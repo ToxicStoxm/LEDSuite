@@ -11,7 +11,7 @@ public class Main{
     public static void main(String[] args) {
 
         // create new window (1080x720) position (500|500) with title and exit program on window close option
-        Window welcomeScreen = new Window(500, 500, 1080, 720, "LED-Cube Control Panel 1.0", WindowConstants.EXIT_ON_CLOSE);
+        Window welcomeScreen = new Window(500, 500, 1080, 720, "LED-Cube Control Panel 1.0.0", WindowConstants.EXIT_ON_CLOSE);
         // create new button
         JButton jB = new JButton();
         // add button to the screen

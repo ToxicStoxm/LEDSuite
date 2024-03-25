@@ -57,7 +57,7 @@ public class Main{
             jB.setToolTipText("Click to switch to Light Mode");
         }
         // log the switch
-        System.out.println("Switched to dark-mode: " + dark_mode);
+        System.out.printf("Switched to dark-mode: %s%n", dark_mode);
         // adjust all colours to match the new mode
         jB.setBackground(new Color(dark_mode ? 0 : 255, dark_mode ? 0 : 255, dark_mode ? 0 : 255));
         jB.setForeground(new Color(dark_mode ? 255 : 0, dark_mode ? 255 : 0, dark_mode ? 255 : 0));

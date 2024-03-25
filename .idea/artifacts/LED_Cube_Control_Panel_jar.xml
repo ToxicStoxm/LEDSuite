@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="LED-Cube-Control-Panel:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/LED_Cube_Control_Panel_jar</output-path>
-    <root id="archive" name="LED-Cube-Control-Panel.jar">
-      <element id="module-output" name="LED-Cube-Control-Panel" />
-    </root>
-  </artifact>
-</component>

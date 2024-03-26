@@ -41,7 +41,7 @@ public class Settings {
         }
     }
     public void load(FileBasedConfiguration config) {
-        String version = "";
+        String version;
         this.DarkM = config.getBoolean(Paths.Config.DARK_MODE_ENABLED);
         this.DarkMColorPrim = config.getString(Paths.Config.DARK_MODE_COLOR_PRIMARY);
         this.DarkMColorSec = config.getString(Paths.Config.DARK_MODE_COLOR_SECONDARY);

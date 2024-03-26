@@ -43,7 +43,6 @@ local.properties
 .autotools
 
 # Java annotation processor (APT)
-.factorypath
 
 # PDT-specific (PHP Development Tools)
 .buildpath
@@ -58,7 +57,6 @@ local.properties
 .texlipse
 
 # STS (Spring Tool Suite)
-.springBeans
 
 # Code Recommenders
 .recommenders/
@@ -73,13 +71,10 @@ local.properties
 
 ### Eclipse Patch ###
 # Eclipse Core
-.project
 
 # JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 # Annotation Processing
-.apt_generated
 
 .sts4-cache/
 

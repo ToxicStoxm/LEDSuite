@@ -9,24 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4bfa529a-c427-41ce-93bc-5423e8b0f5bc" name="Changes" comment="Added config.yml&#10;fixed bugs&#10;implemented Logger">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/java.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/util/Paths.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/HumanReadableConfig.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/version.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Settings/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Settings/Settings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/LED-Cube-Control-Panel-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/LED-Cube-Control-Panel-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/archive-tmp/LED-Cube-Control-Panel-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/archive-tmp/LED-Cube-Control-Panel-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/x_tornado10/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/x_tornado10/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/x_tornado10/Settings/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/x_tornado10/Settings/Settings.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-    </list>
+    <list default="true" id="4bfa529a-c427-41ce-93bc-5423e8b0f5bc" name="Changes" comment="updated ToDo list" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -185,7 +168,31 @@
       <option name="project" value="LOCAL" />
       <updated>1711478578569</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Renamed config.yml to config.yaml&#10;Finished config.yaml implementation&#10;reformatted config.yaml to use single key instead of nested key">
+      <option name="closed" value="true" />
+      <created>1711492387287</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1711492387287</updated>
+    </task>
+    <task id="LOCAL-00008" summary="modified .gitignore">
+      <option name="closed" value="true" />
+      <created>1711492439197</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1711492439197</updated>
+    </task>
+    <task id="LOCAL-00009" summary="updated ToDo list">
+      <option name="closed" value="true" />
+      <created>1711492511487</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1711492511487</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -204,7 +211,10 @@
     <MESSAGE value="Bug fixes" />
     <MESSAGE value="Updated window title" />
     <MESSAGE value="Added config.yml&#10;fixed bugs&#10;implemented Logger" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added config.yml&#10;fixed bugs&#10;implemented Logger" />
+    <MESSAGE value="Renamed config.yml to config.yaml&#10;Finished config.yaml implementation&#10;reformatted config.yaml to use single key instead of nested key" />
+    <MESSAGE value="modified .gitignore" />
+    <MESSAGE value="updated ToDo list" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated ToDo list" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

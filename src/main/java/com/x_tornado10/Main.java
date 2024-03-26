@@ -1,40 +1,58 @@
 package com.x_tornado10;
 
-
 import com.x_tornado10.Logger.Logger;
 import com.x_tornado10.Main_Window.Main_Window;
 import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.util.Paths;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
-import org.fusesource.jansi.AnsiConsole;
+import java.io.*;
 
-import java.io.File;
-import java.io.IOException;
-
-public class Main{
+public class Main {
     public static Settings settings;
     public static Logger logger;
     public static void main(String[] args) {
-
         long start = System.currentTimeMillis();
         settings = new Settings();
         logger = new Logger();
-        File file = new File("/LED-Cube-Control-Panel/config.yml");
+        logger.info("Welcome back!");
+        logger.info("Starting Program..");
+        File file = new File(Paths.config);
         try {
-            if (file.createNewFile()) {
-                logger.info("New config file was successfully created: " + file.getAbsolutePath());
-            } else {
-                logger.info("test");
+            if (!file.exists()) {
+                if (file.getParentFile().mkdirs())
+                    logger.info("Successfully created parent directory for config file: " + file.getParentFile().getAbsolutePath());
+                if (file.createNewFile()) {
+                    logger.info("New config file was successfully created: " + file.getAbsolutePath());
+                    settings.saveDefaultConfig();
+                } else {
+                    logger.warn("Config couldn't be created!");
+                    logger.warn("Please restart the application to prevent wierd behaviour!");
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
+
             logger.error("Settings failed to load!");
             logger.warn("Application was halted!");
             logger.warn("If this keeps happening please open an issue on GitHub!");
             logger.warn("Please restart the application!");
             return;
         }
-        // init settings
-        logger.info("Welcome back!");
-        logger.info("Starting Program..");
+
+        try {
+            Configurations configs = new Configurations();
+            FileBasedConfiguration config = configs.properties(file);
+            settings.load(config);
+        } catch (ConfigurationException e) {
+            logger.error("Failed to parse config.yaml!");
+            logger.warn("Application was halted!");
+            logger.warn("If this keeps happening please open an issue on GitHub!");
+            logger.warn("Please restart the application!");
+            return;
+        }
+
         new Main_Window();
         long timeElapsed = System.currentTimeMillis() - start;
         logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
@@ -98,4 +116,8 @@ public class Main{
         welcomeScreen.repaint();
          */
     }
+    public static void error() {
+        throw new RuntimeException();
+    }
+
 }

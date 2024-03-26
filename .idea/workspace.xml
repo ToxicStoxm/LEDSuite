@@ -9,7 +9,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4bfa529a-c427-41ce-93bc-5423e8b0f5bc" name="Changes" comment="Bug fixes" />
+    <list default="true" id="4bfa529a-c427-41ce-93bc-5423e8b0f5bc" name="Changes" comment="Updated window title">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Logger/Logger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Main_Window/Main_Window.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Settings/Settings.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/ToDo" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/LED_Cube_Control_Panel_jar/LED-Cube-Control-Panel.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/LED_Cube_Control_Panel_jar/LED-Cube-Control-Panel.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/x_tornado10/GUI/Window.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/x_tornado10/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/x_tornado10/GUI/Window.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/x_tornado10/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/x_tornado10/Main.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,32 +56,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "JAR Application.LED-Cube-Control-Panel.jar.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/dominik/IdeaProjects/LED-Cube-Control-Panel",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.LED-Cube-Control-Panel-1.0.0.jar.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.LED-Cube-Control-Panel.jar.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.LED-Cube-Control-Panel [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.LED-Cube-Control-Panel [verify].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/dominik/IdeaProjects/LED-Cube-Control-Panel&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/main/resources" />
       <recent name="$PROJECT_DIR$/src/main/java/com/x_tornado10" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="JAR Application.LED-Cube-Control-Panel-1.0.0.jar">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.x_tornado10.Main" />
       <module name="LED-Cube-Control-Panel" />
@@ -79,12 +101,17 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="LED-Cube-Control-Panel-1.0.0.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/target/LED-Cube-Control-Panel-1.0.0.jar" />
+      <method v="2" />
+    </configuration>
     <configuration name="LED-Cube-Control-Panel.jar" type="JarApplication" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/LED_Cube_Control_Panel_jar/LED-Cube-Control-Panel.jar" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.LED-Cube-Control-Panel-1.0.0.jar" />
         <item itemvalue="Application.Main" />
         <item itemvalue="JAR Application.LED-Cube-Control-Panel.jar" />
       </list>
@@ -132,7 +159,23 @@
       <option name="project" value="LOCAL" />
       <updated>1711401907752</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Updated window title">
+      <option name="closed" value="true" />
+      <created>1711402399826</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1711402399826</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Updated window title">
+      <option name="closed" value="true" />
+      <created>1711402423354</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711402423354</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -149,6 +192,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fixes" />
+    <MESSAGE value="Updated window title" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated window title" />
   </component>
 </project>

@@ -1,8 +1,10 @@
 package com.x_tornado10.util;
 
+// static utility class for storing paths
 public class Paths {
     public static final String config = "./LED-Cube-Control-Panel/config.yaml";
     public static class Config {
+        // marked for removal
         /*
         public static final String DARK_MODE_ENABLED = "LED-Cube-Control-Panel.General.Dark-Mode.Enabled";
         public static final String DARK_MODE_COLOR_PRIMARY = "LED-Cube-Control-Panel.General.Dark-Mode.Dark-Mode-Color.Primary";
@@ -17,7 +19,6 @@ public class Paths {
         public static final String WINDOW_INITIAL_SPAWN_LOCATION_X = "LED-Cube-Control-Panel.General.Window.Initial-Spawn-Location.x";
         public static final String WINDOW_INITIAL_SPAWN_LOCATION_Y = "LED-Cube-Control-Panel.General.Window.Initial-Spawn-Location.y";
         public static final String STARTUP_ENABLE_FAKE_LOADING_BAR = "LED-Cube-Control-Panel.Startup.Enable-Fake-Loading-Bar";
-
          */
         public static final String DARK_MODE_ENABLED = "Dark-Mode-Enabled";
         public static final String DARK_MODE_COLOR_PRIMARY = "Dark-Mode-Color-Primary";

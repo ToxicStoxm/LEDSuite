@@ -18,7 +18,7 @@ public class Main {
         settings = new Settings();
         logger = new Logger();
         logger.info("Welcome back!");
-        logger.info("Starting Program..");
+        logger.info("Starting Program...");
         File file = new File(Paths.config);
         try {
             if (!file.exists()) {

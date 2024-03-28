@@ -1,9 +1,0 @@
-LED-Cube Control Panel
-- Main screen
-    - File picker (System File-Picker)
-    - Settings Menu
-        - light- / dark- mode
-        - config file                                 DONE
-        - config parser                               DONE
-- Application Logger                                  DONE
-- Adding comments to everything for readability   50% DONE

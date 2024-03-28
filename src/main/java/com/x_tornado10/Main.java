@@ -70,7 +70,7 @@ public class Main {
         }
 
         // creating main window
-        new Main_Window();
+        Main_Window mw = new Main_Window();
         // calculating time elapsed during startup and displaying it in the console
         long timeElapsed = System.currentTimeMillis() - start;
         logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");

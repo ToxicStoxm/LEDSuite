@@ -1,28 +1,34 @@
+# DO NOT MODIFY THIS CONFIG WHILE THE APP IS RUNNING
+# IF YOU WANT TO EDIT THE SETTINGS USE THE SETTINGS-MENU
+# ONLY EDIT THIS FILE IF YOU KNOW WHAT YOU ARE DOING
 # General Settings for the app
-## Settings Related to Dark- / Light-Mode
-##### Enable Dark-Mode ? || false = Light-Mode
+# Settings Related to Dark- / Light-Mode
+# Enable Dark-Mode ? [false = Light-Mode]
 Dark-Mode-Enabled: false
-##### Color Palette used for Dark-Mode
+# Color Palette used for Dark-Mode
 Dark-Mode-Color-Primary: #121212
 Dark-Mode-Color-Secondary: #FFFFFF
-##### Color Palette used for Light-Mode
+# Color Palette used for Light-Mode
 Light-Mode-Color-Primary: #FFFFFF
 Light-Mode-Color-Secondary: #000000
-## 'Technical' settings related to the window itself
-##### Window title displayed in the top bar
+# 'Technical' settings related to the window itself
+# Window title displayed in the top bar
 Window-Title: LED-Cube Control Panel %VERSION%
-##### The initial resolution the window spawns as
-##### If set to false window can no longer be resized
-##### They can still be adjusted with the width and height settings below
+# The initial resolution the window spawns as
+# If set to false window can no longer be resized
+# They can still be adjusted with the width and height settings below
 Window-Resizable: true
-Window-Initial-Width: 1080
-Window-Initial-Height: 720
-##### The location on the screen the window will spawn once the app is started
-##### If center option is set to true the window will always spawn in the middle of the current screen
-##### X- and Y Settings below are ignored in that case
+Window-Initial-Width: 1024
+Window-Initial-Height: 600
+# If the window should be resized to be as big as the screen
+# ---> like windowed full screen
+Window-Full-screen: false
+# The location on the screen the window will spawn once the app is started
+# If center option is set to true the window will always spawn in the middle of the current screen
+# X- and Y Settings below are ignored in that case
 Window-Spawn-Center: true
 Window-Spawn-X: 500
 Window-Spawn-Y: 500
-## Settings related to Startup
-##### If the app should display a fake loading bar on startup (Easter egg)
+# Settings related to Startup
+# If the app should display a fake loading bar on startup
 Startup-Fake-Loading-Bar: false

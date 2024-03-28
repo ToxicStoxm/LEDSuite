@@ -27,6 +27,7 @@ public class Settings {
     private int WindowX;
     private int WindowY;
     private boolean FakeLoadingBar;
+    private boolean WindowFullScreen;
     // get the default configuration values from internal resource folder and save them to config.yaml
     public void saveDefaultConfig() throws IOException, NullPointerException {
         // get the internal resource folder and default config values
@@ -80,6 +81,7 @@ public class Settings {
         this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
         this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
         this.WindowCenter = config.getBoolean(Paths.Config.WINDOW_SPAWN_CENTER);
+        this.WindowFullScreen = config.getBoolean(Paths.Config.WINDOW_FULL_SCREEN);
         this.WindowX = config.getInt(Paths.Config.WINDOW_SPAWN_X);
         this.WindowY = config.getInt(Paths.Config.WINDOW_SPAWN_Y);
         this.FakeLoadingBar = config.getBoolean(Paths.Config.STARTUP_FAKE_LOADING_BAR);

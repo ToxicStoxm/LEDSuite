@@ -4,6 +4,7 @@ import com.x_tornado10.Main;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,5 +38,27 @@ public class Logger {
     private void log(Ansi message) {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         System.out.println("[" + df.format(new Date()) + "] " + message);
+    }
+
+    // displaying info popup on screen
+    public void info_popup(String message) {
+        popup(message, "Information", JOptionPane.INFORMATION_MESSAGE);
+    }
+    // displaying warning popup on screen
+    public void warn_popup(String message) {
+        popup(message, "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+    // displaying error popup on screen
+    public void error_popup(String message) {
+        popup(message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    // displaying fatal error popup on screen
+    public void fatal_popup(String message) {
+        popup(message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // displaying popup on screen
+    private void popup(String message, String title, int i) {
+        JOptionPane.showMessageDialog(null, message, title, i);
     }
 }

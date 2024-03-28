@@ -33,7 +33,7 @@ public class Paths {
         public static final String WINDOW_SPAWN_X = "Window-Spawn-X";
         public static final String WINDOW_SPAWN_Y = "Window-Spawn-Y";
         public static final String STARTUP_FAKE_LOADING_BAR = "Startup-Fake-Loading-Bar";
-
+        public static final String WINDOW_FULL_SCREEN = "Window-Full-screen";
 
     }
 }

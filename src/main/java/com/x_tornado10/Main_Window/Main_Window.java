@@ -38,28 +38,41 @@ public class Main_Window extends JFrame {
         // get a list of all graphical devices
         GraphicsDevice[] gs = ge.getScreenDevices();
         // select the primary screen (= 0)
-        GraphicsDevice gd = gs[0];
+        GraphicsDevice gd;
+        if (gs.length - 1 < Main.settings.getWindowInitialScreen()) {
+            Main.logger.error("Screen " + Main.settings.getWindowInitialScreen() + " does not exist! Max value = " + gs.length);
+            Main.logger.warn("Primary screen is used instead!");
+            gd = gs[0];
+        } else {
+            gd = gs[Main.settings.getWindowInitialScreen()];
+        }
 
-        // setting the window size according to the size specified in config.yaml
-        setBounds(new Rectangle(Main.settings.getWindowWidth(), Main.settings.getWindowHeight()));
-        // setting the location of the window to be the top left corner of the current screen
-        setLocation(gd.getDefaultConfiguration().getBounds().x,
-                gd.getDefaultConfiguration().getBounds().y);
-
-        // checking if full screen (windowed full screen) is enabled
+        // check if full screen mode is active
         if (Main.settings.isWindowFullScreen()) {
-            // setting the window size to match the current screens size
-            setBounds(new Rectangle(getToolkit().getScreenSize().width, getToolkit().getScreenSize().height));
+            // setting the window to full screen mode on the specified screen
+            gd.setFullScreenWindow(this);
+        } else {
+            // setting the window size according to the size specified in config.yaml
+            setBounds(new Rectangle(Main.settings.getWindowWidth(), Main.settings.getWindowHeight()));
             // setting the location of the window to be the top left corner of the current screen
             setLocation(gd.getDefaultConfiguration().getBounds().x,
                     gd.getDefaultConfiguration().getBounds().y);
 
-        // checking if window centering is enabled in config.yaml
-        } else {
-            if (Main.settings.isWindowCenter()) {
-                // calculating screen center and moving window to it
-                setLocation((gd.getDefaultConfiguration().getBounds().x + (getToolkit().getScreenSize().width / 2)) - (getWidth() / 2),
-                        (gd.getDefaultConfiguration().getBounds().y + (getToolkit().getScreenSize().height / 2)) - (getHeight() / 2));
+            // checking if full screen (windowed full screen) is enabled
+            if (Main.settings.isWindowedFullScreen()) {
+                // setting the window size to match the current screens size
+                setBounds(new Rectangle(getToolkit().getScreenSize().width, getToolkit().getScreenSize().height));
+                // setting the location of the window to be the top left corner of the current screen
+                setLocation(gd.getDefaultConfiguration().getBounds().x,
+                        gd.getDefaultConfiguration().getBounds().y);
+
+                // checking if window centering is enabled in config.yaml
+            } else {
+                if (Main.settings.isWindowCenter()) {
+                    // calculating screen center and moving window to it
+                    setLocation((gd.getDefaultConfiguration().getBounds().x + (getToolkit().getScreenSize().width / 2)) - (getWidth() / 2),
+                            (gd.getDefaultConfiguration().getBounds().y + (getToolkit().getScreenSize().height / 2)) - (getHeight() / 2));
+                }
             }
         }
     }

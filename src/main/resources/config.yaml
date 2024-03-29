@@ -21,8 +21,12 @@ Window-Resizable: true
 Window-Initial-Width: 1024
 Window-Initial-Height: 600
 # If the window should be resized to be as big as the screen
-# ---> like windowed full screen
-Window-Full-screen: false
+Windowed-Full-screen: false
+# If the window should be in full-screen mode
+Window-Full-Screen: false
+# Choose the screen, where the window will initially spawn
+# Use numbers 0,1,2,3,... (0 = Primary monitor)
+Window-Initial-Screen: 0
 # The location on the screen the window will spawn once the app is started
 # If center option is set to true the window will always spawn in the middle of the current screen
 # X- and Y Settings below are ignored in that case

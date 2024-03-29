@@ -2,7 +2,7 @@ package com.x_tornado10.util;
 
 // static utility class for storing paths
 public class Paths {
-    public static final String config = "./LED-Cube-Control-Panel/config.yaml";
+    public static final String config = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/config.yaml";
     public static class Config {
         // marked for removal
         /*

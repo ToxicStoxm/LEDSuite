@@ -68,6 +68,9 @@ public class Main_Window extends JFrame {
         // resetting borders and clearing main panel
         resetScreen();
 
+        Main.started();
+
+        mainManu();
         //settingsMenu();
     }
 
@@ -171,6 +174,13 @@ public class Main_Window extends JFrame {
             Main.logger.warn("Please disable fake loading bar!");
         }
 
+    }
+
+    private void mainManu() {
+        FileDialog fd = new FileDialog(this);
+        fd.setDirectory(System.getProperty("user.home"));
+        fd.setVisible(true);
+        //main.add(new JFileChooser());
     }
 
     private void settingsMenu() {

@@ -14,10 +14,11 @@ import java.io.IOException;
 public class Main {
     public static Settings settings;
     public static Logger logger;
+    private static long start;
     public static void main(String[] args) {
         // program initialization
         // create timestamp that is used to calculate starting time
-        long start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
         // create new settings class to hold config settings
         settings = new Settings();
         // create new logger instance
@@ -72,12 +73,15 @@ public class Main {
 
         // creating main window
         Main_Window mw = new Main_Window();
-        // calculating time elapsed during startup and displaying it in the console
-        long timeElapsed = System.currentTimeMillis() - start;
-        logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
+
     }
     public static void error() {
         throw new RuntimeException();
+    }
+    public static void started() {
+        // calculating time elapsed during startup and displaying it in the console
+        long timeElapsed = System.currentTimeMillis() - start;
+        logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
     }
 
 }

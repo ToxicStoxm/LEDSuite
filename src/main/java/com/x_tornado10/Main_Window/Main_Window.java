@@ -1,6 +1,7 @@
 package com.x_tornado10.Main_Window;
 
 import com.x_tornado10.Main;
+import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -33,6 +34,7 @@ public class Main_Window extends JFrame {
 
         // initialize borders and add them to the window
         bN = new JPanel();
+        bN.setBackground(Color.BLUE);
         bS = new JPanel();
         bE = new JPanel();
         bW = new JPanel();
@@ -184,6 +186,7 @@ public class Main_Window extends JFrame {
     private void resetScreen() {
         setBorder("*", 0);
         main.removeAll();
+        main.revalidate();
         // built in window update function
         repaint();
     }
@@ -217,6 +220,9 @@ public class Main_Window extends JFrame {
         boolean repaint = false;
         if (!(bN.getHeight() == 0 && north == 0)) {
             bN.setPreferredSize(new Dimension(0, (int) Math.round(getHeight() * north)));
+            Main.logger.info("Calculated: " + (int) Math.round(getHeight() * north));
+            Main.logger.info("Current: " + bN.getHeight());
+            bN.revalidate();
             repaint = true;
         }
         if (!(bS.getHeight() == 0 && south == 0)) {

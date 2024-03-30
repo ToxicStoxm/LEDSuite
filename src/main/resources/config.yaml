@@ -23,7 +23,7 @@ Window-Initial-Height: 600
 # If the window should be resized to be as big as the screen
 Windowed-Full-screen: false
 # If the window should be in full-screen mode
-Window-Full-Screen: false
+Window-Full-screen: false
 # Choose the screen, where the window will initially spawn
 # Use numbers 0,1,2,3,... (0 = Primary monitor)
 Window-Initial-Screen: 0

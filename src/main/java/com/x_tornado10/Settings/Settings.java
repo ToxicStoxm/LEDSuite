@@ -5,7 +5,9 @@ import com.x_tornado10.util.Paths;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.ex.ConversionException;
 
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.util.Properties;
@@ -75,26 +77,62 @@ public class Settings {
         }
         this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE).replace("%VERSION%", version);
         // setting values to parsed config values
-        this.DarkM = config.getBoolean(Paths.Config.DARK_MODE_ENABLED);
+
+        // strings
         this.DarkMColorPrim = config.getString(Paths.Config.DARK_MODE_COLOR_PRIMARY);
         this.DarkMColorSec = config.getString(Paths.Config.DARK_MODE_COLOR_SECONDARY);
         this.LightMColorPrim = config.getString(Paths.Config.LIGHT_MODE_COLOR_PRIMARY);
         this.LightMColorSec = config.getString(Paths.Config.LIGHT_MODE_COLOR_SECONDARY);
-        this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
-        this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
-        this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
+
+        // booleans
+        this.DarkM = config.getBoolean(Paths.Config.DARK_MODE_ENABLED);
         this.WindowCenter = config.getBoolean(Paths.Config.WINDOW_SPAWN_CENTER);
         this.WindowFullScreen = config.getBoolean(Paths.Config.WINDOW_FULL_SCREEN);
-        this.WindowX = config.getInt(Paths.Config.WINDOW_SPAWN_X);
-        this.WindowY = config.getInt(Paths.Config.WINDOW_SPAWN_Y);
+        this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
         this.FakeLoadingBar = config.getBoolean(Paths.Config.STARTUP_FAKE_LOADING_BAR);
         this.WindowedFullScreen = config.getBoolean(Paths.Config.WINDOWED_FULL_SCREEN);
-        // handle a potential IllegalArgumentException gracefully
+
+        // handle potential ConversionExceptions gracefully
+
+        try {
+            this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
+            this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
+        } catch (ConversionException e) {
+            Main.logger.error("Error while parsing Window-Initial-Height and Window-Initial-Width! Not a valid Number!");
+            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            this.WindowHeight = 0;
+            this.WindowWidth = 0;
+        }
+
+        try {
+            this.WindowX = config.getInt(Paths.Config.WINDOW_SPAWN_X);
+            this.WindowY = config.getInt(Paths.Config.WINDOW_SPAWN_Y);
+        } catch (ConversionException e) {
+            Main.logger.error("Error while parsing Window-Spawn-X and Window-Spawn-Y! Not a valid Number!");
+            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            this.WindowX = 0;
+            this.WindowY = 0;
+        }
+
+
         try {
             this.WindowInitialScreen = config.getInt(Paths.Config.WINDOW_INITIAL_SCREEN);
-        } catch (IllegalArgumentException e) {
+        } catch (ConversionException e) {
+            Main.logger.error("Error while parsing Window-Initial-Screen! Not a valid Number!");
             Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
             this.WindowInitialScreen = 0;
         }
+    }
+    public Color getDarkModePrim() {
+        return Color.decode(DarkMColorPrim);
+    }
+    public Color getDarkModeSec() {
+        return Color.decode(DarkMColorSec);
+    }
+    public Color getLightModePrim() {
+        return Color.decode(LightMColorPrim);
+    }
+    public Color getLightModeSec() {
+        return Color.decode(LightMColorSec);
     }
 }

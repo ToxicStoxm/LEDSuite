@@ -3,7 +3,9 @@ LED-Cube Control Panel
     - File picker (System File-Picker)
     - Settings Menu
         - light- / dark- mode
+        - window settings (pos & dim)                 DONE (needs testing)
         - config file                                 DONE
         - config parser                               DONE
+        - config writer
 - Application Logger                                  DONE
-- Adding comments to everything for readability   50% DONE
+- Adding comments to everything for readability   50% DONE (needs optimization)

@@ -1,4 +1,4 @@
-package com.x_tornado10.Utilities;
+package com.x_tornado10.util;
 
 import com.x_tornado10.Events.EventListener;
 import com.x_tornado10.Main;

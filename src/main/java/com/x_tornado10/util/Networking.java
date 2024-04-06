@@ -1,4 +1,4 @@
-package com.x_tornado10.Utilities;
+package com.x_tornado10.util;
 
 public final class Networking {
     // validate an IP4 address

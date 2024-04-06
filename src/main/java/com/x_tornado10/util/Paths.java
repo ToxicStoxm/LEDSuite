@@ -1,4 +1,4 @@
-package com.x_tornado10.util;
+package com.x_tornado10.Util;
 
 // static utility class for storing paths
 public class Paths {

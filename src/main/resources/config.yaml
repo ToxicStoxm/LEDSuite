@@ -16,8 +16,8 @@ Light-Mode-Color-Secondary: #000000
 Window-Title: LED-Cube Control Panel %VERSION%
 # The initial resolution the window spawns as
 # If set to false window can no longer be resized
-# They can still be adjusted with the width and height settings below
-Window-Resizable: true
+# The resolution can still be adjusted with the width and height settings below
+Window-Resizable: false
 Window-Initial-Width: 1024
 Window-Initial-Height: 600
 # If the window should be resized to be as big as the screen
@@ -36,3 +36,6 @@ Window-Spawn-Y: 500
 # Settings related to Startup
 # If the app should display a fake loading bar on startup
 Startup-Fake-Loading-Bar: false
+# Settings related to the Server
+Server-IP: 127.0.0.1
+Server-Port: 12345

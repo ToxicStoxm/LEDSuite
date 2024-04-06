@@ -20,6 +20,10 @@ public class Paths {
         public static final String WINDOW_FULL_SCREEN = "Window-Full-screen";
         public static final String WINDOWED_FULL_SCREEN = "Windowed-Full-screen";
         public static final String WINDOW_INITIAL_SCREEN = "Window-Initial-Screen";
-
+        public static final String IPv4 = "Server-IP";
+        public static final String Port = "Server-Port";
+    }
+    public static class Links {
+        public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel";
     }
 }

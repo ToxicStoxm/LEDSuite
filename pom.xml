@@ -74,5 +74,10 @@
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>open</artifactId>
+            <version>8.4.0.2</version>
+        </dependency>
     </dependencies>
 </project>

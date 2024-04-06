@@ -1,8 +1,10 @@
 package com.x_tornado10;
 
+import com.x_tornado10.Events.EventManager;
 import com.x_tornado10.Logger.Logger;
 import com.x_tornado10.Main_Window.Main_Window;
 import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.util.ColorManager;
 import com.x_tornado10.util.Paths;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -15,6 +17,9 @@ public class Main {
     public static Settings settings;
     public static Logger logger;
     private static long start;
+    public static Main_Window mw;
+    public static ColorManager cm;
+    public static EventManager eventManager;
     public static void main(String[] args) {
         // program initialization
         // create timestamp that is used to calculate starting time
@@ -71,17 +76,32 @@ public class Main {
             return;
         }
 
+        // creating event manager
+        eventManager = new EventManager();
+
+        // creating color manager
+        cm = new ColorManager();
+
         // creating main window
-        Main_Window mw = new Main_Window();
+        mw = new Main_Window();
 
     }
+    // throw a new runtime error if something really severe happens
     public static void error() {
         throw new RuntimeException();
     }
+    // display start message with starting duration
     public static void started() {
         // calculating time elapsed during startup and displaying it in the console
         long timeElapsed = System.currentTimeMillis() - start;
         logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
+    }
+    // exiting program with specified status code
+    public static void exit(int status) {
+        Main.logger.info("Shutting down...");
+        Main.logger.info("Goodbye!");
+        Main.logger.info("Status code: " + status);
+        System.exit(status);
     }
 
 }

@@ -2,7 +2,7 @@ package com.x_tornado10.Main_Window;
 
 import com.vaadin.open.Open;
 import com.x_tornado10.Main;
-import com.x_tornado10.Util.Paths;
+import com.x_tornado10.Utilities.Paths;
 
 import javax.swing.*;
 import java.awt.*;

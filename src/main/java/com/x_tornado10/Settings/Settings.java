@@ -1,8 +1,8 @@
 package com.x_tornado10.Settings;
 
 import com.x_tornado10.Main;
-import com.x_tornado10.Util.Networking;
-import com.x_tornado10.Util.Paths;
+import com.x_tornado10.Utilities.Networking;
+import com.x_tornado10.Utilities.Paths;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;

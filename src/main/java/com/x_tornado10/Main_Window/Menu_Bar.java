@@ -5,6 +5,7 @@ import com.x_tornado10.Main;
 import com.x_tornado10.util.Paths;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -13,7 +14,7 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
     JMenuItem exit;
     JMenuItem info;
     JMenuItem settings;
-    public Menu_Bar() {
+    public Menu_Bar(int width, int height) {
         Main.logger.info("Loading menu bar...");
 
         // setting font
@@ -22,11 +23,23 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         // creating new menu 'File'
         JMenu file = new JMenu("File");
 
+        setBackground(Main.cm.l1);
+
+        file.setBackground(Main.cm.l3);
+        file.setForeground(Main.cm.l7);
+        file.setOpaque(true);
+        file.setFont(new Font("Bahnschrift", Font.PLAIN,Main.settings.scale(10)));
+        file.setPreferredSize(new Dimension(width / 16, height));
+
         // adding 'Info' menuItem to the 'File' menu
         // click event: openURL 'https://github.com/ToxicStoxm/LED-Cube-Control-Panel'
         info = new JMenuItem("Info");
         info.setToolTipText("https://github.com/ToxicStoxm/LED-Cube-Control-Panel");
         info.addActionListener(this);
+        info.setOpaque(true);
+        info.setFont(file.getFont());
+        info.setBackground(Main.cm.l2);
+        info.setForeground(Main.cm.l7);
         file.add(info);
 
         // adding 'Settings' menuItem to the 'File' menu
@@ -36,6 +49,10 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         settings.addActionListener(this);
         settings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_DOWN_MASK));
         settings.setToolTipText("Open settings");
+        settings.setBackground(Main.cm.l2);
+        settings.setOpaque(true);
+        settings.setFont(file.getFont());
+        settings.setForeground(Main.cm.l7);
         file.add(settings);
 
         // adding a separator to 'File' menu
@@ -48,6 +65,10 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         exit.addActionListener(this);
         exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.ALT_DOWN_MASK));
         exit.setToolTipText("Quit the application");
+        exit.setBackground(Main.cm.l2);
+        exit.setForeground(Main.cm.l7);
+        exit.setFont(file.getFont());
+        exit.setOpaque(true);
         file.add(exit);
 
         // adding 'File' menu to the menu bar

@@ -11,6 +11,7 @@ import org.apache.commons.configuration2.ex.ConversionException;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -38,12 +39,13 @@ public class Settings {
     private boolean MobileFriendly = true;
     private int Port = 12345;
     private String IPv4 = "127.0.0.1";
+    private double MobileFriendlyModifier = 200;
 
     // get the default configuration values from internal resource folder and save them to config.yaml
     public void saveDefaultConfig() throws IOException, NullPointerException {
         Main.logger.info("Loading default config values...");
         Main.logger.info("Note: this only happens if config.yaml does not exist or couldn't be found!");
-        Main.logger.info("If this message is shown on each startup please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
+        Main.logger.info("If your settings don't work and this message is shown please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("config.yaml");
         // if the path is null or not found an exception is thrown
@@ -75,81 +77,98 @@ public class Settings {
             Properties properties = new Properties();
             properties.load(inputStream);
             version = properties.getProperty("app.version");
-        } catch (IOException ignored) {
+        } catch (IOException e) {
             // if the version can't be loaded an error is displayed in the console
             // the program is also halted to prevent any further issues
             // if this fails its likely that this build is faulty
-            Main.logger.error("Wasn't able to get app version!");
+            Main.logger.fatal("Wasn't able to get app version!");
             Main.logger.warn("Application was halted!");
             Main.logger.warn("If this keeps happening please open an issue on GitHub!");
             Main.logger.warn("Please restart the application!");
-            Main.error();
+            Main.logger.fatal_popup("Wasn't able to get app version! Please restart the application!");
+            Main.logger.warn_popup("If this keeps happening please open an issue on GitHub!");
+            Main.exit(0);
             return;
         }
-        this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE).replace("%VERSION%", version);
-        // setting values to parsed config values
-
-        this.DarkMColorPrim = config.getString(Paths.Config.DARK_MODE_COLOR_PRIMARY);
-        this.DarkMColorSec = config.getString(Paths.Config.DARK_MODE_COLOR_SECONDARY);
-        this.LightMColorPrim = config.getString(Paths.Config.LIGHT_MODE_COLOR_PRIMARY);
-        this.LightMColorSec = config.getString(Paths.Config.LIGHT_MODE_COLOR_SECONDARY);
-
-        this.DarkM = config.getBoolean(Paths.Config.DARK_MODE_ENABLED);
-        this.WindowCenter = config.getBoolean(Paths.Config.WINDOW_SPAWN_CENTER);
-        this.WindowFullScreen = config.getBoolean(Paths.Config.WINDOW_FULL_SCREEN);
-        this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
-        this.FakeLoadingBar = config.getBoolean(Paths.Config.STARTUP_FAKE_LOADING_BAR);
-        this.WindowedFullScreen = config.getBoolean(Paths.Config.WINDOWED_FULL_SCREEN);
-        this.MobileFriendly = config.getBoolean(Paths.Config.MOBILE_FRIENDLY);
-
-        // handle potential ConversionExceptions gracefully
         try {
-            this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
-            this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
-        } catch (ConversionException e) {
-            Main.logger.error("Error while parsing Window-Initial-Height and Window-Initial-Width! Not a valid Number!");
-            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
-        }
+            this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE).replace("%VERSION%", version);
+            // setting values to parsed config values
 
-        try {
-            this.WindowX = config.getInt(Paths.Config.WINDOW_SPAWN_X);
-            this.WindowY = config.getInt(Paths.Config.WINDOW_SPAWN_Y);
-        } catch (ConversionException e) {
-            Main.logger.error("Error while parsing Window-Spawn-X and Window-Spawn-Y! Not a valid Number!");
-            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
-        }
+            this.DarkMColorPrim = config.getString(Paths.Config.DARK_MODE_COLOR_PRIMARY);
+            this.DarkMColorSec = config.getString(Paths.Config.DARK_MODE_COLOR_SECONDARY);
+            this.LightMColorPrim = config.getString(Paths.Config.LIGHT_MODE_COLOR_PRIMARY);
+            this.LightMColorSec = config.getString(Paths.Config.LIGHT_MODE_COLOR_SECONDARY);
 
-        try {
-            this.WindowInitialScreen = config.getInt(Paths.Config.WINDOW_INITIAL_SCREEN);
-        } catch (ConversionException e) {
-            Main.logger.error("Error while parsing Window-Initial-Screen! Not a valid number!");
-            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
-        }
+            this.DarkM = config.getBoolean(Paths.Config.DARK_MODE_ENABLED);
+            this.WindowCenter = config.getBoolean(Paths.Config.WINDOW_SPAWN_CENTER);
+            this.WindowFullScreen = config.getBoolean(Paths.Config.WINDOW_FULL_SCREEN);
+            this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
+            this.FakeLoadingBar = config.getBoolean(Paths.Config.STARTUP_FAKE_LOADING_BAR);
+            this.WindowedFullScreen = config.getBoolean(Paths.Config.WINDOWED_FULL_SCREEN);
+            this.MobileFriendly = config.getBoolean(Paths.Config.MOBILE_FRIENDLY);
 
-        try {
-            String tempIPv4 = config.getString(Paths.Config.IPV4);
-            if (!Networking.isValidIP(tempIPv4)) {
-                Main.logger.error("Error while parsing Server-IP! Invalid IPv4 address!");
-                Main.logger.warn("Invalid IPv4! Please restart the application!");
-                Main.logger.warn("IPv4 address does not match the following format: 0.0.0.0 - 255.255.255.255");
+            // handle potential ConversionExceptions gracefully
+            try {
+                this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
+                this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
+            } catch (ConversionException e) {
+                Main.logger.error("Error while parsing Window-Initial-Height and Window-Initial-Width! Not a valid Number!");
                 Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
-            } else {
-                this.IPv4 = tempIPv4;
             }
-            int tempPort = config.getInt(Paths.Config.PORT);
-            if (!Networking.isValidPORT(String.valueOf(tempPort))) {
-                Main.logger.error("Error while parsing Server-Port! Invalid Port!");
-                Main.logger.warn("Port is outside the valid range of 0-65535!");
+
+            try {
+                this.WindowX = config.getInt(Paths.Config.WINDOW_SPAWN_X);
+                this.WindowY = config.getInt(Paths.Config.WINDOW_SPAWN_Y);
+            } catch (ConversionException e) {
+                Main.logger.error("Error while parsing Window-Spawn-X and Window-Spawn-Y! Not a valid Number!");
                 Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
-            } else {
-                this.Port = tempPort;
             }
-        } catch (ConversionException | NullPointerException e) {
-            Main.logger.error("Error while parsing Server-IP and Server-Port! Not a valid number!");
-            Main.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
-            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+
+            try {
+                this.WindowInitialScreen = config.getInt(Paths.Config.WINDOW_INITIAL_SCREEN);
+            } catch (ConversionException e) {
+                Main.logger.error("Error while parsing Window-Initial-Screen! Not a valid number!");
+                Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+
+            try {
+                String tempIPv4 = config.getString(Paths.Config.IPV4);
+                if (!Networking.isValidIP(tempIPv4)) {
+                    Main.logger.error("Error while parsing Server-IP! Invalid IPv4 address!");
+                    Main.logger.warn("Invalid IPv4! Please restart the application!");
+                    Main.logger.warn("IPv4 address does not match the following format: 0.0.0.0 - 255.255.255.255");
+                    Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                } else {
+                    this.IPv4 = tempIPv4;
+                }
+                int tempPort = config.getInt(Paths.Config.PORT);
+                if (!Networking.isValidPORT(String.valueOf(tempPort))) {
+                    Main.logger.error("Error while parsing Server-Port! Invalid Port!");
+                    Main.logger.warn("Port is outside the valid range of 0-65535!");
+                    Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                } else {
+                    this.Port = tempPort;
+                }
+            } catch (ConversionException | NullPointerException e) {
+                Main.logger.error("Error while parsing Server-IP and Server-Port! Not a valid number!");
+                Main.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
+                Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+            try {
+                this.MobileFriendlyModifier = config.getDouble(Paths.Config.MOBILE_FRIENDLY_MODIFIER);
+            } catch (ConversionException e) {
+                Main.logger.error("Error while parsing Mobile-Friendly-Modifier! Not a valid number!");
+                Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+            Main.logger.info("Loaded config values to memory!");
+        } catch (NoSuchElementException e){
+            Main.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
+            Main.logger.warn("Program halted to prevent any further errors!");
+            Main.logger.warn("Please delete the old config file from your .config folder and restart the application!");
+            Main.logger.error_popup("Error while parsing config! Settings / values missing! Your probably using an old config file!");
+            Main.logger.warn_popup("Please delete the old config file from your .config folder and restart the application!");
+            Main.exit(0);
         }
-        Main.logger.info("Loaded config values to memory!");
     }
     public Object getDarkModePrim(boolean raw) {
         return raw ? DarkMColorPrim : Color.decode(DarkMColorPrim);
@@ -162,6 +181,12 @@ public class Settings {
     }
     public Object getLightModeSec(boolean raw) {
         return raw ? LightMColorSec : Color.decode(LightMColorSec);
+    }
+    public Double getScaleModifier() {
+        return MobileFriendly ? MobileFriendlyModifier/100 : 1;
+    }
+    public int scale(int value) {
+        return (int) Math.round(value * getScaleModifier());
     }
 
     // copy the settings of another settings class
@@ -186,6 +211,7 @@ public class Settings {
         this.IPv4 = settings.IPv4;
         this.Port = settings.Port;
         this.MobileFriendly = settings.MobileFriendly;
+        this.MobileFriendlyModifier = settings.MobileFriendlyModifier;
         Main.logger.info("Successfully loaded settings from " + settings.getName() + "!");
         Main.logger.info(getName() + " now inherits all values from " + settings.getName());
     }
@@ -212,6 +238,7 @@ public class Settings {
                 WindowX == other.WindowX &&
                 WindowY == other.WindowY &&
                 MobileFriendly == other.MobileFriendly &&
+                MobileFriendlyModifier == other.MobileFriendlyModifier &&
                 Objects.equals(IPv4, other.IPv4) &&
                 Objects.equals(Port, other.Port) &&
                 Objects.equals(DarkMColorPrim, other.DarkMColorPrim) &&
@@ -226,7 +253,8 @@ public class Settings {
     public int hashCode() {
         return Objects.hash(DarkM, DarkMColorPrim, DarkMColorSec, LightMColorPrim, LightMColorSec, WindowTitle,
                 WindowResizeable, WindowWidth, WindowHeight, WindowCenter, WindowX, WindowY,
-                FakeLoadingBar, WindowFullScreen, WindowedFullScreen, WindowInitialScreen, IPv4, Port, MobileFriendly);
+                FakeLoadingBar, WindowFullScreen, WindowedFullScreen, WindowInitialScreen, IPv4, Port, MobileFriendly,
+                MobileFriendlyModifier);
     }
 
 }

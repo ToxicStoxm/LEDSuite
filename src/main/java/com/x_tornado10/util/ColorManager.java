@@ -3,19 +3,31 @@ package com.x_tornado10.util;
 import com.x_tornado10.Events.EventListener;
 import com.x_tornado10.Main;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ColorManager implements EventListener {
-    // color layers
-    public String l0 = "";
-    public String l1 = "";
-    public String l2 = "";
-    public String l3 = "";
-    public String l4 = "";
-    public String l5 = "";
-    public String l6 = "";
-    public String l7 = "";
+
+    // color layers (raw codes)
+    public String l0_raw = "";
+    public String l1_raw = "";
+    public String l2_raw = "";
+    public String l3_raw = "";
+    public String l4_raw = "";
+    public String l5_raw = "";
+    public String l6_raw = "";
+    public String l7_raw = "";
+
+    // color layers (color class)
+    public Color l0 = new Color(0,0,0);
+    public Color l1 = new Color(0,0,0);
+    public Color l2 = new Color(0,0,0);
+    public Color l3 = new Color(0,0,0);
+    public Color l4 = new Color(0,0,0);
+    public Color l5 = new Color(0,0,0);
+    public Color l6 = new Color(0,0,0);
+    public Color l7 = new Color(0,0,0);
 
     // get primary color from config
     private String getPrimary() {
@@ -32,26 +44,51 @@ public class ColorManager implements EventListener {
     // recalculate colors
     private void revalidate() {
         Main.logger.info("Recalculating colors...");
-        String c1 = getPrimary();
-        String c2 = getSecondary();
+        String co1 = getPrimary();
+        String co2 = getSecondary();
 
-        List<String> colors = generateGradient(c1, c2, 8);
-        l0 = colors.get(0);
-        Main.logger.info("Layer1: " + l0);
-        l1 = colors.get(1);
-        Main.logger.info("Layer2: " + l1);
-        l2 = colors.get(2);
-        Main.logger.info("Layer3: " + l2);
-        l3 = colors.get(3);
-        Main.logger.info("Layer4: " + l3);
-        l4 = colors.get(4);
-        Main.logger.info("Layer5: " + l4);
-        l5 = colors.get(5);
-        Main.logger.info("Layer6: " + l5);
-        l6 = colors.get(6);
-        Main.logger.info("Layer7: " + l6);
-        l7 = colors.get(7);
-        Main.logger.info("Layer8: " + l7);
+        List<String> colors = generateGradient(co1, co2, 8);
+
+        String c0 = colors.get(0);
+        l0_raw = c0;
+        l0 = Color.decode(c0);
+        Main.logger.info("Layer1: " + l0_raw);
+
+        String c1 = colors.get(1);
+        l1_raw = c1;
+        l1 = Color.decode(c1);
+        Main.logger.info("Layer2: " + l1_raw);
+
+        String c2 = colors.get(2);
+        l2_raw = c2;
+        l2 = Color.decode(c2);
+        Main.logger.info("Layer3: " + l2_raw);
+
+        String c3 = colors.get(3);
+        l3_raw = c3;
+        l3 = Color.decode(c3);
+        Main.logger.info("Layer4: " + l3_raw);
+
+        String c4 = colors.get(4);
+        l4_raw = c4;
+        l4 = Color.decode(c4);
+        Main.logger.info("Layer5: " + l4_raw);
+
+        String c5 = colors.get(5);
+        l5_raw = c5;
+        l5 = Color.decode(c5);
+        Main.logger.info("Layer6: " + l5_raw);
+
+        String c6 = colors.get(6);
+        l6_raw = c6;
+        l6 = Color.decode(c6);
+        Main.logger.info("Layer7: " + l6_raw);
+
+        String c7 = colors.get(7);
+        l7_raw = c7;
+        l7 = Color.decode(c7);
+        Main.logger.info("Layer8: " + l7_raw);
+
         Main.logger.info("Successfully recalculated colors!");
     }
 
@@ -59,9 +96,9 @@ public class ColorManager implements EventListener {
     public static ArrayList<String> generateGradient(String c1, String c2, int numColors) {
         ArrayList<String> gradientColors = new ArrayList<>();
 
-        // removing '#' symbol from the input strings
-        String color1 = c1.replace("#","");
-        String color2 = c2.replace("#","");
+        // Removing '#' symbol from the input strings
+        String color1 = c1.replace("#", "");
+        String color2 = c2.replace("#", "");
 
         // Convert hexadecimal colors to RGB
         int color1_r = Integer.parseInt(color1.substring(0, 2), 16);
@@ -72,7 +109,7 @@ public class ColorManager implements EventListener {
         int color2_g = Integer.parseInt(color2.substring(2, 4), 16);
         int color2_b = Integer.parseInt(color2.substring(4, 6), 16);
 
-        // Calculate the difference between each RGB component
+        // Calculate the overall change in each RGB component across the entire gradient
         double delta_r = (double) (color2_r - color1_r) / (numColors + 1);
         double delta_g = (double) (color2_g - color1_g) / (numColors + 1);
         double delta_b = (double) (color2_b - color1_b) / (numColors + 1);
@@ -90,7 +127,6 @@ public class ColorManager implements EventListener {
 
         return gradientColors;
     }
-
     // trigger recalculation on reload
     @Override
     public void onReload() {

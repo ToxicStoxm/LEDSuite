@@ -12,6 +12,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 
 public class Main_Window extends JFrame implements EventListener {
+    private WINDOW_STATE current_State = WINDOW_STATE.NONE;
     private final JPanel main;
     private double north = 0;
     private double south = 0;
@@ -24,6 +25,15 @@ public class Main_Window extends JFrame implements EventListener {
     public Main_Window() {
         Main.logger.info("Lading main window...");
 
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            Main.logger.fatal("Failed to load GTK look and feel!");
+            Main.logger.error("Invalid look and feel!");
+            Main.logger.warn("Please check if your system supports GTK!");
+            Main.exit(0);
+        }
+
         // sets title, resizeability and default close operation
         Main.logger.info("Configuring appearance...");
         configureAppearanceAndBehavior();
@@ -34,12 +44,17 @@ public class Main_Window extends JFrame implements EventListener {
         setWindowPosAndBounds();
         Main.logger.info("Successfully calculated and set window position and bounds!");
 
+        setBackground(Main.cm.l0);
+
         // displays the window on screen
         setVisible(true);
 
         // initialize main panel
         Main.logger.info("Creating main content panel...");
         main = new JPanel();
+        main.setBackground(Main.cm.l0);
+
+        main.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(20)));
 
         Main.logger.info("Adding borders to window...");
         // initialize borders and add them to the window
@@ -47,6 +62,11 @@ public class Main_Window extends JFrame implements EventListener {
         bS = new JPanel();
         bE = new JPanel();
         bW = new JPanel();
+
+        bN.setBackground(Main.cm.l0);
+        bS.setBackground(Main.cm.l0);
+        bE.setBackground(Main.cm.l0);
+        bW.setBackground(Main.cm.l0);
 
         add(bN, BorderLayout.NORTH);
         add(bS, BorderLayout.SOUTH);
@@ -143,6 +163,7 @@ public class Main_Window extends JFrame implements EventListener {
     }
     // displays a fake loading bar
     public void fakeLoadingBar() {
+        current_State = WINDOW_STATE.LOADING_BAR;
         // sending a few messages to console as warning because the fake loading bar can cause issues with thread interrupting
         Main.logger.info("Displaying fake loading bar...");
         Main.logger.warn("If there are any errors please disable the fake loading bar!");
@@ -156,8 +177,8 @@ public class Main_Window extends JFrame implements EventListener {
 
         // configuring dimensions and color of the loading bar
         bar.setBorder(new LineBorder(Color.BLACK));
-        bar.setBackground((Color) Main.settings.getDarkModeSec(false));
-        bar.setForeground((Color) Main.settings.getDarkModePrim(false));
+        bar.setBackground(Main.cm.l2);
+        bar.setForeground(Main.cm.l7);
         bar.setPreferredSize(new Dimension(getWidth()/20 * 19, getHeight() / 16));
 
         // adding the loading bar to the main window
@@ -191,19 +212,22 @@ public class Main_Window extends JFrame implements EventListener {
 
     // displaying main menu
     private void mainMenu() {
+        current_State = WINDOW_STATE.MAIN;
         // resetting / clearing screen
         resetScreen();
 
         Main.logger.info("Loading main menu...");
         // setting new layout for the main content pane
         BorderLayout bl = new BorderLayout();
-        bl.setVgap(10);
-        bl.setHgap(10);
+        bl.setVgap(Main.settings.scale(10));
+        bl.setHgap(Main.settings.scale(10));
         main.setLayout(bl);
 
         // creating a new menu bar and adding it to the main content pane
-        Menu_Bar mb = new Menu_Bar();
-        mb.setPreferredSize(new Dimension(0,30));
+        Menu_Bar mb = new Menu_Bar(getWidth(), getHeight());
+        mb.setBackground(Main.cm.l1);
+        mb.setForeground(Main.cm.l7);
+        mb.setPreferredSize(new Dimension(0, Main.settings.scale(30)));
         main.add(mb, BorderLayout.NORTH);
         // revalidating main content pane to ensure correct displaying of the menu bar
         main.revalidate();
@@ -234,19 +258,22 @@ public class Main_Window extends JFrame implements EventListener {
 
     // displaying settings menu
     public void settingsMenu() {
+        current_State = WINDOW_STATE.SETTINGS;
         Main.logger.info("Loading settings menu...");
         resetScreen();
 
         Settings changes = new Settings();
         changes.copy(Main.settings);
-        changes.setWindowedFullScreen(true);
         changes.setName("Settings-User-Changes");
 
         JPanel jp = new JPanel();
+        jp.setOpaque(false);
         jp.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         JButton applyB = new JButton("Apply");
+        applyB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
         JButton okB = new JButton("OK");
+        okB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
 
         okB.addActionListener((e -> {
 
@@ -291,6 +318,15 @@ public class Main_Window extends JFrame implements EventListener {
 
         applyB.setFocusable(false);
         okB.setFocusable(false);
+
+        applyB.setBackground(Main.cm.l7);
+        okB.setBackground(Main.cm.l7);
+
+        applyB.setForeground(Main.cm.l2);
+        okB.setForeground(Main.cm.l2);
+
+        applyB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
+        okB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
 
         jp.add(applyB);
         jp.add(okB);
@@ -388,6 +424,13 @@ public class Main_Window extends JFrame implements EventListener {
     }
 
     public void exitDialog() {
+
+        // don't display the exit dialog on mobile
+        if (Main.settings.isMobileFriendly()) {
+            Main.mw.exit(0);
+            return;
+        }
+
         // creating new confirm popup before quitting application
         JOptionPane optionPane = new JOptionPane();
 
@@ -418,7 +461,16 @@ public class Main_Window extends JFrame implements EventListener {
 
     @Override
     public void onReload() {
+        repaint();
+        revalidate();
+    }
 
+    public enum WINDOW_STATE {
+        NONE,
+        LOADING_BAR,
+        MAIN,
+        SETTINGS,
+        FILE_PICKER
     }
 }
 

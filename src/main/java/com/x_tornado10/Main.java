@@ -56,6 +56,9 @@ public class Main {
             logger.warn("Application was halted!");
             logger.warn("If this keeps happening please open an issue on GitHub!");
             logger.warn("Please restart the application!");
+            logger.error_popup("Settings failed to load! Please restart the application!");
+            logger.warn_popup("If this keeps happening please open an issue on GitHub!");
+            exit(0);
             return;
         }
 
@@ -73,6 +76,9 @@ public class Main {
             logger.warn("Application was halted!");
             logger.warn("If this keeps happening please open an issue on GitHub!");
             logger.warn("Please restart the application!");
+            logger.error_popup("Failed to parse config.yaml! Please restart the application!");
+            logger.warn_popup("If this keeps happening please open an issue on GitHub!");
+            exit(0);
             return;
         }
 
@@ -85,10 +91,6 @@ public class Main {
         // creating main window
         mw = new Main_Window();
 
-    }
-    // throw a new runtime error if something really severe happens
-    public static void error() {
-        throw new RuntimeException();
     }
     // display start message with starting duration
     public static void started() {

@@ -43,3 +43,5 @@ Server-Port: 12345
 # Everything is resized and optimized for touchscreen use
 # Also removes unnecessary popups that don't make sense on mobile
 Mobile-Friendly: true
+# Scale for mobile-friendly mode (in %)
+Mobile-Friendly-Modifier: 200

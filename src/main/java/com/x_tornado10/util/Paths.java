@@ -23,6 +23,7 @@ public class Paths {
         public static final String IPV4 = "Server-IP";
         public static final String PORT = "Server-Port";
         public static final String MOBILE_FRIENDLY = "Mobile-Friendly";
+        public static final String MOBILE_FRIENDLY_MODIFIER = "Mobile-Friendly-Modifier";
     }
     public static class Links {
         public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel";

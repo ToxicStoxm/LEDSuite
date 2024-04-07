@@ -35,6 +35,7 @@ public class Settings {
     private boolean WindowFullScreen = false;
     private boolean WindowedFullScreen = false;
     private int WindowInitialScreen = 0;
+    private boolean MobileFriendly = true;
     private int Port = 12345;
     private String IPv4 = "127.0.0.1";
 
@@ -99,6 +100,7 @@ public class Settings {
         this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
         this.FakeLoadingBar = config.getBoolean(Paths.Config.STARTUP_FAKE_LOADING_BAR);
         this.WindowedFullScreen = config.getBoolean(Paths.Config.WINDOWED_FULL_SCREEN);
+        this.MobileFriendly = config.getBoolean(Paths.Config.MOBILE_FRIENDLY);
 
         // handle potential ConversionExceptions gracefully
         try {
@@ -125,7 +127,7 @@ public class Settings {
         }
 
         try {
-            String tempIPv4 = config.getString(Paths.Config.IPv4);
+            String tempIPv4 = config.getString(Paths.Config.IPV4);
             if (!Networking.isValidIP(tempIPv4)) {
                 Main.logger.error("Error while parsing Server-IP! Invalid IPv4 address!");
                 Main.logger.warn("Invalid IPv4! Please restart the application!");
@@ -134,7 +136,7 @@ public class Settings {
             } else {
                 this.IPv4 = tempIPv4;
             }
-            int tempPort = config.getInt(Paths.Config.Port);
+            int tempPort = config.getInt(Paths.Config.PORT);
             if (!Networking.isValidPORT(String.valueOf(tempPort))) {
                 Main.logger.error("Error while parsing Server-Port! Invalid Port!");
                 Main.logger.warn("Port is outside the valid range of 0-65535!");
@@ -183,6 +185,7 @@ public class Settings {
         this.WindowInitialScreen = settings.WindowInitialScreen;
         this.IPv4 = settings.IPv4;
         this.Port = settings.Port;
+        this.MobileFriendly = settings.MobileFriendly;
         Main.logger.info("Successfully loaded settings from " + settings.getName() + "!");
         Main.logger.info(getName() + " now inherits all values from " + settings.getName());
     }
@@ -208,6 +211,9 @@ public class Settings {
                 WindowHeight == other.WindowHeight &&
                 WindowX == other.WindowX &&
                 WindowY == other.WindowY &&
+                MobileFriendly == other.MobileFriendly &&
+                Objects.equals(IPv4, other.IPv4) &&
+                Objects.equals(Port, other.Port) &&
                 Objects.equals(DarkMColorPrim, other.DarkMColorPrim) &&
                 Objects.equals(DarkMColorSec, other.DarkMColorSec) &&
                 Objects.equals(LightMColorPrim, other.LightMColorPrim) &&
@@ -220,7 +226,7 @@ public class Settings {
     public int hashCode() {
         return Objects.hash(DarkM, DarkMColorPrim, DarkMColorSec, LightMColorPrim, LightMColorSec, WindowTitle,
                 WindowResizeable, WindowWidth, WindowHeight, WindowCenter, WindowX, WindowY,
-                FakeLoadingBar, WindowFullScreen, WindowedFullScreen, WindowInitialScreen);
+                FakeLoadingBar, WindowFullScreen, WindowedFullScreen, WindowInitialScreen, IPv4, Port, MobileFriendly);
     }
 
 }

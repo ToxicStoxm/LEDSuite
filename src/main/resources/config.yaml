@@ -39,3 +39,7 @@ Startup-Fake-Loading-Bar: false
 # Settings related to the Server
 Server-IP: 127.0.0.1
 Server-Port: 12345
+# Other settings
+# Everything is resized and optimized for touchscreen use
+# Also removes unnecessary popups that don't make sense on mobile
+Mobile-Friendly: true

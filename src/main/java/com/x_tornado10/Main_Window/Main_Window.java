@@ -22,7 +22,7 @@ public class Main_Window extends JFrame implements EventListener {
     private final JPanel bS;
     private final JPanel bE;
     private final JPanel bW;
-    public Main_Window() {
+    public Main_Window(boolean windows) {
         Main.logger.info("Lading main window...");
 
         try {
@@ -31,7 +31,8 @@ public class Main_Window extends JFrame implements EventListener {
             Main.logger.fatal("Failed to load GTK look and feel!");
             Main.logger.error("Invalid look and feel!");
             Main.logger.warn("Please check if your system supports GTK!");
-            Main.exit(0);
+            if (!windows) Main.exit(0);
+            else Main.logger.warn("Loading default look and feel! This will break some menus and / or buttons!");
         }
 
         // sets title, resizeability and default close operation

@@ -31,6 +31,18 @@ public class Main {
         // startup information displayed in the console upon opening the program
         logger.info("Welcome back!");
         logger.info("Starting Program...");
+        String os_name = System.getProperty("os.name");
+        String os_version = System.getProperty("os.version");
+
+        logger.info("System environment: " + os_name + os_version);
+        boolean windows = false;
+
+        if (os_name.toLowerCase().contains("windows")) {
+            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
+            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
+            windows = true;
+        }
+
         // defining config file
         File file = new File(Paths.config);
         try {
@@ -89,7 +101,7 @@ public class Main {
         cm = new ColorManager();
 
         // creating main window
-        mw = new Main_Window();
+        mw = new Main_Window(windows);
 
     }
     // display start message with starting duration

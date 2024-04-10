@@ -1,0 +1,6 @@
+# Settings related to the Server
+Server-IP: 127.0.0.1
+Server-Port: 12345
+# How bright the LED's should be
+# Value un percent (min 1% | max 100%)
+LED-Brightness: 20

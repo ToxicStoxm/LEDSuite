@@ -2,7 +2,10 @@ package com.x_tornado10.Main_Window;
 
 import com.x_tornado10.Events.EventListener;
 import com.x_tornado10.Main;
+import com.x_tornado10.Settings.Server_Settings;
+import com.x_tornado10.Settings.Local_Settings;
 import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.util.Paths;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -263,7 +266,7 @@ public class Main_Window extends JFrame implements EventListener {
         Main.logger.info("Loading settings menu...");
         resetScreen();
 
-        Settings changes = new Settings();
+        Local_Settings changes = new Local_Settings();
         changes.copy(Main.settings);
         changes.setName("Settings-User-Changes");
 
@@ -283,7 +286,7 @@ public class Main_Window extends JFrame implements EventListener {
                 JOptionPane optionPane = new JOptionPane();
 
                 // setting options, displayed question and title, default option and question type
-                Object[] options = new Object[]{"Save","Don't save"};
+                Object[] options = new Object[]{"Don't save", "Save"};
                 optionPane.setOptions(options);
                 optionPane.setInitialSelectionValue(options[1]);
                 optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -302,7 +305,12 @@ public class Main_Window extends JFrame implements EventListener {
                     // checking if the user clicked
                     if (selectedValue.equals(options[0])) {
                         // saving the new settings and closing settings menu
-                        applyNewSettings(changes);
+                        // handling potential config type mismatch gracefully with config warn message and error popup
+                        if (!applyNewSettings(changes)) {
+                            Main.logger.error("Failed to save config changes!");
+                            Main.logger.error_popup("Failed to save config changes! We're sorry for the inconvenience! \n" +
+                                    "Please try restarting the application and if the error persists we recommend opening an issue on the projects GitHub: " + Paths.Links.Project_GitHub);
+                        }
                         // loading main menu
                         mainMenu();
                     } else {
@@ -315,7 +323,14 @@ public class Main_Window extends JFrame implements EventListener {
                 mainMenu();
             }
         }));
-        applyB.addActionListener((e -> applyNewSettings(changes)));
+        applyB.addActionListener((e -> {
+            if (!applyNewSettings(changes)) {
+                Main.logger.error("Failed to save config changes!");
+                Main.logger.error_popup("Failed to save config changes! We're sorry for the inconvenience! \n" +
+                        "Please try restarting the application and if the error persists we recommend opening an issue on the projects GitHub: " + Paths.Links.Project_GitHub);
+                mainMenu();
+            }
+        }));
 
         applyB.setFocusable(false);
         okB.setFocusable(false);
@@ -337,10 +352,116 @@ public class Main_Window extends JFrame implements EventListener {
         Main.logger.info("Successfully loaded settings menu!");
     }
 
-    private void applyNewSettings(Settings changes) {
+    public void serverSettingsMenu() {
+
+        current_State = WINDOW_STATE.SERVER_SETTINGS;
+        Main.logger.info("Loading server settings menu...");
+        resetScreen();
+
+        Server_Settings changes = new Server_Settings();
+        changes.copy(Main.server_settings);
+        changes.setName("Server-Settings-User-Changes");
+
+        JPanel jp = new JPanel();
+        jp.setOpaque(false);
+        jp.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        JButton applyB = new JButton("Apply");
+        applyB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
+        JButton okB = new JButton("OK");
+        okB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
+
+        okB.addActionListener((e -> {
+
+            // check if there are any unsaved changes to the settings
+            if (!Main.server_settings.equals(changes)) {
+                JOptionPane optionPane = new JOptionPane();
+
+                // setting options, displayed question and title, default option and question type
+                Object[] options = new Object[]{"Don't save", "Save"};
+                optionPane.setOptions(options);
+                optionPane.setInitialSelectionValue(options[1]);
+                optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+                optionPane.setMessage("Do you want to apply / save changes before closing settings menu?");
+
+                // creating the popup and displaying it
+                JDialog dialog = optionPane.createDialog("Save before quitting?");
+                dialog.setFocusable(false);
+                dialog.setVisible(true);
+
+                // checking witch option the user selected
+                Object selectedValue = optionPane.getValue();
+                // checking if the user closed the window
+                // in that case do nothing
+                if (selectedValue != null) {
+                    // checking if the user clicked
+                    if (selectedValue.equals(options[0])) {
+                        // saving the new settings and closing settings menu
+                        // handling potential config type mismatch gracefully with console message and error popup
+                        if (!applyNewSettings(changes)) {
+                            Main.logger.error("Failed to save config changes!");
+                            Main.logger.error_popup("Failed to save config changes! We're sorry for the inconvenience! \n" +
+                                    "Please try restarting the application and if the error persists we recommend opening an issue on the projects GitHub: " + Paths.Links.Project_GitHub);
+                        }
+                        // loading main menu
+                        mainMenu();
+                    } else {
+                        // loading main menu without saving
+                        mainMenu();
+                    }
+                }
+            } else {
+                //loading main menu
+                mainMenu();
+            }
+        }));
+        applyB.addActionListener((e -> {
+            if (!applyNewSettings(changes)) {
+                Main.logger.error("Failed to save config changes!");
+                Main.logger.error_popup("Failed to save config changes! We're sorry for the inconvenience! \n" +
+                        "Please try restarting the application and if the error persists we recommend opening an issue on the projects GitHub: " + Paths.Links.Project_GitHub);
+                mainMenu();
+            }
+        }));
+
+        applyB.setFocusable(false);
+        okB.setFocusable(false);
+
+        applyB.setBackground(Main.cm.l7);
+        okB.setBackground(Main.cm.l7);
+
+        applyB.setForeground(Main.cm.l2);
+        okB.setForeground(Main.cm.l2);
+
+        applyB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
+        okB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
+
+        jp.add(applyB);
+        jp.add(okB);
+
+        main.add(jp, BorderLayout.SOUTH);
+
+        Main.logger.info("Successfully loaded settings menu!");
+    }
+
+    private boolean applyNewSettings(Settings changes) {
         Main.logger.info("Applying and saving new settings...");
-        Main.settings.copy(changes);
+        switch (changes.getType()) {
+            case LOCAL -> Main.settings.copy(changes);
+            case SERVER -> Main.server_settings.copy(changes);
+            case UNDEFINED -> {
+                Main.logger.error("Can't save config values. Config type is undefined!");
+                Main.logger.warn("Please try restarting the application and if the problem persists please seek support on github!");
+                return false;
+            }
+            default -> {
+                Main.logger.error("Unknown config type! Type: " + changes.getType());
+                Main.logger.warn("Please try restarting the application and if the problem persists please seek support on github!");
+                return false;
+            }
+        }
         Main.logger.info("Successfully saved new config settings!");
+        return true;
     }
 
     // resetting borders and clearing main panel
@@ -471,6 +592,7 @@ public class Main_Window extends JFrame implements EventListener {
         LOADING_BAR,
         MAIN,
         SETTINGS,
+        SERVER_SETTINGS,
         FILE_PICKER
     }
 }

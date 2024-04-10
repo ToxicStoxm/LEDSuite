@@ -5,8 +5,11 @@
 # Settings Related to Dark- / Light-Mode
 # Enable Dark-Mode ? [false = Light-Mode]
 Dark-Mode-Enabled: false
+# Color Palettes:
+# The application creates a gradient between the two specified colors
+# The gradient consists of 8 colors and is applied to the application gui
 # Color Palette used for Dark-Mode
-Dark-Mode-Color-Primary: #121212
+Dark-Mode-Color-Primary: #000000
 Dark-Mode-Color-Secondary: #FFFFFF
 # Color Palette used for Light-Mode
 Light-Mode-Color-Primary: #FFFFFF
@@ -36,12 +39,19 @@ Window-Spawn-Y: 500
 # Settings related to Startup
 # If the app should display a fake loading bar on startup
 Startup-Fake-Loading-Bar: false
-# Settings related to the Server
-Server-IP: 127.0.0.1
-Server-Port: 12345
 # Other settings
 # Everything is resized and optimized for touchscreen use
 # Also removes unnecessary popups that don't make sense on mobile
 Mobile-Friendly: true
 # Scale for mobile-friendly mode (in %)
 Mobile-Friendly-Modifier: 200
+# Logger Settings
+# higher log levels include everything from lower log levels
+# Log - Levels:
+# 0 --> logger turned off
+# 1 --> logger displays only fatal errors
+# 2 --> logger displays normal errors
+# 3 --> logger displays warnings
+# 4 --> logger displays info
+# 5 --> currently unused (for future use)
+Log-Level: 3

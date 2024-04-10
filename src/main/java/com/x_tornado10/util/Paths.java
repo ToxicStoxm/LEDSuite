@@ -3,6 +3,7 @@ package com.x_tornado10.util;
 // static utility class for storing paths
 public class Paths {
     public static final String config = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/config.yaml";
+    public static final String server_config = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/server_config.yaml";
     public static class Config {
         public static final String DARK_MODE_ENABLED = "Dark-Mode-Enabled";
         public static final String DARK_MODE_COLOR_PRIMARY = "Dark-Mode-Color-Primary";
@@ -20,10 +21,14 @@ public class Paths {
         public static final String WINDOW_FULL_SCREEN = "Window-Full-screen";
         public static final String WINDOWED_FULL_SCREEN = "Windowed-Full-screen";
         public static final String WINDOW_INITIAL_SCREEN = "Window-Initial-Screen";
-        public static final String IPV4 = "Server-IP";
-        public static final String PORT = "Server-Port";
         public static final String MOBILE_FRIENDLY = "Mobile-Friendly";
         public static final String MOBILE_FRIENDLY_MODIFIER = "Mobile-Friendly-Modifier";
+        public static final String LOG_LEVEL = "Log-Level";
+    }
+    public static class Server_Config {
+        public static final String BRIGHTNESS = "LED-Brightness";
+        public static final String IPV4 = "Server-IP";
+        public static final String PORT = "Server-Port";
     }
     public static class Links {
         public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel";

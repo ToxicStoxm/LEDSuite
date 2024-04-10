@@ -57,6 +57,46 @@ public class Logger {
         popup(message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    private int currentLogLevel() {
+        return Main.settings.getLogLevel();
+    }
+
+    public enum log_level implements Log_Level {
+        INFO() {
+            @Override
+            public boolean isEnabled() {
+
+                return false;
+            }
+        },
+        WARN() {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        },
+        ERROR() {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        },
+        FATAL() {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        },
+        DEBUG() {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        };
+
+    }
+
+
     // displaying popup on screen
     private void popup(String message, String title, int i) {
         JOptionPane.showMessageDialog(null, message, title, i);

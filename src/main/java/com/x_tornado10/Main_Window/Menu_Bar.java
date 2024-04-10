@@ -5,7 +5,6 @@ import com.x_tornado10.Main;
 import com.x_tornado10.util.Paths;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -14,6 +13,7 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
     JMenuItem exit;
     JMenuItem info;
     JMenuItem settings;
+    JMenuItem serverSettings;
     public Menu_Bar(int width, int height) {
         Main.logger.info("Loading menu bar...");
 
@@ -23,8 +23,10 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         // creating new menu 'File'
         JMenu file = new JMenu("File");
 
+        // setting background for the MenuBar
         setBackground(Main.cm.l1);
 
+        // configuring aesthetics of the 'File' menu
         file.setBackground(Main.cm.l3);
         file.setForeground(Main.cm.l7);
         file.setOpaque(true);
@@ -54,6 +56,17 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         settings.setFont(file.getFont());
         settings.setForeground(Main.cm.l7);
         file.add(settings);
+
+        // adding 'Server side settings' menuItem to the 'File' menu
+        // click event: openServerSideSettingsMenu
+        serverSettings = new JMenuItem("Server Settings");
+        serverSettings.addActionListener(this);
+        serverSettings.setToolTipText("Open the server side settings");
+        serverSettings.setBackground(Main.cm.l2);
+        serverSettings.setOpaque(true);
+        serverSettings.setFont(file.getFont());
+        serverSettings.setForeground(Main.cm.l7);
+        file.add(serverSettings);
 
         // adding a separator to 'File' menu
         file.addSeparator();
@@ -91,7 +104,12 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
             Main.mw.settingsMenu();
         }
         if (source.equals(exit)) {
+            // exiting the application
             Main.mw.exitDialog();
+        }
+        if (source.equals(serverSettings)) {
+            // opening server side settings
+            Main.mw.serverSettingsMenu();
         }
     }
 

@@ -3,18 +3,23 @@ package com.x_tornado10;
 import com.x_tornado10.Events.EventManager;
 import com.x_tornado10.Logger.Logger;
 import com.x_tornado10.Main_Window.Main_Window;
-import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.Settings.Server_Settings;
+import com.x_tornado10.Settings.Local_Settings;
 import com.x_tornado10.util.ColorManager;
 import com.x_tornado10.util.Paths;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static Settings settings;
+    private static final Log log = LogFactory.getLog(Main.class);
+    public static Local_Settings settings;
+    public static Server_Settings server_settings;
     public static Logger logger;
     private static long start;
     public static Main_Window mw;
@@ -24,8 +29,9 @@ public class Main {
         // program initialization
         // create timestamp that is used to calculate starting time
         start = System.currentTimeMillis();
-        // create new settings class to hold config settings
-        settings = new Settings();
+        // create new settings and server_settings classes to hold config settings
+        settings = new Local_Settings();
+        server_settings = new Server_Settings();
         // create new logger instance
         logger = new Logger();
         // startup information displayed in the console upon opening the program
@@ -34,7 +40,7 @@ public class Main {
         String os_name = System.getProperty("os.name");
         String os_version = System.getProperty("os.version");
 
-        logger.info("System environment: " + os_name + os_version);
+        logger.info("System environment: " + os_name + " " + os_version);
         boolean windows = false;
 
         if (os_name.toLowerCase().contains("windows")) {
@@ -45,6 +51,7 @@ public class Main {
 
         // defining config file
         File file = new File(Paths.config);
+        File file1 = new File(Paths.server_config);
         try {
             // checking if the config file doesn't already exist
             if (!file.exists()) {
@@ -58,6 +65,17 @@ public class Main {
                 } else {
                     // if the config can for whatever reason not be created, display a warning message in the console
                     logger.warn("Config couldn't be created!");
+                    logger.warn("Please restart the application to prevent wierd behaviour!");
+                }
+            }
+            // checking if the server side config file does not already exist
+            if (!file1.exists()) {
+                // if the config does not exist it is created and the default values are loaded from the internal resources folder
+                if (file1.createNewFile()) {
+                    logger.info("New server config file was successfully created: " + file1.getAbsolutePath());
+                } else {
+                    // if the config couldn't be loaded for whatever reason
+                    logger.warn("Server config couldn't be created!");
                     logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
             }

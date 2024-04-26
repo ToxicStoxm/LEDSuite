@@ -52,6 +52,11 @@ Mobile-Friendly-Modifier: 200
 # 1 --> logger displays only fatal errors
 # 2 --> logger displays normal errors
 # 3 --> logger displays warnings
-# 4 --> logger displays info
-# 5 --> currently unused (for future use)
-Log-Level: 3
+# 4 --> logger displays info (DEFAULT)
+# 5 --> logger displays debug messages (turn on only if your told so by support)
+Log-Level: 4
+# Default directory to open when selecting files
+# You can change this as you like, but it will also be updated automatically based on the last pick:
+# Example: last picked animation -> /example/directory/example-animation.mp4 will open /example/directory/ the next time you select an animation
+# %user.home% refers to the users home directory
+Default-Selection-Dir: %user.home%

@@ -9,3 +9,176 @@ LED-Cube Control Panel
         - config writer
 - Application Logger                                  DONE
 - Adding comments to everything for readability   50% DONE (needs optimization)
+
+
+CONFIG OPTION FOR NETWORK SENDING LOADING BAR UPDATE INTERVAL DELAY (DON'T IGNORE)
+
+
+
+/*
+        settingsPanel.setLayout(new GridLayout(0, 2));
+
+        // Dark Mode Switch
+        JToggleButton darkModeSwitch = new JToggleButton("Dark Mode: ");
+        darkModeSwitch.setSelected(Main.settings.isDarkM());
+        darkModeSwitch.addChangeListener(e -> Main.settings.setDarkM(darkModeSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Dark Mode: "));
+        settingsPanel.add(darkModeSwitch);
+
+        // Dark Mode Primary Color Text Area
+        JTextArea darkModePrimColorArea = new JTextArea(Main.settings.getDarkMColorPrim());
+        darkModePrimColorArea.setPreferredSize(new Dimension(200, 20));
+        darkModePrimColorArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setDarkMColorPrim(darkModePrimColorArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Dark Mode Primary Color: "));
+        settingsPanel.add(darkModePrimColorArea);
+
+        // Dark Mode Secondary Color Text Area
+        JTextArea darkModeSecColorArea = new JTextArea(Main.settings.getDarkMColorSec());
+        darkModeSecColorArea.setPreferredSize(new Dimension(200, 20));
+        darkModeSecColorArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setDarkMColorSec(darkModeSecColorArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Dark Mode Secondary Color: "));
+        settingsPanel.add(darkModeSecColorArea);
+
+        // Light Mode Primary Color Text Area
+        JTextArea lightModePrimColorArea = new JTextArea(Main.settings.getLightMColorPrim());
+        lightModePrimColorArea.setPreferredSize(new Dimension(200, 20));
+        lightModePrimColorArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setLightMColorPrim(lightModePrimColorArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Light Mode Primary Color: "));
+        settingsPanel.add(lightModePrimColorArea);
+
+        // Light Mode Secondary Color Text Area
+        JTextArea lightModeSecColorArea = new JTextArea(Main.settings.getLightMColorSec());
+        lightModeSecColorArea.setPreferredSize(new Dimension(200, 20));
+        lightModeSecColorArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setLightMColorSec(lightModeSecColorArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Light Mode Secondary Color: "));
+        settingsPanel.add(lightModeSecColorArea);
+
+        // Window Title Text Area
+        JTextArea windowTitleArea = new JTextArea(Main.settings.getWindowTitle());
+        windowTitleArea.setPreferredSize(new Dimension(200, 20));
+        windowTitleArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setWindowTitle(windowTitleArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Window Title: "));
+        settingsPanel.add(windowTitleArea);
+
+        // Window Resizable Switch
+        JToggleButton windowResizeableSwitch = new JToggleButton("Resizable: ");
+        windowResizeableSwitch.setSelected(Main.settings.isWindowResizeable());
+        windowResizeableSwitch.addChangeListener(e -> Main.settings.setWindowResizeable(windowResizeableSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Resizable: "));
+        settingsPanel.add(windowResizeableSwitch);
+
+        // Window Width Slider
+        JSlider windowWidthSlider = new JSlider(0, 1920, Main.settings.getWindowWidth());
+        windowWidthSlider.setMajorTickSpacing(100);
+        windowWidthSlider.setMinorTickSpacing(10);
+        windowWidthSlider.setPaintTicks(true);
+        windowWidthSlider.setPaintLabels(true);
+        windowWidthSlider.addChangeListener(e -> Main.settings.setWindowWidth(windowWidthSlider.getValue()));
+        settingsPanel.add(new JLabel("Window Width: "));
+        settingsPanel.add(windowWidthSlider);
+
+        // Window Height Slider
+        JSlider windowHeightSlider = new JSlider(0, 1080, Main.settings.getWindowHeight());
+        windowHeightSlider.setMajorTickSpacing(100);
+        windowHeightSlider.setMinorTickSpacing(10);
+        windowHeightSlider.setPaintTicks(true);
+        windowHeightSlider.setPaintLabels(true);
+        windowHeightSlider.addChangeListener(e -> Main.settings.setWindowHeight(windowHeightSlider.getValue()));
+        settingsPanel.add(new JLabel("Window Height: "));
+        settingsPanel.add(windowHeightSlider);
+
+        // Window Center Switch
+        JToggleButton windowCenterSwitch = new JToggleButton("Center: ");
+        windowCenterSwitch.setSelected(Main.settings.isWindowCenter());
+        windowCenterSwitch.addChangeListener(e -> Main.settings.setWindowCenter(windowCenterSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Center: "));
+        settingsPanel.add(windowCenterSwitch);
+
+        // Fake Loading Bar Switch
+        JToggleButton fakeLoadingBarSwitch = new JToggleButton("Fake Loading Bar: ");
+        fakeLoadingBarSwitch.setSelected(Main.settings.isFakeLoadingBar());
+        fakeLoadingBarSwitch.addChangeListener(e -> Main.settings.setFakeLoadingBar(fakeLoadingBarSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Fake Loading Bar: "));
+        settingsPanel.add(fakeLoadingBarSwitch);
+
+        // Window Full Screen Switch
+        JToggleButton windowFullScreenSwitch = new JToggleButton("Full Screen: ");
+        windowFullScreenSwitch.setSelected(Main.settings.isWindowFullScreen());
+        windowFullScreenSwitch.addChangeListener(e -> Main.settings.setWindowFullScreen(windowFullScreenSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Full Screen: "));
+        settingsPanel.add(windowFullScreenSwitch);
+
+        // Windowed Full Screen Switch
+        JToggleButton windowedFullScreenSwitch = new JToggleButton("Windowed Full Screen: ");
+        windowedFullScreenSwitch.setSelected(Main.settings.isWindowedFullScreen());
+        windowedFullScreenSwitch.addChangeListener(e -> Main.settings.setWindowedFullScreen(windowedFullScreenSwitch.isSelected()));
+        settingsPanel.add(new JLabel("Windowed Full Screen: "));
+        settingsPanel.add(windowedFullScreenSwitch);
+
+        // Window Initial Screen Slider
+        JSlider windowInitialScreenSlider = new JSlider(0, 3, Main.settings.getWindowInitialScreen());
+        windowInitialScreenSlider.setMajorTickSpacing(1);
+        windowInitialScreenSlider.setPaintTicks(true);
+        windowInitialScreenSlider.setPaintLabels(true);
+        windowInitialScreenSlider.addChangeListener(e -> Main.settings.setWindowInitialScreen(windowInitialScreenSlider.getValue()));
+        settingsPanel.add(new JLabel("Initial Screen: "));
+        settingsPanel.add(windowInitialScreenSlider);
+
+        // Mobile Friendly Switch
+        JToggleButton mobileFriendlySwitch = new JToggleButton("Mobile Friendly: ");
+        mobileFriendlySwitch.setSelected(Main.settings.isMobileFriendly());
+        mobileFriendlySwitch.addChangeListener(e -> Main.settings.setMobileFriendly(mobileFriendlySwitch.isSelected()));
+        settingsPanel.add(new JLabel("Mobile Friendly: "));
+        settingsPanel.add(mobileFriendlySwitch);
+
+        // Mobile Friendly Modifier Slider
+        JSlider mobileFriendlyModifierSlider = new JSlider(0, 400, (int) Main.settings.getMobileFriendlyModifier());
+        mobileFriendlyModifierSlider.setMajorTickSpacing(20);
+        mobileFriendlyModifierSlider.setPaintTicks(true);
+        mobileFriendlyModifierSlider.setPaintLabels(true);
+        mobileFriendlyModifierSlider.addChangeListener(e -> Main.settings.setMobileFriendlyModifier(mobileFriendlyModifierSlider.getValue()));
+        settingsPanel.add(new JLabel("Mobile Friendly Modifier: "));
+        settingsPanel.add(mobileFriendlyModifierSlider);
+
+        // Log Level Slider
+        JSlider logLevelSlider = new JSlider(0, 5, Main.settings.getLogLevel());
+        logLevelSlider.setMajorTickSpacing(1);
+        logLevelSlider.setPaintTicks(true);
+        logLevelSlider.setPaintLabels(true);
+        logLevelSlider.addChangeListener(e -> Main.settings.setLogLevel(logLevelSlider.getValue()));
+        settingsPanel.add(new JLabel("Log Level: "));
+        settingsPanel.add(logLevelSlider);
+
+        // Selection Directory Text Area
+        JTextArea selectionDirArea = new JTextArea(Main.settings.getSelectionDir());
+        selectionDirArea.setPreferredSize(new Dimension(200, 20));
+        selectionDirArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                Main.settings.setSelectionDir(selectionDirArea.getText());
+            }
+        });
+        settingsPanel.add(new JLabel("Selection Directory: "));
+        settingsPanel.add(selectionDirArea);
+
+
+         */

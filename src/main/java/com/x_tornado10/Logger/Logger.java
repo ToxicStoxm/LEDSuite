@@ -19,19 +19,24 @@ public class Logger {
     }
     // sending and info message to console
     public void info(String message) {
-        log( ansi().fg(DEFAULT).a("[INFO]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
+        if (log_level.INFO.isEnabled()) log( ansi().fg(DEFAULT).a("[INFO]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending a warning message to console
     public void warn(String message) {
-        log( ansi().fgRgb(227, 163, 0).a("[WARN]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
+        if (log_level.WARN.isEnabled()) log( ansi().fgRgb(227, 163, 0).a("[WARN]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending an error message to console
     public void error(String message) {
-        log( ansi().fgRgb(255, 0, 0).a("[ERROR]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
+        if (log_level.ERROR.isEnabled()) log( ansi().fgRgb(255, 0, 0).a("[ERROR]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending a fatal error message to console
     public void fatal(String message) {
-        log( ansi().fgRgb(180, 0, 0).a("[FATAL]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
+        if (log_level.FATAL.isEnabled()) log( ansi().fgRgb(180, 0, 0).a("[FATAL]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
+    }
+
+    // sending debug message to console
+    public void debug(String message) {
+        if (log_level.DEBUG.isEnabled()) log( ansi().fgRgb(7, 94, 217).a("[DEBUG]: [" + Main.settings.getWindowTitle() + "] " + message).reset() );
     }
 
     // attaching current time to the front of the message before sending to console
@@ -56,43 +61,45 @@ public class Logger {
     public void fatal_popup(String message) {
         popup(message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
     }
-
-    private int currentLogLevel() {
-        return Main.settings.getLogLevel();
+    // displaying debug popup on screen
+    public void debug_popup(String message) {
+        popup(message, "Debug", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public enum log_level implements Log_Level {
         INFO() {
             @Override
             public boolean isEnabled() {
-
-                return false;
+                return currentLogLevel() >= 4;
             }
         },
         WARN() {
             @Override
             public boolean isEnabled() {
-                return false;
+                return currentLogLevel() >= 3;
             }
         },
         ERROR() {
             @Override
             public boolean isEnabled() {
-                return false;
+                return currentLogLevel() >= 2;
             }
         },
         FATAL() {
             @Override
             public boolean isEnabled() {
-                return false;
+                return currentLogLevel() >= 1;
             }
         },
         DEBUG() {
             @Override
             public boolean isEnabled() {
-                return false;
+                return currentLogLevel() >= 5;
             }
         };
+        int currentLogLevel() {
+            return Main.settings.getLogLevel();
+        }
 
     }
 

@@ -47,6 +47,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.version>${project.version}</project.version>
     </properties>
+    <!--
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    -->
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -79,5 +87,12 @@
             <artifactId>open</artifactId>
             <version>8.4.0.2</version>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>com.github.bailuk</groupId>
+            <artifactId>java-gtk</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        -->
     </dependencies>
 </project>

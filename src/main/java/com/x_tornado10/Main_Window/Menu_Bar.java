@@ -15,7 +15,7 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
     JMenuItem settings;
     JMenuItem serverSettings;
     public Menu_Bar(int width, int height) {
-        Main.logger.info("Loading menu bar...");
+        Main.logger.debug("Loading menu bar...");
 
         // setting font
         this.setFont(new Font("Bahnschrift",Font.PLAIN,20));
@@ -86,7 +86,7 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
 
         // adding 'File' menu to the menu bar
         this.add(file);
-        Main.logger.info("Successfully loaded menu bar!");
+        Main.logger.debug("Successfully loaded menu bar!");
     }
 
     @Override
@@ -96,7 +96,7 @@ public class Menu_Bar extends JMenuBar implements ActionListener, ItemListener {
         // checking witch menu item was clicked / triggered
         if (source.equals(info)) {
             // opening url with default system browser
-            Main.logger.info("Opening: " + Paths.Links.Project_GitHub);
+            Main.logger.debug("Opening: " + Paths.Links.Project_GitHub);
             Open.open(Paths.Links.Project_GitHub);
         }
         if (source.equals(settings)) {

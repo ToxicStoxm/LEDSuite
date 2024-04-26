@@ -2,6 +2,7 @@ package com.x_tornado10.util;
 
 // static utility class for storing paths
 public class Paths {
+    public static final String appDir = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/";
     public static final String config = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/config.yaml";
     public static final String server_config = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/server_config.yaml";
     public static class Config {
@@ -24,6 +25,7 @@ public class Paths {
         public static final String MOBILE_FRIENDLY = "Mobile-Friendly";
         public static final String MOBILE_FRIENDLY_MODIFIER = "Mobile-Friendly-Modifier";
         public static final String LOG_LEVEL = "Log-Level";
+        public static final String SELECTION_DIR = "Default-Selection-Dir";
     }
     public static class Server_Config {
         public static final String BRIGHTNESS = "LED-Brightness";
@@ -32,5 +34,8 @@ public class Paths {
     }
     public static class Links {
         public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel";
+    }
+    public static class Placeholders {
+        public static final String LOOSE_FOCUS = "%LOOSE-FOCUS%";
     }
 }

@@ -1,23 +1,26 @@
 package com.x_tornado10;
 
+import com.x_tornado10.Events.EventListener;
 import com.x_tornado10.Events.EventManager;
+import com.x_tornado10.Events.Events.Event;
+import com.x_tornado10.Events.Events.ReloadEvent;
+import com.x_tornado10.Events.Events.SaveEvent;
+import com.x_tornado10.Events.Events.StartupEvent;
 import com.x_tornado10.Logger.Logger;
 import com.x_tornado10.Main_Window.Main_Window;
 import com.x_tornado10.Settings.Server_Settings;
 import com.x_tornado10.Settings.Local_Settings;
+import com.x_tornado10.Settings.Settings;
 import com.x_tornado10.util.ColorManager;
 import com.x_tornado10.util.Paths;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    private static final Log log = LogFactory.getLog(Main.class);
     public static Local_Settings settings;
     public static Server_Settings server_settings;
     public static Logger logger;
@@ -58,9 +61,9 @@ public class Main {
                 // if the config does not exist the parent directory is created
                 // then a new config file is loaded with the default values from internal resources folder
                 if (file.getParentFile().mkdirs())
-                    logger.info("Successfully created parent directory for config file: " + file.getParentFile().getAbsolutePath());
+                    logger.debug("Successfully created parent directory for config file: " + file.getParentFile().getAbsolutePath());
                 if (file.createNewFile()) {
-                    logger.info("New config file was successfully created: " + file.getAbsolutePath());
+                    logger.debug("New config file was successfully created: " + file.getAbsolutePath());
                     settings.saveDefaultConfig();
                 } else {
                     // if the config can for whatever reason not be created, display a warning message in the console
@@ -72,7 +75,8 @@ public class Main {
             if (!file1.exists()) {
                 // if the config does not exist it is created and the default values are loaded from the internal resources folder
                 if (file1.createNewFile()) {
-                    logger.info("New server config file was successfully created: " + file1.getAbsolutePath());
+                    logger.debug("New server config file was successfully created: " + file1.getAbsolutePath());
+                    server_settings.saveDefaultConfig();
                 } else {
                     // if the config couldn't be loaded for whatever reason
                     logger.warn("Server config couldn't be created!");
@@ -112,8 +116,33 @@ public class Main {
             return;
         }
 
+        try {
+            // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/server_config.yaml)
+            // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
+            Configurations configs = new Configurations();
+            FileBasedConfiguration server_config = configs.properties(file1);
+            // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
+            server_settings.load(server_config);
+        } catch (ConfigurationException e) {
+            // if any errors occur during config parsing an error is displayed in the console
+            // the program is halted to prevent any further unwanted behavior
+            logger.error("Failed to parse server_config.yaml!");
+            logger.warn("Application was halted!");
+            logger.warn("If this keeps happening please open an issue on GitHub!");
+            logger.warn("Please restart the application!");
+            logger.error_popup("Failed to parse server_config.yaml! Please restart the application!");
+            logger.warn_popup("If this keeps happening please open an issue on GitHub!");
+            exit(0);
+            return;
+        }
+
         // creating event manager
         eventManager = new EventManager();
+
+        eventManager.addEventListener(settings);
+        eventManager.addEventListener(server_settings);
+
+        eventManager.newEvent(new StartupEvent());
 
         // creating color manager
         cm = new ColorManager();
@@ -121,19 +150,52 @@ public class Main {
         // creating main window
         mw = new Main_Window(windows);
 
+
     }
+
     // display start message with starting duration
     public static void started() {
         // calculating time elapsed during startup and displaying it in the console
         long timeElapsed = System.currentTimeMillis() - start;
         logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
     }
+
     // exiting program with specified status code
     public static void exit(int status) {
+        Main.logger.info("Saving...");
+        eventManager.newEvent(new SaveEvent());
+        Main.logger.info("Successfully saved!");
         Main.logger.info("Shutting down...");
         Main.logger.info("Goodbye!");
         Main.logger.info("Status code: " + status);
         System.exit(status);
     }
+    public static void restart() {
+        mw.setVisible(false);
+        mw.dispose();
+        mw = new Main_Window(mw.windows);
+    }
 
+    public static void restartWithDest(Settings.Type restartDest) {
+        restart();
+        switch (restartDest) {
+            case LOCAL -> mw.settingsMenu();
+            case SERVER -> mw.serverSettingsMenu();
+        }
+    }
+
+    public static class main_listener implements EventListener {
+
+        @Override
+        public void onEvent(Event event) {
+            switch (event.getType()) {
+                case RELOAD -> {
+                    ReloadEvent e = (ReloadEvent) event;
+                    cm.revalidate();
+                    if (e.hasRebootDest()) restartWithDest(e.getRebootDest());
+                    else restart();
+                }
+            }
+        }
+    }
 }

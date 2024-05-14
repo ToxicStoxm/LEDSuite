@@ -79,28 +79,8 @@ public class Local_Settings extends Settings {
     @Override
     public void load(FileBasedConfiguration config) {
         Main.logger.debug("Loading config values to memory...");
-        String version;
-        // getting the current application version using a version.properties file
-        // the .properties file contains a maven variable that gets replaced once the application is compiled
-        try (InputStream inputStream = Main.class.getResourceAsStream("/version.properties")) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            version = properties.getProperty("app.version");
-        } catch (IOException e) {
-            // if the version can't be loaded an error is displayed in the console
-            // the program is also halted to prevent any further issues
-            // if this fails its likely that this build is faulty
-            Main.logger.fatal("Wasn't able to get app version!");
-            Main.logger.warn("Application was halted!");
-            Main.logger.warn("If this keeps happening please open an issue on GitHub!");
-            Main.logger.warn("Please restart the application!");
-            Main.logger.fatal_popup("Wasn't able to get app version! Please restart the application!");
-            Main.logger.warn_popup("If this keeps happening please open an issue on GitHub!");
-            Main.exit(0);
-            return;
-        }
         try {
-            this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE).replace("%VERSION%", version);
+            this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE);
             // setting values to parsed config values
 
             this.DarkMColorPrim = config.getString(Paths.Config.DARK_MODE_COLOR_PRIMARY);
@@ -177,6 +157,12 @@ public class Local_Settings extends Settings {
     public Object getDarkModeSec(boolean raw) {
         return raw ? DarkMColorSec : Color.decode(DarkMColorSec);
     }
+    public String getWindowTitle() {
+        return Main.version == null ? WindowTitle : WindowTitle.replace(Paths.Placeholders.VERSION, Main.version);
+    }
+    public String getWindowTitleRaw() {
+        return WindowTitle;
+    }
     public Object getLightModePrim(boolean raw) {
         return raw ? LightMColorPrim : Color.decode(LightMColorPrim);
     }
@@ -211,7 +197,7 @@ public class Local_Settings extends Settings {
         this.DarkMColorSec = settings.getDarkMColorSec();
         this.LightMColorPrim = settings.getLightMColorPrim();
         this.LightMColorSec = settings.getLightMColorSec();
-        this.WindowTitle = settings.getWindowTitle();
+        this.WindowTitle = settings.getWindowTitleRaw();
         this.WindowResizeable = settings.isWindowResizeable();
         this.WindowWidth = settings.getWindowWidth();
         this.WindowHeight = settings.getWindowHeight();

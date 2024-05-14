@@ -12,9 +12,15 @@ import com.x_tornado10.util.Paths;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.ToolTipUI;
+import javax.swing.plaf.basic.BasicToolTipUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +36,7 @@ public class Main_Window extends JFrame implements EventListener {
     private final JPanel bE;
     private final JPanel bW;
     public boolean windows = false;
-    public Main_Window(boolean windows) {
+    public Main_Window(boolean windows, boolean first) {
         Main.logger.debug("Loading main window...");
         this.windows = windows;
 
@@ -115,7 +121,7 @@ public class Main_Window extends JFrame implements EventListener {
         // resetting borders and clearing main panel
         resetScreen();
 
-        Main.started();
+        if (first) Main.started();
 
         mainMenu();
     }
@@ -323,8 +329,10 @@ public class Main_Window extends JFrame implements EventListener {
         applyB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
         JButton okB = new JButton("OK");
         okB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
+        JButton resetB = new JButton("Reset");
+        resetB.setPreferredSize(new Dimension(Main.settings.scale(getWidth() / 14), Main.settings.scale(getHeight() / 20)));
 
-        okB.addActionListener((e -> {
+        okB.addActionListener(e -> {
             Main.logger.debug("Ok button pressed!");
             // check if there are any unsaved changes to the settings
             if (!Main.settings.equals(changes)) {
@@ -372,8 +380,8 @@ public class Main_Window extends JFrame implements EventListener {
                 //loading main menu
                 mainMenu();
             }
-        }));
-        applyB.addActionListener((e -> {
+        });
+        applyB.addActionListener(e -> {
             Main.logger.debug("Apply button pressed!");
             if (!applyNewSettings(changes)) {
                 Main.logger.error("Failed to save config changes!");
@@ -381,7 +389,41 @@ public class Main_Window extends JFrame implements EventListener {
                         "Please try restarting the application and if the error persists we recommend opening an issue on the projects GitHub: " + Paths.Links.Project_GitHub);
                 mainMenu();
             }
-        }));
+        });
+        resetB.addActionListener(e -> {
+            Main.logger.debug("Reset button pressed!");
+
+            JOptionPane optionPane = new JOptionPane();
+
+            String[] options = new String[2];
+            options[1] = "Yes";
+            options[0] = "Cancel";
+            optionPane.setOptions(options);
+            optionPane.setInitialSelectionValue(options[0]);
+            optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+            optionPane.setMessage("Do you want to reset all settings to default?");
+
+            // creating the popup and displaying it
+            JDialog dialog = optionPane.createDialog("Reset settings?");
+            dialog.setFocusable(false);
+            dialog.setVisible(true);
+
+            // checking witch option the user selected
+            Object selectedValue = optionPane.getValue();
+
+            if (selectedValue != null) {
+                if (selectedValue.equals(options[1])) {
+                    try {
+                        Main.settings.reset();
+                    } catch (IOException | NullPointerException ex) {
+                        Main.logger.error("Failed to reset config settings!");
+                        Main.logger.warn("Please restart the application to prevent any further issues!");
+                    }
+
+                }
+            }
+
+        });
 
         // hacky workaround to prevent TextArea not applying changes
         applyB.addMouseListener(new MouseAdapter() {
@@ -389,7 +431,7 @@ public class Main_Window extends JFrame implements EventListener {
             public void mouseEntered(MouseEvent e) {
 
                 Component comp = getFocusOwner();
-                if (comp.getName() != null && comp.getName().contains(Paths.Placeholders.LOOSE_FOCUS)) {
+                if (comp != null && comp.getName() != null && comp.getName().contains(Paths.Placeholders.LOOSE_FOCUS)) {
                     for (FocusListener fl : comp.getFocusListeners()) {
                         JLabel temp = new JLabel();
                         fl.focusLost(new FocusEvent(comp, FocusEvent.FOCUS_LOST, false, temp));
@@ -405,7 +447,7 @@ public class Main_Window extends JFrame implements EventListener {
             public void mouseEntered(MouseEvent e) {
 
                 Component comp = getFocusOwner();
-                if (comp.getName() != null && comp.getName().contains(Paths.Placeholders.LOOSE_FOCUS)) {
+                if (comp != null && comp.getName() != null && comp.getName().contains(Paths.Placeholders.LOOSE_FOCUS)) {
                     for (FocusListener fl : comp.getFocusListeners()) {
                         JLabel temp = new JLabel();
                         fl.focusLost(new FocusEvent(comp, FocusEvent.FOCUS_LOST, false, temp));
@@ -418,20 +460,43 @@ public class Main_Window extends JFrame implements EventListener {
 
         applyB.setFocusable(false);
         okB.setFocusable(false);
+        resetB.setFocusable(false);
 
         applyB.setBackground(Main.cm.l7);
         okB.setBackground(Main.cm.l7);
+        resetB.setBackground(Main.cm.l7);
 
         applyB.setForeground(Main.cm.l2);
         okB.setForeground(Main.cm.l2);
+        resetB.setForeground(Main.cm.l2);
 
-        applyB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
-        okB.setFont(new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10)));
+        Font f0 = new Font("Bahnschrift", Font.PLAIN, Main.settings.scale(10));
+
+        applyB.setFont(f0);
+        okB.setFont(f0);
+        resetB.setFont(f0);
 
         jp.add(applyB);
         jp.add(okB);
 
-        main.add(jp, BorderLayout.SOUTH);
+        JPanel bottomPanel = new JPanel();
+
+        GridLayout gL0 = new GridLayout(1,2);
+
+        bottomPanel.setLayout(gL0);
+
+        JPanel jp0 = new JPanel();
+        jp0.setOpaque(false);
+        jp0.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        jp0.add(resetB);
+
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(jp0);
+        bottomPanel.add(jp);
+
+
+        main.add(bottomPanel, BorderLayout.SOUTH);
 
 
         JPanel settingsPanel = new JPanel();
@@ -616,8 +681,7 @@ public class Main_Window extends JFrame implements EventListener {
                             Main.cm.l2
                     ));
 
-                    Main.logger.debug("Triggered system beep!");
-                    java.awt.Toolkit.getDefaultToolkit().beep();
+                    Main.sysBeep();
                     return;
                 }
                 dmCS.setForeground(c);
@@ -648,6 +712,58 @@ public class Main_Window extends JFrame implements EventListener {
         JPanel window = new JPanel();
         window.setLayout(new BorderLayout());
         window.setName("Window");
+
+        JPanel wMainContent = new JPanel();
+        wMainContent.setOpaque(false);
+
+        JPanel centering0 = new JPanel();
+        centering0.setLayout(new GridLayout(3,1));
+        centering0.setOpaque(false);
+
+        JPanel windowTitle = new JPanel();
+        windowTitle.setOpaque(false);
+
+        JLabel wTitleLabel = new JLabel("Window Title: ");
+        wTitleLabel.setFont(f1);
+        wTitleLabel.setForeground(Main.cm.l7);
+
+
+        JTextArea wT = new JTextArea(changes.getWindowTitleRaw());
+
+        wT.setName("wT - " + Paths.Placeholders.LOOSE_FOCUS);
+        wT.setFont(new Font(f1.getFontName(), Font.BOLD, f1.getSize()));
+        wT.setForeground(Main.cm.l7);
+        wT.setBackground(ColorManager.adjustColorForIndistinguishability(wT.getForeground(), Main.cm.l2));
+        wT.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                String title = wT.getText();
+                if (title.isBlank()) {
+                    Main.sysBeep();
+                    wT.setText(changes.getWindowTitleRaw());
+                } else changes.setWindowTitle(title);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                String title = wT.getText();
+                if (title.isBlank()) {
+                    Main.sysBeep();
+                    wT.setText(changes.getWindowTitleRaw());
+                    return;
+                }
+                changes.setWindowTitle(title);
+            }
+        });
+
+
+        windowTitle.add(wTitleLabel);
+
+        windowTitle.add(wT);
+        wMainContent.add(windowTitle);
+        centering0.add(wMainContent);
+
+        window.add(centering0, BorderLayout.CENTER);
 
         Main.logger.debug("--- done ---");
 

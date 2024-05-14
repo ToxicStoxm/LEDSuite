@@ -19,6 +19,10 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import static java.awt.Toolkit.getDefaultToolkit;
 
 public class Main {
     public static Local_Settings settings;
@@ -28,6 +32,7 @@ public class Main {
     public static Main_Window mw;
     public static ColorManager cm;
     public static EventManager eventManager;
+    public static String version;
     public static void main(String[] args) {
         // program initialization
         // create timestamp that is used to calculate starting time
@@ -51,6 +56,26 @@ public class Main {
             logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
             windows = true;
         }
+
+        // getting the current application version using a version.properties file
+        // the .properties file contains a maven variable that gets replaced once the application is compiled
+        try (InputStream inputStream = Main.class.getResourceAsStream("/version.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            version = properties.getProperty("app.version");
+        } catch (IOException e) {
+            // if the version can't be loaded an error is displayed in the console
+            // the program is also halted to prevent any further issues
+            // if this fails its likely that this build is faulty
+            Main.logger.fatal("Wasn't able to get app version!");
+            Main.logger.warn("Application was halted!");
+            Main.logger.warn("If this keeps happening please open an issue on GitHub!");
+            Main.logger.warn("Please restart the application!");
+            Main.logger.fatal_popup("Wasn't able to get app version! Please restart the application!");
+            Main.logger.warn_popup("If this keeps happening please open an issue on GitHub!");
+            Main.exit(0);
+        }
+
 
         // defining config file
         File file = new File(Paths.config);
@@ -96,6 +121,28 @@ public class Main {
             return;
         }
 
+        loadConfigsFromFile();
+
+        // creating event manager
+        eventManager = new EventManager();
+
+        eventManager.addEventListener(settings);
+        eventManager.addEventListener(server_settings);
+
+        eventManager.newEvent(new StartupEvent());
+
+        // creating color manager
+        cm = new ColorManager();
+
+        // creating main window
+        mw = new Main_Window(windows, true);
+
+
+    }
+
+    public static void loadConfigsFromFile() {
+        File file = new File(Paths.config);
+        File file1 = new File(Paths.server_config);
         try {
             // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/config.yaml)
             // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
@@ -133,24 +180,7 @@ public class Main {
             logger.error_popup("Failed to parse server_config.yaml! Please restart the application!");
             logger.warn_popup("If this keeps happening please open an issue on GitHub!");
             exit(0);
-            return;
         }
-
-        // creating event manager
-        eventManager = new EventManager();
-
-        eventManager.addEventListener(settings);
-        eventManager.addEventListener(server_settings);
-
-        eventManager.newEvent(new StartupEvent());
-
-        // creating color manager
-        cm = new ColorManager();
-
-        // creating main window
-        mw = new Main_Window(windows);
-
-
     }
 
     // display start message with starting duration
@@ -173,7 +203,7 @@ public class Main {
     public static void restart() {
         mw.setVisible(false);
         mw.dispose();
-        mw = new Main_Window(mw.windows);
+        mw = new Main_Window(mw.windows, false);
     }
 
     public static void restartWithDest(Settings.Type restartDest) {
@@ -182,6 +212,10 @@ public class Main {
             case LOCAL -> mw.settingsMenu();
             case SERVER -> mw.serverSettingsMenu();
         }
+    }
+    public static void sysBeep() {
+        Main.logger.debug("Triggered system beep!");
+        getDefaultToolkit().beep();
     }
 
     public static class main_listener implements EventListener {

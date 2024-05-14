@@ -37,5 +37,6 @@ public class Paths {
     }
     public static class Placeholders {
         public static final String LOOSE_FOCUS = "%LOOSE-FOCUS%";
+        public static final String VERSION = "%VERSION%";
     }
 }

@@ -21,8 +21,8 @@ Window-Title: LED-Cube Control Panel %VERSION%
 # If set to false window can no longer be resized
 # The resolution can still be adjusted with the width and height settings below
 Window-Resizable: false
-Window-Initial-Width: 1024
-Window-Initial-Height: 600
+Window-Initial-Width: 1280
+Window-Initial-Height: 720
 # If the window should be resized to be as big as the screen
 Windowed-Full-screen: false
 # If the window should be in full-screen mode

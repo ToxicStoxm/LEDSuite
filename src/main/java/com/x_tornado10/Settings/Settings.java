@@ -2,6 +2,7 @@ package com.x_tornado10.Settings;
 
 import com.x_tornado10.Events.EventListener;
 import com.x_tornado10.Events.Events.Event;
+import com.x_tornado10.Main;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -23,6 +24,16 @@ public class Settings implements EventListener {
     public void load(FileBasedConfiguration config) {}
     public void save() {}
     public void copy(Settings settings) {
+    }
+    public void reset() throws IOException, NullPointerException {
+        Settings backup = cloneS();
+        try {
+            saveDefaultConfig();
+            Main.loadConfigsFromFile();
+        } catch (IOException | NullPointerException e) {
+            copy(backup);
+            save();
+        }
     }
     public Settings cloneS() {
         Settings settings1 = new Settings();

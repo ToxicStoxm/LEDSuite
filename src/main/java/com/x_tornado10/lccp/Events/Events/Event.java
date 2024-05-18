@@ -1,4 +1,4 @@
-package com.x_tornado10.Events.Events;
+package com.x_tornado10.lccp.Events.Events;
 
 public class Event {
     public TYPE getType() {return TYPE.UNDEFINED;}

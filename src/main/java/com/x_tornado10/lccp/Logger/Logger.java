@@ -1,10 +1,9 @@
-package com.x_tornado10.Logger;
+package com.x_tornado10.lccp.Logger;
 
-import com.x_tornado10.util.Paths;
+import com.x_tornado10.lccp.LCCP;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -19,24 +18,24 @@ public class Logger {
     }
     // sending and info message to console
     public void info(String message) {
-        if (log_level.INFO.isEnabled()) log( ansi().fg(DEFAULT).a("[INFO]: [" + "LED Cube Panel " + Paths.Placeholders.VERSION + "] " + message).reset() );
+        if (log_level.INFO.isEnabled()) log( ansi().fg(DEFAULT).a("[INFO]: [" + LCCP.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending a warning message to console
     public void warn(String message) {
-        if (log_level.WARN.isEnabled()) log( ansi().fgRgb(227, 163, 0).a("[WARN]: [" + "LED Cube Panel " + Paths.Placeholders.VERSION  + "] " + message).reset() );
+        if (log_level.WARN.isEnabled()) log( ansi().fgRgb(227, 163, 0).a("[WARN]: [" + LCCP.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending an error message to console
     public void error(String message) {
-        if (log_level.ERROR.isEnabled()) log( ansi().fgRgb(255, 0, 0).a("[ERROR]: [" + "LED Cube Panel " + Paths.Placeholders.VERSION  + "] " + message).reset() );
+        if (log_level.ERROR.isEnabled()) log( ansi().fgRgb(255, 0, 0).a("[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message).reset() );
     }
     // sending a fatal error message to console
     public void fatal(String message) {
-        if (log_level.FATAL.isEnabled()) log( ansi().fgRgb(180, 0, 0).a("[FATAL]: [" + "LED Cube Panel " + Paths.Placeholders.VERSION  + "] " + message).reset() );
+        if (log_level.FATAL.isEnabled()) log( ansi().fgRgb(180, 0, 0).a("[FATAL]: [" + LCCP.settings.getWindowTitle() + "] " + message).reset() );
     }
 
     // sending debug message to console
     public void debug(String message) {
-        if (log_level.DEBUG.isEnabled()) log( ansi().fgRgb(7, 94, 217).a("[DEBUG]: [" + "LED Cube Panel " + Paths.Placeholders.VERSION  + "] " + message).reset() );
+        if (log_level.DEBUG.isEnabled()) log( ansi().fgRgb(7, 94, 217).a("[DEBUG]: [" + LCCP.settings.getWindowTitle() + "] " + message).reset() );
     }
 
     // attaching current time to the front of the message before sending to console
@@ -45,27 +44,7 @@ public class Logger {
         System.out.println("[" + df.format(new Date()) + "] " + message);
     }
 
-    // displaying info popup on screen
-    public void info_popup(String message) {
-        popup(message, "Information", JOptionPane.INFORMATION_MESSAGE);
-    }
-    // displaying warning popup on screen
-    public void warn_popup(String message) {
-        popup(message, "Warning", JOptionPane.WARNING_MESSAGE);
-    }
-    // displaying error popup on screen
-    public void error_popup(String message) {
-        popup(message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    // displaying fatal error popup on screen
-    public void fatal_popup(String message) {
-        popup(message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
-    }
-    // displaying debug popup on screen
-    public void debug_popup(String message) {
-        popup(message, "Debug", JOptionPane.INFORMATION_MESSAGE);
-    }
-
+    // log level checker
     public enum log_level implements Log_Level {
         INFO() {
             @Override
@@ -100,12 +79,5 @@ public class Logger {
         int currentLogLevel() {
             return 5;
         }
-
-    }
-
-
-    // displaying popup on screen
-    private void popup(String message, String title, int i) {
-        JOptionPane.showMessageDialog(null, message, title, i);
     }
 }

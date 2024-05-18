@@ -1,6 +1,6 @@
-package com.x_tornado10.Events.Events;
+package com.x_tornado10.lccp.Events.Events;
 
-import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.lccp.Settings.Settings;
 
 public class ReloadEvent extends Event {
 

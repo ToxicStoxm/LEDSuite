@@ -1,8 +1,8 @@
-package com.x_tornado10.Settings;
+package com.x_tornado10.lccp.Settings;
 
-import com.x_tornado10.Main;
-import com.x_tornado10.util.Networking;
-import com.x_tornado10.util.Paths;
+import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.util.Networking;
+import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -35,9 +35,9 @@ public class Server_Settings extends Settings {
     // get the default configuration values from internal resource folder and save them to config.yaml
     @Override
     public void saveDefaultConfig() throws IOException, NullPointerException {
-        Main.logger.debug("Loading default server config values...");
-        Main.logger.debug("Note: this only happens if server_config.yaml does not exist or couldn't be found!");
-        Main.logger.debug("If your settings don't work and this message is shown please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
+        LCCP.logger.debug("Loading default server config values...");
+        LCCP.logger.debug("Note: this only happens if server_config.yaml does not exist or couldn't be found!");
+        LCCP.logger.debug("If your settings don't work and this message is shown please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("server_config.yaml");
         // if the path is null or not found an exception is thrown
@@ -56,7 +56,7 @@ public class Server_Settings extends Settings {
                 }
             }
         }
-        Main.logger.debug("Successfully loaded default server config values!");
+        LCCP.logger.debug("Successfully loaded default server config values!");
     }
 
     // copy settings from another settings class
@@ -66,21 +66,21 @@ public class Server_Settings extends Settings {
         if (settings1.getType() != type) {
             // send error message if config type is not compatible
             if (settings1.getType() != Type.UNDEFINED) {
-                Main.logger.error("Can't copy settings from " + settings1.getName() + " Type: " + settings1.getType() + " to " + getName() + " Type: " + type);
+                LCCP.logger.error("Can't copy settings from " + settings1.getName() + " Type: " + settings1.getType() + " to " + getName() + " Type: " + type);
                 return;
             }
             // send info message if other config class type is undefined
-            Main.logger.debug("Can't confirm settings type! Type = UNDEFINED");
+            LCCP.logger.debug("Can't confirm settings type! Type = UNDEFINED");
         }
         // casting other settings class to compatible type
         Server_Settings settings = (Server_Settings) settings1;
         // copy settings
-        Main.logger.debug("Loading settings from " + settings.getName() + "...");
+        LCCP.logger.debug("Loading settings from " + settings.getName() + "...");
         this.Port = settings.getPort();
         this.IPv4 = settings.getIPv4();
         this.LED_Brightness = settings.getLED_Brightness();
-        Main.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
-        Main.logger.debug(getName() + " now inherits all values from " + settings.getName());
+        LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
+        LCCP.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
 
     // loading settings from config file
@@ -95,12 +95,12 @@ public class Server_Settings extends Settings {
                 new Thread(() -> {
                     try {
                         // check host-name or domain using java.net and getting IPv4 if possible
-                        Main.server_settings.setIPv4(String.valueOf(Inet4Address.getByName(tempIPv4)).split("/")[1].trim());
+                        LCCP.server_settings.setIPv4(String.valueOf(Inet4Address.getByName(tempIPv4)).split("/")[1].trim());
                     } catch (UnknownHostException e) {
-                        Main.logger.error("Error while parsing Server-IP! Invalid IPv4 address or host name!");
-                        Main.logger.warn("Invalid IPv4! Please restart the application!");
-                        Main.logger.warn("IPv4 address does not match the following format: 0.0.0.0 - 255.255.255.255 or the provided host-name is invalid");
-                        Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                        LCCP.logger.error("Error while parsing Server-IP! Invalid IPv4 address or host name!");
+                        LCCP.logger.warn("Invalid IPv4! Please restart the application!");
+                        LCCP.logger.warn("IPv4 address does not match the following format: 0.0.0.0 - 255.255.255.255 or the provided host-name is invalid");
+                        LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
                     }
                 }).start();
             } else {
@@ -109,16 +109,16 @@ public class Server_Settings extends Settings {
             int tempPort = config.getInt(Paths.Server_Config.PORT);
             // checking if provided port is in the valid port range
             if (!Networking.isValidPORT(String.valueOf(tempPort))) {
-                Main.logger.error("Error while parsing Server-Port! Invalid Port!");
-                Main.logger.warn("Port is outside the valid range of 0-65535!");
-                Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LCCP.logger.error("Error while parsing Server-Port! Invalid Port!");
+                LCCP.logger.warn("Port is outside the valid range of 0-65535!");
+                LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             } else {
                 this.Port = tempPort;
             }
         } catch (ConversionException | NullPointerException e) {
-            Main.logger.error("Error while parsing Server-IP and Server-Port! Not a valid number!");
-            Main.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
-            Main.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            LCCP.logger.error("Error while parsing Server-IP and Server-Port! Not a valid number!");
+            LCCP.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
+            LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
         }
         this.LED_Brightness = (float) config.getInt(Paths.Server_Config.BRIGHTNESS) / 100;
     }
@@ -128,10 +128,10 @@ public class Server_Settings extends Settings {
     public void save() {
         // check for changes to avoid unnecessary save
         if (this.equals(backup)) {
-            Main.logger.debug("Didn't save " + name + " because nothing changed!");
+            LCCP.logger.debug("Didn't save " + name + " because nothing changed!");
             return;
         }
-        Main.logger.debug("Saving " + name + " values to server-config.yaml...");
+        LCCP.logger.debug("Saving " + name + " values to server-config.yaml...");
         // loading config file
         File file = new File(Paths.server_config);
         Configurations configs = new Configurations();
@@ -141,8 +141,8 @@ public class Server_Settings extends Settings {
         try {
             config = configs.properties(file);
         } catch (ConfigurationException e) {
-            Main.logger.error("Error occurred while writing server-config values to server-config.yaml!");
-            Main.logger.warn("Please restart the application to prevent further errors!");
+            LCCP.logger.error("Error occurred while writing server-config values to server-config.yaml!");
+            LCCP.logger.warn("Please restart the application to prevent further errors!");
             return;
         }
 
@@ -160,14 +160,14 @@ public class Server_Settings extends Settings {
             // saving settings
             builder.save();
         } catch (ConfigurationException e)  {
-            Main.logger.error("Something went wrong while saving the config values for server-config.yaml!");
-            Main.logger.warn("Please restart the application to prevent further errors!");
-            Main.logger.warn("Previously made changes to the server-config may be lost!");
-            Main.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
+            LCCP.logger.error("Something went wrong while saving the config values for server-config.yaml!");
+            LCCP.logger.warn("Please restart the application to prevent further errors!");
+            LCCP.logger.warn("Previously made changes to the server-config may be lost!");
+            LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
             return;
         }
 
-        Main.logger.debug("Successfully saved server-config values to server-config.yaml!");
+        LCCP.logger.debug("Successfully saved server-config values to server-config.yaml!");
     }
 
     // creating clone for unnecessary saving check
@@ -180,7 +180,7 @@ public class Server_Settings extends Settings {
     @Override
     public Server_Settings cloneS() {
         Server_Settings settings1 = new Server_Settings();
-        settings1.copy(Main.server_settings);
+        settings1.copy(LCCP.server_settings);
         return settings1;
     }
 

@@ -1,0 +1,179 @@
+package com.x_tornado10.lccp;
+
+import com.x_tornado10.lccp.Events.EventListener;
+import com.x_tornado10.lccp.Events.EventManager;
+import com.x_tornado10.lccp.Events.Events.Event;
+import com.x_tornado10.lccp.Events.Events.SaveEvent;
+import com.x_tornado10.lccp.Events.Events.StartupEvent;
+import com.x_tornado10.lccp.Logger.Logger;
+import com.x_tornado10.lccp.Settings.ConfigLoader;
+import com.x_tornado10.lccp.Settings.Local_Settings;
+import com.x_tornado10.lccp.Settings.Server_Settings;
+import com.x_tornado10.lccp.UI.Window;
+import com.x_tornado10.lccp.util.Paths;
+import lombok.Getter;
+import org.gnome.adw.Application;
+import org.gnome.gio.ApplicationFlags;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import static java.awt.Toolkit.getDefaultToolkit;
+
+@Getter
+public class LCCP {
+    public static LCCP instance;
+    public static Local_Settings settings;
+    public static Server_Settings server_settings;
+    public static Logger logger;
+    private static long start;
+    private final Application app;
+    public static EventManager eventManager;
+    public static String version;
+
+    public LCCP(String[] args) {
+        instance = this;
+        app = new Application("com.x_tornado10.lccp", ApplicationFlags.DEFAULT_FLAGS);
+        app.onActivate(this::activate);
+        app.onShutdown(() -> exit(0));
+        app.run(args);
+    }
+
+    public static void main(String[] args) {
+        // create timestamp that is used to calculate starting time
+        start = System.currentTimeMillis();
+
+        logicInit();
+
+        new LCCP(args);
+    }
+
+    public static void logicInit() {
+        // program initialization
+        // create new settings and server_settings classes to hold config settings
+        settings = new Local_Settings();
+        server_settings = new Server_Settings();
+        // create new logger instance
+        logger = new Logger();
+        // startup information displayed in the console upon opening the program
+        logger.info("Welcome back!");
+        logger.info("Starting Program...");
+        String os_name = System.getProperty("os.name");
+        String os_version = System.getProperty("os.version");
+
+        logger.info("System environment: " + os_name + " " + os_version);
+
+        if (os_name.toLowerCase().contains("windows")) {
+            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
+            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
+        }
+
+        // getting the current application version using a version.properties file
+        // the .properties file contains a maven variable that gets replaced once the application is compiled
+        try (InputStream inputStream = LCCP.class.getResourceAsStream("/version.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            version = properties.getProperty("app.version");
+        } catch (IOException e) {
+            // if the version can't be loaded an error is displayed in the console
+            // the program is also halted to prevent any further issues
+            // if this fails its likely that this build is faulty
+            LCCP.logger.fatal("Wasn't able to get app version!");
+            LCCP.logger.warn("Application was halted!");
+            LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");
+            LCCP.logger.warn("Please restart the application!");
+            LCCP.exit(0);
+        }
+
+
+        // defining config file
+        File file = new File(Paths.config);
+        File file1 = new File(Paths.server_config);
+        try {
+            // checking if the config file doesn't already exist
+            if (!file.exists()) {
+                // if the config does not exist the parent directory is created
+                // then a new config file is loaded with the default values from internal resources folder
+                if (file.getParentFile().mkdirs())
+                    logger.debug("Successfully created parent directory for config file: " + file.getParentFile().getAbsolutePath());
+                if (file.createNewFile()) {
+                    logger.debug("New config file was successfully created: " + file.getAbsolutePath());
+                    settings.saveDefaultConfig();
+                } else {
+                    // if the config can for whatever reason not be created, display a warning message in the console
+                    logger.warn("Config couldn't be created!");
+                    logger.warn("Please restart the application to prevent wierd behaviour!");
+                }
+            }
+            // checking if the server side config file does not already exist
+            if (!file1.exists()) {
+                // if the config does not exist it is created and the default values are loaded from the internal resources folder
+                if (file1.createNewFile()) {
+                    logger.debug("New server config file was successfully created: " + file1.getAbsolutePath());
+                    server_settings.saveDefaultConfig();
+                } else {
+                    // if the config couldn't be loaded for whatever reason
+                    logger.warn("Server config couldn't be created!");
+                    logger.warn("Please restart the application to prevent wierd behaviour!");
+                }
+            }
+        } catch (IOException | NullPointerException e) {
+            // if any serious exceptions occur during config creation an error is displayed in the console
+            // additionally the program is halted to prevent any further issues or unexpected behavior
+            logger.error("Settings failed to load!");
+            logger.warn("Application was halted!");
+            logger.warn("If this keeps happening please open an issue on GitHub!");
+            logger.warn("Please restart the application!");
+            exit(0);
+            return;
+        }
+
+        ConfigLoader.loadConfigsFromFile(settings, server_settings);
+
+        // creating event manager
+        eventManager = new EventManager();
+
+        eventManager.addEventListener(settings);
+        eventManager.addEventListener(server_settings);
+
+        eventManager.newEvent(new StartupEvent());
+    }
+
+    public void activate() {
+        Window mainWindow = new Window(app);
+        mainWindow.present();
+        started();
+    }
+
+    // display start message with starting duration
+    public static void started() {
+        // calculating time elapsed during startup and displaying it in the console
+        long timeElapsed = System.currentTimeMillis() - start;
+        logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
+    }
+
+
+    // exiting program with specified status code
+    public static void exit(int status) {
+        LCCP.logger.info("Saving...");
+        eventManager.newEvent(new SaveEvent());
+        LCCP.logger.info("Successfully saved!");
+        LCCP.logger.info("Shutting down...");
+        LCCP.logger.info("Goodbye!");
+        LCCP.logger.info("Status code: " + status);
+        System.exit(status);
+    }
+    public static void sysBeep() {
+        LCCP.logger.debug("Triggered system beep!");
+        getDefaultToolkit().beep();
+    }
+
+    public static class main_listener implements EventListener {
+
+        @Override
+        public void onEvent(Event event) {
+        }
+    }
+}

@@ -1,8 +1,8 @@
-package com.x_tornado10.Settings;
+package com.x_tornado10.lccp.Settings;
 
-import com.x_tornado10.Events.EventListener;
-import com.x_tornado10.Events.Events.Event;
-import com.x_tornado10.Main;
+import com.x_tornado10.lccp.Events.EventListener;
+import com.x_tornado10.lccp.Events.Events.Event;
+import com.x_tornado10.lccp.LCCP;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -29,7 +29,7 @@ public class Settings implements EventListener {
         Settings backup = cloneS();
         try {
             saveDefaultConfig();
-            Main.loadConfigsFromFile();
+            LCCP.loadConfigsFromFile();
         } catch (IOException | NullPointerException e) {
             copy(backup);
             save();

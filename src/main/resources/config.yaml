@@ -1,50 +1,14 @@
 # DO NOT MODIFY THIS CONFIG WHILE THE APP IS RUNNING
 # IF YOU WANT TO EDIT THE SETTINGS USE THE SETTINGS-MENU
 # ONLY EDIT THIS FILE IF YOU KNOW WHAT YOU ARE DOING
-# General Settings for the app
-# Settings Related to Dark- / Light-Mode
-# Enable Dark-Mode ? [false = Light-Mode]
-Dark-Mode-Enabled: false
-# Color Palettes:
-# The application creates a gradient between the two specified colors
-# The gradient consists of 8 colors and is applied to the application gui
-# Color Palette used for Dark-Mode
-Dark-Mode-Color-Primary: #000000
-Dark-Mode-Color-Secondary: #FFFFFF
-# Color Palette used for Light-Mode
-Light-Mode-Color-Primary: #FFFFFF
-Light-Mode-Color-Secondary: #000000
-# 'Technical' settings related to the window itself
+
 # Window title displayed in the top bar
 Window-Title: LED-Cube Control Panel %VERSION%
-# The initial resolution the window spawns as
 # If set to false window can no longer be resized
-# The resolution can still be adjusted with the width and height settings below
 Window-Resizable: false
+# initial width and height for window
 Window-Initial-Width: 1280
 Window-Initial-Height: 720
-# If the window should be resized to be as big as the screen
-Windowed-Full-screen: false
-# If the window should be in full-screen mode
-Window-Full-screen: false
-# Choose the screen, where the window will initially spawn
-# Use numbers 0,1,2,3,... (0 = Primary monitor)
-Window-Initial-Screen: 0
-# The location on the screen the window will spawn once the app is started
-# If center option is set to true the window will always spawn in the middle of the current screen
-# X- and Y Settings below are ignored in that case
-Window-Spawn-Center: true
-Window-Spawn-X: 500
-Window-Spawn-Y: 500
-# Settings related to Startup
-# If the app should display a fake loading bar on startup
-Startup-Fake-Loading-Bar: false
-# Other settings
-# Everything is resized and optimized for touchscreen use
-# Also removes unnecessary popups that don't make sense on mobile
-Mobile-Friendly: true
-# Scale for mobile-friendly mode (in %)
-Mobile-Friendly-Modifier: 200
 # Logger Settings
 # higher log levels include everything from lower log levels
 # Log - Levels:

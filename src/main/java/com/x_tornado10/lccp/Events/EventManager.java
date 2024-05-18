@@ -1,9 +1,9 @@
-package com.x_tornado10.Events;
+package com.x_tornado10.lccp.Events;
 
-import com.x_tornado10.Events.Events.Event;
-import com.x_tornado10.Events.Events.ReloadEvent;
-import com.x_tornado10.Main;
-import com.x_tornado10.Settings.Settings;
+import com.x_tornado10.lccp.Events.Events.Event;
+import com.x_tornado10.lccp.Events.Events.ReloadEvent;
+import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.Settings.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 public class EventManager {
 
     public EventManager() {
-        addEventListener(new Main.main_listener());
+        addEventListener(new LCCP.main_listener());
     }
     // list of all listeners that need to be notified on events
     private final List<EventListener> listeners = new ArrayList<>();
@@ -35,9 +35,9 @@ public class EventManager {
 
     // sending a new reload event
     public void sendReload(Settings.Type menu) {
-        Main.logger.info("Reloading...");
+        LCCP.logger.info("Reloading...");
         newEvent(new ReloadEvent(menu));
-        Main.logger.info("Successfully reloaded!");
+        LCCP.logger.info("Successfully reloaded!");
     }
     public void newEvent(Event event) {
         notifyListeners(event);

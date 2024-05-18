@@ -25,16 +25,6 @@ public class Settings implements EventListener {
     public void save() {}
     public void copy(Settings settings) {
     }
-    public void reset() throws IOException, NullPointerException {
-        Settings backup = cloneS();
-        try {
-            saveDefaultConfig();
-            LCCP.loadConfigsFromFile();
-        } catch (IOException | NullPointerException e) {
-            copy(backup);
-            save();
-        }
-    }
     public Settings cloneS() {
         Settings settings1 = new Settings();
         settings1.copy(this);

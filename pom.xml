@@ -6,7 +6,7 @@
 
     <groupId>com.x_tornado10</groupId>
     <artifactId>LED-Cube-Control-Panel</artifactId>
-    <version>1.0.0</version>
+    <version>v0.0.1</version>
 
     <build>
         <plugins>
@@ -42,19 +42,11 @@
         </resources>
     </build>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.version>${project.version}</project.version>
     </properties>
-    <!--
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-    -->
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -87,12 +79,15 @@
             <artifactId>open</artifactId>
             <version>8.4.0.2</version>
         </dependency>
-        <!--
         <dependency>
-            <groupId>com.github.bailuk</groupId>
-            <artifactId>java-gtk</artifactId>
-            <version>0.5.0</version>
+            <groupId>io.github.jwharm.javagi</groupId>
+            <artifactId>adw</artifactId>
+            <version>0.10.0</version>
         </dependency>
-        -->
+        <dependency>
+            <groupId>io.github.jwharm.javagi</groupId>
+            <artifactId>webkit</artifactId>
+            <version>0.10.0</version>
+        </dependency>
     </dependencies>
 </project>

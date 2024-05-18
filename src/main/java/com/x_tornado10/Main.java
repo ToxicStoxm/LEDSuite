@@ -8,14 +8,22 @@ import com.x_tornado10.Events.Events.SaveEvent;
 import com.x_tornado10.Events.Events.StartupEvent;
 import com.x_tornado10.Logger.Logger;
 import com.x_tornado10.Main_Window.Main_Window;
-import com.x_tornado10.Settings.Server_Settings;
 import com.x_tornado10.Settings.Local_Settings;
+import com.x_tornado10.Settings.Server_Settings;
 import com.x_tornado10.Settings.Settings;
 import com.x_tornado10.util.ColorManager;
 import com.x_tornado10.util.Paths;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.gnome.adw.AboutDialog;
+import org.gnome.adw.Application;
+import org.gnome.adw.ApplicationWindow;
+import org.gnome.adw.HeaderBar;
+import org.gnome.gio.ApplicationFlags;
+import org.gnome.adw.*;
+import org.gnome.gtk.*;
+import org.gnome.gtk.Label;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,16 +32,135 @@ import java.util.Properties;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
+
 public class Main {
     public static Local_Settings settings;
     public static Server_Settings server_settings;
     public static Logger logger;
     private static long start;
+    private final Application app;
+
+
+    public static void main(String[] args) {
+        start = System.currentTimeMillis();
+        logger = new Logger();
+        logger.info("Welcome back!");
+        logger.info("Starting Program...");
+
+        main_two();
+        new Main(args);
+        started();
+    }
+
+    public Main(String[] args) {
+        app = new Application("com.x_tornado10.led_cube_control_panel", ApplicationFlags.DEFAULT_FLAGS);
+        app.onActivate(this::activate);
+        app.run(args);
+    }
+
+    public void activate() {
+        var window = new ApplicationWindow(app);
+        window.setTitle(settings.getWindowTitleRaw().replace(Paths.Placeholders.VERSION, ""));
+        window.setDefaultSize(1280, 720);
+
+        var box = Box.builder()
+                .setOrientation(Orientation.VERTICAL)
+                .build();
+
+        var headerBar = new HeaderBar();
+
+        var aDialog = new AboutDialog();
+        aDialog.setDevelopers(new String[]{"x_Tornado10"});
+        aDialog.setVersion(version);
+        aDialog.setLicense("GPL-3.0");
+        aDialog.setDeveloperName("x_Tornado10");
+        aDialog.setWebsite("https://github.com/ToxicStoxm/LED-Cube-Control-Panel");
+        aDialog.setApplicationName(settings.getWindowTitleRaw().replace(Paths.Placeholders.VERSION, ""));
+
+        var sbutton = new ToggleButton();
+        var toastOverlay = new ToastOverlay();
+        sbutton.setIconName("system-search-symbolic");
+        sbutton.onToggled(() -> {
+            var wipToast = new Toast("Work in progress!");
+            wipToast.setTimeout(1);
+            toastOverlay.addToast(wipToast);
+        });
+
+
+
+        var mbutton = new MenuButton();
+        mbutton.setAlwaysShowArrow(false);
+        mbutton.setIconName("open-menu-symbolic");
+
+        var listBox = new ListBox();
+        var settingsRow = ListBoxRow.builder()
+                .setChild(Label.builder()
+                        .setLabel("Settings")
+                        .setHalign(Align.START)
+                        .setMarginEnd(10)
+                        .setMarginBottom(5)
+                        .build())
+                .setName("settings")
+                .setSelectable(false)
+                .build();
+        var statusRow = ListBoxRow.builder()
+                .setChild(Label.builder()
+                        .setLabel("Status")
+                        .setHalign(Align.START)
+                        .setMarginEnd(10)
+                        .setMarginBottom(5)
+                        .build())
+                .setName("status")
+                .setSelectable(false)
+                .build();
+        var aboutRow = ListBoxRow.builder()
+                .setChild(Label.builder()
+                        .setLabel("About")
+                        .setHalign(Align.START)
+                        .setMarginEnd(10)
+                        .build())
+                .setName("about")
+                .setSelectable(false)
+                .build();
+
+        listBox.setSelectionMode(SelectionMode.SINGLE);
+
+        listBox.append(statusRow);
+        listBox.append(settingsRow);
+        listBox.append(aboutRow);
+
+        listBox.onRowActivated(e -> {
+            if (e == null) return;
+            switch (e.getName()) {
+                case "status" -> toastOverlay.addToast(new Toast("Status"));
+                case "settings" -> toastOverlay.addToast(new Toast("Settings"));
+                case "about" -> aDialog.present(window);
+            }
+        });
+
+        listBox.onRowSelected(e -> {
+
+        });
+
+        var popover = new Popover();
+        popover.setChild(listBox);
+        mbutton.setPopover(popover);
+
+        headerBar.packStart(sbutton);
+        headerBar.packEnd(mbutton);
+
+        box.append(headerBar);
+        box.append(toastOverlay);
+
+        window.setContent(box);
+        window.present();
+    }
+
     public static Main_Window mw;
     public static ColorManager cm;
     public static EventManager eventManager;
     public static String version;
-    public static void main(String[] args) {
+    public static void main_two() {
         // program initialization
         // create timestamp that is used to calculate starting time
         start = System.currentTimeMillis();
@@ -135,7 +262,7 @@ public class Main {
         cm = new ColorManager();
 
         // creating main window
-        mw = new Main_Window(windows, true);
+        //mw = new Main_Window(windows, true);
 
 
     }
@@ -182,13 +309,13 @@ public class Main {
             exit(0);
         }
     }
-
     // display start message with starting duration
     public static void started() {
         // calculating time elapsed during startup and displaying it in the console
         long timeElapsed = System.currentTimeMillis() - start;
         logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
     }
+
 
     // exiting program with specified status code
     public static void exit(int status) {

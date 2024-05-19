@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.x_tornado10</groupId>
-    <artifactId>LED-Cube-Control-Panel</artifactId>
+    <artifactId>LED-Cube-Control-Panel<!-- DO NOT CHANGE IDIOI--></artifactId>
     <version>v0.0.1</version>
 
     <build>

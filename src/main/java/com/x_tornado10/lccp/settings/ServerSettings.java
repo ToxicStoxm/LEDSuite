@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.Settings;
+package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Networking;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
-public class Server_Settings extends Settings {
+public class ServerSettings extends Settings {
 
     private String name = "Server-Config";
     private Type type = Type.SERVER;
@@ -30,7 +30,7 @@ public class Server_Settings extends Settings {
     private String IPv4 = "127.0.0.1";
     private float LED_Brightness = 0.20F;
 
-    private Server_Settings backup;
+    private ServerSettings backup;
 
     // get the default configuration values from internal resource folder and save them to config.yaml
     @Override
@@ -73,7 +73,7 @@ public class Server_Settings extends Settings {
             LCCP.logger.debug("Can't confirm settings type! Type = UNDEFINED");
         }
         // casting other settings class to compatible type
-        Server_Settings settings = (Server_Settings) settings1;
+        ServerSettings settings = (ServerSettings) settings1;
         // copy settings
         LCCP.logger.debug("Loading settings from " + settings.getName() + "...");
         this.Port = settings.getPort();
@@ -173,13 +173,13 @@ public class Server_Settings extends Settings {
     // creating clone for unnecessary saving check
     @Override
     public void startup() {
-        this.backup = new Server_Settings().cloneS();
+        this.backup = new ServerSettings().cloneS();
     }
 
     // creating a clone of this config class
     @Override
-    public Server_Settings cloneS() {
-        Server_Settings settings1 = new Server_Settings();
+    public ServerSettings cloneS() {
+        ServerSettings settings1 = new ServerSettings();
         settings1.copy(LCCP.server_settings);
         return settings1;
     }
@@ -197,7 +197,7 @@ public class Server_Settings extends Settings {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Server_Settings other = (Server_Settings) obj;
+        ServerSettings other = (ServerSettings) obj;
         return LED_Brightness == other.LED_Brightness &&
                 Objects.equals(IPv4, other.IPv4) &&
                 Objects.equals(Port, other.Port);

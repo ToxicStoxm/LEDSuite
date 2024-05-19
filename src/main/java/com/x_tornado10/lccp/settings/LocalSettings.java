@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.Settings;
+package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
@@ -19,7 +19,7 @@ import java.util.Objects;
 // settings class to store config settings on runtime
 @Setter
 @Getter
-public class Local_Settings extends Settings {
+public class LocalSettings extends Settings {
     // default settings
     private Type type = Type.LOCAL;
     private String name = "Main-Config";
@@ -30,7 +30,7 @@ public class Local_Settings extends Settings {
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
 
-    private Local_Settings backup;
+    private LocalSettings backup;
 
     // get the default configuration values from internal resource folder and save them to config.yaml
     @Override
@@ -119,7 +119,7 @@ public class Local_Settings extends Settings {
             LCCP.logger.info("Can't confirm settings type! Type = UNDEFINED");
         }
         // casting to compatible settings type after check
-        Local_Settings settings = (Local_Settings) settings1;
+        LocalSettings settings = (LocalSettings) settings1;
         LCCP.logger.debug("Loading settings from " + settings.getName() + "...");
         // copying settings
         this.WindowTitle = settings.getWindowTitleRaw();
@@ -185,13 +185,13 @@ public class Local_Settings extends Settings {
     // creating clone for unnecessary saving check
     @Override
     public void startup() {
-        this.backup = new Local_Settings().cloneS();
+        this.backup = new LocalSettings().cloneS();
     }
 
     // creating a clone of this config class
     @Override
-    public Local_Settings cloneS() {
-        Local_Settings settings1 = new Local_Settings();
+    public LocalSettings cloneS() {
+        LocalSettings settings1 = new LocalSettings();
         settings1.copy(LCCP.settings);
         return settings1;
     }
@@ -205,7 +205,7 @@ public class Local_Settings extends Settings {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Local_Settings other = (Local_Settings) obj;
+        LocalSettings other = (LocalSettings) obj;
         return WindowResizeable == other.WindowResizeable &&
                 WindowWidth == other.WindowWidth &&
                 WindowHeight == other.WindowHeight &&

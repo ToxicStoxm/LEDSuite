@@ -1,17 +1,15 @@
 package com.x_tornado10.lccp;
 
-import com.x_tornado10.lccp.Events.EventListener;
-import com.x_tornado10.lccp.Events.EventManager;
-import com.x_tornado10.lccp.Events.Events.Event;
-import com.x_tornado10.lccp.Events.Events.SaveEvent;
-import com.x_tornado10.lccp.Events.Events.StartupEvent;
-import com.x_tornado10.lccp.Logger.Logger;
-import com.x_tornado10.lccp.Settings.ConfigLoader;
-import com.x_tornado10.lccp.Settings.Local_Settings;
-import com.x_tornado10.lccp.Settings.Server_Settings;
-import com.x_tornado10.lccp.UI.Window;
+import com.x_tornado10.lccp.event_handling.*;
+import com.x_tornado10.lccp.logger.Logger;
+import com.x_tornado10.lccp.settings.LocalSettings;
+import com.x_tornado10.lccp.settings.ServerSettings;
+import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
@@ -25,8 +23,8 @@ import static java.awt.Toolkit.getDefaultToolkit;
 @Getter
 public class LCCP {
     public static LCCP instance;
-    public static Local_Settings settings;
-    public static Server_Settings server_settings;
+    public static LocalSettings settings;
+    public static ServerSettings server_settings;
     public static Logger logger;
     private static long start;
     private final Application app;
@@ -53,8 +51,8 @@ public class LCCP {
     public static void logicInit() {
         // program initialization
         // create new settings and server_settings classes to hold config settings
-        settings = new Local_Settings();
-        server_settings = new Server_Settings();
+        settings = new LocalSettings();
+        server_settings = new ServerSettings();
         // create new logger instance
         logger = new Logger();
         // startup information displayed in the console upon opening the program
@@ -130,15 +128,12 @@ public class LCCP {
             return;
         }
 
-        ConfigLoader.loadConfigsFromFile(settings, server_settings);
+        loadConfigsFromFile();
 
         // creating event manager
         eventManager = new EventManager();
-
-        eventManager.addEventListener(settings);
-        eventManager.addEventListener(server_settings);
-
-        eventManager.newEvent(new StartupEvent());
+        eventManager.registerEvents(settings);
+        eventManager.registerEvents(server_settings);
     }
 
     public void activate() {
@@ -158,7 +153,7 @@ public class LCCP {
     // exiting program with specified status code
     public static void exit(int status) {
         LCCP.logger.info("Saving...");
-        eventManager.newEvent(new SaveEvent());
+        eventManager.fireEvent(new Events.Save(""));
         LCCP.logger.info("Successfully saved!");
         LCCP.logger.info("Shutting down...");
         LCCP.logger.info("Goodbye!");
@@ -170,10 +165,42 @@ public class LCCP {
         getDefaultToolkit().beep();
     }
 
-    public static class main_listener implements EventListener {
+    public static void loadConfigsFromFile() {
+        File file = new File(Paths.config);
+        File file1 = new File(Paths.server_config);
+        try {
+            // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/config.yaml)
+            // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
+            Configurations configs = new Configurations();
+            FileBasedConfiguration config = configs.properties(file);
+            // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
+            settings.load(config);
+        } catch (ConfigurationException e) {
+            // if any errors occur during config parsing an error is displayed in the console
+            // the program is halted to prevent any further unwanted behavior
+            LCCP.logger.error("Failed to parse config.yaml!");
+            LCCP.logger.warn("Application was halted!");
+            LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");
+            LCCP.logger.warn("Please restart the application!");
+            LCCP.exit(0);
+            return;
+        }
 
-        @Override
-        public void onEvent(Event event) {
+        try {
+            // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/server_config.yaml)
+            // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
+            Configurations configs = new Configurations();
+            FileBasedConfiguration server_config = configs.properties(file1);
+            // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
+            server_settings.load(server_config);
+        } catch (ConfigurationException e) {
+            // if any errors occur during config parsing an error is displayed in the console
+            // the program is halted to prevent any further unwanted behavior
+            LCCP.logger.error("Failed to parse server_config.yaml!");
+            LCCP.logger.warn("Application was halted!");
+            LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");
+            LCCP.logger.warn("Please restart the application!");
+            LCCP.exit(0);
         }
     }
 }

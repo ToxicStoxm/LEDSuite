@@ -1,8 +1,8 @@
-package com.x_tornado10.lccp.Settings;
+package com.x_tornado10.lccp.settings;
 
-import com.x_tornado10.lccp.Events.EventListener;
-import com.x_tornado10.lccp.Events.Events.Event;
-import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.EventHandler;
+import com.x_tornado10.lccp.event_handling.Events;
+import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -31,11 +31,13 @@ public class Settings implements EventListener {
         return settings1;
     }
     public void startup() {}
-    @Override
-    public void onEvent(Event event) {
-        switch (event.getType()) {
-            case SAVE -> this.save();
-            case STARTUP -> this.startup();
-        }
+
+    @EventHandler
+    public void onSave(Events.Save e) {
+        this.save();
+    }
+    @EventHandler
+    public void onStartup(Events.Startup e) {
+        this.startup();
     }
 }

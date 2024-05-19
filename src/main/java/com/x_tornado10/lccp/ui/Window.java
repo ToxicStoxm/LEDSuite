@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.UI;
+package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;

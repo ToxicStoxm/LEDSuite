@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.Logger;
+package com.x_tornado10.lccp.logger;
 
 import com.x_tornado10.lccp.LCCP;
 import org.fusesource.jansi.Ansi;
@@ -45,7 +45,7 @@ public class Logger {
     }
 
     // log level checker
-    public enum log_level implements Log_Level {
+    public enum log_level implements LogLevel {
         INFO() {
             @Override
             public boolean isEnabled() {

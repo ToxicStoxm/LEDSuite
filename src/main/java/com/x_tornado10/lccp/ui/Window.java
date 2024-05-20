@@ -256,6 +256,6 @@ public class Window extends ApplicationWindow {
         status.setRevealed(visible);
     }
     public boolean isBannerVisible() {
-        return status.isVisible();
+        return status.getRevealed();
     }
 }

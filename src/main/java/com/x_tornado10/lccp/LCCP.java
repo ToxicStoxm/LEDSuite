@@ -12,6 +12,7 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
+import org.gnome.pango.Pango;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class LCCP {
     private final Application app;
     public static EventManager eventManager;
     public static String version;
+    public static Window mainWindow;
 
     public LCCP(String[] args) {
         instance = this;
@@ -137,7 +139,7 @@ public class LCCP {
     }
 
     public void activate() {
-        Window mainWindow = new Window(app);
+        mainWindow = new Window(app);
         mainWindow.present();
         started();
     }

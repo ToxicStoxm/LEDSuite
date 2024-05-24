@@ -123,6 +123,7 @@ public class Window extends ApplicationWindow {
         this.addController(shortcutController);
 
         getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
 
 
         listBox.setSelectionMode(SelectionMode.SINGLE);
@@ -131,16 +132,18 @@ public class Window extends ApplicationWindow {
         listBox.append(settingsRow);
         listBox.append(aboutRow);
 
+        var popover = new Popover();
+
         listBox.onRowActivated(e -> {
             if (e == null) return;
             switch (e.getName()) {
                 case "status" -> new StatusWindow().present();
-                case "settings" -> new SettingsWindow().present();
+                case "settings" -> getSettingsDialog().present(this);
                 case "about" -> getAboutDialog().present(this);
             }
+            popover.emitClosed();
         });
 
-        var popover = new Popover();
         popover.setChild(listBox);
         mbutton.setPopover(popover);
 
@@ -257,5 +260,12 @@ public class Window extends ApplicationWindow {
     }
     public boolean isBannerVisible() {
         return status.getRevealed();
+    }
+    private SettingsDialog sD = null;
+    private SettingsDialog getSettingsDialog() {
+        if (sD == null) {
+            sD = new SettingsDialog();
+        }
+        return sD;
     }
 }

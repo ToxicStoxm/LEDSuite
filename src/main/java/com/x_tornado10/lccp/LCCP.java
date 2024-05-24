@@ -1,9 +1,11 @@
 package com.x_tornado10.lccp;
 
 import com.x_tornado10.lccp.event_handling.*;
+import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.logger.Logger;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
+import com.x_tornado10.lccp.settings.Settings;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
@@ -22,7 +24,7 @@ import java.util.Properties;
 import static java.awt.Toolkit.getDefaultToolkit;
 
 @Getter
-public class LCCP {
+public class LCCP implements EventListener {
     public static LCCP instance;
     public static LocalSettings settings;
     public static ServerSettings server_settings;
@@ -141,6 +143,7 @@ public class LCCP {
     public void activate() {
         mainWindow = new Window(app);
         mainWindow.present();
+        eventManager.registerEvents(this);
         started();
     }
 
@@ -155,7 +158,7 @@ public class LCCP {
     // exiting program with specified status code
     public static void exit(int status) {
         LCCP.logger.info("Saving...");
-        eventManager.fireEvent(new Events.Save(""));
+        eventManager.fireEvent(new Events.Save("Shutdown"));
         LCCP.logger.info("Successfully saved!");
         LCCP.logger.info("Shutting down...");
         LCCP.logger.info("Goodbye!");
@@ -204,5 +207,15 @@ public class LCCP {
             LCCP.logger.warn("Please restart the application!");
             LCCP.exit(0);
         }
+    }
+
+    @EventHandler
+    public void onReload(Events.Reload e) {
+        logger.debug("Fulfilling reload request: " + e.message());
+        mainWindow.setTitle(settings.getWindowTitle());
+    }
+    @EventHandler
+    public void onSave(Events.Save e) {
+
     }
 }

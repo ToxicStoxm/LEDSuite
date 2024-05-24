@@ -3,7 +3,6 @@ package com.x_tornado10.lccp.settings;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -16,8 +15,8 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+
 // settings class to store config settings on runtime
-@Setter
 @Getter
 public class LocalSettings extends Settings {
     // default settings
@@ -194,6 +193,36 @@ public class LocalSettings extends Settings {
         LocalSettings settings1 = new LocalSettings();
         settings1.copy(LCCP.settings);
         return settings1;
+    }
+
+    public void setWindowTitle(String windowTitle) {
+        WindowTitle = windowTitle;
+        reload();
+    }
+
+    public void setWindowResizeable(boolean windowResizeable) {
+        WindowResizeable = windowResizeable;
+        reload();
+    }
+
+    public void setWindowWidth(int windowWidth) {
+        WindowWidth = windowWidth;
+        reload();
+    }
+
+    public void setWindowHeight(int windowHeight) {
+        WindowHeight = windowHeight;
+        reload();
+    }
+
+    public void setLogLevel(int logLevel) {
+        LogLevel = logLevel;
+        reload();
+    }
+
+    public void setSelectionDir(String selectionDir) {
+        this.selectionDir = selectionDir;
+        reload();
     }
 
     // used to check if current settings equal another settings class

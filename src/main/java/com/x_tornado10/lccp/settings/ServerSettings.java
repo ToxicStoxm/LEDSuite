@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
-public class ServerSettings extends Settings {
+public class ServerSettings extends Settings{
 
     private String name = "Server-Config";
     private Type type = Type.SERVER;

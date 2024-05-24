@@ -15,7 +15,7 @@ import org.gnome.pango.*;
 
 public class Window extends ApplicationWindow {
     public Banner status = new Banner("");
-    private boolean stopUpdate = true;
+    private boolean statusBarCurrentState = false;
     public Window(Application app) {
         super(app);
         this.setTitle(LCCP.settings.getWindowTitle());
@@ -171,10 +171,8 @@ public class Window extends ApplicationWindow {
 
         box.append(headerBar);
 
-        setVisible(true);
         box.append(status);
-        //box.append(box1);
-
+        setBannerVisible(false);
 
         var mainContent = new Box(Orientation.VERTICAL, 0);
         var northBox = new Box(Orientation.VERTICAL, 0);
@@ -240,26 +238,51 @@ public class Window extends ApplicationWindow {
         displayingAnimation = !displayingAnimation;
         return stringBuilder.toString();
     }
+    private StatusBarUpdater statusBarUpdater;
     private void updateStatus() {
-        new Thread(() -> {
+        LCCP.logger.debug("Running new StatusBar update Task!");
+        statusBarUpdater = new StatusBarUpdater();
+    }
+
+    private class StatusBarUpdater extends Thread {
+        public StatusBarUpdater() {
+            setName("StatusBarUpdaterTask_" + getName());
+            this.start();
+        }
+
+        private boolean stop = false;
+
+        @Override
+        public void run() {
             long lastexec = System.currentTimeMillis() - 1001;
-            while (!stopUpdate) {
+            while (true) {
+                if (stop) return;
                 if (System.currentTimeMillis() - lastexec >= 1000) {
+                    if (!status.getRevealed()) return;
+                    if (stop) return;
                     status.setTitle("LED-Cube-Status: " + getStatus());
                     lastexec = System.currentTimeMillis();
                 }
             }
-        }).start();
-    }
-    public void setVisible(boolean visible) {
-        if (stopUpdate && visible) {
-            updateStatus();
         }
-        stopUpdate = !visible;
+    }
+
+    public void setBannerVisible(boolean visible) {
+        LCCP.logger.debug("---------------------------------------------------------------");
+        LCCP.logger.debug("Fulfilling StatusBarToggle: " + statusBarCurrentState + " >> " + visible);
+        status.setVisible(true);
+        if (!statusBarCurrentState && visible) {
+            statusBarCurrentState = true;
+            updateStatus();
+        } else {
+            if (statusBarUpdater != null) statusBarUpdater.stop = true;
+            statusBarCurrentState = false;
+        }
         status.setRevealed(visible);
+        LCCP.logger.debug("---------------------------------------------------------------");
     }
     public boolean isBannerVisible() {
-        return status.getRevealed();
+        return statusBarCurrentState;
     }
     private SettingsDialog sD = null;
     private SettingsDialog getSettingsDialog() {

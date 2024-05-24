@@ -1,10 +1,10 @@
 package com.x_tornado10.lccp.settings;
 
+import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.EventHandler;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 
 import java.io.IOException;
@@ -24,6 +24,9 @@ public class Settings implements EventListener {
     public void load(FileBasedConfiguration config) {}
     public void save() {}
     public void copy(Settings settings) {
+    }
+    public void reload() {
+        LCCP.eventManager.fireEvent(new Events.Reload(getName() + " changed!"));
     }
     public Settings cloneS() {
         Settings settings1 = new Settings();

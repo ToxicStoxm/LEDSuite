@@ -24,7 +24,7 @@ public class EventManager {
         if (registeredListeners != null) {
             for (RegisteredListener registeredListener : registeredListeners) {
                 try {
-                    registeredListener.method().invoke(registeredListener.getEventListener(), event);
+                    registeredListener.getMethod().invoke(registeredListener.getEventListener(), event);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

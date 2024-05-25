@@ -5,10 +5,10 @@
 # Window title displayed in the top bar
 Window-Title: LED-Cube Control Panel
 # If set to false window can no longer be resized
-Window-Resizable: false
-# initial width and height for window
-Window-Initial-Width: 1280
-Window-Initial-Height: 720
+Window-Resizable: true
+# Default width and height for window
+Window-Default-Width: 1280
+Window-Default-Height: 720
 # Logger Settings
 # higher log levels include everything from lower log levels
 # Log - Levels:

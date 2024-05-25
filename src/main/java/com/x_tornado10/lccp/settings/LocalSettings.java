@@ -23,9 +23,9 @@ public class LocalSettings extends Settings {
     private Type type = Type.LOCAL;
     private String name = "Main-Config";
     private String WindowTitle = "LED-Cube-Control-Panel";
-    private boolean WindowResizeable = false;
-    private int WindowWidth = 1280;
-    private int WindowHeight = 720;
+    private boolean WindowResizeable = true;
+    private int WindowDefWidth = 1280;
+    private int WindowDefHeight = 720;
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
 
@@ -69,8 +69,8 @@ public class LocalSettings extends Settings {
 
             // handle potential ConversionExceptions gracefully
             try {
-                this.WindowWidth = config.getInt(Paths.Config.WINDOW_INITIAL_WIDTH);
-                this.WindowHeight = config.getInt(Paths.Config.WINDOW_INITIAL_HEIGHT);
+                this.WindowDefHeight = config.getInt(Paths.Config.WINDOW_DEFAULT_HEIGHT);
+                this.WindowDefWidth = config.getInt(Paths.Config.WINDOW_DEFAULT_WIDTH);
             } catch (ConversionException e) {
                 LCCP.logger.error("Error while parsing Window-Initial-Height and Window-Initial-Width! Not a valid Number!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
@@ -123,8 +123,8 @@ public class LocalSettings extends Settings {
         // copying settings
         this.WindowTitle = settings.getWindowTitleRaw();
         this.WindowResizeable = settings.isWindowResizeable();
-        this.WindowWidth = settings.getWindowWidth();
-        this.WindowHeight = settings.getWindowHeight();
+        this.WindowDefWidth = settings.getWindowDefWidth();
+        this.WindowDefHeight = settings.getWindowDefHeight();
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
         LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
@@ -164,8 +164,8 @@ public class LocalSettings extends Settings {
         try {
             builder.getConfiguration().setProperty(Paths.Config.WINDOW_TITLE, WindowTitle);
             builder.getConfiguration().setProperty(Paths.Config.WINDOW_RESIZABLE, WindowResizeable);
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_INITIAL_WIDTH, WindowWidth);
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_INITIAL_HEIGHT, WindowHeight);
+            builder.getConfiguration().setProperty(Paths.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
+            builder.getConfiguration().setProperty(Paths.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
             builder.getConfiguration().setProperty(Paths.Config.LOG_LEVEL, LogLevel);
             builder.getConfiguration().setProperty(Paths.Config.SELECTION_DIR, selectionDir);
             // saving settings
@@ -205,16 +205,6 @@ public class LocalSettings extends Settings {
         reload();
     }
 
-    public void setWindowWidth(int windowWidth) {
-        WindowWidth = windowWidth;
-        reload();
-    }
-
-    public void setWindowHeight(int windowHeight) {
-        WindowHeight = windowHeight;
-        reload();
-    }
-
     public void setLogLevel(int logLevel) {
         LogLevel = logLevel;
         reload();
@@ -236,8 +226,8 @@ public class LocalSettings extends Settings {
         }
         LocalSettings other = (LocalSettings) obj;
         return WindowResizeable == other.WindowResizeable &&
-                WindowWidth == other.WindowWidth &&
-                WindowHeight == other.WindowHeight &&
+                WindowDefWidth == other.WindowDefWidth &&
+                WindowDefHeight == other.WindowDefHeight &&
                 LogLevel == other.LogLevel &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(WindowTitle, other.WindowTitle);
@@ -246,7 +236,7 @@ public class LocalSettings extends Settings {
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowWidth, WindowHeight, LogLevel, selectionDir);
+        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir);
     }
 
 }

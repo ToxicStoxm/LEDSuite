@@ -1,5 +1,6 @@
 package com.x_tornado10.lccp.event_handling;
 
+import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,8 +12,10 @@ public class EventManager {
     private final Map<Class<?>, List<RegisteredListener>> listeners = new HashMap<>();
 
     public void registerEvents(EventListener eventListener) {
-        for (Method method : eventListener.getClass().getDeclaredMethods()) {
+        LCCP.logger.debug(eventListener.toString());
+        for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventHandler.class) && method.getParameterCount() == 1) {
+                LCCP.logger.debug(method.getName());
                 Class<?> eventType = method.getParameterTypes()[0];
                 listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(new RegisteredListener(eventListener, method));
             }

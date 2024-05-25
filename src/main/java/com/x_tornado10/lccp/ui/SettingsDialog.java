@@ -6,7 +6,9 @@ import org.gnome.gtk.Widget;
 
 public class SettingsDialog extends PreferencesDialog {
     private boolean fT = true;
-    private boolean prev = false;
+    private boolean prev0 = false;
+    private boolean prev1 = false;
+
     public SettingsDialog() {
         setTitle("Settings");
         setSearchEnabled(true);
@@ -22,16 +24,20 @@ public class SettingsDialog extends PreferencesDialog {
                 .setActive(LCCP.mainWindow.isBannerVisible())
                 .setTitle("Toggle Status Bar")
                 .build();
-        statusBar.getActivatableWidget().onStateFlagsChanged(e -> {
+        statusBar.getActivatableWidget().onStateFlagsChanged(_ -> {
             boolean active = statusBar.getActive();
-            if (!prev == active) {
+            if (!prev0 == active) {
                 LCCP.logger.debug("StatusToggle: " + active);
                 LCCP.mainWindow.setBannerVisible(active);
-                prev = active;
+                prev0 = active;
             }
         });
         windowSettings.add(statusBar);
 
+        v0_0_1.add(windowSettings);
+        /*
+        var devSettings = new PreferencesGroup();
+        devSettings.setTitle("Developer Settings (DO NOT TOUCH)");
         var windowTitle = EntryRow.builder()
                 .setTitle("Window Title")
                 .setShowApplyButton(true)
@@ -41,9 +47,10 @@ public class SettingsDialog extends PreferencesDialog {
             LCCP.settings.setWindowTitle(windowTitle.getText());
             LCCP.logger.debug("New Window Title: " + windowTitle.getText());
         });
-        windowSettings.add(windowTitle);
+        devSettings.add(windowTitle);
 
-        v0_0_1.add(windowSettings);
+        v0_0_1.add(devSettings);
+         */
         return v0_0_1;
     }
 

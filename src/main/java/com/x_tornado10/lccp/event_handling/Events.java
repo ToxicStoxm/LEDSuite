@@ -7,4 +7,6 @@ public class Events {
     }
     public record Startup(String message) {
     }
+    public record Shutdown(String message) {
+    }
 }

@@ -1,6 +1,9 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.EventHandler;
+import com.x_tornado10.lccp.event_handling.Events;
+import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Paths;
 import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
@@ -13,20 +16,19 @@ import org.gnome.gtk.*;
 import org.gnome.pango.*;
 
 
-public class Window extends ApplicationWindow {
+public class Window extends ApplicationWindow implements EventListener {
     public Banner status = new Banner("");
     private boolean statusBarCurrentState = false;
     public Window(Application app) {
         super(app);
         this.setTitle(LCCP.settings.getWindowTitle());
-        this.setDefaultSize(1280, 720);
+        this.setDefaultSize(LCCP.settings.getWindowDefWidth(), LCCP.settings.getWindowDefHeight());
 
         var box = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
                 .build();
 
         var headerBar = new HeaderBar();
-
 
         var sbutton = new ToggleButton();
         var toastOverlay = new ToastOverlay();
@@ -149,25 +151,6 @@ public class Window extends ApplicationWindow {
 
         headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
-
-        /*
-        var box1 = new Box(Orientation.HORIZONTAL, 0);
-        var statusButton = ToggleButton.builder()
-                .setLabel("LED-Cube Status")
-                .setMarginEnd(15)
-                .build();
-        statusButton.setActive(true);
-        statusLabel1 = new Label("");
-        statusLabel1.setAttributes(getAttrBig());
-        statusButton.onToggled(() -> statusLabel1.setVisible(statusButton.getActive()));
-        box1.append(statusButton);
-        updateStatus();
-        box1.append(statusLabel1);
-        box1.setHalign(Align.START);
-        box1.setMarginTop(15);
-        box1.setMarginStart(15);
-         */
-
 
         box.append(headerBar);
 

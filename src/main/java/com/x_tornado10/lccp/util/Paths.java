@@ -3,13 +3,15 @@ package com.x_tornado10.lccp.util;
 // static utility class for storing paths
 public final class Paths {
     public static final String appDir = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/";
+    public static final String tmpDir = System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/";
     public static final String config = appDir + "/config.yaml";
     public static final String server_config = appDir + "/server_config.yaml";
+    public static final String logFile = appDir + "/latest.log";
     public static class Config {
         public static final String WINDOW_TITLE = "Window-Title";
         public static final String WINDOW_RESIZABLE = "Window-Resizable";
-        public static final String WINDOW_INITIAL_WIDTH = "Window-Initial-Width";
-        public static final String WINDOW_INITIAL_HEIGHT = "Window-Initial-Height";
+        public static final String WINDOW_DEFAULT_WIDTH = "Window-Default-Width";
+        public static final String WINDOW_DEFAULT_HEIGHT = "Window-Default-Height";
         public static final String LOG_LEVEL = "Log-Level";
         public static final String SELECTION_DIR = "Default-Selection-Dir";
     }

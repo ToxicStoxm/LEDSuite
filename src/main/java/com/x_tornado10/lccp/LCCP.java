@@ -16,9 +16,7 @@ import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.pango.Pango;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 import static java.awt.Toolkit.getDefaultToolkit;
@@ -93,6 +91,7 @@ public class LCCP implements EventListener {
         // defining config file
         File file = new File(Paths.config);
         File file1 = new File(Paths.server_config);
+        File file2 = new File(Paths.logFile);
         try {
             // checking if the config file doesn't already exist
             if (!file.exists()) {
@@ -121,6 +120,20 @@ public class LCCP implements EventListener {
                     logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
             }
+            if (!file2.exists()) {
+                if (file2.createNewFile()) {
+                    logger.debug("New log config file was successfully created: " + file2.getAbsolutePath());
+                } else {
+                    logger.warn("Log file couldn't be created!");
+                    logger.warn("Please restart the application to prevent wierd behaviour!");
+                }
+            } else {
+                try (FileWriter writer = new FileWriter(file2, false)) {
+                    // FileWriter with 'false' flag to truncate the file
+                    writer.write("");
+                    logger.debug("Existing log file contents erased: " + file2.getAbsolutePath());
+                }
+            }
         } catch (IOException | NullPointerException e) {
             // if any serious exceptions occur during config creation an error is displayed in the console
             // additionally the program is halted to prevent any further issues or unexpected behavior
@@ -141,9 +154,10 @@ public class LCCP implements EventListener {
     }
 
     public void activate() {
-        mainWindow = new Window(app);
-        mainWindow.present();
         eventManager.registerEvents(this);
+        mainWindow = new Window(app);
+        eventManager.registerEvents(mainWindow);
+        mainWindow.present();
         started();
     }
 
@@ -157,8 +171,9 @@ public class LCCP implements EventListener {
 
     // exiting program with specified status code
     public static void exit(int status) {
+        eventManager.fireEvent(new Events.Shutdown("Shutdown"));
         LCCP.logger.info("Saving...");
-        eventManager.fireEvent(new Events.Save("Shutdown"));
+        eventManager.fireEvent(new Events.Save("Shutdown - Save"));
         LCCP.logger.info("Successfully saved!");
         LCCP.logger.info("Shutting down...");
         LCCP.logger.info("Goodbye!");
@@ -213,9 +228,6 @@ public class LCCP implements EventListener {
     public void onReload(Events.Reload e) {
         logger.debug("Fulfilling reload request: " + e.message());
         mainWindow.setTitle(settings.getWindowTitle());
-    }
-    @EventHandler
-    public void onSave(Events.Save e) {
-
+        mainWindow.setResizable(settings.isWindowResizeable());
     }
 }

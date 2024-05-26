@@ -183,6 +183,11 @@ public class LCCP implements EventListener {
         getDefaultToolkit().beep();
     }
 
+    public static void updateRemoteConfig() {
+        LCCP.logger.debug("Updating RemoteConfig...");
+        LCCP.logger.debug("Successfully updatedRemoteConfig!");
+    }
+
     public static void loadConfigsFromFile() {
         File file = new File(Paths.config);
         File file1 = new File(Paths.server_config);
@@ -227,6 +232,7 @@ public class LCCP implements EventListener {
         logger.debug("Fulfilling reload request: " + e.message());
         mainWindow.setTitle(settings.getWindowTitle());
         mainWindow.setResizable(settings.isWindowResizeable());
+        mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
     }
     @EventHandler
     public void onStartup(Events.Startup e) {
@@ -235,5 +241,10 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onSave(Events.Save e) {
         logger.debug("Fulfilling save request: " + e.message());
+    }
+    @EventHandler
+    public void onShutdown(Events.Shutdown e) {
+        logger.debug("Fulfilling shutdown request: " + e.message());
+        logger.debug("New log file was saved to: '" + Paths.logFile + "'");
     }
 }

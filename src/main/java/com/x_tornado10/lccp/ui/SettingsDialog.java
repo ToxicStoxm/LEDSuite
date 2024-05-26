@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import io.github.jwharm.javagi.gobject.SignalConnection;
 import org.gnome.adw.*;
 import org.gnome.gtk.Widget;
 
@@ -8,6 +9,7 @@ import org.gnome.gtk.Widget;
 public class SettingsDialog extends PreferencesDialog {
     private final Boolean[] temp;
     private double prev1 = 0.0;
+    private AutoUpdateRemote autoUpdateRemote = null;
 
     public SettingsDialog() {
         setTitle("Settings");
@@ -83,17 +85,60 @@ public class SettingsDialog extends PreferencesDialog {
             }
             return false;
         });
+        this.setCanClose(true);
+        onClosed(this::stopRemoteUpdate);
         serverSettings.add(brightness);
         v0_0_1.add(serverSettings);
         return v0_0_1;
     }
 
+    private class AutoUpdateRemote extends Thread {
+
+        public AutoUpdateRemote() {
+            setName("AutoUpdateRemoteTask_" + getName());
+            this.start();
+        }
+
+        private boolean stop = false;
+
+        @Override
+        public void run() {
+            long tick = Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 1000);
+            long last = System.currentTimeMillis() - (tick + 1);
+            while (true) {
+                if (stop) return;
+                long current = System.currentTimeMillis();
+                if (current - last >= tick) {
+                    LCCP.updateRemoteConfig();
+                    last = current;
+                }
+                if (!LCCP.mainWindow.isSettingsDialogVisible()) stop = true;
+            }
+        }
+    }
+
     @Override
     public void present(Widget parent) {
+        LCCP.logger.debug("Fulfilling SettingsDialog present request!");
+        if (LCCP.settings.isAutoUpdateRemote()) startRemoteUpdate();
         if (temp[0]) {
             add(get_v0_0_1_page());
             temp[0] = false;
         }
         super.present(parent);
+    }
+
+    public void startRemoteUpdate() {
+        if (autoUpdateRemote == null) {
+            autoUpdateRemote = new AutoUpdateRemote();
+            LCCP.logger.debug("Started autoRemoteUpdateTask!");
+        }
+    }
+    public void stopRemoteUpdate() {
+        if (autoUpdateRemote != null) {
+            autoUpdateRemote.stop = true;
+            LCCP.logger.debug("Stopped autoRemoteUpdateTask " + autoUpdateRemote + " !");
+            autoUpdateRemote = null;
+        }
     }
 }

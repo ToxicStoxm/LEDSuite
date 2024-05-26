@@ -16,6 +16,7 @@ public final class Paths {
         public static final String SELECTION_DIR = "Default-Selection-Dir";
         public static final String AUTO_UPDATE_REMOTE = "Auto-Update-Remote";
         public static final String DISPLAY_STATUS_BAR = "Display-Status-Bar";
+        public static final String AUTO_UPDATE_REMOTE_TICK = "Auto-Update-Remote-Tick";
     }
     public static class Server_Config {
         public static final String BRIGHTNESS = "LED-Brightness";

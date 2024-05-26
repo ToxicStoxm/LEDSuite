@@ -1,8 +1,6 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.event_handling.EventHandler;
-import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Paths;
 import org.gnome.adw.*;
@@ -19,10 +17,13 @@ import org.gnome.pango.*;
 public class Window extends ApplicationWindow implements EventListener {
     public Banner status = new Banner("");
     private boolean statusBarCurrentState = false;
+    private boolean autoUpdate = false;
     public Window(Application app) {
         super(app);
         this.setTitle(LCCP.settings.getWindowTitle());
         this.setDefaultSize(LCCP.settings.getWindowDefWidth(), LCCP.settings.getWindowDefHeight());
+
+        setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
 
         var box = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
@@ -240,11 +241,12 @@ public class Window extends ApplicationWindow implements EventListener {
             long lastexec = System.currentTimeMillis() - 1001;
             while (true) {
                 if (stop) return;
-                if (System.currentTimeMillis() - lastexec >= 1000) {
+                long current = System.currentTimeMillis();
+                if (current - lastexec >= 1000) {
                     if (!status.getRevealed()) return;
                     if (stop) return;
                     status.setTitle("LED-Cube-Status: " + getStatus());
-                    lastexec = System.currentTimeMillis();
+                    lastexec = current;
                 }
             }
         }
@@ -274,5 +276,17 @@ public class Window extends ApplicationWindow implements EventListener {
             sD = new SettingsDialog();
         }
         return sD;
+    }
+    public boolean isSettingsDialogVisible() {
+        return sD != null;
+    }
+    public void setAutoUpdate(boolean active) {
+        LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
+        if (!autoUpdate && active) {
+            if (isSettingsDialogVisible()) getSettingsDialog().startRemoteUpdate();
+        } else if (autoUpdate && !active) {
+            if (isSettingsDialogVisible()) getSettingsDialog().stopRemoteUpdate();
+        }
+        autoUpdate = active;
     }
 }

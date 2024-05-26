@@ -27,5 +27,8 @@ Default-Selection-Dir: %user.home%
 # If the app should try to automatically update remote settings after changes were detected
 # If set to false the user needs to manually press sync settings button
 Auto-Update-Remote: false
+# Time interval between sending update packages to cube
+# Value in seconds
+Auto-Update-Remote-Tick: 1.5
 # If the app should display a short form status bar on the main app window
 Display-Status-Bar: false

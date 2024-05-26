@@ -30,6 +30,7 @@ public class LocalSettings extends Settings {
     private String selectionDir = System.getProperty("user.home");
     private boolean AutoUpdateRemote = false;
     private boolean DisplayStatusBar = false;
+    private double AutoUpdateRemoteTick = 1.5;
 
     private LocalSettings backup;
 
@@ -74,14 +75,21 @@ public class LocalSettings extends Settings {
                 this.WindowDefHeight = config.getInt(Paths.Config.WINDOW_DEFAULT_HEIGHT);
                 this.WindowDefWidth = config.getInt(Paths.Config.WINDOW_DEFAULT_WIDTH);
             } catch (ConversionException e) {
-                LCCP.logger.error("Error while parsing Window-Initial-Height and Window-Initial-Width! Not a valid Number!");
+                LCCP.logger.error("Error while parsing Window-Default-Height and Window-Default-Width! Not a valid Number!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
             try {
                 this.LogLevel = config.getInt(Paths.Config.LOG_LEVEL);
             } catch (ConversionException e) {
-                LCCP.logger.error("Error while parsing Window-Spawn-X and Window-Spawn-Y! Not a valid Number!");
+                LCCP.logger.error("Error while parsing Log-Level! Not a valid Number!");
+                LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+
+            try {
+                this.AutoUpdateRemoteTick = config.getDouble(Paths.Config.AUTO_UPDATE_REMOTE_TICK);
+            } catch (ConversionException e) {
+                LCCP.logger.error("Error while parsing Auto-Update-Remote-Tick! Not a valid Number!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
@@ -99,8 +107,6 @@ public class LocalSettings extends Settings {
             LCCP.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
             LCCP.logger.warn("Program halted to prevent any further errors!");
             LCCP.logger.warn("Please delete the old config file from your .config folder and restart the application!");
-            //Main.logger.error_popup("Error while parsing config! Settings / values missing! Your probably using an old config file!");
-            //Main.logger.warn_popup("Please delete the old config file from your .config folder and restart the application!");
             LCCP.exit(0);
         }
     }
@@ -134,6 +140,7 @@ public class LocalSettings extends Settings {
         this.selectionDir = settings.getSelectionDir();
         this.AutoUpdateRemote = settings.AutoUpdateRemote;
         this.DisplayStatusBar = settings.DisplayStatusBar;
+        this.AutoUpdateRemoteTick = settings.AutoUpdateRemoteTick;
         LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         LCCP.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
@@ -178,6 +185,7 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.SELECTION_DIR, selectionDir);
             conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
             conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
+            conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
             // saving settings
             builder.save();
         } catch (ConfigurationException e)  {
@@ -235,6 +243,11 @@ public class LocalSettings extends Settings {
         reload("DisplayStatusBar -> " + displayStatusBar);
     }
 
+    public void setAutoUpdateRemoteTick(double autoUpdateRemoteTick) {
+        AutoUpdateRemoteTick = autoUpdateRemoteTick;
+        reload("AutoUpdateRemoteTick -> " + autoUpdateRemoteTick);
+    }
+
     // used to check if current settings equal another settings class
     @Override
     public boolean equals(Object obj) {
@@ -252,13 +265,14 @@ public class LocalSettings extends Settings {
                 AutoUpdateRemote == other.AutoUpdateRemote &&
                 DisplayStatusBar == other.DisplayStatusBar &&
                 Objects.equals(selectionDir, other.selectionDir) &&
-                Objects.equals(WindowTitle, other.WindowTitle);
+                Objects.equals(WindowTitle, other.WindowTitle) &&
+                Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
     }
 
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar);
+        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar, AutoUpdateRemoteTick);
     }
 
 }

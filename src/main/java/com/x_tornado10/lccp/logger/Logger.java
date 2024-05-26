@@ -104,12 +104,14 @@ public class Logger {
         ERROR() {
             @Override
             public boolean isEnabled() {
+                LCCP.sysBeep();
                 return currentLogLevel() >= 2;
             }
         },
         FATAL() {
             @Override
             public boolean isEnabled() {
+                LCCP.sysBeep();
                 return currentLogLevel() >= 1;
             }
         },
@@ -120,7 +122,7 @@ public class Logger {
             }
         };
         int currentLogLevel() {
-            return 5;
+            return LCCP.settings.getLogLevel();
         }
     }
 }

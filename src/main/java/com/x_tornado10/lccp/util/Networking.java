@@ -3,7 +3,9 @@ package com.x_tornado10.lccp.util;
 import com.x_tornado10.lccp.LCCP;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -12,8 +14,15 @@ public class Networking {
     // validate an IP4 address
     public static boolean isValidIP(final String ip) {
         String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-
         return ip.matches(PATTERN);
+    }
+    public static String getValidIP(String ip) {
+        if (isValidIP(ip)) return ip;
+        try {
+            return InetAddress.getByName(ip).getHostAddress();
+        } catch (UnknownHostException e) {
+            return "";
+        }
     }
     // validate Port number
     public static boolean isValidPORT(final String port) {

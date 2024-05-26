@@ -1,15 +1,18 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
-import io.github.jwharm.javagi.gobject.SignalConnection;
+import com.x_tornado10.lccp.util.Networking;
 import org.gnome.adw.*;
-import org.gnome.gtk.Widget;
+import org.gnome.adw.ApplicationWindow;
+import org.gnome.gdk.Cursor;
+import org.gnome.gtk.*;
 
 
 public class SettingsDialog extends PreferencesDialog {
     private final Boolean[] temp;
     private double prev1 = 0.0;
     private AutoUpdateRemote autoUpdateRemote = null;
+    private PreferencesGroup serverSettings = null;
 
     public SettingsDialog() {
         setTitle("Settings");
@@ -24,8 +27,8 @@ public class SettingsDialog extends PreferencesDialog {
         var v0_0_1 = new PreferencesPage();
         v0_0_1.setTitle(LCCP.version);
 
-        var windowSettings = new PreferencesGroup();
-        windowSettings.setTitle("Window");
+        var generalSettings = new PreferencesGroup();
+        generalSettings.setTitle("General Settings");
 
         var statusBar = SwitchRow.builder()
                 .setActive(LCCP.mainWindow.isBannerVisible())
@@ -40,12 +43,8 @@ public class SettingsDialog extends PreferencesDialog {
                 temp[1] = active;
             }
         });
-        windowSettings.add(statusBar);
 
-        v0_0_1.add(windowSettings);
-
-        var generalSettings = new PreferencesGroup();
-        generalSettings.setTitle("General Settings");
+        generalSettings.add(statusBar);
 
         var autoUpdateRemoteToggle = SwitchRow.builder()
                 .setActive(LCCP.settings.isAutoUpdateRemote())
@@ -65,7 +64,7 @@ public class SettingsDialog extends PreferencesDialog {
         v0_0_1.add(generalSettings);
 
 
-        var serverSettings = new PreferencesGroup();
+        serverSettings = new PreferencesGroup();
         serverSettings.setTitle("Cube Settings");
 
         var brightness = SpinRow.withRange(0, 100, 1);
@@ -88,11 +87,61 @@ public class SettingsDialog extends PreferencesDialog {
         this.setCanClose(true);
         onClosed(this::stopRemoteUpdate);
         serverSettings.add(brightness);
+
+        var ipv4 = EntryRow.builder().setTitle("IPv4").build();
+        ipv4.setShowApplyButton(true);
+        ipv4.onApply(() -> {
+            String ip = Networking.getValidIP(ipv4.getText());
+            LCCP.logger.debug(ip);
+            if (!ip.isBlank()) {
+                LCCP.server_settings.setIPv4(ip);
+            } else {
+                LCCP.sysBeep();
+                LCCP.mainWindow.toastOverlay.addToast(
+                        Toast.builder()
+                                .setTitle("Connection failed! Invalid Ipv4 / Hostname.")
+                                .setTimeout(Adw.DURATION_INFINITE)
+                                .build()
+                );
+            }
+        });
+        serverSettings.add(ipv4);
+
+        if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
+
         v0_0_1.add(serverSettings);
         return v0_0_1;
     }
 
-    private class AutoUpdateRemote extends Thread {
+    private ActionRow manualRemoteApplySwitchRow = null;
+    private ActionRow getManualRemoteApplySwitchRow() {
+        if (manualRemoteApplySwitchRow == null) {
+            manualRemoteApplySwitchRow = new ActionRow();
+            manualRemoteApplySwitchRow.setTitle("Apply");
+
+            var applyButton = new Button();
+            applyButton.setSizeRequest(50, 50);
+            applyButton.setLabel("Apply");
+            applyButton.setIconName("emblem-synchronizing-symbolic");
+            manualRemoteApplySwitchRow.addSuffix(applyButton);
+            manualRemoteApplySwitchRow.setActivatableWidget(applyButton);
+            applyButton.onClicked(() -> {
+                LCCP.logger.debug("Apply remote request through manual button press");
+                LCCP.updateRemoteConfig();
+            });
+        }
+        return manualRemoteApplySwitchRow;
+    }
+    public void addManualRemoteApplySwitch() {
+
+        serverSettings.add(getManualRemoteApplySwitchRow());
+    }
+
+    public void removeManualRemoteApplySwitch() {
+        serverSettings.remove(getManualRemoteApplySwitchRow());
+    }
+
+    private static class AutoUpdateRemote extends Thread {
 
         public AutoUpdateRemote() {
             setName("AutoUpdateRemoteTask_" + getName());

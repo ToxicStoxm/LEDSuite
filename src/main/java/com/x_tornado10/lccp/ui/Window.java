@@ -18,6 +18,7 @@ public class Window extends ApplicationWindow implements EventListener {
     public Banner status = new Banner("");
     private boolean statusBarCurrentState = false;
     private boolean autoUpdate = false;
+    public ToastOverlay toastOverlay = null;
     public Window(Application app) {
         super(app);
         this.setTitle(LCCP.settings.getWindowTitle());
@@ -32,7 +33,7 @@ public class Window extends ApplicationWindow implements EventListener {
         var headerBar = new HeaderBar();
 
         var sbutton = new ToggleButton();
-        var toastOverlay = new ToastOverlay();
+        toastOverlay = new ToastOverlay();
         sbutton.setIconName("system-search-symbolic");
         sbutton.onToggled(() -> {
             var wipToast = new Toast("Work in progress!");
@@ -284,7 +285,9 @@ public class Window extends ApplicationWindow implements EventListener {
         LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
         if (!autoUpdate && active) {
             if (isSettingsDialogVisible()) getSettingsDialog().startRemoteUpdate();
+            getSettingsDialog().removeManualRemoteApplySwitch();
         } else if (autoUpdate && !active) {
+            getSettingsDialog().addManualRemoteApplySwitch();
             if (isSettingsDialogVisible()) getSettingsDialog().stopRemoteUpdate();
         }
         autoUpdate = active;

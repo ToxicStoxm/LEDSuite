@@ -245,6 +245,6 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onShutdown(Events.Shutdown e) {
         logger.debug("Fulfilling shutdown request: " + e.message());
-        logger.debug("New log file was saved to: '" + Paths.logFile + "'");
+        logger.info("New log file was saved to: '" + Paths.logFile + "'");
     }
 }

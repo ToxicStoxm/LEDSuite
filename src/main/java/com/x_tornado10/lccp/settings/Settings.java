@@ -25,8 +25,8 @@ public class Settings implements EventListener {
     public void save() {}
     public void copy(Settings settings) {
     }
-    public void reload() {
-        LCCP.eventManager.fireEvent(new Events.Reload(getName() + " changed!"));
+    public void reload(String changes) {
+        LCCP.eventManager.fireEvent(new Events.Reload(getName() + " changed! Changes: " + changes));
     }
     public Settings cloneS() {
         Settings settings1 = new Settings();

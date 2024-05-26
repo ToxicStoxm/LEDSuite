@@ -5,7 +5,6 @@ import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.logger.Logger;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
-import com.x_tornado10.lccp.settings.Settings;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
@@ -14,7 +13,6 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
-import org.gnome.pango.Pango;
 
 import java.io.*;
 import java.util.Properties;
@@ -229,5 +227,13 @@ public class LCCP implements EventListener {
         logger.debug("Fulfilling reload request: " + e.message());
         mainWindow.setTitle(settings.getWindowTitle());
         mainWindow.setResizable(settings.isWindowResizeable());
+    }
+    @EventHandler
+    public void onStartup(Events.Startup e) {
+        logger.debug("Fulfilling startup request: " + e.message());
+    }
+    @EventHandler
+    public void onSave(Events.Save e) {
+        logger.debug("Fulfilling save request: " + e.message());
     }
 }

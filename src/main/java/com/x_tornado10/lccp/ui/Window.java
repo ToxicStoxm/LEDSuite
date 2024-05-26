@@ -155,7 +155,7 @@ public class Window extends ApplicationWindow implements EventListener {
         box.append(headerBar);
 
         box.append(status);
-        setBannerVisible(false);
+        setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
         var mainContent = new Box(Orientation.VERTICAL, 0);
         var northBox = new Box(Orientation.VERTICAL, 0);
@@ -262,6 +262,7 @@ public class Window extends ApplicationWindow implements EventListener {
             statusBarCurrentState = false;
         }
         status.setRevealed(visible);
+        if (LCCP.mainWindow != null) LCCP.settings.setDisplayStatusBar(visible);
         LCCP.logger.debug("---------------------------------------------------------------");
     }
     public boolean isBannerVisible() {

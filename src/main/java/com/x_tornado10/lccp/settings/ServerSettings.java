@@ -155,9 +155,10 @@ public class ServerSettings extends Settings{
 
         // writing config settings to file
         try {
-            builder.getConfiguration().setProperty(Paths.Server_Config.BRIGHTNESS, Math.round(LED_Brightness * 100));
-            builder.getConfiguration().setProperty(Paths.Server_Config.IPV4, IPv4);
-            builder.getConfiguration().setProperty(Paths.Server_Config.PORT, Port);
+            FileBasedConfiguration conf = builder.getConfiguration();
+            conf.setProperty(Paths.Server_Config.BRIGHTNESS, Math.round(LED_Brightness * 100));
+            conf.setProperty(Paths.Server_Config.IPV4, IPv4);
+            conf.setProperty(Paths.Server_Config.PORT, Port);
             // saving settings
             builder.save();
         } catch (ConfigurationException e)  {

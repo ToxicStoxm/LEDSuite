@@ -24,3 +24,8 @@ Log-Level: 4
 # Example: last picked animation -> /example/directory/example-animation.mp4 will open /example/directory/ the next time you select an animation
 # %user.home% refers to the users home directory
 Default-Selection-Dir: %user.home%
+# If the app should try to automatically update remote settings after changes were detected
+# If set to false the user needs to manually press sync settings button
+Auto-Update-Remote: false
+# If the app should display a short form status bar on the main app window
+Display-Status-Bar: false

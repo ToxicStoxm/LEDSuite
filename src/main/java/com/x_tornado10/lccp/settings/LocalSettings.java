@@ -28,6 +28,8 @@ public class LocalSettings extends Settings {
     private int WindowDefHeight = 720;
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
+    private boolean AutoUpdateRemote = false;
+    private boolean DisplayStatusBar = false;
 
     private LocalSettings backup;
 
@@ -89,6 +91,9 @@ public class LocalSettings extends Settings {
                 System.getProperty(temp);
             } else this.selectionDir = dir;
 
+            AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
+            DisplayStatusBar = config.getBoolean(Paths.Config.DISPLAY_STATUS_BAR);
+
             LCCP.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e){
             LCCP.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
@@ -127,6 +132,8 @@ public class LocalSettings extends Settings {
         this.WindowDefHeight = settings.getWindowDefHeight();
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
+        this.AutoUpdateRemote = settings.AutoUpdateRemote;
+        this.DisplayStatusBar = settings.DisplayStatusBar;
         LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         LCCP.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
@@ -162,12 +169,15 @@ public class LocalSettings extends Settings {
 
         // writing config settings to file
         try {
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_TITLE, WindowTitle);
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_RESIZABLE, WindowResizeable);
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
-            builder.getConfiguration().setProperty(Paths.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
-            builder.getConfiguration().setProperty(Paths.Config.LOG_LEVEL, LogLevel);
-            builder.getConfiguration().setProperty(Paths.Config.SELECTION_DIR, selectionDir);
+            FileBasedConfiguration conf = builder.getConfiguration();
+            conf.setProperty(Paths.Config.WINDOW_TITLE, WindowTitle);
+            conf.setProperty(Paths.Config.WINDOW_RESIZABLE, WindowResizeable);
+            conf.setProperty(Paths.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
+            conf.setProperty(Paths.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
+            conf.setProperty(Paths.Config.LOG_LEVEL, LogLevel);
+            conf.setProperty(Paths.Config.SELECTION_DIR, selectionDir);
+            conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
+            conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             // saving settings
             builder.save();
         } catch (ConfigurationException e)  {
@@ -197,22 +207,32 @@ public class LocalSettings extends Settings {
 
     public void setWindowTitle(String windowTitle) {
         WindowTitle = windowTitle;
-        reload();
+        reload("WindowTitle -> " + windowTitle);
     }
 
     public void setWindowResizeable(boolean windowResizeable) {
         WindowResizeable = windowResizeable;
-        reload();
+        reload("WindowResizeable -> " + windowResizeable);
     }
 
     public void setLogLevel(int logLevel) {
         LogLevel = logLevel;
-        reload();
+        reload("LogLevel -> " + logLevel);
     }
 
     public void setSelectionDir(String selectionDir) {
         this.selectionDir = selectionDir;
-        reload();
+        reload("selectionDir -> " + selectionDir);
+    }
+
+    public void setAutoUpdateRemote(boolean autoUpdateRemote) {
+        AutoUpdateRemote = autoUpdateRemote;
+        reload("AutoUpdateRemote -> " + autoUpdateRemote);
+    }
+
+    public void setDisplayStatusBar(boolean displayStatusBar) {
+        DisplayStatusBar = displayStatusBar;
+        reload("DisplayStatusBar -> " + displayStatusBar);
     }
 
     // used to check if current settings equal another settings class
@@ -229,6 +249,8 @@ public class LocalSettings extends Settings {
                 WindowDefWidth == other.WindowDefWidth &&
                 WindowDefHeight == other.WindowDefHeight &&
                 LogLevel == other.LogLevel &&
+                AutoUpdateRemote == other.AutoUpdateRemote &&
+                DisplayStatusBar == other.DisplayStatusBar &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(WindowTitle, other.WindowTitle);
     }
@@ -236,7 +258,7 @@ public class LocalSettings extends Settings {
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir);
+        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar);
     }
 
 }

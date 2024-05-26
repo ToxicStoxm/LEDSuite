@@ -12,10 +12,10 @@ public class EventManager {
     private final Map<Class<?>, List<RegisteredListener>> listeners = new HashMap<>();
 
     public void registerEvents(EventListener eventListener) {
-        LCCP.logger.debug(eventListener.toString());
+        //LCCP.logger.debug(eventListener.toString());
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventHandler.class) && method.getParameterCount() == 1) {
-                LCCP.logger.debug(method.getName());
+                LCCP.logger.debug("Registering listener method: " + method.getName() + " from " + eventListener);
                 Class<?> eventType = method.getParameterTypes()[0];
                 listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(new RegisteredListener(eventListener, method));
             }
@@ -23,6 +23,7 @@ public class EventManager {
     }
 
     public void fireEvent(Object event) {
+        LCCP.logger.debug("Firing event: " + event);
         List<RegisteredListener> registeredListeners = listeners.get(event.getClass());
         if (registeredListeners != null) {
             for (RegisteredListener registeredListener : registeredListeners) {

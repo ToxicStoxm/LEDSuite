@@ -14,6 +14,8 @@ public final class Paths {
         public static final String WINDOW_DEFAULT_HEIGHT = "Window-Default-Height";
         public static final String LOG_LEVEL = "Log-Level";
         public static final String SELECTION_DIR = "Default-Selection-Dir";
+        public static final String AUTO_UPDATE_REMOTE = "Auto-Update-Remote";
+        public static final String DISPLAY_STATUS_BAR = "Display-Status-Bar";
     }
     public static class Server_Config {
         public static final String BRIGHTNESS = "LED-Brightness";

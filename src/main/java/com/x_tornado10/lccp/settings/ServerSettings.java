@@ -7,6 +7,7 @@ import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -28,7 +29,7 @@ public class ServerSettings extends Settings{
     private String name = "Server-Config";
     private Type type = Type.SERVER;
     private int Port = 12345;
-    private String IPv4 = "127.0.0.1";
+    private String IPv4 = "localhost";
     private float LED_Brightness = 0.20F;
 
     private ServerSettings backup;
@@ -86,27 +87,10 @@ public class ServerSettings extends Settings{
 
     // loading settings from config file
     @Override
-    public void load(FileBasedConfiguration config) {
+    public void load(YAMLConfiguration config) {
         // loading settings
         try {
-            String tempIPv4 = config.getString(Paths.Server_Config.IPV4);
-            // check if user specified an IPv4 address
-            if (!Networking.isValidIP(tempIPv4)) {
-                // check if the domain or host-name provided by the user is valid using a new thread to offload work from the main thread
-                new Thread(() -> {
-                    try {
-                        // check host-name or domain using java.net and getting IPv4 if possible
-                        LCCP.server_settings.setIPv4(String.valueOf(Inet4Address.getByName(tempIPv4)).split("/")[1].trim());
-                    } catch (UnknownHostException e) {
-                        LCCP.logger.error("Error while parsing Server-IP! Invalid IPv4 address or host name!");
-                        LCCP.logger.warn("Invalid IPv4! Please restart the application!");
-                        LCCP.logger.warn("IPv4 address does not match the following format: 0.0.0.0 - 255.255.255.255 or the provided host-name is invalid");
-                        LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
-                    }
-                }).start();
-            } else {
-                this.IPv4 = tempIPv4;
-            }
+            this.IPv4 = config.getString(Paths.Server_Config.IPV4);
             int tempPort = config.getInt(Paths.Server_Config.PORT);
             // checking if provided port is in the valid port range
             if (!Networking.isValidPORT(String.valueOf(tempPort))) {

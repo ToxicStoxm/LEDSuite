@@ -23,6 +23,7 @@ public final class Paths {
         public static final String IPV4 = "Server-IP";
         public static final String PORT = "Server-Port";
     }
+
     public static class Links {
         public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel";
     }

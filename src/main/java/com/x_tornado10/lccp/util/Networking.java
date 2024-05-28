@@ -16,13 +16,11 @@ public class Networking {
         String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
         return ip.matches(PATTERN);
     }
-    public static String getValidIP(String ip) {
+    public static String getValidIP(String ip, boolean ipify) throws UnknownHostException {
         if (isValidIP(ip)) return ip;
-        try {
-            return InetAddress.getByName(ip).getHostAddress();
-        } catch (UnknownHostException e) {
-            return "";
-        }
+        String ipv4 = InetAddress.getByName(ip).getHostAddress();
+        LCCP.logger.debug(ipv4);
+        return ipify ? ipv4 : ip;
     }
     // validate Port number
     public static boolean isValidPORT(final String port) {

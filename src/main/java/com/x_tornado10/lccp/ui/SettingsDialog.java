@@ -3,9 +3,9 @@ package com.x_tornado10.lccp.ui;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Networking;
 import org.gnome.adw.*;
-import org.gnome.adw.ApplicationWindow;
-import org.gnome.gdk.Cursor;
 import org.gnome.gtk.*;
+
+import java.net.UnknownHostException;
 
 
 public class SettingsDialog extends PreferencesDialog {
@@ -88,22 +88,44 @@ public class SettingsDialog extends PreferencesDialog {
         onClosed(this::stopRemoteUpdate);
         serverSettings.add(brightness);
 
+        var spinner = new Spinner();
+
         var ipv4 = EntryRow.builder().setTitle("IPv4").build();
         ipv4.setShowApplyButton(true);
+        ipv4.setText(LCCP.server_settings.getIPv4());
         ipv4.onApply(() -> {
-            String ip = Networking.getValidIP(ipv4.getText());
-            LCCP.logger.debug(ip);
-            if (!ip.isBlank()) {
-                LCCP.server_settings.setIPv4(ip);
-            } else {
-                LCCP.sysBeep();
-                LCCP.mainWindow.toastOverlay.addToast(
-                        Toast.builder()
-                                .setTitle("Connection failed! Invalid Ipv4 / Hostname.")
-                                .setTimeout(Adw.DURATION_INFINITE)
-                                .build()
-                );
-            }
+            Thread f = new Thread(() -> {
+               spinner.setSpinning(false);
+               ipv4.remove(spinner);
+                ipv4.setEditable(true);
+            });
+
+            Thread t = new Thread(() -> {
+                String ip = "";
+                LCCP.logger.debug(ip);
+                try {
+
+                    ip = Networking.getValidIP(ipv4.getText(), false);
+                } catch (UnknownHostException e) {
+                    LCCP.sysBeep();
+                    this.addToast(
+                            Toast.builder()
+                                    .setTitle("Connection failed! Invalid Ipv4 / Hostname.")
+                                    .setTimeout(Adw.DURATION_INFINITE)
+                                    .build()
+                    );
+                    ip = null;
+                }
+                if (ip != null) {
+                    LCCP.logger.debug(ip);
+                    LCCP.server_settings.setIPv4(ip);
+                }
+                f.start();
+            });
+            ipv4.setEditable(false);
+            ipv4.addSuffix(spinner);
+            spinner.setSpinning(true);
+            t.start();
         });
         serverSettings.add(ipv4);
 

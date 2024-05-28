@@ -3,6 +3,12 @@ package com.x_tornado10.lccp.ui;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Paths;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
@@ -12,6 +18,9 @@ import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
 import org.gnome.gtk.*;
 import org.gnome.pango.*;
+
+import java.io.File;
+import java.util.Arrays;
 
 
 public class Window extends ApplicationWindow implements EventListener {
@@ -141,7 +150,38 @@ public class Window extends ApplicationWindow implements EventListener {
         listBox.onRowActivated(e -> {
             if (e == null) return;
             switch (e.getName()) {
-                case "status" -> new StatusWindow().present();
+                case "status" -> {
+                    new StatusWindow().present();
+                    /*
+                    //File file1 = new File(Paths.server_config);
+                    try {
+                        // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/server_config.yaml)
+                        // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
+                        YAMLConfiguration yamlConfig = new YAMLConfiguration();
+
+                        // Load the YAML file
+                        FileHandler fileHandler = new FileHandler(yamlConfig);
+                        fileHandler.load(Paths.server_config);
+
+                        // Access the nested configuration
+                        //Configuration subConfig = yamlConfig.configurationAt("test");
+
+                        // Retrieve the value
+
+                        String value = (String) yamlConfig.getList("test").get(1);
+                        String value1 = (String) yamlConfig.getList("test").get(2);
+
+
+                        LCCP.logger.fatal(yamlConfig.getString("test1.test2.test3.test4.test5"));
+                        // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
+                    } catch (ConfigurationException ex) {
+                        // if any errors occur during config parsing an error is displayed in the console
+                        // the program is halted to prevent any further unwanted behavior
+                        ex.printStackTrace();
+                    }
+                     */
+
+                }
                 case "settings" -> getSettingsDialog().present(this);
                 case "about" -> getAboutDialog().present(this);
             }

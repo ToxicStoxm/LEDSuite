@@ -4,6 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -63,7 +64,7 @@ public class LocalSettings extends Settings {
     }
     // load the config settings from config.yaml and store them in an instance of this class
     @Override
-    public void load(FileBasedConfiguration config) {
+    public void load(YAMLConfiguration config) {
         LCCP.logger.debug("Loading config values to memory...");
         try {
             this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE);

@@ -9,8 +9,10 @@ import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
@@ -189,15 +191,16 @@ public class LCCP implements EventListener {
     }
 
     public static void loadConfigsFromFile() {
-        File file = new File(Paths.config);
-        File file1 = new File(Paths.server_config);
         try {
             // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/config.yaml)
             // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
-            Configurations configs = new Configurations();
-            FileBasedConfiguration config = configs.properties(file);
+            YAMLConfiguration yamlConfig = new YAMLConfiguration();
+
+            // Load the YAML file
+            FileHandler fileHandler = new FileHandler(yamlConfig);
+            fileHandler.load(Paths.config);
             // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
-            settings.load(config);
+            settings.load(yamlConfig);
         } catch (ConfigurationException e) {
             // if any errors occur during config parsing an error is displayed in the console
             // the program is halted to prevent any further unwanted behavior
@@ -212,10 +215,13 @@ public class LCCP implements EventListener {
         try {
             // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/server_config.yaml)
             // using Apache-Commons-Config (and dependencies like snakeyaml and commons-beanutils)
-            Configurations configs = new Configurations();
-            FileBasedConfiguration server_config = configs.properties(file1);
+            YAMLConfiguration yamlConfig = new YAMLConfiguration();
+
+            // Load the YAML file
+            FileHandler fileHandler = new FileHandler(yamlConfig);
+            fileHandler.load(Paths.server_config);
             // settings are loaded into an instance of the settings class, so they can be used during runtime without any IO-Calls
-            server_settings.load(server_config);
+            server_settings.load(yamlConfig);
         } catch (ConfigurationException e) {
             // if any errors occur during config parsing an error is displayed in the console
             // the program is halted to prevent any further unwanted behavior

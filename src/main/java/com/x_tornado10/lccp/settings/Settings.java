@@ -5,7 +5,7 @@ import com.x_tornado10.lccp.event_handling.EventHandler;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import lombok.*;
-import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ public class Settings implements EventListener {
         UNDEFINED
     }
     public void saveDefaultConfig() throws IOException, NullPointerException {}
-    public void load(FileBasedConfiguration config) {}
+    public void load(YAMLConfiguration config) {}
     public void save() {}
     public void copy(Settings settings) {
     }

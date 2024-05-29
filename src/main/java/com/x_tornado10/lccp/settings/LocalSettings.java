@@ -34,6 +34,7 @@ public class LocalSettings extends Settings {
     private boolean AutoUpdateRemote = false;
     private boolean DisplayStatusBar = false;
     private double AutoUpdateRemoteTick = 1.5;
+    private boolean CheckIPv4 = true;
 
     private LocalSettings backup;
 
@@ -105,6 +106,7 @@ public class LocalSettings extends Settings {
 
             AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
             DisplayStatusBar = config.getBoolean(Paths.Config.DISPLAY_STATUS_BAR);
+            CheckIPv4 = config.getBoolean(Paths.Config.CHECK_IPV4);
 
             LCCP.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e){
@@ -145,6 +147,7 @@ public class LocalSettings extends Settings {
         this.AutoUpdateRemote = settings.AutoUpdateRemote;
         this.DisplayStatusBar = settings.DisplayStatusBar;
         this.AutoUpdateRemoteTick = settings.AutoUpdateRemoteTick;
+        this.CheckIPv4 = settings.CheckIPv4;
         LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         LCCP.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
@@ -183,6 +186,7 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
             conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
+            conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
             // saving settings
             fH.save(Paths.config);
         } catch (ConfigurationException e)  {
@@ -261,6 +265,7 @@ public class LocalSettings extends Settings {
                 LogLevel == other.LogLevel &&
                 AutoUpdateRemote == other.AutoUpdateRemote &&
                 DisplayStatusBar == other.DisplayStatusBar &&
+                CheckIPv4 == other.CheckIPv4 &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(WindowTitle, other.WindowTitle) &&
                 Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
@@ -269,7 +274,7 @@ public class LocalSettings extends Settings {
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar, AutoUpdateRemoteTick);
+        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar, AutoUpdateRemoteTick, CheckIPv4);
     }
 
 }

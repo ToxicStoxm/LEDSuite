@@ -5,6 +5,7 @@ import com.x_tornado10.lccp.util.Networking;
 import org.gnome.adw.*;
 import org.gnome.gtk.*;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 
@@ -94,37 +95,41 @@ public class SettingsDialog extends PreferencesDialog {
         ipv4.setShowApplyButton(true);
         ipv4.setText(LCCP.server_settings.getIPv4());
         ipv4.onApply(() -> {
-            Thread f = new Thread(() -> {
-               spinner.setSpinning(false);
-               ipv4.remove(spinner);
-               ipv4.setEditable(true);
-            });
+            if (!LCCP.settings.isCheckIPv4()) {
+                LCCP.server_settings.setIPv4(ipv4.getText());
+            } else {
+                Thread f = new Thread(() -> {
+                    spinner.setSpinning(false);
+                    ipv4.remove(spinner);
+                    ipv4.setEditable(true);
+                });
 
-            Thread t = new Thread(() -> {
-                String ip = "";
-                String text = ipv4.getText();
-                LCCP.logger.debug(ip);
-                try {
-                    ip = Networking.getValidIP(text, false);
-                } catch (UnknownHostException e) {
-                    LCCP.sysBeep();
-                    this.addToast(
-                            Toast.builder()
-                                    .setTitle("Connection failed! '" + text + "' is not reachable!")
-                                    .setTimeout(10)
-                                    .build()
-                    );
-                    ip = null;
-                }
-                if (ip != null) {
-                    LCCP.server_settings.setIPv4(ip);
-                }
-                f.start();
-            });
-            ipv4.setEditable(false);
-            ipv4.addSuffix(spinner);
-            spinner.setSpinning(true);
-            t.start();
+                Thread t = new Thread(() -> {
+                    String ip = "";
+                    String text = ipv4.getText();
+                    LCCP.logger.debug(ip);
+                    try {
+                        ip = Networking.getValidIP(text, false);
+                    } catch (IOException e) {
+                        LCCP.sysBeep();
+                        this.addToast(
+                                Toast.builder()
+                                        .setTitle("Server unreachable!")
+                                        .setTimeout(10)
+                                        .build()
+                        );
+                        ip = null;
+                    }
+                    if (ip != null) {
+                        LCCP.server_settings.setIPv4(ip);
+                    }
+                    f.start();
+                });
+                ipv4.setEditable(false);
+                ipv4.addSuffix(spinner);
+                spinner.setSpinning(true);
+                t.start();
+            }
         });
         serverSettings.add(ipv4);
 

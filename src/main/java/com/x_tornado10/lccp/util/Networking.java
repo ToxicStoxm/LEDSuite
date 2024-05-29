@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 public class Networking {
@@ -16,20 +18,75 @@ public class Networking {
         String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
         return ip.matches(PATTERN);
     }
+
+    private static boolean ping(String ip, int timeout) {
+        LCCP.logger.debug("Received ping request for '" + ip + "'" + " timeout: '"+ timeout + "'");
+        try {
+            LCCP.logger.debug("Formatting ping command...");
+            List<String> command = new ArrayList<>();
+            command.add("ping");
+            command.add("-W" + timeout);
+            command.add("-c1");
+            command.add(ip);
+            LCCP.logger.debug("Formatting complete! Command: " + command);
+
+            LCCP.logger.debug("Creating new process...");
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            Process process = processBuilder.start();
+            LCCP.logger.debug("Created and started new process!");
+
+            LCCP.logger.debug("Command output: ");
+            LCCP.logger.debug("------------------- PING -------------------");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            List<String> output = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                LCCP.logger.debug(line);
+                output.add(line);
+            }
+            LCCP.logger.debug("--------------------------------------------");
+            process.waitFor();
+            for (String s : output) {
+                if (s.toLowerCase().contains("64 bytes")) {
+
+                    LCCP.logger.debug("Ping was successful!");
+                    LCCP.logger.debug("Command complete.");
+                    return true;
+                }
+            }
+
+        } catch (IOException | InterruptedException e) {
+            LCCP.logger.debug("Ping failed!");
+            LCCP.logger.debug("Command complete.");
+            return false;
+        }
+        LCCP.logger.debug("Ping failed!");
+        LCCP.logger.debug("Command complete.");
+        return false;
+    }
+
+
+
     // extension of isValidIP with option to return IPv4 or host name
     // exception is thrown to enable custom error handling
-    public static String getValidIP(String ip, boolean ipify) throws UnknownHostException {
+    public static String getValidIP(String ip, boolean ipify) throws IOException {
         LCCP.logger.debug("Fulfilling ping request for: '" + ip + "'");
-        // check if IPv4 is a valid format
-        if (isValidIP(ip)) {
-            LCCP.logger.debug("IPv4 is valid: '" + ip + "'");
-            return ip;
-        }
         String ipv4;
         try {
-            // try to get IPv4 from a host name with ping
-            ipv4 = InetAddress.getByName(ip).getHostAddress();
-        } catch (UnknownHostException e) {
+            InetAddress host;
+            if (isValidIP(ip)) {
+
+                if (!ping(ip, 3)) throw new UnknownHostException("Connection timed out!");
+
+                host = InetAddress.ofLiteral(ip);
+            } else {
+                // try to get IPv4 from a host name with ping
+                host = InetAddress.getByName(ip);
+            }
+
+            ipv4 = host.getHostAddress();
+        } catch (IOException e) {
             // some standard error handling
             LCCP.logger.debug("Ping failed!");
             LCCP.logger.debug(e.getMessage());

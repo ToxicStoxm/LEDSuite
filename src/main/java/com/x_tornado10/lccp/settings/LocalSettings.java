@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -10,6 +11,7 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
+import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.URL;
@@ -21,8 +23,8 @@ import java.util.Objects;
 @Getter
 public class LocalSettings extends Settings {
     // default settings
-    private Type type = Type.LOCAL;
-    private String name = "Main-Config";
+    private final Type type = Type.LOCAL;
+    private final String name = "Main-Config";
     private String WindowTitle = "LED-Cube-Control-Panel";
     private boolean WindowResizeable = true;
     private int WindowDefWidth = 1280;
@@ -40,7 +42,8 @@ public class LocalSettings extends Settings {
     public void saveDefaultConfig() throws IOException, NullPointerException {
         LCCP.logger.debug("Loading default config values...");
         LCCP.logger.debug("Note: this only happens if config.yaml does not exist or couldn't be found!");
-        LCCP.logger.debug("If your settings don't work and this message is shown please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
+        LCCP.logger.debug("If your settings don't work and this message is shown");
+        LCCP.logger.debug(Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("config.yaml");
         // if the path is null or not found an exception is thrown
@@ -155,29 +158,22 @@ public class LocalSettings extends Settings {
             return;
         }
         LCCP.logger.debug("Saving " + name + " values to config.yaml...");
+
         // loading config file
-        File file = new File(Paths.config);
-        Configurations configs = new Configurations();
-        FileBasedConfiguration config;
-        Parameters parameters = new Parameters();
-        // loading config file to memory
+        YAMLConfiguration conf;
+        FileHandler fH;
         try {
-            config = configs.properties(file);
+            conf = new YAMLConfiguration();
+            fH = new FileHandler(conf);
+            fH.load(Paths.config);
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing config values to config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             return;
         }
 
-        // initializing new config builder
-        FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
-                new FileBasedConfigurationBuilder<FileBasedConfiguration>(config.getClass())
-                        .configure(parameters.fileBased()
-                                .setFile(file));
-
         // writing config settings to file
         try {
-            FileBasedConfiguration conf = builder.getConfiguration();
             conf.setProperty(Paths.Config.WINDOW_TITLE, WindowTitle);
             conf.setProperty(Paths.Config.WINDOW_RESIZABLE, WindowResizeable);
             conf.setProperty(Paths.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
@@ -188,7 +184,7 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
             // saving settings
-            builder.save();
+            fH.save(Paths.config);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");

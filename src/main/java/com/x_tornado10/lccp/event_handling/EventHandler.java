@@ -5,4 +5,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventHandler {
+    // annotation for EventHandler
+    // every listener method is required to use this annotation
 }

@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.logger;
+package com.x_tornado10.lccp.util.logging;
 
 public interface LogLevel {
     boolean isEnabled();

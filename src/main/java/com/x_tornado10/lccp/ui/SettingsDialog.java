@@ -97,27 +97,26 @@ public class SettingsDialog extends PreferencesDialog {
             Thread f = new Thread(() -> {
                spinner.setSpinning(false);
                ipv4.remove(spinner);
-                ipv4.setEditable(true);
+               ipv4.setEditable(true);
             });
 
             Thread t = new Thread(() -> {
                 String ip = "";
+                String text = ipv4.getText();
                 LCCP.logger.debug(ip);
                 try {
-
-                    ip = Networking.getValidIP(ipv4.getText(), false);
+                    ip = Networking.getValidIP(text, false);
                 } catch (UnknownHostException e) {
                     LCCP.sysBeep();
                     this.addToast(
                             Toast.builder()
-                                    .setTitle("Connection failed! Invalid Ipv4 / Hostname.")
-                                    .setTimeout(Adw.DURATION_INFINITE)
+                                    .setTitle("Connection failed! '" + text + "' is not reachable!")
+                                    .setTimeout(10)
                                     .build()
                     );
                     ip = null;
                 }
                 if (ip != null) {
-                    LCCP.logger.debug(ip);
                     LCCP.server_settings.setIPv4(ip);
                 }
                 f.start();

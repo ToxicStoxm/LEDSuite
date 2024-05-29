@@ -11,18 +11,39 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Networking {
-    // validate an IP4 address
+    // validate an IP4 address format
     public static boolean isValidIP(final String ip) {
         String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
         return ip.matches(PATTERN);
     }
+    // extension of isValidIP with option to return IPv4 or host name
+    // exception is thrown to enable custom error handling
     public static String getValidIP(String ip, boolean ipify) throws UnknownHostException {
-        if (isValidIP(ip)) return ip;
-        String ipv4 = InetAddress.getByName(ip).getHostAddress();
-        LCCP.logger.debug(ipv4);
+        LCCP.logger.debug("Fulfilling ping request for: '" + ip + "'");
+        // check if IPv4 is a valid format
+        if (isValidIP(ip)) {
+            LCCP.logger.debug("IPv4 is valid: '" + ip + "'");
+            return ip;
+        }
+        String ipv4;
+        try {
+            // try to get IPv4 from a host name with ping
+            ipv4 = InetAddress.getByName(ip).getHostAddress();
+        } catch (UnknownHostException e) {
+            // some standard error handling
+            LCCP.logger.debug("Ping failed!");
+            LCCP.logger.debug(e.getMessage());
+            LCCP.logger.warn("Invalid host name or IPv4: '" + ip + "'");
+            throw e;
+        }
+        // console output of the result
+        LCCP.logger.debug("Ping success!");
+        LCCP.logger.debug("Host name: '" + ip + "'");
+        LCCP.logger.debug("Detected IPv4: '" + ipv4 + "'");
+        // return the ip or the host name based on the param 'ipify'
         return ipify ? ipv4 : ip;
     }
-    // validate Port number
+    // validate Port number format
     public static boolean isValidPORT(final String port) {
         String PATTERN = "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
 

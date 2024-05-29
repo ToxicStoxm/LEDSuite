@@ -2,15 +2,13 @@ package com.x_tornado10.lccp;
 
 import com.x_tornado10.lccp.event_handling.*;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import com.x_tornado10.lccp.logger.Logger;
+import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
-import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
@@ -204,6 +202,7 @@ public class LCCP implements EventListener {
         } catch (ConfigurationException e) {
             // if any errors occur during config parsing an error is displayed in the console
             // the program is halted to prevent any further unwanted behavior
+            e.printStackTrace();
             LCCP.logger.error("Failed to parse config.yaml!");
             LCCP.logger.warn("Application was halted!");
             LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");

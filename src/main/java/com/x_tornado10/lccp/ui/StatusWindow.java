@@ -5,6 +5,7 @@ import org.gnome.adw.Window;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Orientation;
 
+@Deprecated(since = "v0.0.1", forRemoval = true)
 public class StatusWindow extends Window {
     public StatusWindow() {
         setTitle("LED-Cube Status");

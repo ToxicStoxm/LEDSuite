@@ -1,9 +1,9 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -13,13 +13,13 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
+import org.apache.commons.configuration2.io.FileHandler;
+
 import java.io.File;
 
 
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Objects;
 
 @Setter
@@ -39,7 +39,8 @@ public class ServerSettings extends Settings{
     public void saveDefaultConfig() throws IOException, NullPointerException {
         LCCP.logger.debug("Loading default server config values...");
         LCCP.logger.debug("Note: this only happens if server_config.yaml does not exist or couldn't be found!");
-        LCCP.logger.debug("If your settings don't work and this message is shown please seek support on the projects GitHub page: " + Paths.Links.Project_GitHub);
+        LCCP.logger.debug("If your settings don't work and this message is shown");
+        LCCP.logger.debug(Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("server_config.yaml");
         // if the path is null or not found an exception is thrown
@@ -118,33 +119,25 @@ public class ServerSettings extends Settings{
         }
         LCCP.logger.debug("Saving " + name + " values to server-config.yaml...");
         // loading config file
-        File file = new File(Paths.server_config);
-        Configurations configs = new Configurations();
-        FileBasedConfiguration config;
-        Parameters parameters = new Parameters();
-        // loading config file to memory
+        YAMLConfiguration conf;
+        FileHandler fH;
         try {
-            config = configs.properties(file);
+            conf = new YAMLConfiguration();
+            fH = new FileHandler(conf);
+            fH.load(Paths.server_config);
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing server-config values to server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             return;
         }
 
-        // initializing new config builder
-        FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
-                new FileBasedConfigurationBuilder<FileBasedConfiguration>(config.getClass())
-                        .configure(parameters.fileBased()
-                                .setFile(file));
-
         // writing config settings to file
         try {
-            FileBasedConfiguration conf = builder.getConfiguration();
             conf.setProperty(Paths.Server_Config.BRIGHTNESS, Math.round(LED_Brightness * 100));
             conf.setProperty(Paths.Server_Config.IPV4, IPv4);
             conf.setProperty(Paths.Server_Config.PORT, Port);
             // saving settings
-            builder.save();
+            fH.save(Paths.server_config);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");

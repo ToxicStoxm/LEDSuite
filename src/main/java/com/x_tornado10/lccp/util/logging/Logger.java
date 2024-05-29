@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.logger;
+package com.x_tornado10.lccp.util.logging;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
@@ -20,7 +20,7 @@ public class Logger {
     }
     // formatting info message
     public void info(String message) {
-        if (log_level.INFO.isEnabled()) cInfo("[INFO]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + LCCP.settings.getWindowTitle() + "] " + message);
     }
     // sending and info message to console and log file
     public void cInfo(String message) {
@@ -29,7 +29,7 @@ public class Logger {
     }
     // formatting warn message
     public void warn(String message) {
-        if (log_level.WARN.isEnabled()) cWarn("[WARN]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + LCCP.settings.getWindowTitle() + "] " + message);
     }
     // sending a warning message to console and log file
     public void cWarn(String message) {

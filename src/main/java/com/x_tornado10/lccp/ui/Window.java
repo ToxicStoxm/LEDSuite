@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
+import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -151,7 +152,10 @@ public class Window extends ApplicationWindow implements EventListener {
             if (e == null) return;
             switch (e.getName()) {
                 case "status" -> {
-                    new StatusWindow().present();
+                    //new StatusWindow().present();
+
+                    Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.config);
+
                 }
                 case "settings" -> getSettingsDialog().present(this);
                 case "about" -> getAboutDialog().present(this);

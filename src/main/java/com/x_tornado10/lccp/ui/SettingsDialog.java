@@ -6,7 +6,6 @@ import org.gnome.adw.*;
 import org.gnome.gtk.*;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 
 public class SettingsDialog extends PreferencesDialog {
@@ -105,9 +104,8 @@ public class SettingsDialog extends PreferencesDialog {
                 });
 
                 Thread t = new Thread(() -> {
-                    String ip = "";
+                    String ip;
                     String text = ipv4.getText();
-                    LCCP.logger.debug(ip);
                     try {
                         ip = Networking.getValidIP(text, false);
                     } catch (IOException e) {

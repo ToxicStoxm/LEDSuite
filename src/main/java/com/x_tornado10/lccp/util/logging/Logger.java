@@ -80,6 +80,7 @@ public class Logger {
     }
 
     // writing console log to log file
+    /*
     private void writeLog(String message) {
         if (!new File(Paths.File_System.logFile).exists()) return;
         // new buffered writer is used to write logging information from console to the log file
@@ -93,6 +94,8 @@ public class Logger {
             warn(Messages.WARN.OPEN_GITHUB_ISSUE);
         }
     }
+
+     */
 
     // log level checker
     // used to determine what messages should be logged / send to console and vice versa

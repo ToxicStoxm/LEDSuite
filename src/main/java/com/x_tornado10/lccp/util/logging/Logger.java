@@ -81,6 +81,7 @@ public class Logger {
 
     // writing console log to log file
     private void writeLog(String message) {
+        if (!new File(Paths.File_System.logFile).exists()) return;
         // new buffered writer is used to write logging information from console to the log file
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.File_System.logFile, true))) {
             // attaching time stamp to message before writing it to the file

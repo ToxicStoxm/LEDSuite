@@ -56,7 +56,7 @@ public class Logger {
     }
     // formatting debug message
     public void debug(String message) {
-        if (log_level.DEBUG.isEnabled())  cDebug("[DEBUG]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + LCCP.settings.getWindowTitle() + "] " + message);
     }
     // sending debug message to console and log file
     public void cDebug(String message) {
@@ -80,7 +80,6 @@ public class Logger {
     }
 
     // writing console log to log file
-    /*
     private void writeLog(String message) {
         if (!new File(Paths.File_System.logFile).exists()) return;
         // new buffered writer is used to write logging information from console to the log file
@@ -89,13 +88,11 @@ public class Logger {
             writer.write(attachTime(message));
             writer.newLine();
         } catch (IOException e) {
-            error("Error while trying to write log to log file!");
-            warn("If this message is displayed repeatedly:");
-            warn(Messages.WARN.OPEN_GITHUB_ISSUE);
+            System.out.println("Error while trying to write log to log file!");
+            System.out.println("If this message is displayed repeatedly:");
+            System.out.println(Messages.WARN.OPEN_GITHUB_ISSUE);
         }
     }
-
-     */
 
     // log level checker
     // used to determine what messages should be logged / send to console and vice versa

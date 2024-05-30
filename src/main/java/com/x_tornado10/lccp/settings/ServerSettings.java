@@ -6,11 +6,7 @@ import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.io.FileHandler;
@@ -20,12 +16,7 @@ import java.io.File;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -53,7 +44,7 @@ public class ServerSettings extends Settings{
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
             // defining config.yaml file to save the values to
-            File outputFile = new File(Paths.server_config);
+            File outputFile = new File(Paths.File_System.server_config);
             // try to open a new output stream to save the values to the new config file
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
                 byte[] buffer = new byte[1024];
@@ -129,7 +120,7 @@ public class ServerSettings extends Settings{
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
-            fH.load(Paths.server_config);
+            fH.load(Paths.File_System.server_config);
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing server-config values to server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -142,7 +133,7 @@ public class ServerSettings extends Settings{
             conf.setProperty(Paths.Server_Config.IPV4, IPv4);
             conf.setProperty(Paths.Server_Config.PORT, Port);
             // saving settings
-            fH.save(Paths.server_config);
+            fH.save(Paths.File_System.server_config);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");

@@ -4,11 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;
-import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.io.FileHandler;
@@ -52,7 +48,7 @@ public class LocalSettings extends Settings {
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
             // defining config.yaml file to save the values to
-            File outputFile = new File(Paths.config);
+            File outputFile = new File(Paths.File_System.config);
             // try to open a new output stream to save the values to the new config file
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
 
@@ -168,7 +164,7 @@ public class LocalSettings extends Settings {
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
-            fH.load(Paths.config);
+            fH.load(Paths.File_System.config);
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing config values to config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -188,7 +184,7 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
             conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
             // saving settings
-            fH.save(Paths.config);
+            fH.save(Paths.File_System.config);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");

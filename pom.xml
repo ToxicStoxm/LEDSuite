@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.x_tornado10</groupId>
-    <artifactId>lccp<!-- DO NOT CHANGE IDIOI--></artifactId>
+    <artifactId>lccp</artifactId>
     <version>v0.0.1</version>
 
     <build>
@@ -31,6 +31,10 @@
                         </goals>
                         <configuration>
                             <filters>
+                                <!--
+                                filter out META-INF/ files and module-info.class files
+                                to prevent shaded .jar from breaking its strong encapsulation
+                                -->
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
@@ -42,6 +46,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>LED-Cube-Control-Panel-${project.version}</finalName>
                             <transformers>
+                                <!-- specify main class to the compiler -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.x_tornado10.lccp.LCCP</mainClass>
                                 </transformer>
@@ -52,6 +57,7 @@
             </plugin>
         </plugins>
         <resources>
+            <!-- adding resources to the .jar -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
@@ -64,28 +70,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.version>${project.version}</project.version>
     </properties>
+    <!-- project dependencies -->
     <dependencies>
+        <!-- annotation processor and library plugin -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
+        <!-- ansi library for displaying colours in console -->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
             <version>2.4.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-configuration2</artifactId>
-            <version>2.10.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.2</version>
-        </dependency>
+        <!-- gnome and libadwaita libraries -->
         <dependency>
             <groupId>io.github.jwharm.javagi</groupId>
             <artifactId>adw</artifactId>
@@ -96,10 +96,16 @@
             <artifactId>webkit</artifactId>
             <version>0.10.0</version>
         </dependency>
+        <!-- config manager using yaml -->
         <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.30.0-GA</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
         </dependency>
     </dependencies>
 </project>

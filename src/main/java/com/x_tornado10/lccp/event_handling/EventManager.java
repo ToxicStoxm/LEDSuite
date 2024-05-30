@@ -2,7 +2,6 @@ package com.x_tornado10.lccp.event_handling;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Messages;
 
 import java.lang.reflect.Method;
@@ -17,9 +16,14 @@ public class EventManager {
     public void registerEvents(EventListener eventListener) {
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventHandler.class) && method.getParameterCount() == 1) {
-                LCCP.logger.debug("Registering listener method: " + method.getName() + " from " + eventListener);
+
                 Class<?> eventType = method.getParameterTypes()[0];
                 listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(new RegisteredListener(eventListener, method));
+                LCCP.logger.debug("Registering listener method: " +
+                        eventListener.toString().split("@")[0] +
+                        "." +
+                        method.getName() +
+                        "(" + eventType.getName().split("event_handling.")[1].replace("$", ".") +  ")");
             }
         }
     }

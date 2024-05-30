@@ -4,12 +4,6 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.YAMLConfiguration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
@@ -20,15 +14,17 @@ import org.gnome.gio.SimpleActionGroup;
 import org.gnome.gtk.*;
 import org.gnome.pango.*;
 
-import java.io.File;
-import java.util.Arrays;
-
-
+// main application window
 public class Window extends ApplicationWindow implements EventListener {
+    // status banner and toast overlay used in the main window
+    // made public to enable global toggling
     public Banner status = new Banner("");
+    public ToastOverlay toastOverlay = null;
+
+    // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
     private boolean autoUpdate = false;
-    public ToastOverlay toastOverlay = null;
+
     public Window(Application app) {
         super(app);
         this.setTitle(LCCP.settings.getWindowTitle());
@@ -154,7 +150,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 case "status" -> {
                     //new StatusWindow().present();
 
-                    Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.config);
+                    Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
                 }
                 case "settings" -> getSettingsDialog().present(this);

@@ -64,10 +64,7 @@ public class Logger {
         log(ansi().fgRgb(7, 94, 217).a(message).reset());
     }
 
-    // attaching current time to the front of the message before sending to console
-    private void log(Ansi message) {
-        System.out.println(attachTime(message));
-    }
+    // attaching current time to the front of the message before sending it to the console
     private String attachTime(String message) {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         return "[" + df.format(new Date()) + "] " + message;
@@ -77,17 +74,27 @@ public class Logger {
         return "[" + df.format(new Date()) + "] " + message;
     }
 
-    // write log to log file
+    // final log function used to send the message to the console
+    private void log(Ansi message) {
+        System.out.println(attachTime(message));
+    }
+
+    // writing console log to log file
     private void writeLog(String message) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.logFile, true))) {
+        // new buffered writer is used to write logging information from console to the log file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.File_System.logFile, true))) {
+            // attaching time stamp to message before writing it to the file
             writer.write(attachTime(message));
             writer.newLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            error("Error while trying to write log to log file!");
+            warn("If this message is displayed repeatedly:");
+            warn(Messages.WARN.OPEN_GITHUB_ISSUE);
         }
     }
 
     // log level checker
+    // used to determine what messages should be logged / send to console and vice versa
     public enum log_level implements LogLevel {
         INFO() {
             @Override
@@ -121,6 +128,7 @@ public class Logger {
                 return currentLogLevel() >= 5;
             }
         };
+        // function that retrieves current log level
         int currentLogLevel() {
             return LCCP.settings.getLogLevel();
         }

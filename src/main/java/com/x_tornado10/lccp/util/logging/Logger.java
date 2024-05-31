@@ -73,7 +73,6 @@ public class Logger {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         return "[" + df.format(new Date()) + "] " + message;
     }
-
     // final log function used to send the message to the console
     private void log(Ansi message) {
         System.out.println(attachTime(message));

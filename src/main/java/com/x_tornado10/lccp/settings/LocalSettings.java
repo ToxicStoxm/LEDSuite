@@ -94,11 +94,7 @@ public class LocalSettings extends Settings {
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
-            String dir = config.getString(Paths.Config.SELECTION_DIR);
-            if (dir.contains("%")) {
-                String temp = dir.replace("%", "");
-                System.getProperty(temp);
-            } else this.selectionDir = dir;
+            this.selectionDir = config.getString(Paths.Config.SELECTION_DIR);
 
             AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
             DisplayStatusBar = config.getBoolean(Paths.Config.DISPLAY_STATUS_BAR);
@@ -196,6 +192,7 @@ public class LocalSettings extends Settings {
         LCCP.logger.debug("Successfully saved server-config values to config.yaml!");
     }
 
+
     // creating clone for unnecessary saving check
     @Override
     public void startup() {
@@ -243,6 +240,22 @@ public class LocalSettings extends Settings {
     public void setAutoUpdateRemoteTick(double autoUpdateRemoteTick) {
         AutoUpdateRemoteTick = autoUpdateRemoteTick;
         reload("AutoUpdateRemoteTick -> " + autoUpdateRemoteTick);
+    }
+
+    public String getSelectionDir() {
+        if (selectionDir.contains("%")) {
+            String temp = selectionDir.replaceAll("%",  "");
+            try {
+
+                return System.getProperty(temp);
+            } catch (Exception e) {
+                LCCP.logger.debug("System property placeholder: '" + selectionDir + "'");
+                LCCP.logger.debug("System property parsed: '" + temp + "'");
+                LCCP.logger.warn("Invalid system property: '" + temp + "'");
+                return System.getProperty("user.home");
+            }
+        }
+        return selectionDir;
     }
 
     // used to check if current settings equal another settings class

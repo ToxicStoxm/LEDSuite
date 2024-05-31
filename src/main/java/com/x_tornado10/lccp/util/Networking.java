@@ -121,14 +121,24 @@ public class Networking {
     }
     // validate an IP4 address format
     public static boolean isValidIP(final String ip) {
-        String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-        return ip.matches(PATTERN);
+        return ip.matches(Paths.Patterns.IPV4);
     }
     // validate Port number format
     public static boolean isValidPORT(final String port) {
-        String PATTERN = "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
+        LCCP.logger.debug("Fulfilling port validation request for: '" + port + "'");
+        // valid port format
+        boolean result = port.matches(Paths.Patterns.PORT);
+        // print result to console
+        if (result) {
+            LCCP.logger.debug("Port validation successful!");
+            LCCP.logger.debug("Port has valid format (Range: 1 - 65535)");
+        } else {
+            LCCP.logger.debug("Port validation has failed!");
+            LCCP.logger.debug("Invalid port format: '" + port + "'");
+            LCCP.logger.debug("Port needs to be a numerical value between 1 and 65535!");
+        }
 
-        return port.matches(PATTERN);
+        return result;
     }
 
     // custom file sender that sends a file to a server using java sockets

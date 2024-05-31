@@ -97,13 +97,13 @@ public class SettingsDialog extends PreferencesDialog {
             if (!LCCP.settings.isCheckIPv4()) {
                 LCCP.server_settings.setIPv4(ipv4.getText());
             } else {
-                Thread f = new Thread(() -> {
+                Thread remove_spinner = new Thread(() -> {
                     spinner.setSpinning(false);
                     ipv4.remove(spinner);
                     ipv4.setEditable(true);
                 });
 
-                Thread t = new Thread(() -> {
+                Thread ip4_validator = new Thread(() -> {
                     String ip;
                     String text = ipv4.getText();
                     try {
@@ -121,15 +121,51 @@ public class SettingsDialog extends PreferencesDialog {
                     if (ip != null) {
                         LCCP.server_settings.setIPv4(ip);
                     }
-                    f.start();
+                    remove_spinner.start();
                 });
                 ipv4.setEditable(false);
                 ipv4.addSuffix(spinner);
                 spinner.setSpinning(true);
-                t.start();
+                ip4_validator.start();
             }
         });
         serverSettings.add(ipv4);
+
+        var spinner1 = new Spinner();
+
+        var port = EntryRow.builder().setTitle("Port").build();
+        port.setShowApplyButton(true);
+        port.setText(String.valueOf(LCCP.server_settings.getPort()));
+        port.onApply(() -> {
+            Thread remove_spinner = new Thread(() -> {
+                spinner1.setSpinning(false);
+                port.remove(spinner1);
+                port.setEditable(true);
+            });
+
+            Thread port_validator = new Thread(() -> {
+                String text = port.getText();
+                try {
+                    if (Networking.isValidPORT(text)) {
+                        LCCP.server_settings.setPort(Integer.parseInt(text));
+                    } else {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    LCCP.sysBeep();
+                    Toast.builder()
+                            .setTitle("Invalid Port!")
+                            .setTimeout(10)
+                            .build();
+                }
+                remove_spinner.start();
+            });
+            port.setEditable(false);
+            port.addSuffix(spinner1);
+            spinner1.setSpinning(true);
+            port_validator.start();
+        });
+        serverSettings.add(port);
 
         if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
 

@@ -25,37 +25,55 @@ public class Window extends ApplicationWindow implements EventListener {
     private boolean statusBarCurrentState = false;
     private boolean autoUpdate = false;
 
+    // constructor for the main window
     public Window(Application app) {
         super(app);
+        // setting title and default size
         this.setTitle(LCCP.settings.getWindowTitle());
         this.setDefaultSize(LCCP.settings.getWindowDefWidth(), LCCP.settings.getWindowDefHeight());
 
+        // settings auto update to user specified value
         setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
 
-        var box = Box.builder()
+        // toast overlay used to display toasts (notification) to the user
+        toastOverlay = new ToastOverlay();
+
+        // container for the header bar on top of the application
+        var headerBarContainer = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
                 .build();
 
+        // the applications header bar
         var headerBar = new HeaderBar();
 
+        // create search button and configure it
         var sbutton = new ToggleButton();
-        toastOverlay = new ToastOverlay();
+        // setting the icon name to gnome icon name
         sbutton.setIconName("system-search-symbolic");
+        // executed when th button is toggled
         sbutton.onToggled(() -> {
+            // display work in progress toast as the search function is not yet implemented
             var wipToast = new Toast("Work in progress!");
             wipToast.setTimeout(1);
             toastOverlay.addToast(wipToast);
         });
 
+        // creating and configuring menu button
         var mbutton = new MenuButton();
         mbutton.setAlwaysShowArrow(false);
+        // setting the icon name to gnome icon name
         mbutton.setIconName("open-menu-symbolic");
 
-        var listBox = new ListBox();
+        // defining menu drop down list, witch will be displayed when the menu button is clicked
+        var menuDropDownList = new ListBox();
+        // defining and configuring list rows
+        // settings row (open settings dialog on click)
         var settingsRow = ListBoxRow.builder()
                 .setChild(Label.builder()
                         .setLabel("Settings")
+                        // setting font attributes
                         .setAttributes(getAttrDef())
+                        // align the label
                         .setHalign(Align.START)
                         .setMarginEnd(10)
                         .setMarginBottom(5)
@@ -63,10 +81,13 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setName("settings")
                 .setSelectable(false)
                 .build();
+        // status row (opens status dialog on click)
         var statusRow = ListBoxRow.builder()
                 .setChild(Label.builder()
                         .setLabel("Status")
+                        // setting font attributes
                         .setAttributes(getAttrDef())
+                        // align the label
                         .setHalign(Align.START)
                         .setMarginEnd(10)
                         .setMarginBottom(5)
@@ -74,10 +95,13 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setName("status")
                 .setSelectable(false)
                 .build();
+        // about row (opens about dialog on click)
         var aboutRow = ListBoxRow.builder()
                 .setChild(Label.builder()
                         .setLabel("About")
+                        // setting font attributes
                         .setAttributes(getAttrDef())
+                        // align the label
                         .setHalign(Align.START)
                         .setMarginEnd(10)
                         .build())
@@ -85,24 +109,24 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setSelectable(false)
                 .build();
 
-        // Create the 'activate' action
+        // Creating actions used for keyboard shortcuts
         var activateAboutRow = SimpleAction.builder().setName("activateAboutRow").build();
         activateAboutRow.onActivate(_ -> {
             aboutRow.emitActivate(); // Emit the activate signal on the aboutRow
-            aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD);
+            aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateSettingsRow = SimpleAction.builder().setName("activateSettingsRow").build();
         activateSettingsRow.onActivate(_ -> {
-            settingsRow.emitActivate(); // Emit the activate signal on the aboutRow
-            settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD);
+            settingsRow.emitActivate(); // Emit the activate signal on the settingsRow
+            settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateStatusRow = SimpleAction.builder().setName("activateStatusRow").build();
         activateStatusRow.onActivate(_ -> {
-            statusRow.emitActivate(); // Emit the activate signal on the aboutRow
-            statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD);
+            statusRow.emitActivate(); // Emit the activate signal on the statusRow
+            statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
 
-        // Add the action to the window's action group
+        // Add the actions to the window's action group
         var actionGroup = new SimpleActionGroup();
         actionGroup.addAction(activateAboutRow);
         actionGroup.addAction(activateSettingsRow);
@@ -112,18 +136,18 @@ public class Window extends ApplicationWindow implements EventListener {
         // Set up a shortcut controller
         var shortcutController = new ShortcutController();
 
-        // Define and add the shortcut to the controller
+        // Define and add the shortcuts to the controller
         var shortcutAboutRow = new Shortcut(
-                ShortcutTrigger.parseString("<Alt>a"),
-                ShortcutAction.parseString("action(main.activateAboutRow)")
+                ShortcutTrigger.parseString("<Alt>a"), // ALT + A
+                ShortcutAction.parseString("action(main.activateAboutRow)") // trigger previously defined action for about row
         );
         var shortcutSettingsRow = new Shortcut(
-                ShortcutTrigger.parseString("<Alt>s"),
-                ShortcutAction.parseString("action(main.activateSettingsRow)")
+                ShortcutTrigger.parseString("<Alt>s"), // ALT + S
+                ShortcutAction.parseString("action(main.activateSettingsRow)") // trigger previously defined action for settings row
         );
         var shortcutStatusRow = new Shortcut(
-                ShortcutTrigger.parseString("<Control>s"),
-                ShortcutAction.parseString("action(main.activateStatusRow)")
+                ShortcutTrigger.parseString("<Control>s"), // CTRL + S
+                ShortcutAction.parseString("action(main.activateStatusRow)") // trigger previously defined action for status row
         );
         shortcutController.addShortcut(shortcutAboutRow);
         shortcutController.addShortcut(shortcutSettingsRow);
@@ -132,64 +156,89 @@ public class Window extends ApplicationWindow implements EventListener {
         // Add the controller to the window
         this.addController(shortcutController);
 
+        // listen for about / settings dialog close and shift the focus backwards to focus the main window again
         getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
         getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
 
+        // change menu list selection mode to single so the user can only select one entry at a time
+        menuDropDownList.setSelectionMode(SelectionMode.SINGLE);
 
-        listBox.setSelectionMode(SelectionMode.SINGLE);
+        // adding the list rows to the menu list
+        menuDropDownList.append(statusRow);
+        menuDropDownList.append(settingsRow);
+        menuDropDownList.append(aboutRow);
 
-        listBox.append(statusRow);
-        listBox.append(settingsRow);
-        listBox.append(aboutRow);
-
+        // creating new popover (small popup)
         var popover = new Popover();
 
-        listBox.onRowActivated(e -> {
+        // listening for menu list entry click events and opening the window / dialog associated with the licked row
+        menuDropDownList.onRowActivated(e -> {
             if (e == null) return;
             switch (e.getName()) {
                 case "status" -> {
                     //new StatusWindow().present();
-
                     Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
                 }
+                // opening settings dialog
                 case "settings" -> getSettingsDialog().present(this);
+                // opening about dialog
                 case "about" -> getAboutDialog().present(this);
             }
+            // close the popover
             popover.emitClosed();
         });
 
-        popover.setChild(listBox);
+        // adding the menu list to the popover
+        popover.setChild(menuDropDownList);
+        // adding popover to menu button, so it is displayed when the button is clicked
         mbutton.setPopover(popover);
 
+        // adding the search button to the start of the header bar and the menu button to its end
         headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
 
-        box.append(headerBar);
+        // adding the header bar to the header bar container
+        headerBarContainer.append(headerBar);
 
-        box.append(status);
+        // adding the status row to the header bar container
+        headerBarContainer.append(status);
+        // toggling status bar visibility depending on user preferences
         setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
+        // creating main container witch will hold the main window content
         var mainContent = new Box(Orientation.VERTICAL, 0);
+        // creating north / center / south containers to correctly align window content
         var northBox = new Box(Orientation.VERTICAL, 0);
         var centerBox = new Box(Orientation.VERTICAL, 0);
         var southBox = new Box(Orientation.VERTICAL, 0);
+        // set vertical expanding to true for the center box, so it pushed the north box to the top of the window and the south box to the bottom
         centerBox.setVexpand(true);
+        // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
         southBox.setValign(Align.END);
 
+        // adding the toast overlay to the south box
         southBox.append(toastOverlay);
-        northBox.append(box);
+        // adding the header bar container to the north box
+        northBox.append(headerBarContainer);
 
+        // adding all alignment boxes to the main window container
         mainContent.append(northBox);
         mainContent.append(centerBox);
         mainContent.append(southBox);
 
+        // adding the main container to the window
         this.setContent(mainContent);
     }
 
+    // about dialog
     private AboutDialog aDialog = null;
+    // method to either create a new about dialog or get an already existing one
+    // this ensures that only one about dialog is created to prevent the app unnecessarily using up system resources
     private AboutDialog getAboutDialog() {
+        // checking if an existing about dialog can be reused
         if (aDialog == null) {
+            // if not a new one is created
             aDialog = AboutDialog.builder()
                     .setDevelopers(new String[]{"x_Tornado10"})
                     .setVersion(LCCP.version)
@@ -201,24 +250,16 @@ public class Window extends ApplicationWindow implements EventListener {
         }
          return aDialog;
     }
-    public static AttrList getAttrBig() {
-        var attr = new AttrList();
-        attr.change(Pango.attrFamilyNew("Bahnschrift"));
-        attr.change(Pango.attrScaleNew(1.5));
-        return attr;
-    }
-    public static AttrList getAttrSmall() {
-        var attr = new AttrList();
-        attr.change(Pango.attrFamilyNew("Bahnschrift"));
-        attr.change(Pango.attrScaleNew(1.3));
-        return attr;
-    }
+    // generates default font arguments
     public static AttrList getAttrDef() {
         var attr = new AttrList();
+        // sets the font to 'Bahnschrift' (does not work :c)
         attr.change(Pango.attrFamilyNew("Bahnschrift"));
+        // sets the scale to be 1 (100%)
         attr.change(Pango.attrScaleNew(1));
         return attr;
     }
+    // placeholder code for status row (will be replaced with actual status display in the future)
     boolean uploading = true;
     boolean displayingAnimation = false;
     private String getStatus() {
@@ -234,73 +275,110 @@ public class Window extends ApplicationWindow implements EventListener {
         displayingAnimation = !displayingAnimation;
         return stringBuilder.toString();
     }
+    // status bar updater
     private StatusBarUpdater statusBarUpdater;
+    // creates a new status bar updater
     private void updateStatus() {
         LCCP.logger.debug("Running new StatusBar update Task!");
         statusBarUpdater = new StatusBarUpdater();
     }
 
+    // status bar updater task
     private class StatusBarUpdater extends Thread {
         public StatusBarUpdater() {
             setName("StatusBarUpdaterTask_" + getName());
+            // automatically start this task after constructing it
             this.start();
         }
 
+        // kill switch
         private boolean stop = false;
 
         @Override
         public void run() {
+            // timestamp last iteration
             long lastexec = System.currentTimeMillis() - 1001;
             while (true) {
+                // if kill switch is active break out of the loop
                 if (stop) return;
+                // current time
                 long current = System.currentTimeMillis();
+                // if more than 1 second has passed since last iteration, the status bar is updated
                 if (current - lastexec >= 1000) {
+                    // if status bar is not visible, break the loop since modifying it in this state will cause errors
                     if (!status.getRevealed()) return;
+                    // if kill switch is active break out of the loop
                     if (stop) return;
+                    // updating status bar to show current status
                     status.setTitle("LED-Cube-Status: " + getStatus());
+                    // updating last iteration time to current time
                     lastexec = current;
                 }
             }
         }
     }
 
+    // toggle status bar
     public void setBannerVisible(boolean visible) {
         LCCP.logger.debug("---------------------------------------------------------------");
         LCCP.logger.debug("Fulfilling StatusBarToggle: " + statusBarCurrentState + " >> " + visible);
         status.setVisible(true);
+        // if status bar is currently turned off and should be activated
         if (!statusBarCurrentState && visible) {
+            // the current status is set to true
             statusBarCurrentState = true;
+            // and a new update status task is created and started
             updateStatus();
         } else {
-            if (statusBarUpdater != null) statusBarUpdater.stop = true;
+            // if status bar is currently turned on and should be deactivated
+            // if there is an updater task running
+            if (statusBarUpdater != null) statusBarUpdater.stop = true; // trigger the tasks kill switch
+            // set the current status to false
             statusBarCurrentState = false;
         }
+        // toggle status bar visibility based on the provided value 'visible'
         status.setRevealed(visible);
+        // update user settings to match new value
         if (LCCP.mainWindow != null) LCCP.settings.setDisplayStatusBar(visible);
         LCCP.logger.debug("---------------------------------------------------------------");
     }
+    // check if status bar is currently visible
     public boolean isBannerVisible() {
         return statusBarCurrentState;
+
     }
+    // settings dialog
     private SettingsDialog sD = null;
+    // method to either create a new settings dialog or get an already existing one
+    // this ensures that only one settings dialog is created to prevent the app unnecessarily using up system resources
     private SettingsDialog getSettingsDialog() {
+        // checking if an existing about dialog can be reused
         if (sD == null) {
+            // if not a new one is created
             sD = new SettingsDialog();
         }
         return sD;
     }
+    // check if the settings dialog is currently visible
     public boolean isSettingsDialogVisible() {
         return sD != null;
     }
+    // toggle auto update option for the settings dialog
     public void setAutoUpdate(boolean active) {
         LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
+        // if auto updating isn't active and should be activated
         if (!autoUpdate && active) {
-            if (isSettingsDialogVisible()) getSettingsDialog().startRemoteUpdate();
-            getSettingsDialog().removeManualRemoteApplySwitch();
+            // if the settings dialog is already visible
+            if (isSettingsDialogVisible()) getSettingsDialog().startRemoteUpdate(); // start the remote updating loop within the settings dialog
+            getSettingsDialog().removeManualRemoteApplySwitch(); // remove the manual updating button from the settings dialog
+        // if auto updating is active and should be deactivated
         } else if (autoUpdate && !active) {
+            // the manual updating button is re added to the settings dialog
             getSettingsDialog().addManualRemoteApplySwitch();
+            // if the settings dialog is currently visible the remote updating task is stopped
             if (isSettingsDialogVisible()) getSettingsDialog().stopRemoteUpdate();
         }
+        // current auto updating status is set based on the provided value 'active'
         autoUpdate = active;
     }
 }

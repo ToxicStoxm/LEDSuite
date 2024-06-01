@@ -1,12 +1,16 @@
 package com.x_tornado10.lccp;
 
-import com.x_tornado10.lccp.event_handling.*;
+import com.x_tornado10.lccp.event_handling.EventHandler;
+import com.x_tornado10.lccp.event_handling.EventManager;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
+import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
+import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -15,7 +19,10 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import static java.awt.Toolkit.getDefaultToolkit;
@@ -30,6 +37,8 @@ public class LCCP implements EventListener {
     public static EventManager eventManager;
     public static String version;
     public static Window mainWindow;
+    public static LCCPScheduler lccpScheduler;
+    public static TickingSystem tickingSystem;
 
     // main method
     public static void main(String[] args) {
@@ -93,7 +102,7 @@ public class LCCP implements EventListener {
             LCCP.logger.warn("If this message is displayed repeatedly this version of the program is likely faulty!");
             LCCP.logger.warn(Messages.WARN.OPEN_GITHUB_ISSUE);
             LCCP.logger.warn("Please restart the application!");
-            LCCP.exit(0);
+            LCCP.exit(1);
         }
 
         // defining config files and log file
@@ -155,7 +164,7 @@ public class LCCP implements EventListener {
             logger.warn("Application was halted!");
             logger.warn("If this keeps happening please open an issue on GitHub!");
             logger.warn("Please restart the application!");
-            exit(0);
+            exit(1);
             return;
         }
 
@@ -167,6 +176,11 @@ public class LCCP implements EventListener {
         // registering event listeners for settings classes
         eventManager.registerEvents(settings);
         eventManager.registerEvents(server_settings);
+
+        // initializing task scheduler with a max core pool size of 5
+        // this means it can at most run 5 different tasks at the same time
+        lccpScheduler = new LCCPScheduler();
+        tickingSystem = new TickingSystem();
     }
 
     // activate function
@@ -199,6 +213,8 @@ public class LCCP implements EventListener {
         LCCP.logger.info("Saving...");
         // firing new save event to save user settings
         eventManager.fireEvent(new Events.Save("Shutdown - Save"));
+        LCCP.logger.debug("Stopping ticking system!");
+        tickingSystem.stop();
         LCCP.logger.info("Successfully saved!");
         LCCP.logger.info("Shutting down...");
         LCCP.logger.info("Goodbye!");
@@ -242,7 +258,7 @@ public class LCCP implements EventListener {
             LCCP.logger.warn("Application was halted!");
             LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");
             LCCP.logger.warn("Please restart the application!");
-            LCCP.exit(0);
+            LCCP.exit(1);
             return;
         }
 
@@ -263,8 +279,12 @@ public class LCCP implements EventListener {
             LCCP.logger.warn("Application was halted!");
             LCCP.logger.warn("If this keeps happening please open an issue on GitHub!");
             LCCP.logger.warn("Please restart the application!");
-            LCCP.exit(0);
+            LCCP.exit(1);
         }
+    }
+
+    public static LCCPScheduler getScheduler() {
+        return lccpScheduler;
     }
 
     // listener function for reload event

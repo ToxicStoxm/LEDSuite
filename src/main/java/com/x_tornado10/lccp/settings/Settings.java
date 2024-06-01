@@ -4,7 +4,8 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.EventHandler;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.io.IOException;

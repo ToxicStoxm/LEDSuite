@@ -105,7 +105,7 @@ public class LocalSettings extends Settings {
             LCCP.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
             LCCP.logger.warn("Program halted to prevent any further errors!");
             LCCP.logger.warn("Please delete the old config file from your .config folder and restart the application!");
-            LCCP.exit(0);
+            LCCP.exit(1);
         }
     }
     public String getWindowTitle() {

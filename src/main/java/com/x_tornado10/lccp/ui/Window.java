@@ -2,17 +2,20 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
+import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
+import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
-import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
+import org.gnome.adw.*;
 import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
 import org.gnome.gtk.*;
-import org.gnome.pango.*;
+import org.gnome.pango.AttrList;
+import org.gnome.pango.Pango;
 
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
@@ -31,6 +34,7 @@ public class Window extends ApplicationWindow implements EventListener {
         // setting title and default size
         this.setTitle(LCCP.settings.getWindowTitle());
         this.setDefaultSize(LCCP.settings.getWindowDefWidth(), LCCP.settings.getWindowDefHeight());
+        this.setIconName("LCCP-logo-256x256");
 
         // settings auto update to user specified value
         setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
@@ -240,10 +244,12 @@ public class Window extends ApplicationWindow implements EventListener {
         if (aDialog == null) {
             // if not a new one is created
             aDialog = AboutDialog.builder()
-                    .setDevelopers(new String[]{"x_Tornado10"})
+                    .setDevelopers(new String[]{"x_Tornado10", "Bukkit GitHub Repo", "CraftBukkit GitHub Repo"})
+                    .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
                     .setVersion(LCCP.version)
-                    .setLicense("GPL-3.0")
-                    .setDeveloperName("x_Tornado10")
+                    .setLicenseType(License.GPL_3_0)
+                    .setApplicationIcon("LCCP-logo-256x256")
+                    .setIssueUrl(Paths.Links.Project_GitHub + "issues")
                     .setWebsite(Paths.Links.Project_GitHub)
                     .setApplicationName(LCCP.settings.getWindowTitle())
                     .build();
@@ -276,46 +282,18 @@ public class Window extends ApplicationWindow implements EventListener {
         return stringBuilder.toString();
     }
     // status bar updater
-    private StatusBarUpdater statusBarUpdater;
+    private LCCPTask statusBarUpdater;
     // creates a new status bar updater
     private void updateStatus() {
         LCCP.logger.debug("Running new StatusBar update Task!");
-        statusBarUpdater = new StatusBarUpdater();
-    }
-
-    // status bar updater task
-    private class StatusBarUpdater extends Thread {
-        public StatusBarUpdater() {
-            setName("StatusBarUpdaterTask_" + getName());
-            // automatically start this task after constructing it
-            this.start();
-        }
-
-        // kill switch
-        private boolean stop = false;
-
-        @Override
-        public void run() {
-            // timestamp last iteration
-            long lastexec = System.currentTimeMillis() - 1001;
-            while (true) {
-                // if kill switch is active break out of the loop
-                if (stop) return;
-                // current time
-                long current = System.currentTimeMillis();
-                // if more than 1 second has passed since last iteration, the status bar is updated
-                if (current - lastexec >= 1000) {
-                    // if status bar is not visible, break the loop since modifying it in this state will cause errors
-                    if (!status.getRevealed()) return;
-                    // if kill switch is active break out of the loop
-                    if (stop) return;
-                    // updating status bar to show current status
-                    status.setTitle("LED-Cube-Status: " + getStatus());
-                    // updating last iteration time to current time
-                    lastexec = current;
-                }
+        statusBarUpdater = new LCCPRunnable() {
+            @Override
+            public void run() {
+                if (!status.getRevealed()) return;
+                // updating status bar to show current status
+                status.setTitle("LED-Cube-Status: " + getStatus());
             }
-        }
+        }.runTaskTimerAsynchronously(0, 20);
     }
 
     // toggle status bar
@@ -332,7 +310,7 @@ public class Window extends ApplicationWindow implements EventListener {
         } else {
             // if status bar is currently turned on and should be deactivated
             // if there is an updater task running
-            if (statusBarUpdater != null) statusBarUpdater.stop = true; // trigger the tasks kill switch
+            if (statusBarUpdater != null) statusBarUpdater.cancel(); // trigger the tasks kill switch
             // set the current status to false
             statusBarCurrentState = false;
         }

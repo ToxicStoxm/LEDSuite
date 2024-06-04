@@ -9,6 +9,7 @@ import com.x_tornado10.lccp.util.Paths;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
+import org.gnome.adw.Dialog;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
 import org.gnome.gio.SimpleAction;
@@ -358,5 +359,9 @@ public class Window extends ApplicationWindow implements EventListener {
         }
         // current auto updating status is set based on the provided value 'active'
         autoUpdate = active;
+    }
+
+    public void test() {
+        this.sD = null;
     }
 }

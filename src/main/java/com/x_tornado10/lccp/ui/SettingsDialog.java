@@ -21,6 +21,7 @@ public class SettingsDialog extends PreferencesDialog {
     private LCCPTask autoUpdateRemote = null;
     // preferences group server settings
     private PreferencesGroup serverSettings = null;
+    private static PreferencesPage cur = null;
 
     // settings dialog constructor
     public SettingsDialog() {
@@ -33,6 +34,8 @@ public class SettingsDialog extends PreferencesDialog {
         temp[0] = true;
         temp[1] = LCCP.settings.isDisplayStatusBar();
         temp[2] = LCCP.settings.isAutoUpdateRemote();
+
+        this.onClosed(() -> LCCP.mainWindow.test());
     }
 
     // function to generate a new settings dialog page
@@ -113,40 +116,39 @@ public class SettingsDialog extends PreferencesDialog {
         var ipv4 = EntryRow.builder().setTitle("IPv4").build();
         ipv4.setShowApplyButton(true);
         ipv4.setText(LCCP.server_settings.getIPv4());
+        ipv4.setEnableUndo(true);
         ipv4.onApply(() -> {
             if (!LCCP.settings.isCheckIPv4()) {
                 LCCP.server_settings.setIPv4(ipv4.getText());
             } else {
-                Thread remove_spinner = new Thread(() -> {
-                    spinner.setSpinning(false);
-                    ipv4.remove(spinner);
-                    ipv4.setEditable(true);
-                });
-
-                Thread ip4_validator = new Thread(() -> {
-                    String ip;
-                    String text = ipv4.getText();
-                    try {
-                        ip = Networking.getValidIP(text, false);
-                    } catch (IOException e) {
-                        LCCP.sysBeep();
-                        this.addToast(
-                                Toast.builder()
-                                        .setTitle("Server unreachable!")
-                                        .setTimeout(10)
-                                        .build()
-                        );
-                        ip = null;
-                    }
-                    if (ip != null) {
-                        LCCP.server_settings.setIPv4(ip);
-                    }
-                    remove_spinner.start();
-                });
                 ipv4.setEditable(false);
                 ipv4.addSuffix(spinner);
                 spinner.setSpinning(true);
-                ip4_validator.start();
+                new LCCPRunnable() {
+                    @Override
+                    public void run() {
+                        String ip;
+                        String text = ipv4.getText();
+                        try {
+                            ip = Networking.getValidIP(text, false);
+                        } catch (IOException e) {
+                            LCCP.sysBeep();
+                            addToast(
+                                    Toast.builder()
+                                            .setTitle("Server unreachable!")
+                                            .setTimeout(10)
+                                            .build()
+                            );
+                            ip = null;
+                        }
+                        if (ip != null) {
+                            LCCP.server_settings.setIPv4(ip);
+                        }
+                        spinner.setSpinning(false);
+                        ipv4.remove(spinner);
+                        ipv4.setEditable(true);
+                    }
+                }.runTask();
             }
         });
         serverSettings.add(ipv4);
@@ -156,34 +158,43 @@ public class SettingsDialog extends PreferencesDialog {
         var port = EntryRow.builder().setTitle("Port").build();
         port.setShowApplyButton(true);
         port.setText(String.valueOf(LCCP.server_settings.getPort()));
-        port.onApply(() -> new LCCPRunnable() {
-            @Override
-            public void run() {
-                String text = port.getText();
-                try {
-                    if (Networking.isValidPORT(text)) {
-                        LCCP.server_settings.setPort(Integer.parseInt(text));
-                    } else {
-                        throw new NumberFormatException();
+        port.setEnableUndo(true);
+        port.onApply(() -> {
+            spinner1.setSpinning(true);
+            port.addSuffix(spinner1);
+            port.setEditable(false);
+            new LCCPRunnable() {
+                @Override
+                public void run() {
+                    String text = port.getText();
+                    try {
+                        if (Networking.isValidPORT(text)) {
+                            LCCP.server_settings.setPort(Integer.parseInt(text));
+                        } else {
+                            throw new NumberFormatException();
+                        }
+                    } catch (NumberFormatException e) {
+                        LCCP.sysBeep();
+                        addToast(
+                                Toast.builder()
+                                        .setTitle("Invalid Port!")
+                                        .setTimeout(10)
+                                        .build()
+                        );
                     }
-                } catch (NumberFormatException e) {
-                    LCCP.sysBeep();
-                    Toast.builder()
-                            .setTitle("Invalid Port!")
-                            .setTimeout(10)
-                            .build();
+                    spinner1.setSpinning(false);
+                    port.remove(spinner1);
+                    port.setEditable(true);
                 }
-                spinner1.setSpinning(false);
-                port.remove(spinner1);
-                port.setEditable(true);
-            }
-        }.runTask());
+            }.runTask();
+        });
         serverSettings.add(port);
 
         if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
 
         user_pref_page.add(serverSettings);
-        return user_pref_page;
+        cur = user_pref_page;
+        return cur;
     }
 
     private ActionRow manualRemoteApplySwitchRow = null;

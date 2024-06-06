@@ -9,7 +9,6 @@ import com.x_tornado10.lccp.util.Paths;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
-import org.gnome.adw.Dialog;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
 import org.gnome.gio.SimpleAction;
@@ -18,6 +17,7 @@ import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.Pango;
 
+//@GtkTemplate(name = "window", ui = "/com/x_tornado10/lccp/ui/window.ui")
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
     // status banner and toast overlay used in the main window
@@ -28,6 +28,7 @@ public class Window extends ApplicationWindow implements EventListener {
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
     private boolean autoUpdate = false;
+    private boolean sideBarVisible = true;
 
     // constructor for the main window
     public Window(Application app) {
@@ -200,16 +201,9 @@ public class Window extends ApplicationWindow implements EventListener {
         mbutton.setPopover(popover);
 
         // adding the search button to the start of the header bar and the menu button to its end
-        headerBar.packStart(sbutton);
+        //headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
 
-        // adding the header bar to the header bar container
-        headerBarContainer.append(headerBar);
-
-        // adding the status row to the header bar container
-        headerBarContainer.append(status);
-        // toggling status bar visibility depending on user preferences
-        setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
         // creating main container witch will hold the main window content
         var mainContent = new Box(Orientation.VERTICAL, 0);
@@ -222,6 +216,15 @@ public class Window extends ApplicationWindow implements EventListener {
         // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
         southBox.setValign(Align.END);
 
+
+        // adding the header bar to the header bar container
+        headerBarContainer.append(headerBar);
+
+        // adding the status row to the header bar container
+        headerBarContainer.append(status);
+        // toggling status bar visibility depending on user preferences
+        setBannerVisible(LCCP.settings.isDisplayStatusBar());
+
         // adding the toast overlay to the south box
         southBox.append(toastOverlay);
         // adding the header bar container to the north box
@@ -232,8 +235,70 @@ public class Window extends ApplicationWindow implements EventListener {
         mainContent.append(centerBox);
         mainContent.append(southBox);
 
+        var overlaySplitView = new OverlaySplitView();
+
+        overlaySplitView.setEnableHideGesture(true);
+        overlaySplitView.setEnableShowGesture(true);
+
+        overlaySplitView.setContent(mainContent);
+        overlaySplitView.setSidebarWidthUnit(LengthUnit.PX);
+        overlaySplitView.setSidebarWidthFraction(0.2);
+        overlaySplitView.setShowSidebar(sideBarVisible);
+
+        var boxList = new ListBox();
+        boxList.append(ListBoxRow.builder().setName("Hey").build());
+
+        var smallHeaderBar = HeaderBar.builder().build();
+        smallHeaderBar.setTitleWidget(Label.builder().setLabel("Animations").build());
+        smallHeaderBar.setHexpand(true);
+
+        var animations = Box.builder().build();
+        animations.append(smallHeaderBar);
+        animations.setValign(Align.START);
+        animations.setHexpand(true);
+
+        overlaySplitView.setSidebar(animations);
+
+        var sideBarToggleButton = new ToggleButton();
+        sideBarToggleButton.setIconName("sidebar-show-symbolic");
+        headerBar.packStart(sideBarToggleButton);
+        sideBarToggleButton.setVisible(overlaySplitView.getShowSidebar());
+
+        sideBarToggleButton.onToggled(() -> {
+            boolean active = sideBarToggleButton.getActive();
+            if (active && !overlaySplitView.getShowSidebar()) {
+                sideBarVisible = true;
+                overlaySplitView.setShowSidebar(true);
+            } else if (!active && overlaySplitView.getShowSidebar()) {
+                sideBarVisible = false;
+                overlaySplitView.setCollapsed(false);
+            }
+        });
+
+        final boolean[] temp = {false};
+
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                if (getWidth() <= 500) {
+                    if (!temp[0]) {
+                        temp[0] = true;
+                        overlaySplitView.setCollapsed(true);
+                        sideBarToggleButton.setVisible(true);
+                    }
+                } else {
+                    temp[0] = false;
+                    overlaySplitView.setCollapsed(false);
+                    sideBarToggleButton.setVisible(false);
+                }
+                if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
+                    sideBarToggleButton.setActive(false);
+                }
+            }
+        }.runTaskTimerAsynchronously(0, 1);
+
         // adding the main container to the window
-        this.setContent(mainContent);
+        this.setContent(overlaySplitView);
     }
 
     // about dialog

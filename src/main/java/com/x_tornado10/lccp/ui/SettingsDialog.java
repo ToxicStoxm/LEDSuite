@@ -10,6 +10,7 @@ import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 // settings dialog / window
 public class SettingsDialog extends PreferencesDialog {
@@ -21,7 +22,6 @@ public class SettingsDialog extends PreferencesDialog {
     private LCCPTask autoUpdateRemote = null;
     // preferences group server settings
     private PreferencesGroup serverSettings = null;
-    private static PreferencesPage cur = null;
 
     // settings dialog constructor
     public SettingsDialog() {
@@ -193,8 +193,7 @@ public class SettingsDialog extends PreferencesDialog {
         if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
 
         user_pref_page.add(serverSettings);
-        cur = user_pref_page;
-        return cur;
+        return user_pref_page;
     }
 
     private ActionRow manualRemoteApplySwitchRow = null;

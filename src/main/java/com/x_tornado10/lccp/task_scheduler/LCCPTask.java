@@ -82,7 +82,7 @@ public class LCCPTask implements Task, Runnable {
      * @return false if it is a craft future task that has already begun execution, true otherwise
      */
     boolean cancel0() {
-        setPeriod(-2l);
+        setPeriod(-2L);
         return true;
     }
 }

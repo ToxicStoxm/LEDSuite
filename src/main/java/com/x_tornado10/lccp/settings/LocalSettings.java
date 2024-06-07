@@ -11,8 +11,7 @@ import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.URL;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 
 // settings class to store config settings on runtime
@@ -157,10 +156,12 @@ public class LocalSettings extends Settings {
         // loading config file
         YAMLConfiguration conf;
         FileHandler fH;
+        HashMap<Integer, String> comments;
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
             fH.load(Paths.File_System.config);
+            comments = new HashMap<>(CommentPreservation.extractComments(Paths.File_System.config));
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing config values to config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -181,8 +182,15 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
             // saving settings
             fH.save(Paths.File_System.config);
+            CommentPreservation.insertComments(Paths.File_System.config, comments);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for config.yaml!");
+            LCCP.logger.warn("Please restart the application to prevent further errors!");
+            LCCP.logger.warn("Previously made changes to the config may be lost!");
+            LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
+            return;
+        } catch (IOException e) {
+            LCCP.logger.error("Something went wrong while saving the config comments for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             LCCP.logger.warn("Previously made changes to the config may be lost!");
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
@@ -191,7 +199,6 @@ public class LocalSettings extends Settings {
 
         LCCP.logger.debug("Successfully saved server-config values to config.yaml!");
     }
-
 
     // creating clone for unnecessary saving check
     @Override

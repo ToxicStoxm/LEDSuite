@@ -9,25 +9,25 @@ public class LCCPFuture<T> extends LCCPTask implements Future<T> {
     private Exception exception = null;
 
     LCCPFuture(final Callable<T> callable, final int id) {
-        super(null, id, -1l);
+        super(null, id, -1L);
         this.callable = callable;
     }
 
     public synchronized boolean cancel(final boolean mayInterruptIfRunning) {
-        if (getPeriod() != -1l) {
+        if (getPeriod() != -1L) {
             return false;
         }
-        setPeriod(-2l);
+        setPeriod(-2L);
         return true;
     }
 
     public boolean isCancelled() {
-        return getPeriod() == -2l;
+        return getPeriod() == -2L;
     }
 
     public boolean isDone() {
         final long period = this.getPeriod();
-        return period != -1l && period != -3l;
+        return period != -1L && period != -3L;
     }
 
     public T get() throws CancellationException, InterruptedException, ExecutionException {
@@ -41,13 +41,13 @@ public class LCCPFuture<T> extends LCCPTask implements Future<T> {
     public synchronized T get(long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         timeout = unit.toMillis(timeout);
         long period = this.getPeriod();
-        long timestamp = timeout > 0 ? System.currentTimeMillis() : 0l;
+        long timestamp = timeout > 0 ? System.currentTimeMillis() : 0L;
         while (true) {
-            if (period == -1l || period == -3l) {
+            if (period == -1L || period == -3L) {
                 this.wait(timeout);
                 period = this.getPeriod();
-                if (period == -1l || period == -3l) {
-                    if (timeout == 0l) {
+                if (period == -1L || period == -3L) {
+                    if (timeout == 0L) {
                         continue;
                     }
                     timeout += timestamp - (timestamp = System.currentTimeMillis());
@@ -57,26 +57,26 @@ public class LCCPFuture<T> extends LCCPTask implements Future<T> {
                     throw new TimeoutException();
                 }
             }
-            if (period == -2l) {
+            if (period == -2L) {
                 throw new CancellationException();
             }
-            if (period == -4l) {
+            if (period == -4L) {
                 if (exception == null) {
                     return value;
                 }
                 throw new ExecutionException(exception);
             }
-            throw new IllegalStateException("Expected " + -1l + " to " + -4l + ", got " + period);
+            throw new IllegalStateException("Expected " + -1L + " to " + -4L + ", got " + period);
         }
     }
 
     @Override
     public void run() {
         synchronized (this) {
-            if (getPeriod() == -2l) {
+            if (getPeriod() == -2L) {
                 return;
             }
-            setPeriod(-3l);
+            setPeriod(-3L);
         }
         try {
             value = callable.call();
@@ -84,17 +84,17 @@ public class LCCPFuture<T> extends LCCPTask implements Future<T> {
             exception = e;
         } finally {
             synchronized (this) {
-                setPeriod(-4l);
+                setPeriod(-4L);
                 this.notifyAll();
             }
         }
     }
 
     synchronized boolean cancel0() {
-        if (getPeriod() != -1l) {
+        if (getPeriod() != -1L) {
             return false;
         }
-        setPeriod(-2l);
+        setPeriod(-2L);
         notifyAll();
         return true;
     }

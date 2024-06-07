@@ -17,7 +17,6 @@ import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.Pango;
 
-//@GtkTemplate(name = "window", ui = "/com/x_tornado10/lccp/ui/window.ui")
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
     // status banner and toast overlay used in the main window
@@ -218,6 +217,8 @@ public class Window extends ApplicationWindow implements EventListener {
 
 
         // adding the header bar to the header bar container
+        headerBarContainer.setHomogeneous(true);
+        headerBar.setCssClasses(new String[]{"flat"});
         headerBarContainer.append(headerBar);
 
         // adding the status row to the header bar container
@@ -252,6 +253,8 @@ public class Window extends ApplicationWindow implements EventListener {
         smallHeaderBar.setTitleWidget(Label.builder().setLabel("Animations").build());
         smallHeaderBar.setHexpand(true);
 
+        smallHeaderBar.setCssClasses(new String[]{"flat"});
+
         var animations = Box.builder().build();
         animations.append(smallHeaderBar);
         animations.setValign(Align.START);
@@ -280,7 +283,7 @@ public class Window extends ApplicationWindow implements EventListener {
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (getWidth() <= 500) {
+                if (getWidth() <= 680) {
                     if (!temp[0]) {
                         temp[0] = true;
                         overlaySplitView.setCollapsed(true);

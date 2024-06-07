@@ -13,6 +13,7 @@ import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Objects;
 
 @Setter
@@ -114,10 +115,12 @@ public class ServerSettings extends Settings{
         // loading config file
         YAMLConfiguration conf;
         FileHandler fH;
+        HashMap<Integer, String> comments;
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
             fH.load(Paths.File_System.server_config);
+            comments = new HashMap<>(CommentPreservation.extractComments(Paths.File_System.server_config));
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing server-config values to server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -131,8 +134,15 @@ public class ServerSettings extends Settings{
             conf.setProperty(Paths.Server_Config.PORT, Port);
             // saving settings
             fH.save(Paths.File_System.server_config);
+            CommentPreservation.insertComments(Paths.File_System.server_config, comments);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for server-config.yaml!");
+            LCCP.logger.warn("Please restart the application to prevent further errors!");
+            LCCP.logger.warn("Previously made changes to the server-config may be lost!");
+            LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
+            return;
+        } catch (IOException e) {
+            LCCP.logger.error("Something went wrong while saving the config comments for server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             LCCP.logger.warn("Previously made changes to the server-config may be lost!");
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");

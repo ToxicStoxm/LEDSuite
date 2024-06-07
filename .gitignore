@@ -92,6 +92,7 @@ local.properties
 *_BASE_*.txt
 *_LOCAL_*.txt
 *_REMOTE_*.txt
+*deprecated*
 
 ### Java ###
 # Compiled class file

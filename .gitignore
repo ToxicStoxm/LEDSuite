@@ -92,7 +92,6 @@ local.properties
 *_BASE_*.txt
 *_LOCAL_*.txt
 *_REMOTE_*.txt
-*deprecated*
 
 ### Java ###
 # Compiled class file
@@ -189,3 +188,5 @@ target
 .gradle
 README.html
 .exercism
+/src/main/java/com/x_tornado10/lccp/deprecated/
+/src/main/java/com/x_tornado10/lccp/deprecated/

@@ -190,7 +190,7 @@ public class LocalSettings extends Settings {
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
             return;
         } catch (IOException e) {
-            LCCP.logger.error("Something went wrong while saving the config comments for config.yaml!");
+            LCCP.logger.error("Something went wrong while saving the ls llsconfig comments for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             LCCP.logger.warn("Previously made changes to the config may be lost!");
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");

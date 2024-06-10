@@ -15,6 +15,7 @@ import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
+import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
 
 // main application window
@@ -246,21 +247,68 @@ public class Window extends ApplicationWindow implements EventListener {
         overlaySplitView.setSidebarWidthFraction(0.2);
         overlaySplitView.setShowSidebar(sideBarVisible);
 
-        var boxList = new ListBox();
-        boxList.append(ListBoxRow.builder().setName("Hey").build());
-
         var smallHeaderBar = HeaderBar.builder().build();
         smallHeaderBar.setTitleWidget(Label.builder().setLabel("Animations").build());
         smallHeaderBar.setHexpand(true);
 
         smallHeaderBar.setCssClasses(new String[]{"flat"});
 
-        var animations = Box.builder().build();
-        animations.append(smallHeaderBar);
-        animations.setValign(Align.START);
-        animations.setHexpand(true);
+        var sidebarContentBox = Box.builder()
+                .setOrientation(Orientation.VERTICAL)
+                .setSpacing(10)
+                .setValign(Align.START)
+                .setHexpand(true)
+                .build();
 
-        overlaySplitView.setSidebar(animations);
+        var addFileList = ListBox.builder()
+                .setSelectionMode(SelectionMode.BROWSE)
+                .setCssClasses(
+                        new String[]{"navigation-sidebar"}
+                )
+                .build();
+        addFileList.append(
+                ListBoxRow.builder()
+                .setSelectable(true)
+                .setChild(
+                        Label.builder()
+                                .setLabel("Add File")
+                                .setEllipsize(EllipsizeMode.END)
+                                .setXalign(0)
+                                .build()
+                ).build()
+        );
+
+
+        var animationsList = ListBox.builder()
+                .setSelectionMode(SelectionMode.BROWSE)
+                .setCssClasses(
+                        new String[]{"navigation-sidebar"}
+                )
+                .build();
+        animationsList.append(
+                ListBoxRow.builder()
+                .setSelectable(true)
+                .setChild(
+                        Label.builder()
+                                .setLabel("Animations")
+                                .setEllipsize(EllipsizeMode.END)
+                                .setXalign(0)
+                                .build()
+                ).build()
+        );
+
+        sidebarContentBox.append(addFileList);
+        sidebarContentBox.append(Separator.builder().build());
+        sidebarContentBox.append(animationsList);
+
+
+        var sidebarMainBox = new Box(Orientation.VERTICAL, 0);
+        sidebarMainBox.append(smallHeaderBar);
+        sidebarMainBox.append(sidebarContentBox);
+
+        var scrolledView = ScrolledWindow.builder().setChild(sidebarMainBox).build();
+
+        overlaySplitView.setSidebar(scrolledView);
 
         var sideBarToggleButton = new ToggleButton();
         sideBarToggleButton.setIconName("sidebar-show-symbolic");

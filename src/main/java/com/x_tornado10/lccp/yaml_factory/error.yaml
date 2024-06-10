@@ -1,0 +1,5 @@
+package_type: error
+error_source: [power, invalid_file, invalid_request, other]
+error_code: # some number
+error_name: # error description (plain english)
+error_severity: [1, 2, 3, 4] # 1: simple software error (wrong filetype) 2: medium software error (r/w part corrupted) 3: non-severe hardware error (overcurrent / short-circuit) 4: severe hardware error (overvoltage / safety coprocessor triggered or missing / unresponsive)

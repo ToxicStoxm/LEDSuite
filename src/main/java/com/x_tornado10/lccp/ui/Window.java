@@ -189,14 +189,21 @@ public class Window extends ApplicationWindow implements EventListener {
             if (e == null) return;
             switch (e.getName()) {
                 case "status" -> {
+                    LCCP.logger.debug("User click: status row");
                     //new StatusWindow().present();
                     Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
                 }
                 // opening settings dialog
-                case "settings" -> getSettingsDialog().present(this);
+                case "settings" -> {
+                    LCCP.logger.debug("User click: settings row");
+                    getSettingsDialog().present(this);
+                }
                 // opening about dialog
-                case "about" -> getAboutDialog().present(this);
+                case "about" -> {
+                    LCCP.logger.debug("User click: about row");
+                    getAboutDialog().present(this);
+                }
             }
             // close the popover
             popover.emitClosed();
@@ -206,6 +213,10 @@ public class Window extends ApplicationWindow implements EventListener {
         popover.setChild(menuDropDownList);
         // adding popover to menu button, so it is displayed when the button is clicked
         mbutton.setPopover(popover);
+
+        mbutton.onActivate(() -> {
+           LCCP.logger.debug("Menu button clicked");
+        });
 
         // adding the search button to the start of the header bar and the menu button to its end
         //headerBar.packStart(sbutton);
@@ -273,15 +284,24 @@ public class Window extends ApplicationWindow implements EventListener {
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
+        var b0 = Box.builder()
+                .setOrientation(Orientation.HORIZONTAL)
+                .setTooltipText("Add file to LED-Cube (Upload)")
+                .setSpacing(10)
+                .build();
+        b0.append(Image.fromIconName("document-send-symbolic"));
+        b0.append(
+                Label.builder()
+                        .setLabel("Add File")
+                        .setEllipsize(EllipsizeMode.END)
+                        .setXalign(0)
+                        .build()
+        );
         addFileList.append(
                 ListBoxRow.builder()
                 .setSelectable(true)
                 .setChild(
-                        Label.builder()
-                                .setLabel("Add File")
-                                .setEllipsize(EllipsizeMode.END)
-                                .setXalign(0)
-                                .build()
+                       b0
                 ).build()
         );
 
@@ -294,9 +314,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        int y = //(int) Math.round(Math.ceil(Math.random() * 1000));
-                1000000000;
-
+        int y = (int) Math.round(Math.ceil(Math.random() * 1000));
 
 
         List<String> gnomeIconNames = new ArrayList<>();
@@ -372,15 +390,21 @@ public class Window extends ApplicationWindow implements EventListener {
 
         for (int i = 0; i <= y; i++) {
 
-            var b = Box.builder().setOrientation(Orientation.HORIZONTAL).setSpacing(10).build();
+            var b = Box.builder()
+                    .setOrientation(Orientation.HORIZONTAL)
+                    .setTooltipText("Animation " + (i + 1))
+                    .setSpacing(10)
+                    .build();
             Random random = new Random();
             int index = random.nextInt(gnomeIconNames.size());
             b.append(Image.fromIconName(gnomeIconNames.get(index)));
-            b.append(Label.builder()
-                    .setLabel("Animation " + (i + 1))
-                    .setEllipsize(EllipsizeMode.END)
-                    .setXalign(0)
-                    .build());
+            b.append(
+                    Label.builder()
+                            .setLabel("Animation " + (i + 1))
+                            .setEllipsize(EllipsizeMode.END)
+                            .setXalign(0)
+                            .build()
+            );
 
             animationsList.append(
                     ListBoxRow.builder()
@@ -391,13 +415,13 @@ public class Window extends ApplicationWindow implements EventListener {
             );
         }
 
-        addFileList.onRowActivated(row -> {
-            LCCP.logger.debug("AddFileList: " + row.getName());
+        addFileList.onRowActivated(_ -> {
+            LCCP.logger.debug("Clicked add file row!");
             animationsList.setSelectionMode(SelectionMode.NONE);
             animationsList.setSelectionMode(SelectionMode.BROWSE);
         });
         animationsList.onRowActivated(row -> {
-            LCCP.logger.debug("AnimationsList: " + row.getName());
+            LCCP.logger.debug("AnimationSelected: " + row.getChild().getTooltipText());
             addFileList.setSelectionMode(SelectionMode.NONE);
             addFileList.setSelectionMode(SelectionMode.BROWSE);
         });
@@ -425,22 +449,27 @@ public class Window extends ApplicationWindow implements EventListener {
             if (active && !overlaySplitView.getShowSidebar()) {
                 sideBarVisible = true;
                 overlaySplitView.setShowSidebar(true);
+                LCCP.logger.debug("Sidebar show button pressed (toggle:true)");
             } else if (!active && overlaySplitView.getShowSidebar()) {
                 sideBarVisible = false;
                 overlaySplitView.setCollapsed(false);
+                LCCP.logger.debug("Sidebar show button pressed (toggle:false)");
             }
         });
 
         final boolean[] temp = {false};
 
+        int min = 680;
+
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (getWidth() <= 680) {
+                if (getWidth() <= min) {
                     if (!temp[0]) {
                         temp[0] = true;
                         overlaySplitView.setCollapsed(true);
                         sideBarToggleButton.setVisible(true);
+                        LCCP.logger.debug("Window with <= " + min + ". Collapsing sidebar");
                     }
                 } else {
                     temp[0] = false;

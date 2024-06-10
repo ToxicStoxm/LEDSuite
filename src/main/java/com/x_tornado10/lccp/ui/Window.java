@@ -11,12 +11,19 @@ import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
+import org.gnome.gio.Icon;
 import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
+import org.gnome.glib.Variant;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
@@ -248,7 +255,7 @@ public class Window extends ApplicationWindow implements EventListener {
         overlaySplitView.setShowSidebar(sideBarVisible);
 
         var smallHeaderBar = HeaderBar.builder().build();
-        smallHeaderBar.setTitleWidget(Label.builder().setLabel("Animations").build());
+        smallHeaderBar.setTitleWidget(Label.builder().setLabel("File Management").build());
         smallHeaderBar.setHexpand(true);
 
         smallHeaderBar.setCssClasses(new String[]{"flat"});
@@ -278,6 +285,8 @@ public class Window extends ApplicationWindow implements EventListener {
                 ).build()
         );
 
+        var Animations = Label.builder().setLabel("Animations").build();
+
 
         var animationsList = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
@@ -285,20 +294,117 @@ public class Window extends ApplicationWindow implements EventListener {
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        animationsList.append(
-                ListBoxRow.builder()
-                .setSelectable(true)
-                .setChild(
-                        Label.builder()
-                                .setLabel("Animations")
-                                .setEllipsize(EllipsizeMode.END)
-                                .setXalign(0)
-                                .build()
-                ).build()
+        int y = (int) Math.round(Math.ceil(Math.random() * 1000));
+
+
+
+        List<String> gnomeIconNames = new ArrayList<>();
+        Collections.addAll(gnomeIconNames,
+                "application-exit",
+                "appointment-new",
+                "call-start",
+                "call-stop",
+                "contact-new",
+                "document-new",
+                "document-open",
+                "document-save",
+                "document-save-as",
+                "edit-cut",
+                "edit-copy",
+                "edit-paste",
+                "edit-delete",
+                "edit-find",
+                "edit-find-replace",
+                "folder-new",
+                "format-indent-more",
+                "format-indent-less",
+                "format-text-bold",
+                "format-text-italic",
+                "format-text-underline",
+                "go-home",
+                "go-bottom",
+                "go-down",
+                "go-first",
+                "go-jump",
+                "go-last",
+                "go-next",
+                "go-previous",
+                "go-top",
+                "help-about",
+                "help-contents",
+                "help-faq",
+                "insert-image",
+                "insert-link",
+                "insert-object",
+                "list-add",
+                "list-remove",
+                "mail-send",
+                "mail-mark-important",
+                "mail-reply-sender",
+                "mail-reply-all",
+                "mail-forward",
+                "media-eject",
+                "media-playback-start",
+                "media-playback-pause",
+                "media-playback-stop",
+                "media-record",
+                "media-seek-backward",
+                "media-seek-forward",
+                "media-skip-backward",
+                "media-skip-forward",
+                "process-stop",
+                "system-lock-screen",
+                "system-log-out",
+                "system-reboot",
+                "system-shutdown",
+                "view-fullscreen",
+                "view-refresh",
+                "view-restore",
+                "view-sort-ascending",
+                "view-sort-descending",
+                "window-close",
+                "zoom-in",
+                "zoom-out",
+                "zoom-original",
+                "zoom-fit-best"
         );
 
+        for (int i = 0; i <= y; i++) {
+            //LCCP.logger.debug(String.valueOf(i));
+
+            var b = Box.builder().setOrientation(Orientation.HORIZONTAL).setSpacing(10).build();
+            //b.append(Button.builder().setCssClasses(new String[]{"flat"}).setIconName("sidebar-show-symbolic").build());
+            Random random = new Random();
+            int index = random.nextInt(gnomeIconNames.size());
+            b.append(Image.fromIconName(gnomeIconNames.get(index)));
+            b.append(Label.builder()
+                    .setLabel("Animation " + (i + 1))
+                    .setEllipsize(EllipsizeMode.END)
+                    .setXalign(0)
+                    .build());
+
+            animationsList.append(
+                    ListBoxRow.builder()
+                            .setSelectable(true)
+                            .setChild(
+                                    b
+                            ).build()
+            );
+        }
+
+        addFileList.onRowActivated(row -> {
+            LCCP.logger.debug("AddFileList: " + row.getName());
+            animationsList.setSelectionMode(SelectionMode.NONE);
+            animationsList.setSelectionMode(SelectionMode.BROWSE);
+        });
+        animationsList.onRowActivated(row -> {
+            LCCP.logger.debug("AnimationsList: " + row.getName());
+            addFileList.setSelectionMode(SelectionMode.NONE);
+            addFileList.setSelectionMode(SelectionMode.BROWSE);
+        });
         sidebarContentBox.append(addFileList);
         sidebarContentBox.append(Separator.builder().build());
+        sidebarContentBox.append(Animations);
         sidebarContentBox.append(animationsList);
 
 

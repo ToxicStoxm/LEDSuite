@@ -294,7 +294,8 @@ public class Window extends ApplicationWindow implements EventListener {
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        int y = (int) Math.round(Math.ceil(Math.random() * 1000));
+        int y = //(int) Math.round(Math.ceil(Math.random() * 1000));
+                1000000000;
 
 
 
@@ -370,10 +371,8 @@ public class Window extends ApplicationWindow implements EventListener {
         );
 
         for (int i = 0; i <= y; i++) {
-            //LCCP.logger.debug(String.valueOf(i));
 
             var b = Box.builder().setOrientation(Orientation.HORIZONTAL).setSpacing(10).build();
-            //b.append(Button.builder().setCssClasses(new String[]{"flat"}).setIconName("sidebar-show-symbolic").build());
             Random random = new Random();
             int index = random.nextInt(gnomeIconNames.size());
             b.append(Image.fromIconName(gnomeIconNames.get(index)));

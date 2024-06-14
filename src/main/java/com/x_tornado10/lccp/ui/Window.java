@@ -6,15 +6,18 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
+import org.apache.commons.configuration2.YAMLConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
-import org.gnome.gio.Icon;
 import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
-import org.gnome.glib.Variant;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
@@ -191,8 +194,83 @@ public class Window extends ApplicationWindow implements EventListener {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
                     //new StatusWindow().present();
-                    Networking.FileSender.sendFileToServer(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
+                    //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
+                    new LCCPRunnable() {
+                        @Override
+                        public void run() {
+                            YAMLConfiguration yaml = null;
+                            try {
+                                yaml = new YAMLMessage()
+                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                        .setRequestFile("test-file.mp4")
+                                                        .build();
+                            } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
+                                     YAMLAssembly.InvalidPacketTypeException ex) {
+                                ex.printStackTrace();
+                            } catch (YAMLAssembly.TODOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            /*
+                            for (int i = 200000; i >= 0; i--) {
+                                yaml.setProperty(String.valueOf(i), "");
+                            }
+                             */
+
+                            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
+                            yaml = new YAMLConfiguration();
+
+
+                            FileHandler fh = new FileHandler(yaml);
+                            try {
+                                fh.load(Paths.File_System.appDir + "test.yaml");
+                            } catch (ConfigurationException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+
+
+                            //LCCP.logger.debug("done");
+
+
+                            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
+
+                            try {
+                                Thread.sleep(20);
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.status)
+                                                        .build()
+                                        );
+                                Thread.sleep(20);
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.reply)
+                                                        .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                                                        .setFileLoaded(true)
+                                                        .setFileState(YAMLMessage.FILE_STATE.playing)
+                                                        .setFileSelected("test-file.mp4")
+                                                        .setCurrentDraw(12)
+                                                        .setVoltage(220.0)
+                                                        .setLidState(false)
+                                        .build()
+                                );
+                            } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
+                                     YAMLAssembly.InvalidPacketTypeException | InterruptedException ex) {
+                                ex.printStackTrace();
+                            } catch (YAMLAssembly.TODOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }.runTaskAsynchronously();
                 }
                 // opening settings dialog
                 case "settings" -> {

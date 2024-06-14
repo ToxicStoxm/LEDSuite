@@ -6,12 +6,14 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
+import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.util.logging.Messages;
+import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -19,19 +21,25 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
 @Getter
 public class LCCP implements EventListener {
+    @Getter
+    private static LCCP instance;
     public static LocalSettings settings;
     public static ServerSettings server_settings;
     public static Logger logger;
+    public static NetworkLogger networkLogger;
     private static long start;
     private final Application app;
     public static EventManager eventManager;
@@ -39,6 +47,7 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
+    public static boolean server = false;
 
     // main method
     public static void main(String[] args) {
@@ -54,6 +63,9 @@ public class LCCP implements EventListener {
 
     // constructor method
     public LCCP(String[] args) {
+
+        instance = this;
+
         // create new libadwaita application object
         app = new Application("com.x_tornado10.lccp", ApplicationFlags.DEFAULT_FLAGS);
         // define function to be executed on application start
@@ -72,6 +84,8 @@ public class LCCP implements EventListener {
         server_settings = new ServerSettings();
         // create new logger instance
         logger = new Logger();
+        // create new networkLogger instance
+        networkLogger = new NetworkLogger();
         // general startup information displayed in the console upon starting the program
         logger.info("Welcome back!");
         logger.info("Starting Program...");
@@ -181,6 +195,76 @@ public class LCCP implements EventListener {
         // this means it can at most run 5 different tasks at the same time
         lccpScheduler = new LCCPScheduler();
         tickingSystem = new TickingSystem();
+
+        server = true;
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                try (ServerSocket server = new ServerSocket(server_settings.getPort())) {
+                    while (LCCP.server) {
+                        Socket socket = server.accept();
+                        String id = "[" +
+                                networkLogger.getRandomUUID(
+                                        "[Internal Server]" +
+                                                "[Data Input]" +
+                                                "[YAML]" +
+                                                "[Sender '" + socket.getInetAddress().getHostAddress() + "']" +
+                                                "[Port '" + server.getLocalPort() + "']"
+                                ) +
+                                "] ";
+                        LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
+                        LCCP.logger.debug(id + "Type: server - data in");
+
+                        try (InputStream input = socket.getInputStream();
+                             BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+
+                            String text;
+                            CharBuffer charBuffer = CharBuffer.allocate(1024);
+                            int added = reader.read(charBuffer);
+                            int bytes = 0;
+                            if (added > 0) {
+                                charBuffer.flip();
+                                CharBuffer sub = charBuffer.subSequence(0, added);
+                                bytes = Integer.parseInt(sub.toString());
+                                LCCP.logger.debug(id + "Bytes: " + bytes);
+                            }
+
+                            List<String> content = new ArrayList<>();
+                            if (bytes > 0) {
+                                while ((text = reader.readLine()) != null) {
+                                    content.add(text);
+                                }
+                                new LCCPRunnable() {
+                                    @Override
+                                    public void run() {
+                                        LCCP.logger.debug(id + "Packet Content:");
+                                        for (String s : content) {
+                                            LCCP.logger.debug(id+ s);
+                                        }
+                                        content.clear();
+                                        LCCP.logger.debug(id + "Successfully received data!");
+                                        LCCP.logger.debug(id + "---------------------------------------------------------------");
+                                        //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
+                                    }
+                                }.runTaskAsynchronously();
+                            }
+                        } catch (IOException ex) {
+                            LCCP.logger.error(id + "Server receive socket failed to read input!");
+                            //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                        } finally {
+                            try {
+                                socket.close();
+                            } catch (IOException ex) {
+                                LCCP.logger.warn(id + "Server receive socket failed to close!");
+                                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.WARN);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    LCCP.logger.fatal("Server socket failed to start!");
+                }
+            }
+        }.runTaskAsynchronously();
     }
 
     // activate function
@@ -314,6 +398,8 @@ public class LCCP implements EventListener {
     public void onShutdown(Events.Shutdown e) {
         // default console message response to a shutdown event
         logger.debug("Fulfilling shutdown request: " + e.message());
+        server = false;
+        networkLogger.printEvents();
         logger.info("New log file was saved to: '" + Paths.File_System.logFile + "'");
     }
 }

@@ -50,4 +50,24 @@ public final class Paths {
         public static final String PORT = "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
         public static final String IPV4 = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
     }
+    public static final class NETWORK {
+        public static final class YAML {
+            public static final String PACKET_TYPE = "packet_type";
+            public static final String REQUEST_TYPE = "request_type";
+            public static final String REQUEST_FILE = "request_file";
+            public static final String OBJECT_PATH = "object_path";
+            public static final String OBJECT_NEW_VALUE = "object_new_value";
+            public static final String REPLY_TYPE = "reply_type";
+            public static final String FILE_IS_LOADED = "file_is_loaded";
+            public static final String FILE_STATE = "file_state";
+            public static final String FILE_SELECTED = "file_selected";
+            public static final String CURRENT_DRAW = "current_draw";
+            public static final String VOLTAGE = "voltage";
+            public static final String LID_STATE = "lid_state";
+            public static final String ERROR_SOURCE = "error_source";
+            public static final String ERROR_CODE = "error_code";
+            public static final String ERROR_NAME = "error_name";
+            public static final String ERROR_SEVERITY = "error_severity";
+        }
+    }
 }

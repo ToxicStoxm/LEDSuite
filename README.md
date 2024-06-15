@@ -1,5 +1,5 @@
 # LED-Cube-Control-Panel
- - Front-End for 10x10x10 LED Cube / Matrix Project  
+ - Front-End for any LED Cube with the matching backend
  - Back-End: https://github.com/hannescam/NeoSPI  
 ## WARNING: prototype software does currently not work properly
  - When the application officialy releases, this README will be updated!

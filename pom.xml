@@ -5,36 +5,59 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.x_tornado10</groupId>
-    <artifactId>LED-Cube-Control-Panel</artifactId>
-    <version>1.0.0</version>
+    <artifactId>lccp</artifactId>
+    <version>v0.0.1</version>
 
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>22</source>
+                    <target>22</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <filters>
+                                <!--
+                                filter out META-INF/ files and module-info.class files
+                                to prevent shaded .jar from breaking its strong encapsulation
+                                -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <finalName>LED-Cube-Control-Panel-${project.version}</finalName>
+                            <transformers>
+                                <!-- specify main class to the compiler -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.x_tornado10.lccp.LCCP</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.x_tornado10.Main</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
             </plugin>
         </plugins>
         <resources>
+            <!-- adding resources to the .jar -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
@@ -42,31 +65,38 @@
         </resources>
     </build>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.version>${project.version}</project.version>
     </properties>
-    <!--
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-    -->
+    <!-- project dependencies -->
     <dependencies>
+        <!-- annotation processor and library plugin -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
+        <!-- ansi library for displaying colours in console -->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
             <version>2.4.1</version>
         </dependency>
+        <!-- gnome and libadwaita libraries -->
+        <dependency>
+            <groupId>io.github.jwharm.javagi</groupId>
+            <artifactId>adw</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.jwharm.javagi</groupId>
+            <artifactId>webkit</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+        <!-- config manager using yaml -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-configuration2</artifactId>
@@ -77,22 +107,5 @@
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
         </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>open</artifactId>
-            <version>8.4.0.2</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>com.github.bailuk</groupId>
-            <artifactId>java-gtk</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        -->
     </dependencies>
 </project>

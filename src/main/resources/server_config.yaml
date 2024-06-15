@@ -1,5 +1,5 @@
 # Settings related to the Server
-Server-IP: cube
+Server-IP: "localhost"
 Server-Port: 1200
 # How bright the LED's should be
 # Value un percent (min 1% | max 100%)

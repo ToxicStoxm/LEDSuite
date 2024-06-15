@@ -1,0 +1,297 @@
+package com.x_tornado10.lccp.yaml_factory;
+
+import com.x_tornado10.lccp.util.Paths;
+import org.apache.commons.configuration2.YAMLConfiguration;
+
+import java.util.NoSuchElementException;
+
+public class YAMLAssembly {
+    public static YAMLConfiguration assembleYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
+        YAMLMessage.PACKET_TYPE packetType = null;
+        try {
+            packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketType());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
+        }
+        switch (packetType) {
+            case reply -> {
+                return assembleReplyYAML(yamlMessage);
+            }
+            case error -> {
+                return assembleErrorYAML(yamlMessage);
+            }
+            case request -> {
+                return assembleRequestYAML(yamlMessage);
+            }
+            case null, default -> throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
+        }
+    }
+
+    protected static YAMLConfiguration assembleReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
+        YAMLMessage.REPLY_TYPE replyType = null;
+        try {
+            replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyType());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
+        }
+        switch (replyType) {
+            case menu -> {
+                return assembleMenuReplyYAML(yamlMessage);
+            }
+            case status -> {
+                return assembleStatusReplyYAML(yamlMessage);
+            }
+            case null, default -> throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
+        }
+    }
+    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) throws TODOException {
+        throw new TODOException("Implement it!");
+    }
+
+    protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {
+        YAMLConfiguration yaml = new YAMLConfiguration();
+
+        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
+        if (yamlMessage.getRequestType() != null) yaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getRequestType());
+        yaml.setProperty(Paths.NETWORK.YAML.FILE_IS_LOADED, yamlMessage.isFileLoaded());
+        if (yamlMessage.getFileState() != null) yaml.setProperty(Paths.NETWORK.YAML.FILE_STATE, yamlMessage.getFileState());
+        if (yamlMessage.getFileSelected() != null && !yamlMessage.getFileSelected().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.FILE_SELECTED, yamlMessage.getFileSelected());
+        yaml.setProperty(Paths.NETWORK.YAML.CURRENT_DRAW, yamlMessage.getCurrentDraw());
+        yaml.setProperty(Paths.NETWORK.YAML.VOLTAGE, yamlMessage.getVoltage());
+        if (yamlMessage.getFileState() != null) yaml.setProperty(Paths.NETWORK.YAML.LID_STATE, yamlMessage.isLidState());
+
+        return yaml;
+    }
+
+    protected static YAMLConfiguration assembleErrorYAML(YAMLMessage yamlMessage) {
+        YAMLConfiguration yaml = new YAMLConfiguration();
+
+        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
+        if (yamlMessage.getErrorSource() != null) yaml.setProperty(Paths.NETWORK.YAML.ERROR_SOURCE, yamlMessage.getErrorSource());
+        yaml.setProperty(Paths.NETWORK.YAML.ERROR_CODE, yamlMessage.getErrorCode());
+        if (yamlMessage.getErrorName() != null && !yamlMessage.getErrorName().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.ERROR_NAME, yamlMessage.getErrorName());
+        yaml.setProperty(Paths.NETWORK.YAML.ERROR_SEVERITY, yamlMessage.getErrorSeverity());
+
+        return yaml;
+    }
+    protected static YAMLConfiguration assembleRequestYAML(YAMLMessage yamlMessage) {
+        YAMLConfiguration yaml = new YAMLConfiguration();
+
+        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
+        if (yamlMessage.getRequestType() != null) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_TYPE, yamlMessage.getRequestType());
+        if (yamlMessage.getRequestFile() != null && !yamlMessage.getRequestFile().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_FILE, yamlMessage.getRequestFile());
+        if (yamlMessage.getObjectPath() != null && !yamlMessage.getObjectPath().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_PATH, yamlMessage.getObjectPath());
+        if (yamlMessage.getObjectNewValue() != null && !yamlMessage.getObjectNewValue().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_NEW_VALUE, yamlMessage.getObjectNewValue());
+        return yaml;
+    }
+
+    public static class YAMLException extends Exception {
+        public YAMLException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidPacketTypeException extends YAMLException {
+        public InvalidPacketTypeException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidReplyTypeException extends YAMLException {
+        public InvalidReplyTypeException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidRequestTypeException extends YAMLException {
+        public InvalidRequestTypeException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidErrorSourceException extends YAMLException {
+        public InvalidErrorSourceException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidErrorCodeException extends YAMLException {
+        public InvalidErrorCodeException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidErrorSeverityException extends YAMLException {
+        public InvalidErrorSeverityException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidRequestFileException extends YAMLException {
+        public InvalidRequestFileException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidObjectPathException extends YAMLException {
+        public InvalidObjectPathException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidObjectNewValueException extends YAMLException {
+        public InvalidObjectNewValueException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidFileStateException extends YAMLException {
+        public InvalidFileStateException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidFileSelectedException extends YAMLException {
+        public InvalidFileSelectedException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidCurrentDrawException extends YAMLException {
+        public InvalidCurrentDrawException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidVoltageException extends YAMLException {
+        public InvalidVoltageException(String message) {
+            super(message);
+        }
+    }
+    public static class InvalidMenuReplySyntaxException extends YAMLException {
+        public InvalidMenuReplySyntaxException(String message) {
+            super(message);
+        }
+    }
+    public static class TODOException extends YAMLException {
+        public TODOException(String message) {
+            super(message);
+        }
+    }
+
+    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml) throws YAMLException {
+
+        String s = yaml.getString(Paths.NETWORK.YAML.PACKET_TYPE);
+        YAMLMessage.PACKET_TYPE pT;
+        try {
+            pT = YAMLMessage.PACKET_TYPE.valueOf(s);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidPacketTypeException("Invalid packet type: '" + s + "'");
+        }
+
+        YAMLMessage yamlMessage = new YAMLMessage().setPacketType(pT);
+
+        try {
+            switch (pT) {
+                case request -> disassembleRequestYAML(yaml, yamlMessage);
+                case reply -> disassembleReplyYAML(yaml, yamlMessage);
+                case error -> disassembleErrorYAML(yaml, yamlMessage);
+            }
+        } catch (NoSuchElementException e) {
+            throw new YAMLException("Couldn't disassemble YAML! Invalid or missing values / keys!");
+        }
+
+        return yamlMessage;
+    }
+
+    private static void disassembleRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+        String s0 = yaml.getString(Paths.NETWORK.YAML.REQUEST_TYPE);
+        YAMLMessage.REQUEST_TYPE rT;
+        try {
+            rT = YAMLMessage.REQUEST_TYPE.valueOf(s0);
+            yamlMessage.setRequestType(rT);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRequestTypeException("Invalid request type: '" + s0 + "'");
+        }
+
+        switch (rT) {
+            case play, pause, stop, menu, menu_change -> {
+                String requestFile = yaml.getString(Paths.NETWORK.YAML.REQUEST_FILE);
+                if (requestFile == null || requestFile.isBlank()) throw new InvalidRequestFileException("Invalid request file name: '" + requestFile + "'. Must be a valid, non empty String!");
+                yamlMessage.setRequestFile(requestFile);
+                if (rT == YAMLMessage.REQUEST_TYPE.menu_change) {
+                    String objectPath = yaml.getString(Paths.NETWORK.YAML.OBJECT_PATH);
+                    String objectNewValue = yaml.getString(Paths.NETWORK.YAML.OBJECT_NEW_VALUE);
+                    if (objectPath == null || objectPath.isBlank()) throw new InvalidObjectPathException("Invalid object path: '" + objectPath + "'. Must be a valid, non empty String!");
+                    yamlMessage.setObjectPath(objectPath);
+                    if (objectNewValue == null || objectNewValue.isBlank()) throw new InvalidObjectNewValueException("Invalid object new value: '" + objectNewValue + "'. Must be a valid, non empty String!");
+                    yamlMessage.setObjectNewValue(objectNewValue);
+                }
+            }
+        }
+    }
+
+    private static void disassembleReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+        String s0 = yaml.getString(Paths.NETWORK.YAML.REPLY_TYPE);
+        YAMLMessage.REPLY_TYPE rT;
+        try {
+            rT = YAMLMessage.REPLY_TYPE.valueOf(s0);
+            yamlMessage.setReplyType(rT);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidReplyTypeException("Invalid reply type: '" + s0 + "'");
+        }
+
+        switch (rT) {
+            case status -> disassembleStatusReplyYAML(yaml, yamlMessage);
+            case menu -> disassembleMenuReplyYAML(yaml, yamlMessage);
+        }
+    }
+
+    private static void disassembleStatusReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+        boolean fileIsLoaded = yaml.getBoolean(Paths.NETWORK.YAML.FILE_IS_LOADED);
+        yamlMessage.setFileLoaded(fileIsLoaded);
+
+        String s1 = yaml.getString(Paths.NETWORK.YAML.FILE_STATE);
+        String s2 = yaml.getString(Paths.NETWORK.YAML.FILE_SELECTED);
+        if (!s1.isBlank()) {
+            YAMLMessage.FILE_STATE fS;
+            try {
+                fS = YAMLMessage.FILE_STATE.valueOf(s1);
+                yamlMessage.setFileState(fS);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidFileStateException("Invalid file state: '" + s1 + "'");
+            }
+            if (s2.isBlank()) throw new InvalidFileSelectedException("Selected file name mustn't be empty if file state is given!");
+            else {
+                yamlMessage.setFileSelected(s2);
+            }
+        }
+
+        double currentDraw = yaml.getDouble(Paths.NETWORK.YAML.CURRENT_DRAW);
+        double voltage = yaml.getDouble(Paths.NETWORK.YAML.VOLTAGE);
+        boolean lidState = yaml.getBoolean(Paths.NETWORK.YAML.LID_STATE);
+
+        if (currentDraw < 0) throw new InvalidCurrentDrawException("Invalid current draw value! Value mustn't be negative!");
+        if (voltage < 0) throw new InvalidVoltageException("Invalid voltage value! Value mustn't be negative!");
+
+        yamlMessage.setCurrentDraw(currentDraw);
+        yamlMessage.setVoltage(voltage);
+        yamlMessage.setLidState(lidState);
+    }
+    private static void disassembleMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+
+    }
+
+    private static void disassembleErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+        String s0 = yaml.getString(Paths.NETWORK.YAML.ERROR_SOURCE);
+        YAMLMessage.ERROR_SOURCE eS;
+        try {
+            eS = YAMLMessage.ERROR_SOURCE.valueOf(s0);
+            yamlMessage.setErrorSource(eS);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidErrorSourceException("Invalid error source: '" + s0 + "'");
+        }
+
+        int errorCode = yaml.getInt(Paths.NETWORK.YAML.ERROR_CODE);
+        if (errorCode < 0) throw new InvalidErrorCodeException("Invalid error code: '" + errorCode + "'. Error code must be a valid, positive integer!");
+        yamlMessage.setErrorCode(errorCode);
+
+        yamlMessage.setErrorName(yaml.getString(Paths.NETWORK.YAML.ERROR_NAME));
+
+        String s1 = yaml.getString(Paths.NETWORK.YAML.ERROR_SEVERITY);
+        YAMLMessage.ERROR_SEVERITY eS0;
+        try {
+            eS0 = YAMLMessage.ERROR_SEVERITY.valueOf(s1);
+            yamlMessage.setErrorSeverity(eS0);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidErrorSeverityException("Invalid error severity: '" + s1 + "'");
+        }
+    }
+}

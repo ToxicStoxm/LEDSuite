@@ -1,0 +1,57 @@
+package_type: reply
+reply_type: menu
+menu_top:
+   layout:
+     orientation: x, y
+     align: start, center, end
+     spacing: 10
+   speed:
+     type: slider
+     slider_label: scroll speed
+     slider-current: 50
+     slider-min: 1
+     slider-max: 100
+
+   gfhjfdghfdgj:
+     type: [button, label, slider, text_box, toggle_button, dropdown]
+     content: jghfdjghsd #label
+     button_label: dfgjhfjudg
+     text_box_content: tfgjhfd
+     slider_current_value: 453
+     slider_max_value: 435
+     slider_min_value: 411
+     slider_label: fgjf
+     drop_down_content: #dropdown
+       _ fgfdg
+       _ sdfgsdfg
+       _ sdfgsd
+menu_center:
+  gfhjfdghfdgj:
+    type: [button, label, slider, text_box, toggle_button, dropdown]
+    reply_name: jfghjfd
+    content: jghfdjghsd #label
+    button_label: dfgjhfjudg
+    text_box_content: tfgjhfd
+    slider_current_value: 453
+    slider_max_value: 435
+    slider_min_value: 411
+    slider_label: fgjf
+    drop_down_content: #dropdown
+      _ fgfdg
+      _ sdfgsdfg
+      _ sdfgsd
+menu_bottom:
+  layout: flow
+  gfhjfdghfdgj:
+    type: [button, label, slider, text_box, toggle_button, dropdown]
+    content: jghfdjghsd #label
+    button_label: dfgjhfjudg
+    text_box_content: tfgjhfd
+    slider_current_value: 453
+    slider_max_value: 435
+    slider_min_value: 411
+    slider_label: fgjf
+    drop_down_content: #dropdown
+      _ fgfdg
+      _ sdfgsdfg
+      _ sdfgsd

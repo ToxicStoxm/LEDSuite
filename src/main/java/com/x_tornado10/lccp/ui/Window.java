@@ -14,6 +14,7 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
+import org.gnome.adw.Dialog;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
 import org.gnome.gio.SimpleAction;
@@ -193,51 +194,122 @@ public class Window extends ApplicationWindow implements EventListener {
             switch (e.getName()) {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
-                    //new StatusWindow().present();
+
+                    var statusList = Box.builder()
+                            .setOrientation(Orientation.VERTICAL)
+                            .setSpacing(12)
+                            .setHexpand(true)
+                            .build();
+                    var clamp = Clamp.builder()
+                            .setMaximumSize(500)
+                            .setTighteningThreshold(400)
+                            .setChild(statusList)
+                            .build();
+
+                    var powerUsage = PreferencesGroup.builder()
+                            .setCssClasses(new String[]{"background"})
+                            .setTitle("Power")
+                            .build();
+
+                    var currentDraw = ActionRow.builder()
+                            .setTitle("Current Draw")
+                            .setSubtitle("12A")
+                            .setSubtitleSelectable(true)
+                            .setCssClasses(new String[]{"property"})
+                            .build();
+                    var voltage = ActionRow.builder()
+                            .setTitle("Voltage")
+                            .setSubtitle("220V")
+                            .setSubtitleSelectable(true)
+                            .setCssClasses(new String[]{"property"})
+                            .build();
+
+                    var fileStats = PreferencesGroup.builder()
+                            .setCssClasses(new String[]{"background"})
+                            .setTitle("Animation")
+                            .build();
+
+                    var currentFile = ActionRow.builder()
+                            .setTitle("Current File")
+                            .setSubtitle("test-file.mp4")
+                            .setSubtitleSelectable(true)
+                            .setCssClasses(new String[]{"property"})
+                            .build();
+
+                    var fileState = ActionRow.builder()
+                            .setTitle("Current State")
+                            .setSubtitle("playing")
+                            .setSubtitleSelectable(true)
+                            .setCssClasses(new String[]{"property"})
+                            .build();
+
+                    var general = PreferencesGroup.builder()
+                            .setTitle("General")
+                            .build();
+
+                    var lidState = ActionRow.builder()
+                            .setTitle("Lid State")
+                            .setSubtitle("open")
+                            .setSubtitleSelectable(true)
+                            .setCssClasses(new String[]{"property"})
+                            .build();
+
+                    general.add(lidState);
+
+                    powerUsage.add(voltage);
+                    powerUsage.add(currentDraw);
+
+                    fileStats.add(fileState);
+                    fileStats.add(currentFile);
+
+                    statusList.append(general);
+                    statusList.append(fileStats);
+                    statusList.append(powerUsage);
+
+                    var statusPage = StatusPage.builder()
+                            .setIconName("LCCP-logo-256x256")
+                            .setTitle("LED Cube Status")
+                            .setChild(clamp)
+                            .build();
+
+                    var toolbarView = ToolbarView.builder()
+                            .setContent(statusPage)
+                            .build();
+
+                    var headerBar1 = HeaderBar.builder()
+                            .setShowTitle(false)
+                            .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                            .build();
+
+                    toolbarView.addTopBar(headerBar1);
+
+                    var statusDialog = PreferencesDialog.builder()
+                            .setChild(toolbarView)
+                            .setTitle("")
+                            .setSearchEnabled(true)
+                            .build();
+                    statusDialog.present(this);
+                    //statusDialog.setSizeRequest(500, 600);
+
+
                     //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
+                    /*
                     new LCCPRunnable() {
                         @Override
                         public void run() {
-                            YAMLConfiguration yaml = null;
                             try {
-                                yaml = new YAMLMessage()
-                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
-                                        .setRequestFile("test-file.mp4")
-                                                        .build();
-                            } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException ex) {
-                                ex.printStackTrace();
-                            } catch (YAMLAssembly.TODOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            /*
-                            for (int i = 200000; i >= 0; i--) {
-                                yaml.setProperty(String.valueOf(i), "");
-                            }
-                             */
-
-                            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
-                            yaml = new YAMLConfiguration();
-
-
-                            FileHandler fh = new FileHandler(yaml);
-                            try {
-                                fh.load(Paths.File_System.appDir + "test.yaml");
-                            } catch (ConfigurationException ex) {
-                                throw new RuntimeException(ex);
-                            }
-
-
-
-                            //LCCP.logger.debug("done");
-
-
-                            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
-
-                            try {
-                                Thread.sleep(20);
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                                        .setRequestFile("test-file.mp4")
+                                                        .build()
+                                        );
+                                //Thread.sleep(20);
                                 Networking.FileSender
                                         .sendYAML(
                                                 LCCP.server_settings.getIPv4(),
@@ -247,7 +319,7 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setRequestType(YAMLMessage.REQUEST_TYPE.status)
                                                         .build()
                                         );
-                                Thread.sleep(20);
+                                //Thread.sleep(20);
                                 Networking.FileSender
                                         .sendYAML(
                                                 LCCP.server_settings.getIPv4(),
@@ -264,13 +336,14 @@ public class Window extends ApplicationWindow implements EventListener {
                                         .build()
                                 );
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException | InterruptedException ex) {
+                                     YAMLAssembly.InvalidPacketTypeException ex) {
                                 ex.printStackTrace();
                             } catch (YAMLAssembly.TODOException ex) {
                                 throw new RuntimeException(ex);
                             }
                         }
                     }.runTaskAsynchronously();
+                     */
                 }
                 // opening settings dialog
                 case "settings" -> {

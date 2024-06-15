@@ -10,7 +10,6 @@ import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 // settings dialog / window
 public class SettingsDialog extends PreferencesDialog {

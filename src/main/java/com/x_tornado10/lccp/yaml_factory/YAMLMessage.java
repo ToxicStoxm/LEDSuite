@@ -1,5 +1,6 @@
 package com.x_tornado10.lccp.yaml_factory;
 
+import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
 
 @Getter
@@ -196,5 +197,53 @@ public class YAMLMessage implements YAMLFactoryMessage {
     public YAMLMessage setLidState(boolean lidState) {
         this.lidState = lidState;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("YAMLMessage {");
+
+        // Include fields based on packet type
+        switch (packetType) {
+            case error -> {
+                sb.append("packetType=").append(packetType.value).append(", ");
+                sb.append("errorSource=").append(errorSource.value).append(", ");
+                if (errorCode != 0) sb.append("errorCode=").append(errorCode).append(", ");
+                if (errorName != null && !errorName.isBlank()) sb.append("errorName='").append(errorName).append("', ");
+                sb.append("errorSeverity=").append(errorSeverity.value).append(", ");
+            }
+
+            case request -> {
+                sb.append("packetType=").append(packetType.value).append(", ");
+                sb.append("requestType=").append(requestType.value).append(", ");
+                switch (requestType) {
+                    case play, pause, stop, menu, menu_change -> {
+                        sb.append("requestFile='").append(requestFile).append("', ");
+                        if (requestType == REQUEST_TYPE.menu_change) {
+                            sb.append("objectPath='").append(objectPath).append("', ");
+                            sb.append("objectNewValue='").append(objectNewValue).append("', ");
+                        }
+                    }
+                }
+            }
+
+            case reply -> {
+                sb.append("packetType=").append(packetType.value).append(", ");
+                sb.append("replyType=").append(replyType.value).append(", ");
+                sb.append("isFileLoaded=").append(isFileLoaded).append(", ");
+                sb.append("fileState=").append(fileState.value).append(", ");
+                if (fileSelected != null && !fileSelected.isBlank())
+                    sb.append("fileSelected='").append(fileSelected).append("', ");
+                if (currentDraw != 0) sb.append("currentDraw=").append(currentDraw).append(", ");
+                if (voltage != 0) sb.append("voltage=").append(voltage).append(", ");
+                sb.append("lidState=").append(lidState).append(", ");
+            }
+        }
+
+        // Remove trailing comma and space
+        if (sb.length() > 12) sb.setLength(sb.length() - 2);
+
+        sb.append('}');
+        return sb.toString();
     }
 }

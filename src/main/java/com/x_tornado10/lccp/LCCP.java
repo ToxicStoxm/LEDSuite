@@ -14,6 +14,7 @@ import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.util.logging.Messages;
 import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
+import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -21,10 +22,13 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
+import javax.sound.sampled.AudioFormat;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -229,19 +233,46 @@ public class LCCP implements EventListener {
                                 LCCP.logger.debug(id + "Bytes: " + bytes);
                             }
 
-                            List<String> content = new ArrayList<>();
+                            YAMLConfiguration yaml = new YAMLConfiguration();
+                            FileHandler fh = new FileHandler(yaml);
+
+                            //List<String> content = new ArrayList<>();
                             if (bytes > 0) {
+
+                                StringBuilder sB = new StringBuilder();
                                 while ((text = reader.readLine()) != null) {
-                                    content.add(text);
+                                    //content.add(text);
+                                    sB.append(text).append("\n");
                                 }
+                                String yamlContent = sB.toString();
+                                //LCCP.logger.debug(id + "YAML Content:\n" + yamlContent);
+                                String cleanedYamlContent = yamlContent.replaceAll("[^\\x20-\\x7E\\x0A]", "");
+                                //LCCP.logger.debug(id + "Cleaned YAML Content:\n" + cleanedYamlContent);
+
+                                InputStream is = new ByteArrayInputStream(cleanedYamlContent.getBytes(StandardCharsets.UTF_8));
+
+                                fh.load(is);
                                 new LCCPRunnable() {
                                     @Override
                                     public void run() {
+
                                         LCCP.logger.debug(id + "Packet Content:");
+
+                                        try {
+                                            LCCP.logger.debug(id + YAMLAssembly.disassembleYAML(yaml).toString());
+                                        } catch (YAMLAssembly.YAMLException e) {
+                                            LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
+                                        }
+
+                                        /*
                                         for (String s : content) {
                                             LCCP.logger.debug(id+ s);
                                         }
-                                        content.clear();
+
+                                         */
+
+                                        //content.clear();
+
                                         LCCP.logger.debug(id + "Successfully received data!");
                                         LCCP.logger.debug(id + "---------------------------------------------------------------");
                                         //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
@@ -251,6 +282,9 @@ public class LCCP implements EventListener {
                         } catch (IOException ex) {
                             LCCP.logger.error(id + "Server receive socket failed to read input!");
                             //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                        } catch (ConfigurationException e) {
+                            LCCP.logger.error(id + "Error while trying to parse YAML from received data!");
+                            e.printStackTrace();
                         } finally {
                             try {
                                 socket.close();

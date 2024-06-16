@@ -6,7 +6,6 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -49,6 +48,11 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // toast overlay used to display toasts (notification) to the user
         toastOverlay = new ToastOverlay();
+
+        // container for the header bar on top of the application
+        var headerBarContainer = Box.builder()
+                .setOrientation(Orientation.VERTICAL)
+                .build();
 
         // the applications header bar
         var headerBar = new HeaderBar();
@@ -184,33 +188,70 @@ public class Window extends ApplicationWindow implements EventListener {
             switch (e.getName()) {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
-                    StatusDialog sD = new StatusDialog();
-                    sD.present(this);
+
+                    new StatusDialog().present(this);
+                    //statusDialog.setSizeRequest(500, 600);
+
+
+                    //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
+
 
                     new LCCPRunnable() {
                         @Override
                         public void run() {
                             try {
-                                Networking.FileSender.sendYAML("127.0.0.1", 1200,
-                                        new YAMLMessage()
-                                                .setPacketType(YAMLMessage.PACKET_TYPE.reply)
-                                                .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                                                .setFileLoaded(true)
-                                                .setFileState(YAMLMessage.FILE_STATE.playing)
-                                                .setFileSelected("test-file.mp4")
-                                                .setCurrentDraw(40)
-                                                .setVoltage(5)
-                                                .setLidState(false)
-                                                .setAvailableAnimations(constructMap(":", "hansimansi:cat-symbolic", "lol:symbolic","test:symbolic"))
-                                                .build()
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                                        .setRequestFile("test-file.mp4")
+                                                        .build()
                                         );
+                                //Thread.sleep(20);
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.status)
+                                                        .build()
+                                        );
+                                //Thread.sleep(20);
+                                HashMap<String, String> availableAnimations = new HashMap<>();
+                                availableAnimations.put("Hansimansi", "search-symbolic");
+                                availableAnimations.put("katze", "katze-symbolic");
+                                Networking.FileSender
+                                        .sendYAML(
+                                                LCCP.server_settings.getIPv4(),
+                                                LCCP.server_settings.getPort(),
+                                                new YAMLMessage()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.reply)
+                                                        .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                                                        .setFileLoaded(true)
+                                                        .setAvailableAnimations(
+                                                               availableAnimations
+                                                        )
+                                                        .setFileState(YAMLMessage.FILE_STATE.playing)
+                                                        .setFileSelected("test-file.mp4")
+                                                        .setCurrentDraw(12)
+                                                        .setVoltage(220.0)
+                                                        .setLidState(false)
+                                        .build()
+                                );
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException | YAMLAssembly.TODOException ex) {
+                                     YAMLAssembly.InvalidPacketTypeException ex) {
+                                for (StackTraceElement s : ex.getStackTrace()) {
+                                    LCCP.logger.error(s.toString());
+                                }
+                            } catch (YAMLAssembly.TODOException ex) {
                                 throw new RuntimeException(ex);
                             }
                         }
                     }.runTaskAsynchronously();
-                    
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -240,9 +281,9 @@ public class Window extends ApplicationWindow implements EventListener {
         //headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
 
+
         // creating main container witch will hold the main window content
         var mainContent = new Box(Orientation.VERTICAL, 0);
-        mainContent.setHomogeneous(false);
         // creating north / center / south containers to correctly align window content
         var northBox = new Box(Orientation.VERTICAL, 0);
         var centerBox = new Box(Orientation.VERTICAL, 0);
@@ -252,30 +293,33 @@ public class Window extends ApplicationWindow implements EventListener {
         // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
         southBox.setValign(Align.END);
 
+
+        // adding the header bar to the header bar container
+        headerBarContainer.setHomogeneous(true);
+        headerBar.setCssClasses(new String[]{"flat"});
+        headerBarContainer.append(headerBar);
+
+        // adding the status row to the header bar container
+        headerBarContainer.append(status);
         // toggling status bar visibility depending on user preferences
         setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
-        // adding the header bar container to the north box
-        northBox.append(status);
-
         // adding the toast overlay to the south box
         southBox.append(toastOverlay);
+        // adding the header bar container to the north box
+        northBox.append(headerBarContainer);
 
         // adding all alignment boxes to the main window container
         mainContent.append(northBox);
         mainContent.append(centerBox);
         mainContent.append(southBox);
 
-        var mainView = ToolbarView.builder().setContent(mainContent).build();
-        mainView.addTopBar(headerBar);
-        mainView.setTopBarStyle(ToolbarStyle.FLAT);
-
         var overlaySplitView = new OverlaySplitView();
 
         overlaySplitView.setEnableHideGesture(true);
         overlaySplitView.setEnableShowGesture(true);
 
-        overlaySplitView.setContent(mainView);
+        overlaySplitView.setContent(mainContent);
         overlaySplitView.setSidebarWidthUnit(LengthUnit.PX);
         overlaySplitView.setSidebarWidthFraction(0.2);
         overlaySplitView.setShowSidebar(sideBarVisible);
@@ -497,22 +541,8 @@ public class Window extends ApplicationWindow implements EventListener {
             }
         }.runTaskTimerAsynchronously(0, 1);
 
-        status.onButtonClicked(statusRow::emitActivate);
-        status.setButtonLabel("LED Cube Status");
-
         // adding the main container to the window
         this.setContent(overlaySplitView);
-    }
-
-    private HashMap<String, String> constructMap(String regex, String... entries) {
-        HashMap<String, String> result = new HashMap<>();
-        for (String s : entries) {
-            LCCP.logger.debug(s);
-            String[] parts = s.split(regex);
-            LCCP.logger.debug(Arrays.toString(parts));
-            result.put(parts[0], parts[1]);
-        }
-        return result;
     }
 
     // about dialog
@@ -545,18 +575,21 @@ public class Window extends ApplicationWindow implements EventListener {
         attr.change(Pango.attrScaleNew(1));
         return attr;
     }
-    protected void getStatus() {
-        try {
-            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
-                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                    .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                    .build()
-            );
-        } catch (YAMLAssembly.TODOException | ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                 YAMLAssembly.InvalidPacketTypeException e) {
-            LCCP.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
-            LCCP.logger.error(e);
+    // placeholder code for status row (will be replaced with actual status display in the future)
+    boolean uploading = true;
+    boolean displayingAnimation = false;
+    private String getStatus() {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (uploading) {
+            stringBuilder.append("Uploading -> 500MB/s | ");
         }
+        if (displayingAnimation) {
+            stringBuilder.append("Current Animation -> 'Never Gonna Give You Up.mp4'");
+        }
+        uploading = !uploading;
+        displayingAnimation = !displayingAnimation;
+        return stringBuilder.toString();
     }
     // status bar updater
     private LCCPTask statusBarUpdater;
@@ -567,11 +600,10 @@ public class Window extends ApplicationWindow implements EventListener {
             @Override
             public void run() {
                 if (!status.getRevealed()) return;
-                getStatus();
                 // updating status bar to show current status
-                //status.setTitle("LED-Cube-Status: " + getStatus());
+                status.setTitle("LED-Cube-Status: " + getStatus());
             }
-        }.runTaskTimerAsynchronously(0, 100);
+        }.runTaskTimerAsynchronously(0, 20);
     }
 
     // toggle status bar
@@ -641,9 +673,4 @@ public class Window extends ApplicationWindow implements EventListener {
     public void resetSettingsDialog() {
         this.sD = null;
     }
-
-    public void updateStatus(StatusUpdate statusUpdate) {
-        status.setTitle(statusUpdate.toString());
-    }
-
 }

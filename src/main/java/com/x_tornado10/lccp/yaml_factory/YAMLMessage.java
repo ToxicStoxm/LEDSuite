@@ -1,10 +1,15 @@
 package com.x_tornado10.lccp.yaml_factory;
 
-import com.x_tornado10.lccp.util.Paths;
 import lombok.Getter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class YAMLMessage implements YAMLFactoryMessage {
+
+    private UUID uuid;
 
     private PACKET_TYPE packetType = PACKET_TYPE.request;
     private ERROR_SOURCE errorSource = ERROR_SOURCE.other;
@@ -22,6 +27,22 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private double currentDraw = 0;
     private double voltage = 0;
     private boolean lidState = false;
+    private HashMap<String, String> availableAnimations = new HashMap<>();
+
+    public YAMLMessage(UUID uuid) {
+        this.uuid = uuid;
+    }
+    public YAMLMessage() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    protected YAMLMessage setUUID(UUID uuid) {
+        this.uuid = uuid;
+        return this;
+    }
+    public UUID getNetworkEventID() {
+        return uuid;
+    }
 
     public enum PACKET_TYPE {
         error("error"),
@@ -99,27 +120,27 @@ public class YAMLMessage implements YAMLFactoryMessage {
         }
     }
 
-    public String getPacketType() {
+    public String getPacketTypeV() {
         return packetType.value;
     }
 
-    public String getErrorSource() {
+    public String getErrorSourceV() {
         return errorSource.value;
     }
 
-    public int getErrorSeverity() {
+    public int getErrorSeverityV() {
         return errorSeverity.value;
     }
 
-    public String getRequestType() {
+    public String getRequestTypeV() {
         return requestType.value;
     }
 
-    public String getReplyType() {
+    public String getReplyTypeV() {
         return replyType.value;
     }
 
-    public String getFileState() {
+    public String getFileStateV() {
         return fileState.value;
     }
 
@@ -198,6 +219,10 @@ public class YAMLMessage implements YAMLFactoryMessage {
         this.lidState = lidState;
         return this;
     }
+    public YAMLMessage setAvailableAnimations(HashMap<String, String> availableAnimations) {
+        this.availableAnimations = availableAnimations;
+        return this;
+    }
 
     @Override
     public String toString() {
@@ -237,6 +262,7 @@ public class YAMLMessage implements YAMLFactoryMessage {
                 if (currentDraw != 0) sb.append("currentDraw=").append(currentDraw).append(", ");
                 if (voltage != 0) sb.append("voltage=").append(voltage).append(", ");
                 sb.append("lidState=").append(lidState).append(", ");
+                sb.append("availableAnimations=").append(availableAnimations).append(", ");
             }
         }
 

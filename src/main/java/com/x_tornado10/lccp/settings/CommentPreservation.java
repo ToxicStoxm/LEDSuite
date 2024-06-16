@@ -1,5 +1,7 @@
 package com.x_tornado10.lccp.settings;
 
+import com.x_tornado10.lccp.LCCP;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +25,9 @@ public final class CommentPreservation {
                 lineNumber++;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            for (StackTraceElement s : e.getStackTrace()) {
+                LCCP.logger.error(s.toString());
+            }
         }
 
         return result;

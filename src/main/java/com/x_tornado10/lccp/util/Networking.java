@@ -296,15 +296,31 @@ public class Networking {
         }
 
         public static boolean sendYAML(String serverIP4, int serverPort, YAMLConfiguration yaml) {
-            String id = "[" +
-                    LCCP.networkLogger.getRandomUUID(
-                            "[Client]" +
-                                    "[Data Output]" +
-                                    "[YAML]" +
-                                    "[Destination '" + serverIP4 +"']" +
-                                    "[Port '" + serverPort + "']"
-                    ) +
-                    "] ";
+            boolean noID = false;
+            String networkID = "";
+            String id;
+            String description =
+                    "[Client]" +
+                            "[Data Output]" +
+                            "[YAML]" +
+                            "[Destination '" + serverIP4 +"']" +
+                            "[Port '" + serverPort + "']";
+            try {
+                networkID = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+                if (networkID == null || networkID.isBlank()) noID = true;
+            } catch (NoSuchElementException e) {
+                noID = true;
+            }
+
+            if (noID) {
+                id = "[" +
+                        LCCP.networkLogger.getRandomUUID(description) +
+                        "] ";
+            } else {
+                id = "[" + networkID + "]";
+                LCCP.networkLogger.addEvent(UUID.fromString(networkID), description);
+            }
+
             //List<String> messages = new ArrayList<>();
             LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
             LCCP.logger.debug(id + "Type: client - data out");

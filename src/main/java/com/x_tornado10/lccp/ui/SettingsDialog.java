@@ -34,7 +34,7 @@ public class SettingsDialog extends PreferencesDialog {
         temp[1] = LCCP.settings.isDisplayStatusBar();
         temp[2] = LCCP.settings.isAutoUpdateRemote();
 
-        this.onClosed(() -> LCCP.mainWindow.test());
+        this.onClosed(() -> LCCP.mainWindow.resetSettingsDialog());
     }
 
     // function to generate a new settings dialog page

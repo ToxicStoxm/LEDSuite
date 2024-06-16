@@ -1,36 +1,35 @@
 package com.x_tornado10.lccp.yaml_factory;
 
 import com.x_tornado10.lccp.util.Paths;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class YAMLAssembly {
     public static YAMLConfiguration assembleYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
         YAMLMessage.PACKET_TYPE packetType = null;
+        YAMLConfiguration result = new YAMLConfiguration();
+        if (yamlMessage.getNetworkEventID() == null) yamlMessage.setUUID(UUID.randomUUID());
+        result.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkEventID()));
         try {
-            packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketType());
+            packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketTypeV());
         } catch (IllegalArgumentException e) {
             throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
         switch (packetType) {
-            case reply -> {
-                return assembleReplyYAML(yamlMessage);
-            }
-            case error -> {
-                return assembleErrorYAML(yamlMessage);
-            }
-            case request -> {
-                return assembleRequestYAML(yamlMessage);
-            }
+            case reply -> result = assembleReplyYAML(yamlMessage);
+            case error -> result = assembleErrorYAML(yamlMessage);
+            case request -> result = assembleRequestYAML(yamlMessage);
             case null, default -> throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
+        return result;
     }
 
     protected static YAMLConfiguration assembleReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
         YAMLMessage.REPLY_TYPE replyType = null;
         try {
-            replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyType());
+            replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyTypeV());
         } catch (IllegalArgumentException e) {
             throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
         }
@@ -51,14 +50,19 @@ public class YAMLAssembly {
     protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
-        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
-        if (yamlMessage.getRequestType() != null) yaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getRequestType());
+        if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
+        if (yamlMessage.getRequestTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getRequestTypeV());
         yaml.setProperty(Paths.NETWORK.YAML.FILE_IS_LOADED, yamlMessage.isFileLoaded());
-        if (yamlMessage.getFileState() != null) yaml.setProperty(Paths.NETWORK.YAML.FILE_STATE, yamlMessage.getFileState());
+        if (yamlMessage.getFileStateV() != null) yaml.setProperty(Paths.NETWORK.YAML.FILE_STATE, yamlMessage.getFileStateV());
         if (yamlMessage.getFileSelected() != null && !yamlMessage.getFileSelected().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.FILE_SELECTED, yamlMessage.getFileSelected());
         yaml.setProperty(Paths.NETWORK.YAML.CURRENT_DRAW, yamlMessage.getCurrentDraw());
         yaml.setProperty(Paths.NETWORK.YAML.VOLTAGE, yamlMessage.getVoltage());
-        if (yamlMessage.getFileState() != null) yaml.setProperty(Paths.NETWORK.YAML.LID_STATE, yamlMessage.isLidState());
+        if (yamlMessage.getFileStateV() != null) yaml.setProperty(Paths.NETWORK.YAML.LID_STATE, yamlMessage.isLidState());
+        if (yamlMessage.getAvailableAnimations() != null && !yamlMessage.getAvailableAnimations().isEmpty()) {
+            for (Map.Entry<String, String> entry : yamlMessage.getAvailableAnimations().entrySet()) {
+                yaml.setProperty(Paths.NETWORK.YAML.AVAILABLE_ANIMATIONS + Paths.Config.SEPARATOR + entry.getKey(), entry.getValue());
+            }
+        }
 
         return yaml;
     }
@@ -66,19 +70,19 @@ public class YAMLAssembly {
     protected static YAMLConfiguration assembleErrorYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
-        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
-        if (yamlMessage.getErrorSource() != null) yaml.setProperty(Paths.NETWORK.YAML.ERROR_SOURCE, yamlMessage.getErrorSource());
+        if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
+        if (yamlMessage.getErrorSourceV() != null) yaml.setProperty(Paths.NETWORK.YAML.ERROR_SOURCE, yamlMessage.getErrorSourceV());
         yaml.setProperty(Paths.NETWORK.YAML.ERROR_CODE, yamlMessage.getErrorCode());
         if (yamlMessage.getErrorName() != null && !yamlMessage.getErrorName().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.ERROR_NAME, yamlMessage.getErrorName());
-        yaml.setProperty(Paths.NETWORK.YAML.ERROR_SEVERITY, yamlMessage.getErrorSeverity());
+        yaml.setProperty(Paths.NETWORK.YAML.ERROR_SEVERITY, yamlMessage.getErrorSeverityV());
 
         return yaml;
     }
     protected static YAMLConfiguration assembleRequestYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
-        if (yamlMessage.getPacketType() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketType());
-        if (yamlMessage.getRequestType() != null) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_TYPE, yamlMessage.getRequestType());
+        if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
+        if (yamlMessage.getRequestTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_TYPE, yamlMessage.getRequestTypeV());
         if (yamlMessage.getRequestFile() != null && !yamlMessage.getRequestFile().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_FILE, yamlMessage.getRequestFile());
         if (yamlMessage.getObjectPath() != null && !yamlMessage.getObjectPath().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_PATH, yamlMessage.getObjectPath());
         if (yamlMessage.getObjectNewValue() != null && !yamlMessage.getObjectNewValue().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_NEW_VALUE, yamlMessage.getObjectNewValue());
@@ -164,6 +168,10 @@ public class YAMLAssembly {
         public TODOException(String message) {
             super(message);
         }
+    }
+
+    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
+        return disassembleYAML(yaml).setUUID(uuid);
     }
 
     public static YAMLMessage disassembleYAML(YAMLConfiguration yaml) throws YAMLException {
@@ -264,6 +272,16 @@ public class YAMLAssembly {
         yamlMessage.setCurrentDraw(currentDraw);
         yamlMessage.setVoltage(voltage);
         yamlMessage.setLidState(lidState);
+
+        HashMap<String, String> availableAnimations = new HashMap<>();
+
+        Configuration availableAnimationsSection = yaml.subset(Paths.NETWORK.YAML.AVAILABLE_ANIMATIONS);
+
+        for (Iterator<String> it = availableAnimationsSection.getKeys(); it.hasNext(); ) {
+            String s = it.next();
+            availableAnimations.put(s, availableAnimationsSection.getString(s));
+        }
+        yamlMessage.setAvailableAnimations(availableAnimations);
     }
     private static void disassembleMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
 

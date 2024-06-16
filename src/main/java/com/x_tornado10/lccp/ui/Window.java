@@ -252,7 +252,6 @@ public class Window extends ApplicationWindow implements EventListener {
                             }
                         }
                     }.runTaskAsynchronously();
-
                 }
                 // opening settings dialog
                 case "settings" -> {

@@ -8,13 +8,10 @@ import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
-import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
-import org.gnome.adw.Dialog;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
 import org.gnome.gio.SimpleAction;
@@ -24,10 +21,7 @@ import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
@@ -195,106 +189,13 @@ public class Window extends ApplicationWindow implements EventListener {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
 
-                    var statusList = Box.builder()
-                            .setOrientation(Orientation.VERTICAL)
-                            .setSpacing(12)
-                            .setHexpand(true)
-                            .build();
-                    var clamp = Clamp.builder()
-                            .setMaximumSize(500)
-                            .setTighteningThreshold(400)
-                            .setChild(statusList)
-                            .build();
-
-                    var powerUsage = PreferencesGroup.builder()
-                            .setCssClasses(new String[]{"background"})
-                            .setTitle("Power")
-                            .build();
-
-                    var currentDraw = ActionRow.builder()
-                            .setTitle("Current Draw")
-                            .setSubtitle("12A")
-                            .setSubtitleSelectable(true)
-                            .setCssClasses(new String[]{"property"})
-                            .build();
-                    var voltage = ActionRow.builder()
-                            .setTitle("Voltage")
-                            .setSubtitle("220V")
-                            .setSubtitleSelectable(true)
-                            .setCssClasses(new String[]{"property"})
-                            .build();
-
-                    var fileStats = PreferencesGroup.builder()
-                            .setCssClasses(new String[]{"background"})
-                            .setTitle("Animation")
-                            .build();
-
-                    var currentFile = ActionRow.builder()
-                            .setTitle("Current File")
-                            .setSubtitle("test-file.mp4")
-                            .setSubtitleSelectable(true)
-                            .setCssClasses(new String[]{"property"})
-                            .build();
-
-                    var fileState = ActionRow.builder()
-                            .setTitle("Current State")
-                            .setSubtitle("playing")
-                            .setSubtitleSelectable(true)
-                            .setCssClasses(new String[]{"property"})
-                            .build();
-
-                    var general = PreferencesGroup.builder()
-                            .setTitle("General")
-                            .build();
-
-                    var lidState = ActionRow.builder()
-                            .setTitle("Lid State")
-                            .setSubtitle("open")
-                            .setSubtitleSelectable(true)
-                            .setCssClasses(new String[]{"property"})
-                            .build();
-
-                    general.add(lidState);
-
-                    powerUsage.add(voltage);
-                    powerUsage.add(currentDraw);
-
-                    fileStats.add(fileState);
-                    fileStats.add(currentFile);
-
-                    statusList.append(general);
-                    statusList.append(fileStats);
-                    statusList.append(powerUsage);
-
-                    var statusPage = StatusPage.builder()
-                            .setIconName("LCCP-logo-256x256")
-                            .setTitle("LED Cube Status")
-                            .setChild(clamp)
-                            .build();
-
-                    var toolbarView = ToolbarView.builder()
-                            .setContent(statusPage)
-                            .build();
-
-                    var headerBar1 = HeaderBar.builder()
-                            .setShowTitle(false)
-                            .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
-                            .build();
-
-                    toolbarView.addTopBar(headerBar1);
-
-                    var statusDialog = PreferencesDialog.builder()
-                            .setChild(toolbarView)
-                            .setTitle("")
-                            .setSearchEnabled(true)
-                            .build();
-                    statusDialog.present(this);
+                    new StatusDialog().present(this);
                     //statusDialog.setSizeRequest(500, 600);
 
 
                     //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
-                    /*
+
                     new LCCPRunnable() {
                         @Override
                         public void run() {
@@ -320,6 +221,9 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .build()
                                         );
                                 //Thread.sleep(20);
+                                HashMap<String, String> availableAnimations = new HashMap<>();
+                                availableAnimations.put("Hansimansi", "search-symbolic");
+                                availableAnimations.put("katze", "katze-symbolic");
                                 Networking.FileSender
                                         .sendYAML(
                                                 LCCP.server_settings.getIPv4(),
@@ -328,6 +232,9 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setPacketType(YAMLMessage.PACKET_TYPE.reply)
                                                         .setReplyType(YAMLMessage.REPLY_TYPE.status)
                                                         .setFileLoaded(true)
+                                                        .setAvailableAnimations(
+                                                               availableAnimations
+                                                        )
                                                         .setFileState(YAMLMessage.FILE_STATE.playing)
                                                         .setFileSelected("test-file.mp4")
                                                         .setCurrentDraw(12)
@@ -337,13 +244,15 @@ public class Window extends ApplicationWindow implements EventListener {
                                 );
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
                                      YAMLAssembly.InvalidPacketTypeException ex) {
-                                ex.printStackTrace();
+                                for (StackTraceElement s : ex.getStackTrace()) {
+                                    LCCP.logger.error(s.toString());
+                                }
                             } catch (YAMLAssembly.TODOException ex) {
                                 throw new RuntimeException(ex);
                             }
                         }
                     }.runTaskAsynchronously();
-                     */
+
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -762,7 +671,7 @@ public class Window extends ApplicationWindow implements EventListener {
         autoUpdate = active;
     }
 
-    public void test() {
+    public void resetSettingsDialog() {
         this.sD = null;
     }
 }

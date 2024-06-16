@@ -68,6 +68,8 @@ public final class Paths {
             public static final String ERROR_CODE = "error_code";
             public static final String ERROR_NAME = "error_name";
             public static final String ERROR_SEVERITY = "error_severity";
+            public static final String INTERNAL_NETWORK_EVENT_ID = "internal_network_event_id";
+            public static final String AVAILABLE_ANIMATIONS = "available_animations";
         }
     }
 }

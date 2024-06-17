@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -152,6 +153,7 @@ public class Networking {
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
 
+            // getting new network event id from networkLogger
             String id = "[" +
                     LCCP.networkLogger.getRandomUUID(
                             "[Client]" +
@@ -161,8 +163,6 @@ public class Networking {
                                     "[Port '" + serverPort + "']"
                     ) +
                     "] ";
-            //UUID uuid = UUID.randomUUID();
-            //List<String> messages = new ArrayList<>();
 
             //displaying file metadata to console
             LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
@@ -172,42 +172,47 @@ public class Networking {
             LCCP.logger.debug(id + "File size: " + ((fileToSend.length() / 1024) / 1024) + "MB");
             LCCP.logger.debug(id + "File type: " + fileToSend.getName().split("\\.")[1].toUpperCase());
 
-            //LCCP.networkLogger.addMessagesToPacket(uuid, messages);
 
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
 
             try {
+                // open a new client socket for server:port
                 LCCP.logger.debug(id + "Opening new socket: " + serverIP4 + ":" + serverPort);
-                // creating new socket
                 Socket socket = new Socket(serverIP4, serverPort);
                 LCCP.logger.debug(id + "Successfully established connection!");
 
+                // creating data streams
                 LCCP.logger.debug(id + "Opening output streams...");
-                // getting the sockets output stream to transfer data
-                OutputStream outputStream = socket.getOutputStream();
+                DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
                 LCCP.logger.debug(id + "Successfully opened output streams!");
 
                 // sending file metadata
                 LCCP.logger.debug(id + "Sending file metadata...");
-                LCCP.logger.debug(id + "Sending file name...");
+
                 // sending file name
-                outputStream.write(fileToSend.getName().strip().getBytes());
+                LCCP.logger.debug(id + "Sending file name...");
+                dout.write(fileToSend.getName().strip().getBytes());
+
+                // sending file size
                 LCCP.logger.debug(id + "Sending file size...");
-                // sending file size in bytes
-                outputStream.write(String.valueOf(fileToSend.length()).getBytes());
+                dout.writeLong(fileToSend.length());
+
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step
-                outputStream.flush();
+                dout.flush();
+
                 LCCP.logger.debug(id + "Successfully send file metadata!");
 
-                LCCP.logger.debug(id + "Opening new FileInputStream to read the main file content...");
                 // creating new file input stream to read the file contents
+                LCCP.logger.debug(id + "Opening new FileInputStream to read the main file content...");
                 FileInputStream fileInputStream = new FileInputStream(fileToSend);
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-                LCCP.logger.debug(id + "Defining new 8129B buffer...");
-                // defining new 8KB buffer to store data while reading / writing
-                byte[] buffer = new byte[8192];
                 LCCP.logger.debug(id + "Successfully created new BufferedInputStream for the FileInputStream!");
+
+                // defining new 8KB buffer to store data while reading / writing
+                LCCP.logger.debug(id + "Defining new 8129B buffer...");
+                byte[] buffer = new byte[8192];
+
                 int count;
 
                 // getting exact file size
@@ -265,7 +270,7 @@ public class Networking {
                         lastTransferredSize = transferredSize;
                     }
                     // writing buffer to output stream and sending it with socket
-                    outputStream.write(buffer, 0, count);
+                    dout.write(buffer, 0, count);
                     // keeping track of transferred size
                     transferredSize += buffer.length;
                     // calculating transferred size in MB
@@ -273,13 +278,12 @@ public class Networking {
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
                 // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
-                outputStream.flush();
+                dout.flush();
                 LCCP.logger.debug(id + "Successfully send file contents!");
 
                 LCCP.logger.debug(id + "Closing socket and streams...");
                 // closing socket and all streams to free up system resources
                 bufferedInputStream.close();
-                outputStream.close();
                 socket.close();
                 LCCP.logger.debug(id + "Successfully closed socket and streams!");
                 LCCP.logger.debug(id + "Sending complete!");
@@ -295,8 +299,11 @@ public class Networking {
             return true;
         }
 
+        // function to send YAML packets to the server
         public static boolean sendYAML(String serverIP4, int serverPort, YAMLConfiguration yaml) {
+            // checking if network event id is given
             boolean noID = false;
+            // figuring out network event id, if none is given create a new one
             String networkID = "";
             String id;
             String description =
@@ -306,65 +313,75 @@ public class Networking {
                             "[Destination '" + serverIP4 +"']" +
                             "[Port '" + serverPort + "']";
             try {
+                // try to get network event id from the yaml file
                 networkID = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+                // if no id is given trigger creation of a new one
                 if (networkID == null || networkID.isBlank()) noID = true;
             } catch (NoSuchElementException e) {
+                // if the id check fails due to an error trigger creating of a new id
                 noID = true;
             }
 
+            // if no id is given get a new one from networkLogger
             if (noID) {
                 id = "[" +
                         LCCP.networkLogger.getRandomUUID(description) +
                         "] ";
+            // if an id is give, pass it on to the network logger
             } else {
                 id = "[" + networkID + "]";
                 LCCP.networkLogger.addEvent(UUID.fromString(networkID), description);
             }
 
-            //List<String> messages = new ArrayList<>();
+            // general information messages
             LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
             LCCP.logger.debug(id + "Type: client - data out");
             LCCP.logger.debug(id + "Server: " + serverIP4);
             LCCP.logger.debug(id + "Port: " + serverPort);
 
-            //LCCP.networkLogger.addMessagesToPacket(uuid, messages);
 
             try {
+                // open a new client socket for server:port
                 Socket socket = new Socket(serverIP4, serverPort);
                 LCCP.logger.debug(id + "Successfully established connection!");
 
+                // opening data streams
                 LCCP.logger.debug(id + "Creating data streams...");
+                DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
                 ByteArrayOutputStream outputS = new ByteArrayOutputStream();
+
+                // loading the yaml message into a byteArrayOutputStream using fileHandler built-in function
                 LCCP.logger.debug(id + "Loading data to transmit...");
-                FileHandler fh = new FileHandler(yaml);
-                fh.save(outputS);
+                new FileHandler(yaml).save(outputS);
 
-                OutputStream outputStream = socket.getOutputStream();
-
-                byte[] bytes = outputS.toByteArray();
-                bytes[bytes.length - 1] = 0;
-
+                // inspecting loaded data, detecting data size and printing it to console
                 LCCP.logger.debug(id + "Inspecting data:");
-                boolean kb = bytes.length > 8192;
-                //LCCP.logger.debug("Size in Bytes: " + bytes.length + " Bytes");
-                //LCCP.logger.debug("Size in packets: " + bytes.length / 1024 + " Packets");
-                LCCP.logger.debug(id + "Size: " + (kb ? (bytes.length / 1024) + "KB" : bytes.length + " Bytes"));
+                byte[] bytes = outputS.toByteArray();
+                int byteCount = bytes.length;
+                boolean kb = byteCount > 8192;
+                LCCP.logger.debug(id + "Size: " + (kb ? (byteCount / 1024) + "KB" : byteCount + " Bytes"));
+
+                // sending data size to server
                 LCCP.logger.debug(id + "Transmitting size...");
-                outputStream.write(String.valueOf(bytes.length).getBytes());
+                dout.writeInt(byteCount);
+                LCCP.logger.debug(id + "Successfully transmitted size to server!");
+
+                // sending yaml data to server
                 LCCP.logger.debug(id + "Transmitting data...");
-                outputStream.write(bytes);
+                dout.write(bytes);
                 LCCP.logger.debug(id + "Successfully transmitted data to server!");
 
+                // closing data streams and socket to free up system resources
                 LCCP.logger.debug(id + "Closing socket and data streams...");
-
-                outputStream.close();
+                dout.close();
                 socket.close();
+
                 LCCP.logger.debug(id + "---------------------------------------------------------------");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
 
             } catch (IOException | ConfigurationException e) {
+                // if an error occurs print an error message
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                LCCP.logger.error(e);
                 return false;
             }
 

@@ -6,6 +6,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Networking;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -541,6 +542,11 @@ public class Window extends ApplicationWindow implements EventListener {
             }
         }.runTaskTimerAsynchronously(0, 1);
 
+        status.onButtonClicked(statusRow::emitActivate);
+        status.setButtonLabel("LED Cube Status");
+
+        //overlaySplitView.setS
+
         // adding the main container to the window
         this.setContent(overlaySplitView);
     }
@@ -578,8 +584,20 @@ public class Window extends ApplicationWindow implements EventListener {
     // placeholder code for status row (will be replaced with actual status display in the future)
     boolean uploading = true;
     boolean displayingAnimation = false;
-    private String getStatus() {
+    private /*String*/void getStatus() {
+        try {
+            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
+                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                    .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                    .build()
+            );
+        } catch (YAMLAssembly.TODOException | ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
+                 YAMLAssembly.InvalidPacketTypeException e) {
+            LCCP.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
+            LCCP.logger.error(e);
+        }
 
+        /*
         StringBuilder stringBuilder = new StringBuilder();
         if (uploading) {
             stringBuilder.append("Uploading -> 500MB/s | ");
@@ -590,6 +608,7 @@ public class Window extends ApplicationWindow implements EventListener {
         uploading = !uploading;
         displayingAnimation = !displayingAnimation;
         return stringBuilder.toString();
+         */
     }
     // status bar updater
     private LCCPTask statusBarUpdater;
@@ -600,8 +619,9 @@ public class Window extends ApplicationWindow implements EventListener {
             @Override
             public void run() {
                 if (!status.getRevealed()) return;
+                getStatus();
                 // updating status bar to show current status
-                status.setTitle("LED-Cube-Status: " + getStatus());
+                //status.setTitle("LED-Cube-Status: " + getStatus());
             }
         }.runTaskTimerAsynchronously(0, 20);
     }
@@ -673,4 +693,9 @@ public class Window extends ApplicationWindow implements EventListener {
     public void resetSettingsDialog() {
         this.sD = null;
     }
+
+    public void updateStatus(StatusUpdate statusUpdate) {
+        status.setTitle(statusUpdate.toString());
+    }
+
 }

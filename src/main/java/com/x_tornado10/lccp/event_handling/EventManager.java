@@ -43,12 +43,13 @@ public class EventManager {
                     // calls all methods from the current listener that listen for this specific event
                     registeredListener.getMethod().invoke(registeredListener.getEventListener(), event);
                 } catch (Exception e) {
-                    LCCP.logger.error(id + "Error while trying to fire event: " + event);
-                    LCCP.logger.error("Stack trace: ");
+                    LCCP.logger.warn(id + "Error while trying to fire event: " + event);
+                    LCCP.logger.warn(id + "This warning can be ignored!");
+                    LCCP.logger.debug(id + "Stack trace: ");
                     for (StackTraceElement s : e.getStackTrace()) {
-                        LCCP.logger.error(s.toString());
+                        LCCP.logger.debug(id + s.toString());
+                        registeredListeners.remove(registeredListener);
                     }
-                    LCCP.logger.warn(Messages.WARN.OPEN_GITHUB_ISSUE);
                 }
             }
         }

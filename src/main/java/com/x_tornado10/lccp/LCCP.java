@@ -30,7 +30,6 @@ import org.gnome.gio.ApplicationFlags;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
@@ -236,8 +235,14 @@ public class LCCP implements EventListener {
                         LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
                         LCCP.logger.debug(id + "Type: server - data in");
 
+                        byte[] b = new byte[0];
+
                         // try to open data stream
-                        try (DataInputStream din = new DataInputStream(socket.getInputStream())) {
+                        try (DataInputStream di = new DataInputStream(socket.getInputStream())) {
+
+                            b = di.readAllBytes();
+
+                            DataInputStream din = new DataInputStream(new ByteArrayInputStream(b));
 
                             // reading data size from incoming data and displaying it in the console
                             int bytes = din.readInt();
@@ -288,6 +293,51 @@ public class LCCP implements EventListener {
                         } catch (ConfigurationException e) {
                             // if the application fails to parse yaml from incoming data an error message is printed
                             LCCP.logger.error(id + "Error while trying to parse YAML from received data! Error Message: " + e.getMessage());
+                            /* // TODO FLIP INT, FILE NAME SENDING ORDER
+                            DataInputStream din = new DataInputStream(new ByteArrayInputStream(b));
+
+                            File f = new File(Paths.File_System.appDir + "test-file");
+
+                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
+
+                            String name = "";
+                            int bytes1 = 0;
+                            byte[] buffer = new byte[8192];
+                            int bytes = 0;
+                            int i;
+                            while ((i = din.read(buffer)) > 0) {
+                                int offset = 0;
+                                if (bytes == 0) {
+                                    String s = new String(buffer, StandardCharsets.UTF_8);
+                                    LCCP.logger.debug(s);
+                                    offset = s.indexOf(" ") - 1;
+                                    String s0 = s.split(" ")[0];
+                                    int num;
+                                    int bytes0 = 0;
+                                    StringBuilder sb = new StringBuilder();
+                                    for (int j = 0; j < s0.length(); j++) {
+                                        try {
+                                            num = Integer.parseInt(String.valueOf(s0.charAt(j)));
+                                            if (j > 0) bytes0 *= 10;
+                                            bytes0 += num;
+                                        } catch (NumberFormatException ex) {
+                                            sb.append(s0.charAt(j));
+                                        }
+                                    }
+                                    name = sb.toString();
+                                    bytes1 = bytes0;
+                                }
+                                bos.write(buffer, offset, i);
+                                bytes += i;
+                            }
+                            bos.flush();
+                            bos.close();
+                            LCCP.logger.debug("Size: " + bytes + " Bytes");
+                            LCCP.logger.debug("SizeC: " + bytes1 + " Bytes");
+                            LCCP.logger.debug("NameC: " + name);
+
+                             */
+
                         } finally {
                             // try to close the receiving socket
                             try {
@@ -359,6 +409,7 @@ public class LCCP implements EventListener {
     // sends a .yaml file to the server using a java socket
     public static void updateRemoteConfig() {
         LCCP.logger.debug("Updating RemoteConfig...");
+        Networking.FileSender.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config);
         LCCP.logger.debug("Successfully updatedRemoteConfig!");
     }
 

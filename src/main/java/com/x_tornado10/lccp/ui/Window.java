@@ -21,6 +21,7 @@ import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.util.*;
 
@@ -49,11 +50,6 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // toast overlay used to display toasts (notification) to the user
         toastOverlay = new ToastOverlay();
-
-        // container for the header bar on top of the application
-        var headerBarContainer = Box.builder()
-                .setOrientation(Orientation.VERTICAL)
-                .build();
 
         // the applications header bar
         var headerBar = new HeaderBar();
@@ -189,8 +185,9 @@ public class Window extends ApplicationWindow implements EventListener {
             switch (e.getName()) {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
-
-                    new StatusDialog().present(this);
+                    StatusDialog sD = new StatusDialog();
+                    LCCP.eventManager.registerEvents(sD);
+                    sD.present(this);
                     //statusDialog.setSizeRequest(500, 600);
 
 
@@ -211,8 +208,10 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setRequestFile("test-file.mp4")
                                                         .build()
                                         );
+
+
                                 //Thread.sleep(20);
-                                Networking.FileSender
+                                /*Networking.FileSender
                                         .sendYAML(
                                                 LCCP.server_settings.getIPv4(),
                                                 LCCP.server_settings.getPort(),
@@ -221,7 +220,10 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setRequestType(YAMLMessage.REQUEST_TYPE.status)
                                                         .build()
                                         );
+
+                                 */
                                 //Thread.sleep(20);
+                                /*
                                 HashMap<String, String> availableAnimations = new HashMap<>();
                                 availableAnimations.put("Hansimansi", "search-symbolic");
                                 availableAnimations.put("katze", "katze-symbolic");
@@ -242,7 +244,10 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setVoltage(220.0)
                                                         .setLidState(false)
                                         .build()
+
+
                                 );
+                                 */
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
                                      YAMLAssembly.InvalidPacketTypeException ex) {
                                 for (StackTraceElement s : ex.getStackTrace()) {
@@ -282,9 +287,9 @@ public class Window extends ApplicationWindow implements EventListener {
         //headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
 
-
         // creating main container witch will hold the main window content
         var mainContent = new Box(Orientation.VERTICAL, 0);
+        mainContent.setHomogeneous(false);
         // creating north / center / south containers to correctly align window content
         var northBox = new Box(Orientation.VERTICAL, 0);
         var centerBox = new Box(Orientation.VERTICAL, 0);
@@ -294,33 +299,30 @@ public class Window extends ApplicationWindow implements EventListener {
         // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
         southBox.setValign(Align.END);
 
-
-        // adding the header bar to the header bar container
-        headerBarContainer.setHomogeneous(true);
-        headerBar.setCssClasses(new String[]{"flat"});
-        headerBarContainer.append(headerBar);
-
-        // adding the status row to the header bar container
-        headerBarContainer.append(status);
         // toggling status bar visibility depending on user preferences
         setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
+        // adding the header bar container to the north box
+        northBox.append(status);
+
         // adding the toast overlay to the south box
         southBox.append(toastOverlay);
-        // adding the header bar container to the north box
-        northBox.append(headerBarContainer);
 
         // adding all alignment boxes to the main window container
         mainContent.append(northBox);
         mainContent.append(centerBox);
         mainContent.append(southBox);
 
+        var mainView = ToolbarView.builder().setContent(mainContent).build();
+        mainView.addTopBar(headerBar);
+        mainView.setTopBarStyle(ToolbarStyle.FLAT);
+
         var overlaySplitView = new OverlaySplitView();
 
         overlaySplitView.setEnableHideGesture(true);
         overlaySplitView.setEnableShowGesture(true);
 
-        overlaySplitView.setContent(mainContent);
+        overlaySplitView.setContent(mainView);
         overlaySplitView.setSidebarWidthUnit(LengthUnit.PX);
         overlaySplitView.setSidebarWidthFraction(0.2);
         overlaySplitView.setShowSidebar(sideBarVisible);
@@ -545,8 +547,6 @@ public class Window extends ApplicationWindow implements EventListener {
         status.onButtonClicked(statusRow::emitActivate);
         status.setButtonLabel("LED Cube Status");
 
-        //overlaySplitView.setS
-
         // adding the main container to the window
         this.setContent(overlaySplitView);
     }
@@ -584,7 +584,7 @@ public class Window extends ApplicationWindow implements EventListener {
     // placeholder code for status row (will be replaced with actual status display in the future)
     boolean uploading = true;
     boolean displayingAnimation = false;
-    private /*String*/void getStatus() {
+    protected void getStatus() {
         try {
             Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
                     .setPacketType(YAMLMessage.PACKET_TYPE.request)
@@ -596,19 +596,6 @@ public class Window extends ApplicationWindow implements EventListener {
             LCCP.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
             LCCP.logger.error(e);
         }
-
-        /*
-        StringBuilder stringBuilder = new StringBuilder();
-        if (uploading) {
-            stringBuilder.append("Uploading -> 500MB/s | ");
-        }
-        if (displayingAnimation) {
-            stringBuilder.append("Current Animation -> 'Never Gonna Give You Up.mp4'");
-        }
-        uploading = !uploading;
-        displayingAnimation = !displayingAnimation;
-        return stringBuilder.toString();
-         */
     }
     // status bar updater
     private LCCPTask statusBarUpdater;

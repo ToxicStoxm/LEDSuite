@@ -6,24 +6,32 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class NetworkLogger {
+
     private final HashMap<UUID, String> networkEvents;
+    private final TreeMap<Integer, UUID> order;
 
     public NetworkLogger() {
         networkEvents = new HashMap<>();
+        order = new TreeMap<>();
     }
 
     public UUID addEvent(UUID id, String description) {
-        networkEvents.putIfAbsent(id, description);
+        if (networkEvents.putIfAbsent(id, description) == null) order.put(order.size(), id);
         return id;
     }
     public void printEvents() {
         alignNetworkEvents();
         LCCP.logger.debug("-------------------- Network Events ---------------------------");
-        for (Map.Entry<UUID, String> entry : networkEvents.entrySet()) {
+        for (Map.Entry<Integer, UUID> entry : order.entrySet()) {
+            LCCP.logger.debug(networkEvents.get(entry.getValue()) + " " + entry.getValue());
+        }
+
+        /*for (Map.Entry<UUID, String> entry : networkEvents.entrySet()) {
             //LCCP.logger.debug( "ID [" + entry.getKey() + "] -- Description [" + entry.getValue() + "]");
             LCCP.logger.debug(entry.getValue() + " " + entry.getKey());
         }
-        if (networkEvents.isEmpty()) {
+         */
+        if (networkEvents.isEmpty() && order.isEmpty()) {
             LCCP.logger.debug("Couldn't find any network events!");
         }
         LCCP.logger.debug("---------------------------------------------------------------");

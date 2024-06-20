@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.util;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.util.logging.Logger;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -175,7 +176,6 @@ public class Networking {
 
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
-
             try {
                 // open a new client socket for server:port
                 LCCP.logger.debug(id + "Opening new socket: " + serverIP4 + ":" + serverPort);
@@ -196,7 +196,8 @@ public class Networking {
 
                 // sending file size
                 LCCP.logger.debug(id + "Sending file size...");
-                dout.writeLong(fileToSend.length());
+                dout.writeBytes(String.valueOf(fileToSend.length()));
+                //dout.writeLong(fileToSend.length());
 
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step
                 dout.flush();
@@ -324,9 +325,11 @@ public class Networking {
 
             // if no id is given get a new one from networkLogger
             if (noID) {
+                UUID uuid = LCCP.networkLogger.getRandomUUID(description);
                 id = "[" +
-                        LCCP.networkLogger.getRandomUUID(description) +
+                        uuid +
                         "] ";
+                yaml.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
             // if an id is give, pass it on to the network logger
             } else {
                 id = "[" + networkID + "]";
@@ -339,6 +342,7 @@ public class Networking {
             LCCP.logger.debug(id + "Server: " + serverIP4);
             LCCP.logger.debug(id + "Port: " + serverPort);
 
+            LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
 
             try {
                 // open a new client socket for server:port
@@ -363,7 +367,8 @@ public class Networking {
 
                 // sending data size to server
                 LCCP.logger.debug(id + "Transmitting size...");
-                dout.writeInt(byteCount);
+                //dout.writeInt(byteCount);
+                dout.writeBytes(String.valueOf(byteCount));
                 LCCP.logger.debug(id + "Successfully transmitted size to server!");
 
                 // sending yaml data to server

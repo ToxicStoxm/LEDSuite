@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
@@ -193,12 +194,13 @@ public class Window extends ApplicationWindow implements EventListener {
 
                     //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
 
+                    /*
 
                     new LCCPRunnable() {
                         @Override
                         public void run() {
                             try {
-                                Networking.FileSender
+                                /*Networking.FileSender
                                         .sendYAML(
                                                 LCCP.server_settings.getIPv4(),
                                                 LCCP.server_settings.getPort(),
@@ -208,6 +210,8 @@ public class Window extends ApplicationWindow implements EventListener {
                                                         .setRequestFile("test-file.mp4")
                                                         .build()
                                         );
+
+                                 */
 
 
                                 //Thread.sleep(20);
@@ -247,7 +251,7 @@ public class Window extends ApplicationWindow implements EventListener {
 
 
                                 );
-                                 */
+
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
                                      YAMLAssembly.InvalidPacketTypeException ex) {
                                 for (StackTraceElement s : ex.getStackTrace()) {
@@ -256,8 +260,11 @@ public class Window extends ApplicationWindow implements EventListener {
                             } catch (YAMLAssembly.TODOException ex) {
                                 throw new RuntimeException(ex);
                             }
+
                         }
                     }.runTaskAsynchronously();
+                    */
+
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -581,9 +588,6 @@ public class Window extends ApplicationWindow implements EventListener {
         attr.change(Pango.attrScaleNew(1));
         return attr;
     }
-    // placeholder code for status row (will be replaced with actual status display in the future)
-    boolean uploading = true;
-    boolean displayingAnimation = false;
     protected void getStatus() {
         try {
             Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()

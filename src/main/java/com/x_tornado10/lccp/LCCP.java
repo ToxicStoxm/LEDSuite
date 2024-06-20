@@ -293,51 +293,7 @@ public class LCCP implements EventListener {
                         } catch (ConfigurationException e) {
                             // if the application fails to parse yaml from incoming data an error message is printed
                             LCCP.logger.error(id + "Error while trying to parse YAML from received data! Error Message: " + e.getMessage());
-                            /* // TODO FLIP INT, FILE NAME SENDING ORDER
-                            DataInputStream din = new DataInputStream(new ByteArrayInputStream(b));
-
-                            File f = new File(Paths.File_System.appDir + "test-file");
-
-                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
-
-                            String name = "";
-                            int bytes1 = 0;
-                            byte[] buffer = new byte[8192];
-                            int bytes = 0;
-                            int i;
-                            while ((i = din.read(buffer)) > 0) {
-                                int offset = 0;
-                                if (bytes == 0) {
-                                    String s = new String(buffer, StandardCharsets.UTF_8);
-                                    LCCP.logger.debug(s);
-                                    offset = s.indexOf(" ") - 1;
-                                    String s0 = s.split(" ")[0];
-                                    int num;
-                                    int bytes0 = 0;
-                                    StringBuilder sb = new StringBuilder();
-                                    for (int j = 0; j < s0.length(); j++) {
-                                        try {
-                                            num = Integer.parseInt(String.valueOf(s0.charAt(j)));
-                                            if (j > 0) bytes0 *= 10;
-                                            bytes0 += num;
-                                        } catch (NumberFormatException ex) {
-                                            sb.append(s0.charAt(j));
-                                        }
-                                    }
-                                    name = sb.toString();
-                                    bytes1 = bytes0;
-                                }
-                                bos.write(buffer, offset, i);
-                                bytes += i;
-                            }
-                            bos.flush();
-                            bos.close();
-                            LCCP.logger.debug("Size: " + bytes + " Bytes");
-                            LCCP.logger.debug("SizeC: " + bytes1 + " Bytes");
-                            LCCP.logger.debug("NameC: " + name);
-
-                             */
-
+                            LCCP.logger.error(e);
                         } finally {
                             // try to close the receiving socket
                             try {
@@ -526,8 +482,6 @@ public class LCCP implements EventListener {
             logger.error(id + "Error message: " + ex.getMessage());
         }
         logger.debug(id + "Data stream direction: out");
-        Networking.FileSender.sendYAML(server_settings.getIPv4(), server_settings.getPort(), e.yaml());
-        logger.debug(id + "Network: Send data!");
         try {
             logger.debug(id + "Data: " + YAMLAssembly.disassembleYAML(e.yaml()));
         } catch (YAMLAssembly.YAMLException ex) {
@@ -543,5 +497,20 @@ public class LCCP implements EventListener {
         logger.debug(id + "Received status update from server!");
         logger.debug(id + "Status: " + status);
         mainWindow.updateStatus(status);
+    }
+    @EventHandler
+    public void onSend(Events.DataOut e) {
+        YAMLConfiguration yaml = e.yaml();
+        String id;
+        try {
+            id = "[" + yaml.getProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
+            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+        } catch (NoSuchElementException ex) {
+            id = "[failed to get id] ";
+            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+            logger.error(id + "Failed to get internal network event id from YAML!");
+            logger.error(id + "Error message: " + ex.getMessage());
+        }
+
     }
 }

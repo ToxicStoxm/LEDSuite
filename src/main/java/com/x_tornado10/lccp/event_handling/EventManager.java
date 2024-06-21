@@ -3,7 +3,6 @@ package com.x_tornado10.lccp.event_handling;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.util.logging.Messages;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,6 +24,17 @@ public class EventManager {
                         "." +
                         method.getName() +
                         "(" + eventType.getName().split("event_handling.")[1].replace("$", ".") +  ")");
+            }
+        }
+    }
+
+    public void unregisterEvents(EventListener eventListener) {
+        for (Map.Entry<Class<?>, List<RegisteredListener>> entry : listeners.entrySet()) {
+            List<RegisteredListener> registeredListeners = entry.getValue();
+            registeredListeners.removeIf(registeredListener -> registeredListener.getEventListener().equals(eventListener));
+            // Clean up the list if it becomes empty
+            if (registeredListeners.isEmpty()) {
+                listeners.remove(entry.getKey());
             }
         }
     }

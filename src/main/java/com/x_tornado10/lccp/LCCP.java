@@ -10,7 +10,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
-import com.x_tornado10.lccp.util.Networking;
+import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.util.logging.Messages;
@@ -31,7 +31,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.UUID;
@@ -206,6 +205,8 @@ public class LCCP implements EventListener {
         server = true;
         startServer();
 
+        Networking.FileSender.networkHandler();
+
     }
 
     // function to start the internal server, listening on specified port for yaml packets
@@ -235,30 +236,28 @@ public class LCCP implements EventListener {
                         LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
                         LCCP.logger.debug(id + "Type: server - data in");
 
-                        byte[] b = new byte[0];
+                        // create buffered reader for the socket input stream
+                        try (BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                            // defining Buffer to temp save read data to
+                            //CharBuffer charBuffer = CharBuffer.allocate(1024);
+                            // write read data to the buffer
+                            //int added = bf.read(charBuffer);
+                            // flip the buffer as prep for reading it
+                            //charBuffer.flip();
+                            // get read chars from buffer and try to pare byte count
+                            //int bytes = Integer.parseInt(charBuffer.subSequence(0, added).toString());
+                            // print byte count to console
+                            //LCCP.logger.debug(id + "Bytes: " + bytes);
 
-                        // try to open data stream
-                        try (DataInputStream di = new DataInputStream(socket.getInputStream())) {
-
-                            b = di.readAllBytes();
-
-                            DataInputStream din = new DataInputStream(new ByteArrayInputStream(b));
-
-                            // reading data size from incoming data and displaying it in the console
-                            int bytes = din.readInt();
-                            LCCP.logger.debug(id + "Bytes: " + bytes);
-
-                            // creating new yaml config object that will hold incoming data
+                            // define new yaml config to hold the rest of the data
                             YAMLConfiguration yaml = new YAMLConfiguration();
 
-                            // if there is any incoming data
-                            if (bytes > 0) {
-                                // built-in function from fileHandler is used to load the incoming byte data into the yaml config object
-                                new FileHandler(yaml)
-                                        .load(
-                                                new ByteArrayInputStream(din.readAllBytes())
-                                        );
-                                // creating new async thread
+                            // checking if message actually contains data
+                            //if (bytes > 0) {
+                                // loading data into the yaml config
+                                new FileHandler(yaml).load(bf);
+
+                                // handling message in new async task to prevent the server socket from blocking
                                 new LCCPRunnable() {
                                     @Override
                                     public void run() {
@@ -286,7 +285,8 @@ public class LCCP implements EventListener {
                                         LCCP.logger.debug(id + "---------------------------------------------------------------");
                                     }
                                 }.runTaskAsynchronously();
-                            }
+                            //}
+
                         } catch (IOException ex) {
                             // if server socket or data streams fail to read input an error message is displayed
                             LCCP.logger.error(id + "Server receive socket failed to read input!");
@@ -304,6 +304,7 @@ public class LCCP implements EventListener {
                                 LCCP.logger.error(ex);
                             }
                         }
+
                     }
                 } catch (IOException e) {
                     // if server socket fails to start print error message to console

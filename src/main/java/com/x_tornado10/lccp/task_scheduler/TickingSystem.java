@@ -4,7 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 
 public class TickingSystem {
 
-    private static final int TICKS_PER_SECOND = 20;
+    private static final int TICKS_PER_SECOND = 100;
     private static final long TICK_DELAY_MS = 1000 / TICKS_PER_SECOND;
 
     private boolean running;

@@ -1,11 +1,10 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.Networking;
+import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
@@ -22,7 +21,6 @@ import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.util.*;
 
@@ -187,84 +185,32 @@ public class Window extends ApplicationWindow implements EventListener {
                 case "status" -> {
                     LCCP.logger.debug("User click: status row");
                     StatusDialog sD = new StatusDialog();
-                    LCCP.eventManager.registerEvents(sD);
                     sD.present(this);
-                    //statusDialog.setSizeRequest(500, 600);
-
-
-                    //Networking.FileSender.sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), Paths.File_System.config);
-
-                    /*
 
                     new LCCPRunnable() {
                         @Override
                         public void run() {
                             try {
-                                /*Networking.FileSender
-                                        .sendYAML(
-                                                LCCP.server_settings.getIPv4(),
-                                                LCCP.server_settings.getPort(),
-                                                new YAMLMessage()
-                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
-                                                        .setRequestFile("test-file.mp4")
-                                                        .build()
+                                Networking.FileSender.sendYAML("127.0.0.1", 1200,
+                                        new YAMLMessage()
+                                                .setPacketType(YAMLMessage.PACKET_TYPE.reply)
+                                                .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                                                .setFileLoaded(true)
+                                                .setFileState(YAMLMessage.FILE_STATE.playing)
+                                                .setFileSelected("test-file.mp4")
+                                                .setCurrentDraw(40)
+                                                .setVoltage(5)
+                                                .setLidState(false)
+                                                .setAvailableAnimations(constructMap(":", "hansimansi:cat-symbolic", "lol:symbolic","test:symbolic"))
+                                                .build()
                                         );
-
-                                 */
-
-
-                                //Thread.sleep(20);
-                                /*Networking.FileSender
-                                        .sendYAML(
-                                                LCCP.server_settings.getIPv4(),
-                                                LCCP.server_settings.getPort(),
-                                                new YAMLMessage()
-                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.status)
-                                                        .build()
-                                        );
-
-                                 */
-                                //Thread.sleep(20);
-                                /*
-                                HashMap<String, String> availableAnimations = new HashMap<>();
-                                availableAnimations.put("Hansimansi", "search-symbolic");
-                                availableAnimations.put("katze", "katze-symbolic");
-                                Networking.FileSender
-                                        .sendYAML(
-                                                LCCP.server_settings.getIPv4(),
-                                                LCCP.server_settings.getPort(),
-                                                new YAMLMessage()
-                                                        .setPacketType(YAMLMessage.PACKET_TYPE.reply)
-                                                        .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                                                        .setFileLoaded(true)
-                                                        .setAvailableAnimations(
-                                                               availableAnimations
-                                                        )
-                                                        .setFileState(YAMLMessage.FILE_STATE.playing)
-                                                        .setFileSelected("test-file.mp4")
-                                                        .setCurrentDraw(12)
-                                                        .setVoltage(220.0)
-                                                        .setLidState(false)
-                                        .build()
-
-
-                                );
-
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException ex) {
-                                for (StackTraceElement s : ex.getStackTrace()) {
-                                    LCCP.logger.error(s.toString());
-                                }
-                            } catch (YAMLAssembly.TODOException ex) {
+                                     YAMLAssembly.InvalidPacketTypeException | YAMLAssembly.TODOException ex) {
                                 throw new RuntimeException(ex);
                             }
-
                         }
                     }.runTaskAsynchronously();
-                    */
-
+                    
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -558,6 +504,17 @@ public class Window extends ApplicationWindow implements EventListener {
         this.setContent(overlaySplitView);
     }
 
+    private HashMap<String, String> constructMap(String regex, String... entries) {
+        HashMap<String, String> result = new HashMap<>();
+        for (String s : entries) {
+            LCCP.logger.debug(s);
+            String[] parts = s.split(regex);
+            LCCP.logger.debug(Arrays.toString(parts));
+            result.put(parts[0], parts[1]);
+        }
+        return result;
+    }
+
     // about dialog
     private AboutDialog aDialog = null;
     // method to either create a new about dialog or get an already existing one
@@ -614,7 +571,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 // updating status bar to show current status
                 //status.setTitle("LED-Cube-Status: " + getStatus());
             }
-        }.runTaskTimerAsynchronously(0, 20);
+        }.runTaskTimerAsynchronously(0, 100);
     }
 
     // toggle status bar

@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.util.Networking;
+import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Messages;
 import lombok.Getter;

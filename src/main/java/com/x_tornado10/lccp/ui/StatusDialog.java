@@ -18,10 +18,13 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         configure(StatusUpdate.blank());
         this.onClosed(() -> {
            if (updateTask != null) {
+               LCCP.eventManager.unregisterEvents(this);
                updateTask.cancel();
                updateTask = null;
            }
         });
+
+        this.setFollowsContentSize(true);
 
     }
     private LCCPTask updateTask = null;
@@ -47,7 +50,10 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     .build();
 
             statusList.append(
-                    ActionRow.builder().setTitle("Not connected to Cube!").setSubtitle(LCCP.server_settings.getIPv4() + ":" + LCCP.server_settings.getPort() + " is not responding!").build()
+                    ActionRow.builder().setTitle("Not connected to Cube!").setSubtitle(LCCP.server_settings.getIPv4() + ":" + LCCP.server_settings.getPort() + " is currently not responding!").build()
+            );
+            statusList.append(
+                    ActionRow.builder().setTitle("Possible causes").setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
             );
 
             /*
@@ -188,13 +194,14 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
     }
 
     private LCCPTask updateLoop() {
+        LCCP.eventManager.registerEvents(this);
         if (!LCCP.mainWindow.isBannerVisible()) {
             return new LCCPRunnable() {
                 @Override
                 public void run() {
                     LCCP.mainWindow.getStatus();
                 }
-            }.runTaskTimerAsynchronously(0, 20);
+            }.runTaskTimerAsynchronously(0, 100);
         }
         return new LCCPRunnable() {
             @Override

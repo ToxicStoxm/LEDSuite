@@ -21,20 +21,13 @@ public class NetworkLogger {
     }
     public void printEvents() {
         alignNetworkEvents();
-        LCCP.logger.debug("-------------------- Network Events ---------------------------");
+        boolean empty = networkEvents.isEmpty() && order.isEmpty();
+        LCCP.logger.debug("-------------------- Network Events ---------------------------------------------------------------------------------------------------------");
+        LCCP.logger.debug(empty ? "Couldn't find any network events!" : "Network event count: " + networkEvents.size());
         for (Map.Entry<Integer, UUID> entry : order.entrySet()) {
             LCCP.logger.debug(networkEvents.get(entry.getValue()) + " " + entry.getValue());
         }
-
-        /*for (Map.Entry<UUID, String> entry : networkEvents.entrySet()) {
-            //LCCP.logger.debug( "ID [" + entry.getKey() + "] -- Description [" + entry.getValue() + "]");
-            LCCP.logger.debug(entry.getValue() + " " + entry.getKey());
-        }
-         */
-        if (networkEvents.isEmpty() && order.isEmpty()) {
-            LCCP.logger.debug("Couldn't find any network events!");
-        }
-        LCCP.logger.debug("---------------------------------------------------------------");
+        LCCP.logger.debug("----------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     public UUID getRandomUUID(String description) {

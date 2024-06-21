@@ -2,9 +2,7 @@ package com.x_tornado10.lccp.yaml_factory;
 
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 public class StatusUpdate {
@@ -22,7 +20,7 @@ public class StatusUpdate {
     @Getter
     private final boolean lidState;
     @Getter
-    private HashMap<String, String> availableAnimations = new HashMap<>();
+    private HashMap<String, String> availableAnimations;
 
 
     public UUID getNetworkEventID() {
@@ -52,6 +50,32 @@ public class StatusUpdate {
                 yamlMessage.getAvailableAnimations()
         );
     }
+    public static StatusUpdate blank() {
+        return new StatusUpdate(
+                false,
+                null,
+                null,
+                0,
+                0,
+                false,
+                blankUUID(),
+                null
+        );
+    }
+    private static final List<UUID> blanks = new ArrayList<>();
+    private static UUID blankUUID() {
+        UUID uuid1 = UUID.randomUUID();
+        blanks.add(uuid1);
+        return uuid1;
+    }
+
+    public boolean isBlank() {
+        return blanks.contains(uuid);
+    }
+
+    public String humanReadableLidState(boolean lidState) {
+        return lidState ? "closed" : "open";
+    }
 
     @Override
     public String toString() {
@@ -63,7 +87,7 @@ public class StatusUpdate {
         } else sb.append("no file selected ");
         sb.append("Current Draw: ").append(currentDraw).append(" ");
         sb.append("Voltage: ").append(voltage).append(" ");
-        sb.append("Lid State: ").append(lidState ? "closed" : "open").append(" ");
+        sb.append("Lid State: ").append(humanReadableLidState(lidState)).append(" ");
         if (!availableAnimations.isEmpty()) {
             sb.append("Available Animations: [");
             for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {

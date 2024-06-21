@@ -3,7 +3,6 @@ package com.x_tornado10.lccp.event_handling;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.util.logging.Messages;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,6 +28,17 @@ public class EventManager {
         }
     }
 
+    public void unregisterEvents(EventListener eventListener) {
+        for (Map.Entry<Class<?>, List<RegisteredListener>> entry : listeners.entrySet()) {
+            List<RegisteredListener> registeredListeners = entry.getValue();
+            registeredListeners.removeIf(registeredListener -> registeredListener.getEventListener().equals(eventListener));
+            // Clean up the list if it becomes empty
+            if (registeredListeners.isEmpty()) {
+                listeners.remove(entry.getKey());
+            }
+        }
+    }
+
     // fires a new specified event
     // notifies all RegisteredListeners that listen for this specific event
     public void fireEvent(Object event) {
@@ -43,12 +53,13 @@ public class EventManager {
                     // calls all methods from the current listener that listen for this specific event
                     registeredListener.getMethod().invoke(registeredListener.getEventListener(), event);
                 } catch (Exception e) {
-                    LCCP.logger.error(id + "Error while trying to fire event: " + event);
-                    LCCP.logger.error("Stack trace: ");
+                    LCCP.logger.warn(id + "Error while trying to fire event: " + event);
+                    LCCP.logger.warn(id + "This warning can be ignored!");
+                    LCCP.logger.debug(id + "Stack trace: ");
                     for (StackTraceElement s : e.getStackTrace()) {
-                        LCCP.logger.error(s.toString());
+                        LCCP.logger.debug(id + s.toString());
+                        registeredListeners.remove(registeredListener);
                     }
-                    LCCP.logger.warn(Messages.WARN.OPEN_GITHUB_ISSUE);
                 }
             }
         }

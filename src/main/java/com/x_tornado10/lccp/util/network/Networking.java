@@ -1,20 +1,24 @@
-package com.x_tornado10.lccp.util;
+package com.x_tornado10.lccp.util.network;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.util.logging.Logger;
+import com.x_tornado10.lccp.event_handling.Events;
+import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
+import com.x_tornado10.lccp.util.Paths;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Networking {
+
+    //private static final TreeMap<Integer, NetworkQueueElement> networkQueue = new TreeMap<>();
+    private static final TreeMap<Long, LCCPRunnable> networkQueue = new TreeMap<>();
 
     // try to check a provided IPv4 for connectivity using the ping command in the linux terminal
     // this is kind of a workaround since the default Java function normally used for this (InetAddress.isReachable()) requires root to work properly
@@ -152,6 +156,7 @@ public class Networking {
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
 
+            // getting new network event id from networkLogger
             String id = "[" +
                     LCCP.networkLogger.getRandomUUID(
                             "[Client]" +
@@ -161,8 +166,6 @@ public class Networking {
                                     "[Port '" + serverPort + "']"
                     ) +
                     "] ";
-            //UUID uuid = UUID.randomUUID();
-            //List<String> messages = new ArrayList<>();
 
             //displaying file metadata to console
             LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
@@ -172,42 +175,47 @@ public class Networking {
             LCCP.logger.debug(id + "File size: " + ((fileToSend.length() / 1024) / 1024) + "MB");
             LCCP.logger.debug(id + "File type: " + fileToSend.getName().split("\\.")[1].toUpperCase());
 
-            //LCCP.networkLogger.addMessagesToPacket(uuid, messages);
 
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
-
             try {
+                // open a new client socket for server:port
                 LCCP.logger.debug(id + "Opening new socket: " + serverIP4 + ":" + serverPort);
-                // creating new socket
                 Socket socket = new Socket(serverIP4, serverPort);
                 LCCP.logger.debug(id + "Successfully established connection!");
 
+                // creating data streams
                 LCCP.logger.debug(id + "Opening output streams...");
-                // getting the sockets output stream to transfer data
-                OutputStream outputStream = socket.getOutputStream();
+                OutputStream out = socket.getOutputStream();
                 LCCP.logger.debug(id + "Successfully opened output streams!");
 
                 // sending file metadata
                 LCCP.logger.debug(id + "Sending file metadata...");
-                LCCP.logger.debug(id + "Sending file name...");
+
                 // sending file name
-                outputStream.write(fileToSend.getName().strip().getBytes());
-                LCCP.logger.debug(id + "Sending file size...");
-                // sending file size in bytes
-                outputStream.write(String.valueOf(fileToSend.length()).getBytes());
+                LCCP.logger.debug(id + "Sending file name...");
+                out.write(fileToSend.getName().strip().getBytes());
+
+                // sending file size
+                //LCCP.logger.debug(id + "Sending file size...");
+                //out.writeBytes(String.valueOf(fileToSend.length()));
+                //dout.writeLong(fileToSend.length());
+
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step
-                outputStream.flush();
+                out.flush();
+
                 LCCP.logger.debug(id + "Successfully send file metadata!");
 
-                LCCP.logger.debug(id + "Opening new FileInputStream to read the main file content...");
                 // creating new file input stream to read the file contents
+                LCCP.logger.debug(id + "Opening new FileInputStream to read the main file content...");
                 FileInputStream fileInputStream = new FileInputStream(fileToSend);
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-                LCCP.logger.debug(id + "Defining new 8129B buffer...");
-                // defining new 8KB buffer to store data while reading / writing
-                byte[] buffer = new byte[8192];
                 LCCP.logger.debug(id + "Successfully created new BufferedInputStream for the FileInputStream!");
+
+                // defining new 8KB buffer to store data while reading / writing
+                LCCP.logger.debug(id + "Defining new 8129B buffer...");
+                byte[] buffer = new byte[8192];
+
                 int count;
 
                 // getting exact file size
@@ -265,7 +273,7 @@ public class Networking {
                         lastTransferredSize = transferredSize;
                     }
                     // writing buffer to output stream and sending it with socket
-                    outputStream.write(buffer, 0, count);
+                    out.write(buffer, 0, count);
                     // keeping track of transferred size
                     transferredSize += buffer.length;
                     // calculating transferred size in MB
@@ -273,13 +281,12 @@ public class Networking {
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
                 // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
-                outputStream.flush();
+                out.flush();
                 LCCP.logger.debug(id + "Successfully send file contents!");
 
                 LCCP.logger.debug(id + "Closing socket and streams...");
                 // closing socket and all streams to free up system resources
                 bufferedInputStream.close();
-                outputStream.close();
                 socket.close();
                 LCCP.logger.debug(id + "Successfully closed socket and streams!");
                 LCCP.logger.debug(id + "Sending complete!");
@@ -295,8 +302,88 @@ public class Networking {
             return true;
         }
 
-        public static boolean sendYAML(String serverIP4, int serverPort, YAMLConfiguration yaml) {
+        private static final long delay = 10; // delay in milliseconds between network packets
+        private static long last = System.currentTimeMillis() - delay;
+        private static long current = System.currentTimeMillis();
+
+        public static void networkHandler() {
+            LCCP.logger.debug("Network Handler started!");
+            new LCCPRunnable() {
+                @Override
+                public void run() {
+                    //LCCP.logger.debug("Iteration");
+                    if (!networkQueue.isEmpty()) {
+                         Map.Entry<Long, LCCPRunnable> entry = networkQueue.firstEntry();
+                         LCCP.logger.debug("Handling request: " + entry.getKey());
+                         entry.getValue().runTaskAsynchronously();
+                         networkQueue.remove(entry.getKey());
+                    }
+                }
+            }.runTaskTimerAsynchronously(0, delay / 10);
+        }
+
+        //static int concurrent = 0;
+
+        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml) {
+            //concurrent++;
+            LCCP.logger.debug("Appending send request to the network queue!");
+            LCCPRunnable sendRequest = new LCCPRunnable() {
+                @Override
+                public void run() {
+                    LCCP.logger.debug("Sending packet: " + yaml.getProperty(Paths.NETWORK.YAML.PACKET_TYPE));
+                    sendYAMLMessage(host, port, yaml);
+                }
+            };
+            networkQueue.put(System.currentTimeMillis(), sendRequest);
+            //concurrent--;
+
+            /*
+
+            LCCP.logger.debug("Received yaml send request!");
+            current = System.currentTimeMillis();
+            long timePassed = current - last;
+            LCCP.logger.debug("Delay: " + delay + " Time since last packet was send: " + Math.round((float) timePassed / 10) / 100 + "s");
+            if (timePassed >= delay) {
+                LCCP.logger.debug("Debounce fulfilled: sending!");
+                last = current;
+                return sendYAMLMessage(host, port, yaml);
+            } else {
+                LCCP.logger.debug("Debounce not fulfilled: appending to queue!");
+                int queueIndex = networkQueue.size();
+                LCCP.logger.debug("Queue current size: " + queueIndex);
+                boolean success = networkQueue.putIfAbsent(queueIndex, new NetworkQueueElement(host, port, yaml)) == null;
+                LCCP.logger.debug(success ? "Successfully added send request to queue!" : "Failed to add send request to queue! Possible causes: already queued, invalid send request");
+                if (success) {
+                    long sendDelay = ((networkQueue.size() * delay) / 1000) * 20;
+                    new LCCPRunnable() {
+                        @Override
+                        public void run() {
+                            LCCP.logger.debug("Debounce fulfilled: sending scheduled request at queueIndex: " + queueIndex + "!");
+                            current = System.currentTimeMillis();
+                            sendYAMLMessage(queueIndex);
+                        }
+                    }.runTaskLaterAsynchronously(sendDelay);
+                    LCCP.logger.debug("Request scheduled with delay: " + Math.round((float) sendDelay / 10) / 100);
+                }
+                return success;
+            }
+
+             */
+            return true;
+        }
+        /*
+        private static boolean sendYAMLMessage(Integer queueIndex) {
+            NetworkQueueElement networkQueueElement = networkQueue.get(queueIndex);
+            networkQueue.remove(queueIndex);
+            return sendYAMLMessage(networkQueueElement.host(), networkQueueElement.port(), networkQueueElement.message());
+        }
+         */
+
+        // function to send YAML packets to the server
+        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml) {
+            // checking if network event id is given
             boolean noID = false;
+            // figuring out network event id, if none is given create a new one
             String networkID = "";
             String id;
             String description =
@@ -306,65 +393,78 @@ public class Networking {
                             "[Destination '" + serverIP4 +"']" +
                             "[Port '" + serverPort + "']";
             try {
+                // try to get network event id from the yaml file
                 networkID = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+                // if no id is given trigger creation of a new one
                 if (networkID == null || networkID.isBlank()) noID = true;
             } catch (NoSuchElementException e) {
+                // if the id check fails due to an error trigger creating of a new id
                 noID = true;
             }
 
+            // if no id is given get a new one from networkLogger
             if (noID) {
+                UUID uuid = LCCP.networkLogger.getRandomUUID(description);
                 id = "[" +
-                        LCCP.networkLogger.getRandomUUID(description) +
+                        uuid +
                         "] ";
+                yaml.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
+            // if an id is give, pass it on to the network logger
             } else {
                 id = "[" + networkID + "]";
                 LCCP.networkLogger.addEvent(UUID.fromString(networkID), description);
             }
 
-            //List<String> messages = new ArrayList<>();
+            // general information messages
             LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
             LCCP.logger.debug(id + "Type: client - data out");
             LCCP.logger.debug(id + "Server: " + serverIP4);
             LCCP.logger.debug(id + "Port: " + serverPort);
 
-            //LCCP.networkLogger.addMessagesToPacket(uuid, messages);
+            LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
 
             try {
+                // open a new client socket for server:port
                 Socket socket = new Socket(serverIP4, serverPort);
                 LCCP.logger.debug(id + "Successfully established connection!");
 
+                // opening data streams
                 LCCP.logger.debug(id + "Creating data streams...");
+                OutputStream out = socket.getOutputStream();
                 ByteArrayOutputStream outputS = new ByteArrayOutputStream();
+
+                // loading the yaml message into a byteArrayOutputStream using fileHandler built-in function
                 LCCP.logger.debug(id + "Loading data to transmit...");
-                FileHandler fh = new FileHandler(yaml);
-                fh.save(outputS);
+                new FileHandler(yaml).save(outputS);
 
-                OutputStream outputStream = socket.getOutputStream();
-
-                byte[] bytes = outputS.toByteArray();
-                bytes[bytes.length - 1] = 0;
-
+                // inspecting loaded data, detecting data size and printing it to console
                 LCCP.logger.debug(id + "Inspecting data:");
-                boolean kb = bytes.length > 8192;
-                //LCCP.logger.debug("Size in Bytes: " + bytes.length + " Bytes");
-                //LCCP.logger.debug("Size in packets: " + bytes.length / 1024 + " Packets");
-                LCCP.logger.debug(id + "Size: " + (kb ? (bytes.length / 1024) + "KB" : bytes.length + " Bytes"));
-                LCCP.logger.debug(id + "Transmitting size...");
-                outputStream.write(String.valueOf(bytes.length).getBytes());
+                byte[] bytes = outputS.toByteArray();
+                int byteCount = bytes.length;
+                boolean kb = byteCount > 8192;
+                LCCP.logger.debug(id + "Size: " + (kb ? (byteCount / 1024) + "KB" : byteCount + " Bytes"));
+
+                // sending data size to server
+                //LCCP.logger.debug(id + "Transmitting size...");
+                //out.write(String.valueOf(byteCount).getBytes());
+                //out.flush();
+                //LCCP.logger.debug(id + "Successfully transmitted size to server!");
+
+                // sending yaml data to server
                 LCCP.logger.debug(id + "Transmitting data...");
-                outputStream.write(bytes);
+                out.write(bytes);
                 LCCP.logger.debug(id + "Successfully transmitted data to server!");
 
+                // closing data streams and socket to free up system resources
                 LCCP.logger.debug(id + "Closing socket and data streams...");
-
-                outputStream.close();
                 socket.close();
+
                 LCCP.logger.debug(id + "---------------------------------------------------------------");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
 
             } catch (IOException | ConfigurationException e) {
+                // if an error occurs print an error message
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                LCCP.logger.error(e);
                 return false;
             }
 

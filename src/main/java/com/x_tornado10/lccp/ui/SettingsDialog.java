@@ -3,7 +3,7 @@ package com.x_tornado10.lccp.ui;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.Networking;
+import com.x_tornado10.lccp.util.network.Networking;
 import org.gnome.adw.*;
 import org.gnome.gtk.Button;
 import org.gnome.gtk.Spinner;
@@ -239,7 +239,7 @@ public class SettingsDialog extends PreferencesDialog {
             public void run() {
                 LCCP.updateRemoteConfig();
             }
-        }.runTaskTimerAsynchronously(0, Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 20));
+        }.runTaskTimerAsynchronously(0, Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 100));
         LCCP.logger.debug("Started autoRemoteUpdateTask!");
     }
     public void stopRemoteUpdate() {

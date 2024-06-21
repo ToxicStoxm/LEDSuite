@@ -4,6 +4,8 @@ import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
+import java.util.UUID;
+
 public class Events {
     public record Reload(String message) {
     }

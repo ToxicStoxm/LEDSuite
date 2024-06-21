@@ -43,6 +43,22 @@ public class Logger {
     public void error(String message) {
         if (log_level.ERROR.isEnabled()) cError( "[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message);
     }
+    public void error(Exception e) {
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        Throwable t = e.getCause();
+
+        if (log_level.ERROR.isEnabled()) {
+
+            error("Stack trace:");
+            for (StackTraceElement s : stackTrace) {
+                error(e.toString());
+            }
+            if (t != null) {
+                error("Cause:");
+                error(t.toString());
+            }
+        }
+    }
     // sending an error message to console and log file
     public void cError(String message) {
         writeLog(message);
@@ -114,14 +130,14 @@ public class Logger {
         ERROR() {
             @Override
             public boolean isEnabled() {
-                LCCP.sysBeep();
+                //LCCP.sysBeep();
                 return currentLogLevel() >= 2;
             }
         },
         FATAL() {
             @Override
             public boolean isEnabled() {
-                LCCP.sysBeep();
+                //LCCP.sysBeep();
                 return currentLogLevel() >= 1;
             }
         },

@@ -30,7 +30,8 @@ import org.gnome.gio.ApplicationFlags;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.CharBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.UUID;
@@ -205,7 +206,7 @@ public class LCCP implements EventListener {
         server = true;
         startServer();
 
-        Networking.FileSender.networkHandler();
+        Networking.Communication.networkHandler();
 
     }
 
@@ -320,6 +321,8 @@ public class LCCP implements EventListener {
     public void activate() {
         // registering event listener for this class
         eventManager.registerEvents(this);
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
         // creating main window of the application
         mainWindow = new Window(app);
         // registering event listener for the main window
@@ -327,16 +330,43 @@ public class LCCP implements EventListener {
         // showing the main window on screen
         mainWindow.present();
         // trigger started to send started message to console
-        started();
+        // calculating time elapsed during startup and displaying it in the console
+        long timeElapsed = System.currentTimeMillis() - start;
+        eventManager.fireEvent(new Events.Started("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)"));
     }
 
     // display start message with starting duration
-    public static void started() {
-        // calculating time elapsed during startup and displaying it in the console
-        long timeElapsed = System.currentTimeMillis() - start;
-        logger.info("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)");
+    public static void started(String message) {
+        logger.info(message);
+        try {
+            Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
+        } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+            LCCP.logger.error("Failed to send / get available animations list from the server!");
+            LCCP.logger.error(e);
+        }
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Networking.Communication.sendYAML("127.0.0.1", 1200,
+                            new YAMLMessage()
+                                    .setPacketType(YAMLMessage.PACKET_TYPE.reply)
+                                    .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                                    .setFileLoaded(true)
+                                    .setFileState(YAMLMessage.FILE_STATE.playing)
+                                    .setFileSelected("test-file.mp4")
+                                    .setCurrentDraw(40)
+                                    .setVoltage(5)
+                                    .setLidState(false)
+                                    .setAvailableAnimations(LCCP.mainWindow.constructMap(":", "hansimansi:ac-adapter-symbolic", "lol:battery-level-90-charging-symbolic","test:battery-empty-symbolic"))
+                                    .build()
+                    );
+                } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.runTaskLaterAsynchronously(1000);
     }
-
 
     // exiting program with specified status code
     public static void exit(int status) {
@@ -366,7 +396,7 @@ public class LCCP implements EventListener {
     // sends a .yaml file to the server using a java socket
     public static void updateRemoteConfig() {
         LCCP.logger.debug("Updating RemoteConfig...");
-        Networking.FileSender.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config);
+        Networking.Communication.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config);
         LCCP.logger.debug("Successfully updatedRemoteConfig!");
     }
 
@@ -435,6 +465,10 @@ public class LCCP implements EventListener {
     public void onStartup(Events.Startup e) {
         // default console message response to a startup event
         logger.debug("Fulfilling startup request: " + e.message());
+    }
+    @EventHandler
+    public void onStarted(Events.Started e) {
+        started(e.message());
     }
     // listener function for save event
     @EventHandler

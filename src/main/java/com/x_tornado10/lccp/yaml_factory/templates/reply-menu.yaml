@@ -1,5 +1,15 @@
 package_type: reply
 reply_type: menu
+group1-name:
+  suffix:
+group2-name:
+group3-name:
+group4-name:
+
+
+
+
+
 menu_top:
    layout:
      orientation: x, y

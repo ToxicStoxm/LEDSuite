@@ -1,6 +1,8 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.EventHandler;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
@@ -30,6 +32,9 @@ public class Window extends ApplicationWindow implements EventListener {
     // made public to enable global toggling
     public Banner status = new Banner("");
     public ToastOverlay toastOverlay = null;
+    private ListBox animationsList = null;
+    private ListBox addFileList = null;
+    private Box addFile = null;
 
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
@@ -191,7 +196,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         @Override
                         public void run() {
                             try {
-                                Networking.FileSender.sendYAML("127.0.0.1", 1200,
+                                Networking.Communication.sendYAML("127.0.0.1", 1200,
                                         new YAMLMessage()
                                                 .setPacketType(YAMLMessage.PACKET_TYPE.reply)
                                                 .setReplyType(YAMLMessage.REPLY_TYPE.status)
@@ -292,19 +297,19 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setHexpand(true)
                 .build();
 
-        var addFileList = ListBox.builder()
+        addFileList = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
                 .setCssClasses(
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        var b0 = Box.builder()
+        addFile = Box.builder()
                 .setOrientation(Orientation.HORIZONTAL)
                 .setTooltipText("Add file to LED-Cube (Upload)")
                 .setSpacing(10)
                 .build();
-        b0.append(Image.fromIconName("document-send-symbolic"));
-        b0.append(
+        addFile.append(Image.fromIconName("document-send-symbolic"));
+        addFile.append(
                 Label.builder()
                         .setLabel("Add File")
                         .setEllipsize(EllipsizeMode.END)
@@ -315,129 +320,52 @@ public class Window extends ApplicationWindow implements EventListener {
                 ListBoxRow.builder()
                 .setSelectable(true)
                 .setChild(
-                       b0
+                       addFile
                 ).build()
         );
 
         var Animations = Label.builder().setLabel("Animations").build();
 
-
-        var animationsList = ListBox.builder()
+        animationsList = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
                 .setCssClasses(
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        int y = (int) Math.round(Math.ceil(Math.random() * 1000));
 
+        var box = Box.builder().setHalign(Align.CENTER).build();
+        box.append(Spinner.builder().setSpinning(true).build());
 
-        List<String> gnomeIconNames = new ArrayList<>();
-        Collections.addAll(gnomeIconNames,
-                "application-exit",
-                "appointment-new",
-                "call-start",
-                "call-stop",
-                "contact-new",
-                "document-new",
-                "document-open",
-                "document-save",
-                "document-save-as",
-                "edit-cut",
-                "edit-copy",
-                "edit-paste",
-                "edit-delete",
-                "edit-find",
-                "edit-find-replace",
-                "folder-new",
-                "format-indent-more",
-                "format-indent-less",
-                "format-text-bold",
-                "format-text-italic",
-                "format-text-underline",
-                "go-home",
-                "go-bottom",
-                "go-down",
-                "go-first",
-                "go-jump",
-                "go-last",
-                "go-next",
-                "go-previous",
-                "go-top",
-                "help-about",
-                "help-contents",
-                "help-faq",
-                "insert-image",
-                "insert-link",
-                "insert-object",
-                "list-add",
-                "list-remove",
-                "mail-send",
-                "mail-mark-important",
-                "mail-reply-sender",
-                "mail-reply-all",
-                "mail-forward",
-                "media-eject",
-                "media-playback-start",
-                "media-playback-pause",
-                "media-playback-stop",
-                "media-record",
-                "media-seek-backward",
-                "media-seek-forward",
-                "media-skip-backward",
-                "media-skip-forward",
-                "process-stop",
-                "system-lock-screen",
-                "system-log-out",
-                "system-reboot",
-                "system-shutdown",
-                "view-fullscreen",
-                "view-refresh",
-                "view-restore",
-                "view-sort-ascending",
-                "view-sort-descending",
-                "window-close",
-                "zoom-in",
-                "zoom-out",
-                "zoom-original",
-                "zoom-fit-best"
-        );
-
-        for (int i = 0; i <= y; i++) {
-
-            var b = Box.builder()
-                    .setOrientation(Orientation.HORIZONTAL)
-                    .setTooltipText("Animation " + (i + 1))
-                    .setSpacing(10)
-                    .build();
-            Random random = new Random();
-            int index = random.nextInt(gnomeIconNames.size());
-            b.append(Image.fromIconName(gnomeIconNames.get(index)));
-            b.append(
-                    Label.builder()
-                            .setLabel("Animation " + (i + 1))
-                            .setEllipsize(EllipsizeMode.END)
-                            .setXalign(0)
-                            .build()
-            );
-
-            animationsList.append(
-                    ListBoxRow.builder()
-                            .setSelectable(true)
-                            .setChild(
-                                    b
-                            ).build()
-            );
-        }
+        addAnimation(box);
 
         addFileList.onRowActivated(_ -> {
             LCCP.logger.debug("Clicked add file row!");
+            if (centerBox.getFirstChild() != null) centerBox.remove(centerBox.getFirstChild());
+            centerBox.append(new AddFileDialog());
             animationsList.setSelectionMode(SelectionMode.NONE);
             animationsList.setSelectionMode(SelectionMode.BROWSE);
+            addFileActivate();
         });
+
         animationsList.onRowActivated(row -> {
-            LCCP.logger.debug("AnimationSelected: " + row.getChild().getTooltipText());
+            if (centerBox.getFirstChild() != null) centerBox.remove(centerBox.getFirstChild());
+            String rowName = row.getName();
+            try {
+                Networking.Communication.sendYAMLDefaultHost(
+                        YAMLMessage.builder()
+                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                .setRequestType(YAMLMessage.REQUEST_TYPE.menu)
+                                .setRequestFile(rowName)
+                                .build()
+                );
+            } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+                LCCP.logger.error("Failed to send / get menu request for: " + rowName);
+                LCCP.logger.error(e);
+            }
+            LCCP.logger.debug("AnimationSelected: " + rowName);
             addFileList.setSelectionMode(SelectionMode.NONE);
             addFileList.setSelectionMode(SelectionMode.BROWSE);
+            animationActivate();
         });
         sidebarContentBox.append(addFileList);
         sidebarContentBox.append(Separator.builder().build());
@@ -494,7 +422,7 @@ public class Window extends ApplicationWindow implements EventListener {
                     sideBarToggleButton.setActive(false);
                 }
             }
-        }.runTaskTimerAsynchronously(0, 1);
+        }.runTaskTimerAsynchronously(0, 10);
 
         status.onButtonClicked(statusRow::emitActivate);
         status.setButtonLabel("LED Cube Status");
@@ -503,7 +431,7 @@ public class Window extends ApplicationWindow implements EventListener {
         this.setContent(overlaySplitView);
     }
 
-    private HashMap<String, String> constructMap(String regex, String... entries) {
+    public HashMap<String, String> constructMap(String regex, String... entries) {
         HashMap<String, String> result = new HashMap<>();
         for (String s : entries) {
             LCCP.logger.debug(s);
@@ -546,7 +474,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
     protected void getStatus() {
         try {
-            Networking.FileSender.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
+            Networking.Communication.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
                     .setPacketType(YAMLMessage.PACKET_TYPE.request)
                     .setReplyType(YAMLMessage.REPLY_TYPE.status)
                     .build()
@@ -570,7 +498,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 // updating status bar to show current status
                 //status.setTitle("LED-Cube-Status: " + getStatus());
             }
-        }.runTaskTimerAsynchronously(0, 100);
+        }.runTaskTimerAsynchronously(0, 1000);
     }
 
     // toggle status bar
@@ -643,6 +571,57 @@ public class Window extends ApplicationWindow implements EventListener {
 
     public void updateStatus(StatusUpdate statusUpdate) {
         status.setTitle(statusUpdate.toString());
+    }
+
+    @EventHandler
+    public void onStatus(Events.Status e) {
+        StatusUpdate statusUpdate = e.statusUpdate();
+
+        animationsList.removeAll();
+        for (Map.Entry<String, String> entry : statusUpdate.getAvailableAnimations().entrySet()) {
+
+            var b = Box.builder()
+                    .setOrientation(Orientation.HORIZONTAL)
+                    .setTooltipText("Open " + entry.getKey() + " settings menu")
+                    .setName(entry.getKey())
+                    .setSpacing(10)
+                    .build();
+            b.append(Image.fromIconName(entry.getValue()));
+            b.append(
+                    Label.builder()
+                            .setLabel(entry.getKey())
+                            .setEllipsize(EllipsizeMode.END)
+                            .setXalign(0)
+                            .build()
+            );
+            addAnimation(b);
+        }
+
+    }
+
+    @EventHandler
+    public void onStarted(Events.Started e) {
+        addFileList.emitRowSelected(addFileList.getRowAtIndex(0));
+        addFileList.emitRowActivated(addFileList.getRowAtIndex(0));
+        addFileList.emitSelectedRowsChanged();
+    }
+
+    private void addFileActivate() {
+
+    }
+    private void animationActivate() {
+
+    }
+
+    public void addAnimation(Widget widget) {
+        animationsList.append(
+                ListBoxRow.builder()
+                        .setSelectable(true)
+                        .setName(widget.getName())
+                        .setChild(
+                                widget
+                        ).build()
+        );
     }
 
 }

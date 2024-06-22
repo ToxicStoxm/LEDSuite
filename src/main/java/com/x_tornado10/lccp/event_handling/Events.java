@@ -13,6 +13,9 @@ public class Events {
     }
     public record Startup(String message) {
     }
+    public record Started(String message) {
+
+    }
     public record Shutdown(String message) {
     }
     public record DataOut(YAMLConfiguration yaml) {

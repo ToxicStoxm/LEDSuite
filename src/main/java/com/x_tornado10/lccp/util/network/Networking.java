@@ -20,136 +20,143 @@ public class Networking {
     //private static final TreeMap<Integer, NetworkQueueElement> networkQueue = new TreeMap<>();
     private static final TreeMap<Long, LCCPRunnable> networkQueue = new TreeMap<>();
 
-    // try to check a provided IPv4 for connectivity using the ping command in the linux terminal
-    // this is kind of a workaround since the default Java function normally used for this (InetAddress.isReachable()) requires root to work properly
-    // also doing it this way is way more robust since it uses a real ping utility instead of echo port 7 like InetAddress.isReachable() function does
-    // also, using echo port 7 can lead to false positives since most routers / firewalls are configured to respond to closed / non-existing addresses with a reset (RST) response,
-    // this will lead to InetAddress.isReachable() returning true because it interprets any kind of response as reachable even though
-    // the InetAddress.getByName() works just fine for host names though
-    private static boolean ping(String ip, int timeout) {
-        LCCP.logger.debug("Received ping request for '" + ip + "'" + " timeout: '" + timeout + "'");
-        try {
-            // formatting ping command with specified timeout and IPv4 / host name
-            LCCP.logger.debug("Formatting ping command...");
-            List<String> command = new ArrayList<>();
-            command.add("ping");
-            command.add("-W" + timeout);
-            command.add("-c1");
-            command.add(ip);
-            LCCP.logger.debug("Formatting complete! Command: " + command);
+    public static class General {
 
-            // creating a new process with the specified arguments above using process builder
-            LCCP.logger.debug("Creating new process...");
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
-            // starting the process
-            Process process = processBuilder.start();
-            LCCP.logger.debug("Created and started new process!");
+        // try to check a provided IPv4 for connectivity using the ping command in the linux terminal
+        // this is kind of a workaround since the default Java function normally used for this (InetAddress.isReachable()) requires root to work properly
+        // also doing it this way is way more robust since it uses a real ping utility instead of echo port 7 like InetAddress.isReachable() function does
+        // also, using echo port 7 can lead to false positives since most routers / firewalls are configured to respond to closed / non-existing addresses with a reset (RST) response,
+        // this will lead to InetAddress.isReachable() returning true because it interprets any kind of response as reachable even though
+        // the InetAddress.getByName() works just fine for host names though
+        private static boolean ping(String ip, int timeout) {
+            LCCP.logger.debug("Received ping request for '" + ip + "'" + " timeout: '" + timeout + "'");
+            try {
+                // formatting ping command with specified timeout and IPv4 / host name
+                LCCP.logger.debug("Formatting ping command...");
+                List<String> command = new ArrayList<>();
+                command.add("ping");
+                command.add("-W" + timeout);
+                command.add("-c1");
+                command.add(ip);
+                LCCP.logger.debug("Formatting complete! Command: " + command);
 
-            LCCP.logger.debug("Command output: ");
-            LCCP.logger.debug("------------------- PING -------------------");
-            // reading console feedback using a buffered reader
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                // creating a new process with the specified arguments above using process builder
+                LCCP.logger.debug("Creating new process...");
+                ProcessBuilder processBuilder = new ProcessBuilder(command);
+                // starting the process
+                Process process = processBuilder.start();
+                LCCP.logger.debug("Created and started new process!");
 
-            String line;
-            List<String> output = new ArrayList<>();
-            // storing single feedback lines in a String list
-            while ((line = reader.readLine()) != null) {
-                // displaying the command output in the console for debugging purposes
-                LCCP.logger.debug(line);
-                output.add(line);
-            }
-            LCCP.logger.debug("--------------------------------------------");
-            // waiting for the ping process to complete or time out
-            process.waitFor();
-            // iterating through the command output and checking if it contains a specific String that indicates that the ping was successful
-            for (String s : output) {
-                if (s.toLowerCase().contains("64 bytes")) {
-                    // if the specific string ('64 bytes' in this case) is found the function returns true
-                    LCCP.logger.debug("Ping was successful!");
-                    LCCP.logger.debug("Command complete.");
-                    return true;
+                LCCP.logger.debug("Command output: ");
+                LCCP.logger.debug("------------------- PING -------------------");
+                // reading console feedback using a buffered reader
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+                String line;
+                List<String> output = new ArrayList<>();
+                // storing single feedback lines in a String list
+                while ((line = reader.readLine()) != null) {
+                    // displaying the command output in the console for debugging purposes
+                    LCCP.logger.debug(line);
+                    output.add(line);
                 }
-            }
+                LCCP.logger.debug("--------------------------------------------");
+                // waiting for the ping process to complete or time out
+                process.waitFor();
+                // iterating through the command output and checking if it contains a specific String that indicates that the ping was successful
+                for (String s : output) {
+                    if (s.toLowerCase().contains("64 bytes")) {
+                        // if the specific string ('64 bytes' in this case) is found the function returns true
+                        LCCP.logger.debug("Ping was successful!");
+                        LCCP.logger.debug("Command complete.");
+                        return true;
+                    }
+                }
 
-        } catch (IOException | InterruptedException e) {
-            // if an exception is thrown due to an UnknownHostException / InterruptedException or any kind of IoException,
-            // it returns false
+            } catch (IOException | InterruptedException e) {
+                // if an exception is thrown due to an UnknownHostException / InterruptedException or any kind of IoException,
+                // it returns false
+                LCCP.logger.debug("Ping failed!");
+                LCCP.logger.debug("Command complete.");
+                return false;
+            }
+            // if the string isn't found and no exception is thrown the ping command executed but timed out so the function also returns false
             LCCP.logger.debug("Ping failed!");
             LCCP.logger.debug("Command complete.");
             return false;
         }
-        // if the string isn't found and no exception is thrown the ping command executed but timed out so the function also returns false
-        LCCP.logger.debug("Ping failed!");
-        LCCP.logger.debug("Command complete.");
-        return false;
-    }
 
+        // extension of isValidIP with option to return IPv4 or host name
+        // exception is thrown to enable custom error handling
+        public static String getValidIP(String ip, boolean ipify) throws IOException {
+            LCCP.logger.debug("Fulfilling ping request for: '" + ip + "'");
+            String ipv4;
+            try {
+                // creating new InetAddress to hold the IPv4 / host name
+                InetAddress host;
+                // check if the specified string is a valid IPv4 address (matches format)
+                if (isValidIP(ip)) {
+                    // try to ping ip with custom ping function
+                    // if the ping times out or fails throw new UnknownHostException
+                    // this is done so the error can be handled differently for different use cases
+                    if (!ping(ip, 3)) throw new UnknownHostException("Connection timed out!");
 
-    // extension of isValidIP with option to return IPv4 or host name
-    // exception is thrown to enable custom error handling
-    public static String getValidIP(String ip, boolean ipify) throws IOException {
-        LCCP.logger.debug("Fulfilling ping request for: '" + ip + "'");
-        String ipv4;
-        try {
-            // creating new InetAddress to hold the IPv4 / host name
-            InetAddress host;
-            // check if the specified string is a valid IPv4 address (matches format)
-            if (isValidIP(ip)) {
-                // try to ping ip with custom ping function
-                // if the ping times out or fails throw new UnknownHostException
-                // this is done so the error can be handled differently for different use cases
-                if (!ping(ip, 3)) throw new UnknownHostException("Connection timed out!");
+                    // if the ping is successful the IPv4 is pares by InetAddress
+                    host = InetAddress.ofLiteral(ip);
+                } else {
+                    // tries to get IPv4 from a host name using InetAddress integrated getByName() function
+                    host = InetAddress.getByName(ip);
+                }
 
-                // if the ping is successful the IPv4 is pares by InetAddress
-                host = InetAddress.ofLiteral(ip);
+                // gets the IPv4 address from the InetAddress object
+                ipv4 = host.getHostAddress();
+            } catch (IOException e) {
+                // if any exception occur the program will display some standard messages in the console
+                LCCP.logger.debug("Ping failed!");
+                LCCP.logger.debug(e.getMessage());
+                LCCP.logger.warn("Invalid host name or IPv4: '" + ip + "'");
+                // the exception is thrown again to enable for custom error handling later
+                throw e;
+            }
+            // ping results are displayed in the console
+            LCCP.logger.debug("Ping success!");
+            LCCP.logger.debug("Host name: '" + ip + "'");
+            LCCP.logger.debug("Detected IPv4: '" + ipv4 + "'");
+            // return the ip or the host name based on 'ipify' param
+            return ipify ? ipv4 : ip;
+        }
+
+        // validate an IP4 address format
+        public static boolean isValidIP(final String ip) {
+            return ip.matches(Paths.Patterns.IPV4);
+        }
+
+        // validate Port number format
+        public static boolean isValidPORT(final String port) {
+            LCCP.logger.debug("Fulfilling port validation request for: '" + port + "'");
+            // valid port format
+            boolean result = port.matches(Paths.Patterns.PORT);
+            // print result to console
+            if (result) {
+                LCCP.logger.debug("Port validation successful!");
+                LCCP.logger.debug("Port has valid format (Range: 1 - 65535)");
             } else {
-                // tries to get IPv4 from a host name using InetAddress integrated getByName() function
-                host = InetAddress.getByName(ip);
+                LCCP.logger.debug("Port validation has failed!");
+                LCCP.logger.debug("Invalid port format: '" + port + "'");
+                LCCP.logger.debug("Port needs to be a numerical value between 1 and 65535!");
             }
 
-            // gets the IPv4 address from the InetAddress object
-            ipv4 = host.getHostAddress();
-        } catch (IOException e) {
-            // if any exception occur the program will display some standard messages in the console
-            LCCP.logger.debug("Ping failed!");
-            LCCP.logger.debug(e.getMessage());
-            LCCP.logger.warn("Invalid host name or IPv4: '" + ip + "'");
-            // the exception is thrown again to enable for custom error handling later
-            throw e;
+            return result;
         }
-        // ping results are displayed in the console
-        LCCP.logger.debug("Ping success!");
-        LCCP.logger.debug("Host name: '" + ip + "'");
-        LCCP.logger.debug("Detected IPv4: '" + ipv4 + "'");
-        // return the ip or the host name based on 'ipify' param
-        return ipify ? ipv4 : ip;
-    }
-
-    // validate an IP4 address format
-    public static boolean isValidIP(final String ip) {
-        return ip.matches(Paths.Patterns.IPV4);
-    }
-
-    // validate Port number format
-    public static boolean isValidPORT(final String port) {
-        LCCP.logger.debug("Fulfilling port validation request for: '" + port + "'");
-        // valid port format
-        boolean result = port.matches(Paths.Patterns.PORT);
-        // print result to console
-        if (result) {
-            LCCP.logger.debug("Port validation successful!");
-            LCCP.logger.debug("Port has valid format (Range: 1 - 65535)");
-        } else {
-            LCCP.logger.debug("Port validation has failed!");
-            LCCP.logger.debug("Invalid port format: '" + port + "'");
-            LCCP.logger.debug("Port needs to be a numerical value between 1 and 65535!");
-        }
-
-        return result;
     }
 
     // custom file sender that sends a file to a server using java sockets
-    public static class FileSender {
+    public static class Communication {
+
+        public static boolean sendFileDefaultHost(String fileToSendPath) {
+            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath);
+        }
+
         // send file to server using sockets
         public static boolean sendFile(String serverIP4, int serverPort, String fileToSendPath) {
 
@@ -303,8 +310,6 @@ public class Networking {
         }
 
         private static final long delay = 10; // delay in milliseconds between network packets
-        private static long last = System.currentTimeMillis() - delay;
-        private static long current = System.currentTimeMillis();
 
         public static void networkHandler() {
             LCCP.logger.debug("Network Handler started!");
@@ -319,13 +324,14 @@ public class Networking {
                          networkQueue.remove(entry.getKey());
                     }
                 }
-            }.runTaskTimerAsynchronously(0, delay / 10);
+            }.runTaskTimerAsynchronously(0, delay);
         }
 
-        //static int concurrent = 0;
+        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml) {
+            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
+        }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml) {
-            //concurrent++;
             LCCP.logger.debug("Appending send request to the network queue!");
             LCCPRunnable sendRequest = new LCCPRunnable() {
                 @Override
@@ -334,50 +340,8 @@ public class Networking {
                     sendYAMLMessage(host, port, yaml);
                 }
             };
-            networkQueue.put(System.currentTimeMillis(), sendRequest);
-            //concurrent--;
-
-            /*
-
-            LCCP.logger.debug("Received yaml send request!");
-            current = System.currentTimeMillis();
-            long timePassed = current - last;
-            LCCP.logger.debug("Delay: " + delay + " Time since last packet was send: " + Math.round((float) timePassed / 10) / 100 + "s");
-            if (timePassed >= delay) {
-                LCCP.logger.debug("Debounce fulfilled: sending!");
-                last = current;
-                return sendYAMLMessage(host, port, yaml);
-            } else {
-                LCCP.logger.debug("Debounce not fulfilled: appending to queue!");
-                int queueIndex = networkQueue.size();
-                LCCP.logger.debug("Queue current size: " + queueIndex);
-                boolean success = networkQueue.putIfAbsent(queueIndex, new NetworkQueueElement(host, port, yaml)) == null;
-                LCCP.logger.debug(success ? "Successfully added send request to queue!" : "Failed to add send request to queue! Possible causes: already queued, invalid send request");
-                if (success) {
-                    long sendDelay = ((networkQueue.size() * delay) / 1000) * 20;
-                    new LCCPRunnable() {
-                        @Override
-                        public void run() {
-                            LCCP.logger.debug("Debounce fulfilled: sending scheduled request at queueIndex: " + queueIndex + "!");
-                            current = System.currentTimeMillis();
-                            sendYAMLMessage(queueIndex);
-                        }
-                    }.runTaskLaterAsynchronously(sendDelay);
-                    LCCP.logger.debug("Request scheduled with delay: " + Math.round((float) sendDelay / 10) / 100);
-                }
-                return success;
-            }
-
-             */
-            return true;
+            return networkQueue.put(System.currentTimeMillis(), sendRequest) == null;
         }
-        /*
-        private static boolean sendYAMLMessage(Integer queueIndex) {
-            NetworkQueueElement networkQueueElement = networkQueue.get(queueIndex);
-            networkQueue.remove(queueIndex);
-            return sendYAMLMessage(networkQueueElement.host(), networkQueueElement.port(), networkQueueElement.message());
-        }
-         */
 
         // function to send YAML packets to the server
         private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml) {

@@ -43,11 +43,6 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     .setSpacing(12)
                     .setHexpand(true)
                     .build();
-            var clamp = Clamp.builder()
-                    .setMaximumSize(500)
-                    .setTighteningThreshold(400)
-                    .setChild(statusList)
-                    .build();
 
             statusList.append(
                     ActionRow.builder().setTitle("Not connected to Cube!").setSubtitle(LCCP.server_settings.getIPv4() + ":" + LCCP.server_settings.getPort() + " is currently not responding!").build()
@@ -65,11 +60,17 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
             var statusPage = StatusPage.builder()
                     .setIconName("LCCP-logo-256x256")
                     .setTitle("LED Cube Status")
-                    .setChild(clamp)
+                    .setChild(statusList)
+                    .build();
+
+            var clamp = Clamp.builder()
+                    .setMaximumSize(500)
+                    .setTighteningThreshold(400)
+                    .setChild(statusPage)
                     .build();
 
             var toolbarView = ToolbarView.builder()
-                    .setContent(statusPage)
+                    .setContent(clamp)
                     .build();
 
             var headerBar1 = HeaderBar.builder()
@@ -87,11 +88,6 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     .setOrientation(Orientation.VERTICAL)
                     .setSpacing(12)
                     .setHexpand(true)
-                    .build();
-            var clamp = Clamp.builder()
-                    .setMaximumSize(500)
-                    .setTighteningThreshold(400)
-                    .setChild(statusList)
                     .build();
 
             var powerUsage = PreferencesGroup.builder()
@@ -170,11 +166,17 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
             var statusPage = StatusPage.builder()
                     .setIconName("LCCP-logo-256x256")
                     .setTitle("LED Cube Status")
-                    .setChild(clamp)
+                    .setChild(statusList)
+                    .build();
+
+            var clamp = Clamp.builder()
+                    .setMaximumSize(700)
+                    .setTighteningThreshold(600)
+                    .setChild(statusPage)
                     .build();
 
             var toolbarView = ToolbarView.builder()
-                    .setContent(statusPage)
+                    .setContent(clamp)
                     .build();
 
             var headerBar1 = HeaderBar.builder()
@@ -201,7 +203,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                 public void run() {
                     LCCP.mainWindow.getStatus();
                 }
-            }.runTaskTimerAsynchronously(0, 100);
+            }.runTaskTimerAsynchronously(0, 1000);
         }
         return new LCCPRunnable() {
             @Override

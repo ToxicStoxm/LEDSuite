@@ -35,6 +35,13 @@ public class YAMLMessage implements YAMLFactoryMessage {
     public YAMLMessage() {
         this.uuid = UUID.randomUUID();
     }
+    public static YAMLMessage defaultStatusRequest() {
+        return new YAMLMessage().setPacketType(PACKET_TYPE.request).setRequestType(REQUEST_TYPE.status);
+    }
+
+    public static YAMLMessage builder() {
+        return new YAMLMessage();
+    }
 
     protected YAMLMessage setUUID(UUID uuid) {
         this.uuid = uuid;

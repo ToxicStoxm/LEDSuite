@@ -21,22 +21,22 @@ public abstract class LCCPRunnable implements Runnable {
 
     public synchronized LCCPTask runTaskLater(long delay) throws IllegalStateException {
         checkState();
-        return setupId(LCCP.getScheduler().runTaskLater(this, delay));
+        return setupId(LCCP.getScheduler().runTaskLater(this, translate(delay)));
     }
 
     public synchronized LCCPTask runTaskLaterAsynchronously(long delay) throws IllegalStateException {
         checkState();
-        return setupId(LCCP.getScheduler().runTaskLaterAsynchronously(this, delay));
+        return setupId(LCCP.getScheduler().runTaskLaterAsynchronously(this, translate(delay)));
     }
 
     public synchronized LCCPTask runTaskTimer(long delay, long period) throws IllegalStateException {
         checkState();
-        return setupId(LCCP.getScheduler().runTaskTimer(this, delay, period));
+        return setupId(LCCP.getScheduler().runTaskTimer(this, translate(delay), translate(period)));
     }
 
     public synchronized LCCPTask runTaskTimerAsynchronously(long delay, long period) throws IllegalStateException {
         checkState();
-        return setupId(LCCP.getScheduler().runTaskTimerAsynchronously(this, delay, period));
+        return setupId(LCCP.getScheduler().runTaskTimerAsynchronously(this, translate(delay), translate(period)));
     }
 
     public synchronized int getTaskId() throws IllegalStateException {
@@ -45,6 +45,10 @@ public abstract class LCCPRunnable implements Runnable {
             throw new IllegalStateException("Not scheduled yet");
         }
         return id;
+    }
+
+    public synchronized long translate(long val) {
+        return val / 10;
     }
 
     private void checkState() {

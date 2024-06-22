@@ -48,14 +48,14 @@ public class Logger {
         Throwable t = e.getCause();
 
         if (log_level.ERROR.isEnabled()) {
-
-            error("Stack trace:");
+            debug("Error message: " + e);
+            debug("Stack trace:");
             for (StackTraceElement s : stackTrace) {
-                error(e.toString());
+                debug(s.toString());
             }
             if (t != null) {
-                error("Cause:");
-                error(t.toString());
+                debug("Cause:");
+                debug(t.toString());
             }
         }
     }

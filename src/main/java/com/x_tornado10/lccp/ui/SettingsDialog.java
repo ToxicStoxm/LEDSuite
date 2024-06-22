@@ -129,7 +129,7 @@ public class SettingsDialog extends PreferencesDialog {
                         String ip;
                         String text = ipv4.getText();
                         try {
-                            ip = Networking.getValidIP(text, false);
+                            ip = Networking.General.getValidIP(text, false);
                         } catch (IOException e) {
                             LCCP.sysBeep();
                             addToast(
@@ -167,7 +167,7 @@ public class SettingsDialog extends PreferencesDialog {
                 public void run() {
                     String text = port.getText();
                     try {
-                        if (Networking.isValidPORT(text)) {
+                        if (Networking.General.isValidPORT(text)) {
                             LCCP.server_settings.setPort(Integer.parseInt(text));
                         } else {
                             throw new NumberFormatException();
@@ -239,7 +239,7 @@ public class SettingsDialog extends PreferencesDialog {
             public void run() {
                 LCCP.updateRemoteConfig();
             }
-        }.runTaskTimerAsynchronously(0, Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 100));
+        }.runTaskTimerAsynchronously(0, Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 1000));
         LCCP.logger.debug("Started autoRemoteUpdateTask!");
     }
     public void stopRemoteUpdate() {

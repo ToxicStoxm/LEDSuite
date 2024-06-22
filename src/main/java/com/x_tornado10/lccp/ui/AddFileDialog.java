@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.adw.*;
 import org.gnome.gio.File;
@@ -37,21 +38,16 @@ public class AddFileDialog extends PreferencesPage {
                 .setMimeTypes(new String[]{"image/*","video/*"})
                 .setName("Animations")
                 .build();
-        var filter1 = FileFilter.builder()
-                .setPatterns(new String[]{"*"})
-                .setName("All Files")
-                .build();
 
         var file1 =  File.newForPath(LCCP.settings.getSelectionDir());
         LCCP.logger.debug(file1.getPath());
-
-
 
         // Create the file dialog for selecting files
         var fileSel = FileDialog.builder()
                 .setTitle("Pick file to upload")
                 .setModal(true)
                 .setInitialFolder(file1)
+                .setFilters(FilterListModel.builder().setFilter(filter).build())
                 .setDefaultFilter(filter)
                 .build();
 
@@ -59,6 +55,7 @@ public class AddFileDialog extends PreferencesPage {
         fileSelButton.onClicked(() -> {
             LCCP.logger.debug("Clicked file select button: opening new open file dialog");
             // Open the file dialog with a callback to handle the user's file selection
+
             fileSel.open(LCCP.mainWindow, null, (_, result, _) -> {
                 try {
                     // Finish the file selection operation and get the selected file

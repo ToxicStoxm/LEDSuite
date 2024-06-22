@@ -6,6 +6,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.network.Networking;
 import org.gnome.adw.*;
 import org.gnome.gtk.Button;
+import org.gnome.gtk.Orientation;
 import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
 
@@ -202,10 +203,17 @@ public class SettingsDialog extends PreferencesDialog {
             manualRemoteApplySwitchRow.setTitle("Apply");
 
             var applyButton = new Button();
-            applyButton.setSizeRequest(50, 50);
+            applyButton.setSizeRequest(40, 40);
             applyButton.setLabel("Apply");
             applyButton.setIconName("emblem-synchronizing-symbolic");
-            manualRemoteApplySwitchRow.addSuffix(applyButton);
+            manualRemoteApplySwitchRow.addSuffix(
+                    Clamp.builder()
+                            .setMaximumSize(40)
+                            .setTighteningThreshold(40)
+                            .setOrientation(Orientation.VERTICAL)
+                            .setChild(applyButton)
+                            .build()
+            );
             manualRemoteApplySwitchRow.setActivatableWidget(applyButton);
             applyButton.onClicked(() -> {
                 LCCP.logger.debug("Apply remote request through manual button press");

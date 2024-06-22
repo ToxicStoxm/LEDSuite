@@ -89,12 +89,12 @@
         <dependency>
             <groupId>io.github.jwharm.javagi</groupId>
             <artifactId>adw</artifactId>
-            <version>0.10.0</version>
+            <version>0.10.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.jwharm.javagi</groupId>
             <artifactId>webkit</artifactId>
-            <version>0.10.0</version>
+            <version>0.10.1</version>
         </dependency>
         <!-- config manager using yaml -->
         <dependency>

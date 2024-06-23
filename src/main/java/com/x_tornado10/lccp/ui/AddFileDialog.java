@@ -2,17 +2,21 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
+import com.x_tornado10.lccp.util.ALLOWED_FILE_TYPES;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.adw.*;
-import org.gnome.gio.File;
+import org.gnome.gio.*;
 import org.gnome.gio.ListModel;
 import org.gnome.glib.Variant;
 import org.gnome.gtk.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.attribute.FileAttribute;
 import java.util.List;
+import java.util.Objects;
 
 public class AddFileDialog extends PreferencesPage {
     public AddFileDialog() {
@@ -63,7 +67,7 @@ public class AddFileDialog extends PreferencesPage {
                     if (selectedFile != null) {
                         String filePath = selectedFile.getPath();
                         // Update the pathRow text with the selected file path
-                        pathRow.setSubtitle(filePath);
+                        fileDialogResult(selectedFile, pathRow);
                         LCCP.logger.debug("Selected file: " + filePath);
                     }
                 } catch (GErrorException _) {
@@ -85,6 +89,37 @@ public class AddFileDialog extends PreferencesPage {
 
         // Add the file preferences group to the dialog
         add(file);
+    }
+
+    private void fileDialogResult(File result, ActionRow pathRow) {
+        FileType fType = result.queryFileType(FileQueryInfoFlags.NONE, null);
+        String path = result.getPath();
+        if (fType == FileType.REGULAR && path != null) {
+            String fileName = path.substring(path.lastIndexOf("/"));
+            if (checkFileType(fileName)) {
+                pathRow.setSubtitle(path);
+                LCCP.logger.debug("Valid file type! " + path);
+                return;
+            }
+        }
+        LCCP.logger.error("Invalid file type selected! " + path);
+        LCCP.logger.warn("Only Image, Video and Shared Library files are allowed!");
+        LCCP.mainWindow.toastOverlay.addToast(
+                Toast.builder().setTitle("Error: Invalid file type selected!").build()
+        );
+    }
+
+    private boolean checkFileType(String fileName) {
+        String mimeType = URLConnection.guessContentTypeFromName(fileName);
+        String suffix = fileName.substring(
+                fileName.lastIndexOf(".") + 1
+        );
+        return  suffix.equalsIgnoreCase("SO") ||
+                mimeType == null ? ALLOWED_FILE_TYPES.isALLOWED(suffix) :
+                (
+                mimeType.contains("image/") ||
+                mimeType.contains("video/")
+        );
     }
 
 }

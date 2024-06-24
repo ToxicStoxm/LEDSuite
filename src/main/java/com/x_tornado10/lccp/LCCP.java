@@ -22,8 +22,6 @@ import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 
@@ -40,7 +38,7 @@ import static java.awt.Toolkit.getDefaultToolkit;
 
 @Getter
 public class LCCP implements EventListener {
-    private static final Log log = LogFactory.getLog(LCCP.class);
+
     @Getter
     private static LCCP instance;
     public static LocalSettings settings;
@@ -70,7 +68,6 @@ public class LCCP implements EventListener {
 
     // constructor method
     public LCCP(String[] args) {
-
         instance = this;
 
         // create new libadwaita application object
@@ -359,7 +356,8 @@ public class LCCP implements EventListener {
                                     .setVoltage(5)
                                     .setLidState(false)
                                     .setAvailableAnimations(LCCP.mainWindow.constructMap(":", "hansimansi:ac-adapter-symbolic", "lol:battery-level-90-charging-symbolic","test:battery-empty-symbolic"))
-                                    .build()
+                                    .build(),
+                            null
                     );
                 } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
                     throw new RuntimeException(e);
@@ -396,7 +394,7 @@ public class LCCP implements EventListener {
     // sends a .yaml file to the server using a java socket
     public static void updateRemoteConfig() {
         LCCP.logger.debug("Updating RemoteConfig...");
-        Networking.Communication.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config);
+        Networking.Communication.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config, null);
         LCCP.logger.debug("Successfully updatedRemoteConfig!");
     }
 

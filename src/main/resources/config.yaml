@@ -39,3 +39,5 @@ Local-Settings:
     Default-Selection-Dir: "%user.home%"
     # If the app should display a short form status bar on the main app window
     Display-Status-Bar: false
+    # If the animation should automatically start playing after uploading finished
+    Auto-Play-After-Upload: true

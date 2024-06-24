@@ -35,6 +35,8 @@ public class Window extends ApplicationWindow implements EventListener {
     private ListBox animationsList = null;
     private ListBox addFileList = null;
     private Box addFile = null;
+    public ToolbarView rootView = null;
+    public ProgressBar progressBar = null;
 
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
@@ -207,7 +209,8 @@ public class Window extends ApplicationWindow implements EventListener {
                                                 .setVoltage(5)
                                                 .setLidState(false)
                                                 .setAvailableAnimations(constructMap(":", "hansimansi:cat-symbolic", "lol:symbolic","test:symbolic"))
-                                                .build()
+                                                .build(),
+                                        null
                                         );
                             } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
                                      YAMLAssembly.InvalidPacketTypeException | YAMLAssembly.TODOException ex) {
@@ -372,6 +375,7 @@ public class Window extends ApplicationWindow implements EventListener {
         sidebarContentBox.append(Animations);
         sidebarContentBox.append(animationsList);
 
+        //southBox.append(progressBar);
 
         var sidebarMainBox = new Box(Orientation.VERTICAL, 0);
         sidebarMainBox.append(smallHeaderBar);
@@ -427,8 +431,16 @@ public class Window extends ApplicationWindow implements EventListener {
         status.onButtonClicked(statusRow::emitActivate);
         status.setButtonLabel("LED Cube Status");
 
+        progressBar = ProgressBar.builder().build();
+
+        rootView = ToolbarView.builder()
+                .setContent(overlaySplitView)
+                .build();
+        rootView.addBottomBar(progressBar);
+        rootView.setRevealBottomBars(false);
+
         // adding the main container to the window
-        this.setContent(overlaySplitView);
+        this.setContent(rootView);
     }
 
     public HashMap<String, String> constructMap(String regex, String... entries) {
@@ -477,7 +489,8 @@ public class Window extends ApplicationWindow implements EventListener {
             Networking.Communication.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
                     .setPacketType(YAMLMessage.PACKET_TYPE.request)
                     .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                    .build()
+                    .build(),
+                    null
             );
         } catch (YAMLAssembly.TODOException | ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
                  YAMLAssembly.InvalidPacketTypeException e) {
@@ -548,6 +561,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
     // toggle auto update option for the settings dialog
     public void setAutoUpdate(boolean active) {
+        if (autoUpdate == active) return;
         LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
         // if auto updating isn't active and should be activated
         if (!autoUpdate && active) {

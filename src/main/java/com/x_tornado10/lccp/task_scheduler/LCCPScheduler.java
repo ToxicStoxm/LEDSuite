@@ -38,8 +38,8 @@ public class LCCPScheduler implements TaskScheduler {
     private final ConcurrentHashMap<Integer, LCCPTask> runners = new ConcurrentHashMap<>();
     private volatile int currentTick = -1;
     private final Executor executor = Executors.newCachedThreadPool();
-    private LCCPAsyncDebugger debugHead = new LCCPAsyncDebugger(-1, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
-    private LCCPAsyncDebugger debugTail = debugHead;
+    //private LCCPAsyncDebugger debugHead = new LCCPAsyncDebugger(-1, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+    //private LCCPAsyncDebugger debugTail = debugHead;
     private static final int RECENT_TICKS;
 
     static {
@@ -260,7 +260,7 @@ public class LCCPScheduler implements TaskScheduler {
                 }
                 parsePending();
             } else {
-                debugTail = debugTail.setNext(new LCCPAsyncDebugger(currentTick + RECENT_TICKS, task.getTaskClass()));
+                //debugTail = debugTail.setNext(new LCCPAsyncDebugger(currentTick + RECENT_TICKS, task.getTaskClass()));
                 executor.execute(task);
                 // We don't need to parse pending
                 // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
@@ -275,7 +275,7 @@ public class LCCPScheduler implements TaskScheduler {
         }
         pending.addAll(temp);
         temp.clear();
-        debugHead = debugHead.getNextHead(currentTick);
+        //debugHead = debugHead.getNextHead(currentTick);
     }
     
     private void addTask(final LCCPTask task) {
@@ -326,7 +326,7 @@ public class LCCPScheduler implements TaskScheduler {
     public String toString() {
         int debugTick = currentTick;
         StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
-        debugHead.debugTo(string);
+        //debugHead.debugTo(string);
         return string.append('}').toString();
     }
 }

@@ -1,0 +1,13 @@
+#!/bin/bash
+cp "$1-16x16.png" "$2/.local/share/icons/hicolor/16x16/apps/"
+cp "$1-20x20.png" "$2/.local/share/icons/hicolor/20x20/apps/"
+cp "$1-24x24.png" "$2/.local/share/icons/hicolor/24x24/apps/"
+cp "$1-32x32.png" "$2/.local/share/icons/hicolor/32x32/apps/"
+cp "$1-40x40.png" "$2/.local/share/icons/hicolor/40x40/apps/"
+cp "$1-48x48.png" "$2/.local/share/icons/hicolor/48x48/apps/"
+cp "$1-64x64.png" "$2/.local/share/icons/hicolor/64x64/apps/"
+cp "$1-72x72.png" "$2/.local/share/icons/hicolor/72x72/apps/"
+cp "$1-96x96.png" "$2/.local/share/icons/hicolor/96x96/apps/"
+cp "$1-128x128.png" "$2/.local/share/icons/hicolor/128x128/apps/"
+cp "$1-192x192.png" "$2/.local/share/icons/hicolor/192x192/apps/"
+cp "$1-256x256.png" "$2/.local/share/icons/hicolor/256x256/apps/"

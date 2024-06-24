@@ -31,6 +31,7 @@ public final class Paths {
         public static final String DISPLAY_STATUS_BAR = USER_PREFERENCES_SECTION + SEPARATOR + "Display-Status-Bar";
         public static final String AUTO_UPDATE_REMOTE_TICK = NETWORK_SECTION + SEPARATOR + "Auto-Update-Remote-Tick";
         public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
+        public static final String AUTO_PLAY_AFTER_UPLOAD = USER_PREFERENCES_SECTION + SEPARATOR + "Auto-Play-After-Upload";
     }
     // yaml paths for server_config
     public static final class Server_Config {

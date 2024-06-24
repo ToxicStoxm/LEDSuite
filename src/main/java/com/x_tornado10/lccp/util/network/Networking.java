@@ -4,6 +4,8 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.util.Paths;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
@@ -153,12 +155,17 @@ public class Networking {
     // custom file sender that sends a file to a server using java sockets
     public static class Communication {
 
+        public static boolean sendFileDefaultHost(String fileToSendPath, ProgressTracker progressTracker) {
+            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, progressTracker);
+        }
+
         public static boolean sendFileDefaultHost(String fileToSendPath) {
-            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath);
+            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, null);
         }
 
         // send file to server using sockets
-        public static boolean sendFile(String serverIP4, int serverPort, String fileToSendPath) {
+        public static boolean sendFile(String serverIP4, int serverPort, String fileToSendPath, ProgressTracker progressTracker) {
+            boolean track = progressTracker != null;
 
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
@@ -277,6 +284,16 @@ public class Networking {
 
                         // displaying transfer information message in the console containing speed, eta, file size and transferred data
                         LCCP.logger.debug(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
+                        if (track && transferredSize > 0) {
+                            progressTracker.setTotalSizeInBytes(fileSize);
+                            progressTracker.setTotalSizeInMegabytes(mbFileSize);
+                            progressTracker.setTransferredSizeInBytes(transferredSize);
+                            progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
+                            progressTracker.setSpeedInBytes(bytesPerSecond);
+                            progressTracker.setSpeedInMegabytes(mbPerSecond);
+                            progressTracker.setProgressPercentage(percent);
+                            progressTracker.setEta(result.toString());
+                        }
                         lastTransferredSize = transferredSize;
                     }
                     // writing buffer to output stream and sending it with socket
@@ -299,6 +316,7 @@ public class Networking {
                 LCCP.logger.debug(id + "Sending complete!");
 
             } catch (IOException e) {
+                if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
                 return false;
@@ -307,6 +325,20 @@ public class Networking {
             LCCP.logger.debug(id + "---------------------------------------------------------------");
             //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
             return true;
+        }
+        @Setter
+        @Getter
+        public static class ProgressTracker {
+            private boolean error = false;
+            private boolean updated = false;
+            private double totalSizeInBytes = 0.0;
+            private double totalSizeInMegabytes = 0.0;
+            private double transferredSizeInBytes = 0.0;
+            private double transferredSizeInMegabytes = 0.0;
+            private double progressPercentage = 0.0;
+            private double speedInBytes = 0.0;
+            private double speedInMegabytes = 0.0;
+            private String eta = "";
         }
 
         private static final long delay = 10; // delay in milliseconds between network packets
@@ -326,25 +358,35 @@ public class Networking {
                 }
             }.runTaskTimerAsynchronously(0, delay);
         }
-
-        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml) {
-            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml);
+        
+        public interface FinishCallback {
+            void onFinish(boolean success);
         }
 
-        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml) {
+        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml) {
+            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null);
+        }
+        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback) {
+            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback);
+        }
+
+        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
             LCCP.logger.debug("Appending send request to the network queue!");
             LCCPRunnable sendRequest = new LCCPRunnable() {
                 @Override
                 public void run() {
                     LCCP.logger.debug("Sending packet: " + yaml.getProperty(Paths.NETWORK.YAML.PACKET_TYPE));
-                    sendYAMLMessage(host, port, yaml);
+                    sendYAMLMessage(host, port, yaml, callback);
                 }
             };
             return networkQueue.put(System.currentTimeMillis(), sendRequest) == null;
         }
 
         // function to send YAML packets to the server
-        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml) {
+        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback) {
+            boolean callb = callback != null;
+            boolean err = false;
+            
             // checking if network event id is given
             boolean noID = false;
             // figuring out network event id, if none is given create a new one
@@ -429,11 +471,23 @@ public class Networking {
                 // if an error occurs print an error message
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 LCCP.logger.error(e);
-                return false;
+                err = true;
             }
+            
+            err = !err;
+            if (callb) callback.onFinish(err);
+            return err; 
 
-            return true;
-
+        }
+    }
+    public static class NetworkException extends Exception {
+        private NetworkException(String message) {
+            super(message);
+        }
+    }
+    public static class ServerCommunicationException extends NetworkException {
+        public ServerCommunicationException(String message) {
+            super(message);
         }
     }
 }

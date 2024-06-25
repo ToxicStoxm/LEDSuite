@@ -287,6 +287,7 @@ public class AddFileDialog extends PreferencesPage {
             public void run() {
                 if (progressTracker.isUpdated()) {
                     LCCP.mainWindow.progressBar.setFraction(0.0);
+
                     cancel();
                     cancelled[0] = true;
                     LCCP.logger.debug("Changing button style!");

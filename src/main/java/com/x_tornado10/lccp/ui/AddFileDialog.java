@@ -276,15 +276,16 @@ public class AddFileDialog extends PreferencesPage {
 
         LCCP.logger.debug("Requesting send with stats tracking!");
         Networking.Communication.ProgressTracker progressTracker = new Networking.Communication.ProgressTracker();
-        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
 
         long start = System.currentTimeMillis();
+        long timeout = 500; // time in ms until sending operation times out
+        int resetDelay = 500; // time in ms until reset is triggered
 
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (System.currentTimeMillis() - start > 500) {
-                    resetUI(1000, false, false, callback);
+                if (System.currentTimeMillis() - start > timeout) {
+                    resetUI(resetDelay, false, false, callback);
                     cancel();
                 }
                 if (progressTracker.isUpdated()) {
@@ -309,6 +310,8 @@ public class AddFileDialog extends PreferencesPage {
                 }
             }
         }.runTaskTimerAsynchronously(0, 10);
+
+        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
 
     }
 

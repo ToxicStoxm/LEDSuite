@@ -280,11 +280,14 @@ public class AddFileDialog extends PreferencesPage {
         long start = System.currentTimeMillis();
         long timeout = 500; // time in ms until sending operation times out
         int resetDelay = 500; // time in ms until reset is triggered
+        final boolean[] cancelled = {false};
 
         new LCCPRunnable() {
             @Override
             public void run() {
                 if (progressTracker.isUpdated()) {
+                    cancel();
+                    cancelled[0] = true;
                     LCCP.logger.debug("Changing button style!");
                     LCCP.mainWindow.rootView.setRevealBottomBars(true);
                     statsRow.setVisible(true);
@@ -299,12 +302,12 @@ public class AddFileDialog extends PreferencesPage {
                             statsRow.setSubtitle("Upload speed: " + progressTracker.getSpeedInMegabytes() + "MB/S - ETA: " + progressTracker.getEta());
                             LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage() / 100);
                         }
-                    }.runTaskTimerAsynchronously(100, 10);
+                    }.runTaskTimerAsynchronously(0, 10);
 
-                } else if (System.currentTimeMillis() - start > timeout) {
+                } else if (System.currentTimeMillis() - start > timeout && !cancelled[0]) {
                     resetUI(resetDelay, false, false, callback);
                     cancel();
-                } else if (progressTracker.isError()) {
+                } else if (progressTracker.isError() && !cancelled[0]) {
                     resetUI(1000, true, false, callback);
                     cancel();
                 }

@@ -284,10 +284,6 @@ public class AddFileDialog extends PreferencesPage {
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (System.currentTimeMillis() - start > timeout) {
-                    resetUI(resetDelay, false, false, callback);
-                    cancel();
-                }
                 if (progressTracker.isUpdated()) {
                     LCCP.logger.debug("Changing button style!");
                     LCCP.mainWindow.rootView.setRevealBottomBars(true);
@@ -304,7 +300,11 @@ public class AddFileDialog extends PreferencesPage {
                             LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage() / 100);
                         }
                     }.runTaskTimerAsynchronously(100, 10);
-                } else if (progressTracker.isError()){
+
+                } else if (System.currentTimeMillis() - start > timeout) {
+                    resetUI(resetDelay, false, false, callback);
+                    cancel();
+                } else if (progressTracker.isError()) {
                     resetUI(1000, true, false, callback);
                     cancel();
                 }

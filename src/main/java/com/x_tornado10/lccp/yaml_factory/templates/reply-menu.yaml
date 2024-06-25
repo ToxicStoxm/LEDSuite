@@ -139,6 +139,9 @@ group0-name:
         - "entry1"
         - "entry2"
         - "entry3"
+    spinner:
+      pos: 8
+      time: -1 # how long the spinner is displayed and spinning, -1 = infinite
 
 group1-name:
   pos: 1

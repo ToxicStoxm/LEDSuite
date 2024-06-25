@@ -189,7 +189,6 @@ public class Networking {
             LCCP.logger.debug(id + "File size: " + ((fileToSend.length() / 1024) / 1024) + "MB");
             LCCP.logger.debug(id + "File type: " + fileToSend.getName().split("\\.")[1].toUpperCase());
 
-
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
             try {
@@ -318,12 +317,11 @@ public class Networking {
             } catch (IOException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                LCCP.logger.error(e);
                 return false;
             }
             LCCP.logger.debug(id + "Successfully send file to server!");
             LCCP.logger.debug(id + "---------------------------------------------------------------");
-            //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
             return true;
         }
         @Setter

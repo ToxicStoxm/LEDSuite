@@ -1,67 +1,161 @@
 package_type: reply
 reply_type: menu
-group1-name:
+group0-name:
+  pos: 0 # group position
+
   suffix:
+    button:
+      label: "groupSuffixButton"
+
+  content: # group content
+
+    button:
+      pos: 0 # widget position in group
+      label: "ButtonLabel" # text inside the button
+      icon: "" # gnome icon name (replaces label)
+      style: "style1,style2,style3" # libadwaita style String (see adwaita-1-demo/Style Classes for reference)
+      tooltip: "some text" # text that is displayed when hovering over the object
+      row: true / false # if button should be inside a row (if true, style arguments are handled internally and the style entry will be ignored)
+
+    property:
+      pos: 1
+      label: "EntryTitle" # text above
+      content: "EntryContent" # text below (main text)
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+      prefixes: # prefix widget/s for expander
+        button:
+          pos: 0
+          label: ""
+          icon: "share symbolic"
+        switch:
+          pos: 1
+
+      suffixes: # suffix widget/s for expander
+        button:
+          pos: 0
+          label: ""
+          icon: "copy-symbolic"
+        switch:
+          pos: 1
+
+    switch:
+      pos: 2
+      label: "SwitchLabel"
+      value: true / false # switch position on / off
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+      prefixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+      suffixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+    slider:
+      pos: 3
+      label: "SliderLabel"
+      min: 0 # min value
+      max: 100 # max value
+      step: 1 # units + per click
+      value: 55 # current value
+      climb_rate: 2 # acceleration rate when buttons are held down
+      digits: 2 # number of decimal places to display
+      numeric: true / false # if the values are numeric (ignores non-numerical input)
+      snap: true / false # if invalid input value should snap to nearest valid value
+      wraparound: true / false # wraparound to min when max is reached and vice versa
+
+      prefixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+      suffixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+    entry: # text box
+      pos: 4
+      label: "Entry Label"
+      content: "Content text"
+      editable: true / false
+      apply_button: true / false
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+      prefixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+      suffixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+    expander: # dropdown but with rows (nested shit)
+      pos: 5
+      toggleable: true / false # displays toggle for the expander row
+      label: "Entry Label"
+
+      prefixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+      suffixes:
+        button:
+          pos: 0
+        switch:
+          pos: 1
+
+      content: # rows in expander
+        switch:
+          pos: 0
+        slider:
+          pos: 1
+
+    dropdown:
+      pos: 6
+      label: "dropdown label"
+      content: "some text"
+      display_selected: true / false # if current selected value should be displayed as content (if true content value will be ignored)
+      searchable: true / false # toggle search function
+      selected: -1 # index of selected entry. -1 = nothing selected
+      dropdown:
+        - "entry1"
+        - "entry2"
+        - "entry3"
+
+group1-name:
+  pos: 1
+  content:
+    ...
+
 group2-name:
+  pos: 2
+  content:
+    ...
+
 group3-name:
+  pos: 3
+  content:
+    ...
+
 group4-name:
-
-
-
-
-
-menu_top:
-   layout:
-     orientation: x, y
-     align: start, center, end
-     spacing: 10
-   speed:
-     type: slider
-     slider_label: scroll speed
-     slider-current: 50
-     slider-min: 1
-     slider-max: 100
-
-   gfhjfdghfdgj:
-     type: [button, label, slider, text_box, toggle_button, dropdown]
-     content: jghfdjghsd #label
-     button_label: dfgjhfjudg
-     text_box_content: tfgjhfd
-     slider_current_value: 453
-     slider_max_value: 435
-     slider_min_value: 411
-     slider_label: fgjf
-     drop_down_content: #dropdown
-       _ fgfdg
-       _ sdfgsdfg
-       _ sdfgsd
-menu_center:
-  gfhjfdghfdgj:
-    type: [button, label, slider, text_box, toggle_button, dropdown]
-    reply_name: jfghjfd
-    content: jghfdjghsd #label
-    button_label: dfgjhfjudg
-    text_box_content: tfgjhfd
-    slider_current_value: 453
-    slider_max_value: 435
-    slider_min_value: 411
-    slider_label: fgjf
-    drop_down_content: #dropdown
-      _ fgfdg
-      _ sdfgsdfg
-      _ sdfgsd
-menu_bottom:
-  layout: flow
-  gfhjfdghfdgj:
-    type: [button, label, slider, text_box, toggle_button, dropdown]
-    content: jghfdjghsd #label
-    button_label: dfgjhfjudg
-    text_box_content: tfgjhfd
-    slider_current_value: 453
-    slider_max_value: 435
-    slider_min_value: 411
-    slider_label: fgjf
-    drop_down_content: #dropdown
-      _ fgfdg
-      _ sdfgsdfg
-      _ sdfgsd
+  pos: 4
+  content:
+    ...

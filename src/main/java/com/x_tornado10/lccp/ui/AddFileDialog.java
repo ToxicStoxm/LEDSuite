@@ -286,6 +286,7 @@ public class AddFileDialog extends PreferencesPage {
             @Override
             public void run() {
                 if (progressTracker.isUpdated()) {
+                    LCCP.mainWindow.progressBar.setFraction(0.0);
                     cancel();
                     cancelled[0] = true;
                     LCCP.logger.debug("Changing button style!");
@@ -300,7 +301,7 @@ public class AddFileDialog extends PreferencesPage {
                                 cancel();
                             }
                             statsRow.setSubtitle("Upload speed: " + progressTracker.getSpeedInMegabytes() + "MB/S - ETA: " + progressTracker.getEta());
-                            LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage() / 100);
+                            LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
                         }
                     }.runTaskTimerAsynchronously(0, 10);
 

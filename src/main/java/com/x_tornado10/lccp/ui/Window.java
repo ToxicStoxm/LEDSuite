@@ -431,7 +431,7 @@ public class Window extends ApplicationWindow implements EventListener {
         status.onButtonClicked(statusRow::emitActivate);
         status.setButtonLabel("LED Cube Status");
 
-        progressBar = ProgressBar.builder().build();
+        progressBar = ProgressBar.builder().setFraction(0.0).build();
 
         rootView = ToolbarView.builder()
                 .setContent(overlaySplitView)

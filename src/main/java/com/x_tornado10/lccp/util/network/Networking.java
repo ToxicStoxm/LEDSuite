@@ -290,7 +290,7 @@ public class Networking {
                             progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
                             progressTracker.setSpeedInBytes(bytesPerSecond);
                             progressTracker.setSpeedInMegabytes(mbPerSecond);
-                            progressTracker.setProgressPercentage(percent);
+                            progressTracker.setProgressPercentage(Math.round(percent / 100));
                             progressTracker.setEta(result.toString());
                         }
                         lastTransferredSize = transferredSize;

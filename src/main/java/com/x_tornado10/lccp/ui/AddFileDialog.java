@@ -278,7 +278,7 @@ public class AddFileDialog extends PreferencesPage {
         Networking.Communication.ProgressTracker progressTracker = new Networking.Communication.ProgressTracker();
 
         long start = System.currentTimeMillis();
-        long timeout = 500; // time in ms until sending operation times out
+        long timeout = 2000; // time in ms until sending operation times out
         int resetDelay = 500; // time in ms until reset is triggered
         final boolean[] cancelled = {false};
 
@@ -344,6 +344,7 @@ public class AddFileDialog extends PreferencesPage {
                                     )
                                     .build()
                     );
+
                     uploadButton.setCssClasses(new String[]{"destructive-action", "pill"});
                     new LCCPRunnable() {
                         @Override

@@ -27,7 +27,9 @@ public class AddFileDialog extends PreferencesPage {
     private final Spinner spinner;
     private String filePath = null;
     private String fileName = null;
-    private final ActionRow statsRow;
+    private final ExpanderRow statsRow;
+    private final ActionRow speed;
+    private final ActionRow eta;
     public AddFileDialog() {
 
         if (VarPool.init) {
@@ -54,7 +56,7 @@ public class AddFileDialog extends PreferencesPage {
 
         var filter = FileFilter.builder()
                 .setSuffixes(new String[]{"so"})
-                .setMimeTypes(new String[]{"image/*","video/*"})
+                .setMimeTypes(new String[]{"image/*", "video/*"})
                 .setName("Animations")
                 .build();
 
@@ -124,24 +126,33 @@ public class AddFileDialog extends PreferencesPage {
 
         file.add(autoPlay);
 
-        statsRow = ActionRow.builder()
-                .setTitle("Upload statistics")
-                .setSubtitle("Upload speed: N/A - ETA: N/A")
+        statsRow = ExpanderRow.builder()
+                .setTitle("Upload Statistics")
+                .setExpanded(false)
+                .setActivatable(false)
                 .build();
 
-        statsRow.setVisible(false);
+        speed = ActionRow.builder()
+                .setTitle("Speed")
+                .setSubtitle("N/A")
+                .build();
+        eta = ActionRow.builder()
+                .setTitle("ETA")
+                .setSubtitle("N/A")
+                .build();
+
+        statsRow.addRow(speed);
+        statsRow.addRow(eta);
 
         file.add(statsRow);
 
         uploadButton = Button.builder()
                 .setCssClasses(new String[]{"suggested-action", "pill"})
-                        .build();
+                .build();
 
         uploadButton.onClicked(() -> {
-            if (uploading) return;
-            new LCCPRunnable() {
-                @Override
-                public void run() {
+                    if (uploading) return;
+
                     upload((error, fileName) -> {
                         if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
                             try {
@@ -167,9 +178,9 @@ public class AddFileDialog extends PreferencesPage {
                             }
                         }
                     });
+
                 }
-            }.runTaskAsynchronously();
-        });
+        );
 
         spinner = Spinner.builder().setSpinning(true).build();
 
@@ -285,26 +296,31 @@ public class AddFileDialog extends PreferencesPage {
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (progressTracker.isUpdated()) {
-                    LCCP.mainWindow.progressBar.setFraction(0.0);
-
-                    cancel();
+                if (progressTracker.isUpdated() && !cancelled[0]) {
                     cancelled[0] = true;
-                    LCCP.logger.debug("Changing button style!");
+                    LCCP.mainWindow.progressBar.setFraction(0.0);
+                    //LCCP.logger.debug("Changing button style!");
                     LCCP.mainWindow.rootView.setRevealBottomBars(true);
-                    statsRow.setVisible(true);
+                    statsRow.setExpanded(true);
                     new LCCPRunnable() {
                         @Override
                         public void run() {
                             boolean error = progressTracker.isError();
-                            if (error || progressTracker.getProgressPercentage() >= 100) {
+                            if (error || progressTracker.getProgressPercentage() >= 1.0) {
+                                if (!error) {
+                                    speed.setSubtitle(progressTracker.getSpeedInMegabytes() + "MB/S");
+                                    eta.setSubtitle(progressTracker.getEta());
+                                    LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
+                                }
                                 resetUI(1000, error, false, callback);
                                 cancel();
                             }
-                            statsRow.setSubtitle("Upload speed: " + progressTracker.getSpeedInMegabytes() + "MB/S - ETA: " + progressTracker.getEta());
+                            speed.setSubtitle(progressTracker.getSpeedInMegabytes() + "MB/S");
+                            eta.setSubtitle(progressTracker.getEta());
                             LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
                         }
                     }.runTaskTimerAsynchronously(0, 10);
+                    cancel();
 
                 } else if (System.currentTimeMillis() - start > timeout && !cancelled[0]) {
                     resetUI(resetDelay, false, false, callback);
@@ -316,8 +332,12 @@ public class AddFileDialog extends PreferencesPage {
             }
         }.runTaskTimerAsynchronously(0, 10);
 
-        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
-
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
+            }
+        }.runTaskAsynchronously();
     }
 
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
@@ -329,8 +349,9 @@ public class AddFileDialog extends PreferencesPage {
                 uploading = false;
                 spinner.setVisible(false);
                 uploadButton.emitRealize();
-                statsRow.setSubtitle("Upload speed: N/A - ETA: N/A");
-                statsRow.setVisible(false);
+                statsRow.setExpanded(false);
+                speed.setSubtitle("N/A");
+                eta.setSubtitle("N/A");
                 LCCP.mainWindow.progressBar.setFraction(0.0);
                 if (error) {
                     LCCP.mainWindow.toastOverlay.addToast(

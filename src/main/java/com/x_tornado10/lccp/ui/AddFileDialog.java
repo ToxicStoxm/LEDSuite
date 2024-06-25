@@ -310,7 +310,7 @@ public class AddFileDialog extends PreferencesPage {
                     resetUI(resetDelay, false, false, callback);
                     cancel();
                 } else if (progressTracker.isError() && !cancelled[0]) {
-                    resetUI(1000, true, false, callback);
+                    resetUI(resetDelay, true, false, callback);
                     cancel();
                 }
             }

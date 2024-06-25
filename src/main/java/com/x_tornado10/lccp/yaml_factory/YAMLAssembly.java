@@ -43,8 +43,11 @@ public class YAMLAssembly {
             case null, default -> throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
         }
     }
-    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) throws TODOException {
-        throw new TODOException("Implement it!");
+    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) {
+        YAMLConfiguration menuYaml = yamlMessage.getMenuYaml();
+        if (yamlMessage.getPacketTypeV() != null) menuYaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
+        if (yamlMessage.getReplyType() != null) menuYaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getReplyTypeV());
+        return menuYaml;
     }
 
     protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {
@@ -284,6 +287,9 @@ public class YAMLAssembly {
         yamlMessage.setAvailableAnimations(availableAnimations);
     }
     private static void disassembleMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+        yaml.clearProperty(Paths.NETWORK.YAML.PACKET_TYPE);
+        yaml.clearProperty(Paths.NETWORK.YAML.REPLY_TYPE);
+        yamlMessage.setMenuYaml(yaml);
 
     }
 

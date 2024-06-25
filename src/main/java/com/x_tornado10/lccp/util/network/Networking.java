@@ -189,7 +189,6 @@ public class Networking {
             LCCP.logger.debug(id + "File size: " + ((fileToSend.length() / 1024) / 1024) + "MB");
             LCCP.logger.debug(id + "File type: " + fileToSend.getName().split("\\.")[1].toUpperCase());
 
-
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
             try {
@@ -242,7 +241,7 @@ public class Networking {
                 double mbFileSize = (double) Math.round(temp * 1000) / 1000;
                 double mbTransferredSize = (double) transferredSize / (1024 * 1024);
 
-                long delay = 1000;
+                long delay = 100;
                 long lastDisplay = System.currentTimeMillis() - 1000;
 
                 LCCP.logger.debug(id + "Sending main file contents...");
@@ -291,7 +290,7 @@ public class Networking {
                             progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
                             progressTracker.setSpeedInBytes(bytesPerSecond);
                             progressTracker.setSpeedInMegabytes(mbPerSecond);
-                            progressTracker.setProgressPercentage(percent);
+                            progressTracker.setProgressPercentage(Math.round(percent / 100));
                             progressTracker.setEta(result.toString());
                         }
                         lastTransferredSize = transferredSize;
@@ -318,12 +317,11 @@ public class Networking {
             } catch (IOException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
-                //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.ERROR);
+                LCCP.logger.error(e);
                 return false;
             }
             LCCP.logger.debug(id + "Successfully send file to server!");
             LCCP.logger.debug(id + "---------------------------------------------------------------");
-            //LCCP.networkLogger.addPacketToQueue(uuid, Logger.log_level.DEBUG);
             return true;
         }
         @Setter
@@ -341,7 +339,7 @@ public class Networking {
             private String eta = "";
         }
 
-        private static final long delay = 10; // delay in milliseconds between network packets
+        private static final long delay = 1; // delay in milliseconds between network packets
 
         public static void networkHandler() {
             LCCP.logger.debug("Network Handler started!");

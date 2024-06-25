@@ -8,7 +8,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -431,7 +431,7 @@ public class Window extends ApplicationWindow implements EventListener {
         status.onButtonClicked(statusRow::emitActivate);
         status.setButtonLabel("LED Cube Status");
 
-        progressBar = ProgressBar.builder().build();
+        progressBar = ProgressBar.builder().setFraction(0.0).build();
 
         rootView = ToolbarView.builder()
                 .setContent(overlaySplitView)
@@ -468,8 +468,8 @@ public class Window extends ApplicationWindow implements EventListener {
                     .setVersion(LCCP.version)
                     .setLicenseType(License.GPL_3_0)
                     .setApplicationIcon("LCCP-logo-256x256")
-                    .setIssueUrl(Paths.Links.Project_GitHub + "issues")
-                    .setWebsite(Paths.Links.Project_GitHub)
+                    .setIssueUrl(Paths.Links.PROJECT_GITHUB + "issues")
+                    .setWebsite(Paths.Links.PROJECT_GITHUB)
                     .setApplicationName(LCCP.settings.getWindowTitle())
                     .build();
         }

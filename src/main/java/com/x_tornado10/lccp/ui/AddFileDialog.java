@@ -7,7 +7,6 @@ import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import io.github.jwharm.javagi.base.GErrorException;
-import lombok.SneakyThrows;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.*;
 import org.gnome.gio.*;
@@ -17,6 +16,12 @@ import java.net.URLConnection;
 
 public class AddFileDialog extends PreferencesPage {
 
+    public static class VarPool {
+        public static boolean init = false;
+        public static String filePath = null;
+        public static String fileName = null;
+    }
+
     private final Button uploadButton;
     private boolean uploading = false;
     private final Spinner spinner;
@@ -24,6 +29,12 @@ public class AddFileDialog extends PreferencesPage {
     private String fileName = null;
     private final ActionRow statsRow;
     public AddFileDialog() {
+
+        if (VarPool.init) {
+            this.fileName = VarPool.fileName;
+            this.filePath = VarPool.filePath;
+        }
+
         // Create a preferences group for file selection
         var file = PreferencesGroup.builder()
                 .setTitle("File")
@@ -32,7 +43,7 @@ public class AddFileDialog extends PreferencesPage {
         // Create an EntryRow for displaying the selected file path, initially empty
         var pathRow = ActionRow.builder()
                 .setTitle("Path")
-                .setSubtitle("N/A")
+                .setSubtitle(filePath == null ? "N/A" : filePath)
                 .setUseMarkup(false)
                 .build();
 
@@ -128,31 +139,36 @@ public class AddFileDialog extends PreferencesPage {
 
         uploadButton.onClicked(() -> {
             if (uploading) return;
-            upload((error, fileName) -> {
-                if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
-                    try {
-                        Networking.Communication
-                                .sendYAMLDefaultHost(
-                                        YAMLMessage.builder()
-                                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                                .setRequestType(YAMLMessage.REQUEST_TYPE.play)
-                                                .setRequestFile(fileName)
-                                                .build(),
-                                        success -> {
-                                            if (!success) displayPlayRequestError(
-                                                    new Networking.ServerCommunicationException(
-                                                            "Failed to communicate with server! Possible cause: Invalid or no response!"
-                                                    ),
-                                                    fileName
-                                            );
-                                        }
+            new LCCPRunnable() {
+                @Override
+                public void run() {
+                    upload((error, fileName) -> {
+                        if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
+                            try {
+                                Networking.Communication
+                                        .sendYAMLDefaultHost(
+                                                YAMLMessage.builder()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                                        .setRequestFile(fileName)
+                                                        .build(),
+                                                success -> {
+                                                    if (!success) displayPlayRequestError(
+                                                            new Networking.ServerCommunicationException(
+                                                                    "Failed to communicate with server! Possible cause: Invalid or no response!"
+                                                            ),
+                                                            fileName
+                                                    );
+                                                }
                                         );
-                    } catch (YAMLAssembly.YAMLException | ConfigurationException e) {
-                        displayPlayRequestError(e, fileName);
+                            } catch (YAMLAssembly.YAMLException | ConfigurationException e) {
+                                displayPlayRequestError(e, fileName);
 
-                    }
+                            }
+                        }
+                    });
                 }
-            });
+            }.runTaskAsynchronously();
         });
 
         spinner = Spinner.builder().setSpinning(true).build();
@@ -203,7 +219,10 @@ public class AddFileDialog extends PreferencesPage {
             if (checkFileType(fileName)) {
                 filePath = path;
                 this.fileName = fileName;
+                VarPool.fileName = fileName;
                 pathRow.setSubtitle(filePath);
+                VarPool.filePath = filePath;
+                VarPool.init = true;
                 File parent = result.getParent();
                 String parentPath = parent.getPath();
                 if (parentPath != null &&
@@ -257,18 +276,20 @@ public class AddFileDialog extends PreferencesPage {
 
         LCCP.logger.debug("Requesting send with stats tracking!");
         Networking.Communication.ProgressTracker progressTracker = new Networking.Communication.ProgressTracker();
-        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
 
         long start = System.currentTimeMillis();
+        long timeout = 500; // time in ms until sending operation times out
+        int resetDelay = 500; // time in ms until reset is triggered
+        final boolean[] cancelled = {false};
 
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (System.currentTimeMillis() - start > 500) {
-                    resetUI(1000, false, false, callback);
-                    cancel();
-                }
                 if (progressTracker.isUpdated()) {
+                    LCCP.mainWindow.progressBar.setFraction(0.0);
+
+                    cancel();
+                    cancelled[0] = true;
                     LCCP.logger.debug("Changing button style!");
                     LCCP.mainWindow.rootView.setRevealBottomBars(true);
                     statsRow.setVisible(true);
@@ -281,15 +302,21 @@ public class AddFileDialog extends PreferencesPage {
                                 cancel();
                             }
                             statsRow.setSubtitle("Upload speed: " + progressTracker.getSpeedInMegabytes() + "MB/S - ETA: " + progressTracker.getEta());
-                            LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage() / 100);
+                            LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
                         }
-                    }.runTaskTimerAsynchronously(100, 10);
-                } else if (progressTracker.isError()){
-                    resetUI(1000, true, false, callback);
+                    }.runTaskTimerAsynchronously(0, 10);
+
+                } else if (System.currentTimeMillis() - start > timeout && !cancelled[0]) {
+                    resetUI(resetDelay, false, false, callback);
+                    cancel();
+                } else if (progressTracker.isError() && !cancelled[0]) {
+                    resetUI(resetDelay, true, false, callback);
                     cancel();
                 }
             }
         }.runTaskTimerAsynchronously(0, 10);
+
+        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
 
     }
 

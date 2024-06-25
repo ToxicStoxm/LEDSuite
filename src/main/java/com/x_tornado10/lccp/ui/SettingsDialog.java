@@ -5,10 +5,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.network.Networking;
 import org.gnome.adw.*;
-import org.gnome.gtk.Button;
-import org.gnome.gtk.Orientation;
-import org.gnome.gtk.Spinner;
-import org.gnome.gtk.Widget;
+import org.gnome.gtk.*;
 
 import java.io.IOException;
 
@@ -90,18 +87,18 @@ public class SettingsDialog extends PreferencesDialog {
         serverSettings = new PreferencesGroup();
         serverSettings.setTitle("Cube Settings");
 
-        var brightness = SpinRow.withRange(0, 100, 1);
-        brightness.setValue(LCCP.server_settings.getLED_Brightness() * 100);
-        brightness.setSnapToTicks(true);
-        brightness.setWrap(false);
-        brightness.setClimbRate(2);
-        brightness.setNumeric(true);
-        brightness.setTitle("LED - Brightness");
-        prev1 = brightness.getValue();
-        brightness.onOutput(() -> {
-            double val = brightness.getValue();
+        var brightnessRow = SpinRow.withRange(0, 100, 1);
+        brightnessRow.setValue(LCCP.server_settings.getLED_Brightness() * 100);
+        brightnessRow.setSnapToTicks(true);
+        brightnessRow.setWrap(false);
+        brightnessRow.setClimbRate(2);
+        brightnessRow.setNumeric(true);
+        brightnessRow.setTitle("LED - Brightness");
+        prev1 = brightnessRow.getValue();
+        brightnessRow.onOutput(() -> {
+            double val = brightnessRow.getValue();
             if (prev1 != val) {
-                LCCP.logger.debug(String.valueOf(brightness.getValue()));
+                LCCP.logger.debug(String.valueOf(brightnessRow.getValue()));
                 LCCP.server_settings.setLED_Brightness((float) val);
                 prev1 = val;
             }
@@ -109,26 +106,26 @@ public class SettingsDialog extends PreferencesDialog {
         });
         this.setCanClose(true);
         onClosed(this::stopRemoteUpdate);
-        serverSettings.add(brightness);
+        serverSettings.add(brightnessRow);
 
         var spinner = new Spinner();
 
-        var ipv4 = EntryRow.builder().setTitle("IPv4").build();
-        ipv4.setShowApplyButton(true);
-        ipv4.setText(LCCP.server_settings.getIPv4());
-        ipv4.setEnableUndo(true);
-        ipv4.onApply(() -> {
+        var ipv4Row = EntryRow.builder().setTitle("IPv4").build();
+        ipv4Row.setShowApplyButton(true);
+        ipv4Row.setText(LCCP.server_settings.getIPv4());
+        ipv4Row.setEnableUndo(true);
+        ipv4Row.onApply(() -> {
             if (!LCCP.settings.isCheckIPv4()) {
-                LCCP.server_settings.setIPv4(ipv4.getText());
+                LCCP.server_settings.setIPv4(ipv4Row.getText());
             } else {
-                ipv4.setEditable(false);
-                ipv4.addSuffix(spinner);
+                ipv4Row.setEditable(false);
+                ipv4Row.addSuffix(spinner);
                 spinner.setSpinning(true);
                 new LCCPRunnable() {
                     @Override
                     public void run() {
                         String ip;
-                        String text = ipv4.getText();
+                        String text = ipv4Row.getText();
                         try {
                             ip = Networking.General.getValidIP(text, false);
                         } catch (IOException e) {
@@ -145,13 +142,13 @@ public class SettingsDialog extends PreferencesDialog {
                             LCCP.server_settings.setIPv4(ip);
                         }
                         spinner.setSpinning(false);
-                        ipv4.remove(spinner);
-                        ipv4.setEditable(true);
+                        ipv4Row.remove(spinner);
+                        ipv4Row.setEditable(true);
                     }
                 }.runTask();
             }
         });
-        serverSettings.add(ipv4);
+        serverSettings.add(ipv4Row);
 
         var spinner1 = new Spinner();
 

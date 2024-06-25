@@ -1,9 +1,9 @@
 package com.x_tornado10.lccp.yaml_factory;
 
 import lombok.Getter;
+import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -28,6 +28,7 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private double voltage = 0;
     private boolean lidState = false;
     private HashMap<String, String> availableAnimations = new HashMap<>();
+    private YAMLConfiguration menuYaml = new YAMLConfiguration();
 
     public YAMLMessage(UUID uuid) {
         this.uuid = uuid;
@@ -41,6 +42,63 @@ public class YAMLMessage implements YAMLFactoryMessage {
 
     public static YAMLMessage builder() {
         return new YAMLMessage();
+    }
+
+    public static YAMLMessage errorMsg(
+            ERROR_SOURCE source,
+            int errorCode,
+            String name,
+            ERROR_SEVERITY severity
+    ) {
+        return builder()
+                .setPacketType(PACKET_TYPE.error)
+                .setErrorSource(source)
+                .setErrorCode(errorCode)
+                .setErrorName(name)
+                .setErrorSeverity(severity);
+    }
+    public static YAMLMessage requestMsg(
+            REQUEST_TYPE type,
+            String file,
+            String path,
+            String newVal
+    ) {
+        return builder()
+                .setPacketType(PACKET_TYPE.request)
+                .setRequestType(type)
+                .setRequestFile(file)
+                .setObjectPath(path)
+                .setObjectNewValue(newVal);
+    }
+
+    public static YAMLMessage replyStatusMsg(
+            boolean fileLoaded,
+            FILE_STATE state,
+            String fileSelected,
+            double currentDraw,
+            double voltage,
+            boolean lidState,
+            HashMap<String, String> availableAnimations
+    ) {
+        return builder()
+                .setPacketType(PACKET_TYPE.reply)
+                .setReplyType(REPLY_TYPE.status)
+                .setFileLoaded(fileLoaded)
+                .setFileState(state)
+                .setFileSelected(fileSelected)
+                .setCurrentDraw(currentDraw)
+                .setVoltage(voltage)
+                .setLidState(lidState)
+                .setAvailableAnimations(availableAnimations);
+    }
+
+    public static YAMLMessage replyMenuMsg(
+            YAMLConfiguration menuYaml
+    ) {
+        return builder()
+                .setPacketType(PACKET_TYPE.reply)
+                .setReplyType(REPLY_TYPE.menu)
+                .setMenuYaml(menuYaml);
     }
 
     protected YAMLMessage setUUID(UUID uuid) {
@@ -228,6 +286,10 @@ public class YAMLMessage implements YAMLFactoryMessage {
     }
     public YAMLMessage setAvailableAnimations(HashMap<String, String> availableAnimations) {
         this.availableAnimations = availableAnimations;
+        return this;
+    }
+    public YAMLMessage setMenuYaml(YAMLConfiguration menuYaml) {
+        this.menuYaml = menuYaml;
         return this;
     }
 

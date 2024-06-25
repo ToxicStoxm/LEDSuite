@@ -339,7 +339,7 @@ public class Networking {
             private String eta = "";
         }
 
-        private static final long delay = 10; // delay in milliseconds between network packets
+        private static final long delay = 1; // delay in milliseconds between network packets
 
         public static void networkHandler() {
             LCCP.logger.debug("Network Handler started!");

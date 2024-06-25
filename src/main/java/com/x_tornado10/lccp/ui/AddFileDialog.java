@@ -139,31 +139,36 @@ public class AddFileDialog extends PreferencesPage {
 
         uploadButton.onClicked(() -> {
             if (uploading) return;
-            upload((error, fileName) -> {
-                if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
-                    try {
-                        Networking.Communication
-                                .sendYAMLDefaultHost(
-                                        YAMLMessage.builder()
-                                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                                .setRequestType(YAMLMessage.REQUEST_TYPE.play)
-                                                .setRequestFile(fileName)
-                                                .build(),
-                                        success -> {
-                                            if (!success) displayPlayRequestError(
-                                                    new Networking.ServerCommunicationException(
-                                                            "Failed to communicate with server! Possible cause: Invalid or no response!"
-                                                    ),
-                                                    fileName
-                                            );
-                                        }
+            new LCCPRunnable() {
+                @Override
+                public void run() {
+                    upload((error, fileName) -> {
+                        if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
+                            try {
+                                Networking.Communication
+                                        .sendYAMLDefaultHost(
+                                                YAMLMessage.builder()
+                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                                        .setRequestFile(fileName)
+                                                        .build(),
+                                                success -> {
+                                                    if (!success) displayPlayRequestError(
+                                                            new Networking.ServerCommunicationException(
+                                                                    "Failed to communicate with server! Possible cause: Invalid or no response!"
+                                                            ),
+                                                            fileName
+                                                    );
+                                                }
                                         );
-                    } catch (YAMLAssembly.YAMLException | ConfigurationException e) {
-                        displayPlayRequestError(e, fileName);
+                            } catch (YAMLAssembly.YAMLException | ConfigurationException e) {
+                                displayPlayRequestError(e, fileName);
 
-                    }
+                            }
+                        }
+                    });
                 }
-            });
+            }.runTaskAsynchronously();
         });
 
         spinner = Spinner.builder().setSpinning(true).build();

@@ -7,7 +7,6 @@ import com.x_tornado10.lccp.util.network.Networking;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import io.github.jwharm.javagi.base.GErrorException;
-import lombok.SneakyThrows;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.*;
 import org.gnome.gio.*;
@@ -17,6 +16,12 @@ import java.net.URLConnection;
 
 public class AddFileDialog extends PreferencesPage {
 
+    public static class VarPool {
+        public static boolean init = false;
+        public static String filePath = null;
+        public static String fileName = null;
+    }
+
     private final Button uploadButton;
     private boolean uploading = false;
     private final Spinner spinner;
@@ -24,6 +29,12 @@ public class AddFileDialog extends PreferencesPage {
     private String fileName = null;
     private final ActionRow statsRow;
     public AddFileDialog() {
+
+        if (VarPool.init) {
+            this.fileName = VarPool.fileName;
+            this.filePath = VarPool.filePath;
+        }
+
         // Create a preferences group for file selection
         var file = PreferencesGroup.builder()
                 .setTitle("File")
@@ -32,7 +43,7 @@ public class AddFileDialog extends PreferencesPage {
         // Create an EntryRow for displaying the selected file path, initially empty
         var pathRow = ActionRow.builder()
                 .setTitle("Path")
-                .setSubtitle("N/A")
+                .setSubtitle(filePath == null ? "N/A" : filePath)
                 .setUseMarkup(false)
                 .build();
 
@@ -203,7 +214,10 @@ public class AddFileDialog extends PreferencesPage {
             if (checkFileType(fileName)) {
                 filePath = path;
                 this.fileName = fileName;
+                VarPool.fileName = fileName;
                 pathRow.setSubtitle(filePath);
+                VarPool.filePath = filePath;
+                VarPool.init = true;
                 File parent = result.getParent();
                 String parentPath = parent.getPath();
                 if (parentPath != null &&

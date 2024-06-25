@@ -43,8 +43,8 @@ public class YAMLAssembly {
             case null, default -> throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
         }
     }
-    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) throws TODOException {
-        throw new TODOException("Implement it!");
+    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) {
+        return null;
     }
 
     protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {

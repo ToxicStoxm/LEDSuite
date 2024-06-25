@@ -15,7 +15,8 @@ import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.util.logging.Messages;
 import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
-import com.x_tornado10.lccp.yaml_factory.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
+import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
@@ -23,6 +24,7 @@ import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Application;
+import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
 
 import java.io.*;
@@ -341,6 +343,8 @@ public class LCCP implements EventListener {
             LCCP.logger.error("Failed to send / get available animations list from the server!");
             LCCP.logger.error(e);
         }
+
+        /*
         new LCCPRunnable() {
             @Override
             public void run() {
@@ -364,6 +368,7 @@ public class LCCP implements EventListener {
                 }
             }
         }.runTaskLaterAsynchronously(1000);
+         */
     }
 
     // exiting program with specified status code
@@ -491,14 +496,33 @@ public class LCCP implements EventListener {
         logger.debug(id + "Data stream direction: in");
         logger.debug(id + "Network: Received data!");
         logger.debug(id + "Data: " + yaml);
-        if (yaml.getPacketType() == YAMLMessage.PACKET_TYPE.reply &&
-                yaml.getReplyType() == YAMLMessage.REPLY_TYPE.status) {
-            eventManager.fireEvent(
-                    new Events.Status(
-                            StatusUpdate.fromYAMLMessage(yaml)
-                    )
-            );
+
+        switch (yaml.getPacketType()) {
+            case reply -> {
+
+                switch (yaml.getReplyType()) {
+                    case status -> {
+                        eventManager.fireEvent(
+                                new Events.Status(
+                                        StatusUpdate.fromYAMLMessage(yaml)
+                                )
+                        );
+                    }
+                    case menu -> {
+
+                    }
+                }
+
+            }
+            case error -> {
+                eventManager.fireEvent(
+                        new Events.Error(
+                                ServerError.fromYAMLMessage(yaml)
+                        )
+                );
+            }
         }
+
         logger.debug(id + "---------------------------------------------------------------");
     }
     @EventHandler
@@ -545,5 +569,18 @@ public class LCCP implements EventListener {
             logger.error(id + "Error message: " + ex.getMessage());
         }
 
+    }
+    @EventHandler
+    public void onError(Events.Error e) {
+        ServerError error = e.serverError();
+        String id = "[" + error.getNetworkEventID() + "] ";
+        logger.debug(id + "Received error from server!");
+        logger.debug("id" + "Error: " + error);
+        /*if (error.getErrorSeverity().getValue() >= 3)*/ sysBeep();
+        mainWindow.toastOverlay.addToast(
+                Toast.builder()
+                        .setTitle(error.humanReadable())
+                        .build()
+        );
     }
 }

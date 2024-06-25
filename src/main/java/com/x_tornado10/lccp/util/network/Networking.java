@@ -242,7 +242,7 @@ public class Networking {
                 double mbFileSize = (double) Math.round(temp * 1000) / 1000;
                 double mbTransferredSize = (double) transferredSize / (1024 * 1024);
 
-                long delay = 1000;
+                long delay = 100;
                 long lastDisplay = System.currentTimeMillis() - 1000;
 
                 LCCP.logger.debug(id + "Sending main file contents...");

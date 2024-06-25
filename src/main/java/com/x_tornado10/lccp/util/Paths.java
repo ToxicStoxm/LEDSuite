@@ -41,7 +41,7 @@ public final class Paths {
     }
     // links used by the program
     public static final class Links {
-        public static final String Project_GitHub = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel/";
+        public static final String PROJECT_GITHUB = "https://github.com/ToxicStoxm/LED-Cube-Control-Panel/";
     }
     // placeholders used by the program
     public static final class Placeholders {

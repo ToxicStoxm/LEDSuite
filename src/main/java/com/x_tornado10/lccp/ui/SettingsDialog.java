@@ -124,23 +124,29 @@ public class SettingsDialog extends PreferencesDialog {
                 new LCCPRunnable() {
                     @Override
                     public void run() {
+
                         String ip;
                         String text = ipv4Row.getText();
-                        try {
-                            ip = Networking.General.getValidIP(text, false);
-                        } catch (IOException e) {
-                            LCCP.sysBeep();
-                            addToast(
-                                    Toast.builder()
-                                            .setTitle("Server unreachable!")
-                                            .setTimeout(10)
-                                            .build()
-                            );
-                            ip = null;
+
+                        if (!LCCP.server_settings.getIPv4().equals(text)) {
+
+                            try {
+                                ip = Networking.General.getValidIP(text, false);
+                            } catch (IOException e) {
+                                LCCP.sysBeep();
+                                addToast(
+                                        Toast.builder()
+                                                .setTitle("Server unreachable!")
+                                                .setTimeout(10)
+                                                .build()
+                                );
+                                ip = null;
+                            }
+                            if (ip != null) {
+                                LCCP.server_settings.setIPv4(ip);
+                            }
                         }
-                        if (ip != null) {
-                            LCCP.server_settings.setIPv4(ip);
-                        }
+
                         spinner.setSpinning(false);
                         ipv4Row.remove(spinner);
                         ipv4Row.setEditable(true);

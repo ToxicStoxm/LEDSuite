@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
 
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -13,6 +14,10 @@ public class LCCPAsyncTask extends LCCPTask {
 
     LCCPAsyncTask(final Map<Integer, LCCPTask> runners, final Runnable task, final int id, final long delay) {
         super(task, id, delay);
+        this.runners = runners;
+    }
+    LCCPAsyncTask(final Map<Integer, LCCPTask> runners, final Runnable task, final InputStream is, final int id, final long delay) {
+        super(task, is, id, delay);
         this.runners = runners;
     }
 

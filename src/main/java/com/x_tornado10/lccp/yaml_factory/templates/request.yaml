@@ -1,5 +1,5 @@
 #package_type: request
-#request_type: [status, play, pause, stop, menu, menu_change]
+#request_type: [status, play, pause, stop, menu, menu_change, file_upload]
 #request_file: # file name without path
 #request_position: [menu_top, menu_center, menu_bottom]
 #object_name: # object name

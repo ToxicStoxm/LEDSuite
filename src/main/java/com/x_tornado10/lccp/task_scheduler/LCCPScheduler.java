@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +58,12 @@ public class LCCPScheduler implements TaskScheduler {
     }
 
     @Override
+    public LCCPTask runTaskAsynchronously(Runnable runnable, InputStream is) {
+        return runTaskLaterAsynchronously(runnable, is, 0);
+    }
+
+
+    @Override
     public LCCPTask runTaskLater(Runnable runnable, long delay) {
         return runTaskTimer(runnable, delay, -1);
     }
@@ -64,6 +71,11 @@ public class LCCPScheduler implements TaskScheduler {
     @Override
     public LCCPTask runTaskLaterAsynchronously(Runnable runnable, long delay) {
         return runTaskTimerAsynchronously(runnable, delay, -1);
+    }
+
+    @Override
+    public LCCPTask runTaskLaterAsynchronously(Runnable runnable, InputStream is, long delay) {
+        return runTaskTimerAsynchronously(runnable, is, delay, -1);
     }
 
     @Override
@@ -90,6 +102,19 @@ public class LCCPScheduler implements TaskScheduler {
             period = -1;
         }
         return handle(new LCCPAsyncTask(runners, runnable, nextId(), period), delay);
+    }
+
+    @Override
+    public LCCPTask runTaskTimerAsynchronously(Runnable runnable, InputStream is, long delay, long period) {
+        if (delay < 0) {
+            delay = 0;
+        }
+        if (period == 0) {
+            period = 1;
+        } else if (period < -1) {
+            period = -1;
+        }
+        return handle(new LCCPAsyncTask(runners, runnable, is, nextId(), period), delay);
     }
 
 

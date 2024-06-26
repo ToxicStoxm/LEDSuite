@@ -24,4 +24,6 @@ public class Events {
     }
     public record Error(ServerError serverError) {
     }
+    public record HostChanged(String message) {
+    }
 }

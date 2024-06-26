@@ -204,7 +204,11 @@ public class LCCP implements EventListener {
         //server = true;
         //startServer();
 
-        Networking.Communication.networkHandler();
+        try {
+            Networking.Communication.NetworkHandler.init(_ -> {});
+        } catch (Networking.NetworkException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

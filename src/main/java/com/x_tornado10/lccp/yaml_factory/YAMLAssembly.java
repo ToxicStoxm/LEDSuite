@@ -213,7 +213,7 @@ public class YAMLAssembly {
         }
 
         switch (rT) {
-            case play, pause, stop, menu, menu_change -> {
+            case play, pause, stop, menu, menu_change, file_upload -> {
                 String requestFile = yaml.getString(Paths.NETWORK.YAML.REQUEST_FILE);
                 if (requestFile == null || requestFile.isBlank()) throw new InvalidRequestFileException("Invalid request file name: '" + requestFile + "'. Must be a valid, non empty String!");
                 yamlMessage.setRequestFile(requestFile);

@@ -2,6 +2,8 @@ package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
 
+import java.io.InputStream;
+
 public class LCCPTask implements Task, Runnable {
 
     private volatile LCCPTask next = null;
@@ -16,6 +18,7 @@ public class LCCPTask implements Task, Runnable {
     private volatile long period;
     private long nextRun;
     private final Runnable task;
+    private final InputStream is;
     private final int id;
 
     LCCPTask() {
@@ -27,7 +30,11 @@ public class LCCPTask implements Task, Runnable {
     }
 
     LCCPTask(final Runnable task, final int id, final long period) {
+        this(task, null, id, period);
+    }
+    LCCPTask(final Runnable task, InputStream is, final int id, final long period) {
         this.task = task;
+        this.is = is;
         this.id = id;
         this.period = period;
     }

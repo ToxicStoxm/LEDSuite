@@ -4,13 +4,20 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.gnome.gio.*;
 
 import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -21,6 +28,8 @@ public class Networking {
 
     //private static final TreeMap<Integer, NetworkQueueElement> networkQueue = new TreeMap<>();
     private static final TreeMap<Long, LCCPRunnable> networkQueue = new TreeMap<>();
+
+    public static Socket socket = new Socket();
 
     public static class General {
 
@@ -385,7 +394,7 @@ public class Networking {
                 }
             }.runTaskTimerAsynchronously(0, delay);
         }
-        
+
         public interface FinishCallback {
             void onFinish(boolean success);
         }
@@ -411,9 +420,21 @@ public class Networking {
 
         // function to send YAML packets to the server
         private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback) {
+
+            /*
+
+            org.gnome.gio.Socket socket = org.gnome.gio.Socket.builder()
+                    .setFamily(SocketFamily.IPV4)
+                            .setKeepalive(true)
+                                    .setProtocol(SocketProtocol.TCP)
+                                            .setType(SocketType.STREAM)
+                                                    .build();
+            socket.connect(SocketAddress.builder().build(), Cancellable.builder().build());
+            */
+
             boolean callb = callback != null;
             boolean err = false;
-            
+
             // checking if network event id is given
             boolean noID = false;
             // figuring out network event id, if none is given create a new one
@@ -457,8 +478,18 @@ public class Networking {
             LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
 
             try {
+
+                if (!socket.isConnected()) {
+                    try {
+                        socket = new Socket(serverIP4, serverPort);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
                 // open a new client socket for server:port
-                Socket socket = new Socket(serverIP4, serverPort);
+                //Socket socket = new Socket(serverIP4, serverPort);
                 LCCP.logger.debug(id + "Successfully established connection!");
 
                 // opening data streams
@@ -500,10 +531,31 @@ public class Networking {
                 LCCP.logger.error(e);
                 err = true;
             }
-            
+
             err = !err;
             if (callb) callback.onFinish(err);
-            return err; 
+
+            byte[] bytes;
+
+            try {
+                InputStream is = socket.getInputStream();
+                while (true) {
+                    if (is.available() == 0) {
+                    } else {
+                        bytes = is.readAllBytes();
+                        break;
+                    }
+                }
+
+                YAMLConfiguration response = new YAMLConfiguration();
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                new FileHandler().load(new BufferedReader(new InputStreamReader(bais)));
+                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(response)));
+            } catch (IOException | YAMLAssembly.YAMLException | ConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+
+            return err;
 
         }
     }

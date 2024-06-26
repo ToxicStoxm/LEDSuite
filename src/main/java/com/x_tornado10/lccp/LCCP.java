@@ -52,7 +52,7 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
-    public static boolean server = false;
+    //public static boolean server = false;
 
     // main method
     public static void main(String[] args) {
@@ -200,12 +200,14 @@ public class LCCP implements EventListener {
         lccpScheduler = new LCCPScheduler();
         tickingSystem = new TickingSystem();
 
-        server = true;
-        startServer();
+        //server = true;
+        //startServer();
 
         Networking.Communication.networkHandler();
 
     }
+
+    /*
 
     // function to start the internal server, listening on specified port for yaml packets
     private static void startServer() {
@@ -251,7 +253,7 @@ public class LCCP implements EventListener {
                             String yaml2 = sb.toString();
                             ByteArrayInputStream byteArrayInputStream =  new ByteArrayInputStream(yaml2.getBytes());
 
-                             */
+
 
                             // write read data to the buffer
                             //int added = bf.read(charBuffer);
@@ -270,9 +272,9 @@ public class LCCP implements EventListener {
                             // loading data into the yaml config
                             new FileHandler(yaml).load(bf);
 
-                                /*new LCCPRunnable() {
+                                new LCCPRunnable() {
                                     @Override
-                                    public void run() {*/
+                                    public void run() {
                             // received data is inspected and printed to console for debugging
                             LCCP.logger.debug(id + "Packet Content:");
 
@@ -296,7 +298,7 @@ public class LCCP implements EventListener {
                             LCCP.logger.debug(id + "Successfully received data!");
                             LCCP.logger.debug(id + "---------------------------------------------------------------");
 
-                        /*}.runTaskAsynchronously();*/
+                        }.runTaskAsynchronously();
 
 
                         } catch (IOException ex) {
@@ -326,6 +328,7 @@ public class LCCP implements EventListener {
             }
         }.runTaskAsynchronously();
     }
+    */
 
     // activate function
     // this is triggered on libadwaita application activate
@@ -496,7 +499,7 @@ public class LCCP implements EventListener {
     public void onShutdown(Events.Shutdown e) {
         // default console message response to a shutdown event
         logger.debug("Fulfilling shutdown request: " + e.message());
-        server = false;
+        //server = false;
         networkLogger.printEvents();
         logger.info("New log file was saved to: '" + Paths.File_System.logFile + "'");
     }

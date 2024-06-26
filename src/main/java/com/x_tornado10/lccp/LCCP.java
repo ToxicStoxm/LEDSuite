@@ -273,6 +273,7 @@ public class LCCP implements EventListener {
                             for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
                                 String s = it.next();
                                 System.out.println(s);
+                                System.out.flush();
                             }
 
                                 new LCCPRunnable() {

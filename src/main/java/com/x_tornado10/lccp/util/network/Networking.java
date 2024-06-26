@@ -3,7 +3,9 @@ package com.x_tornado10.lccp.util.network;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
+import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.util.logging.Logger;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -219,9 +223,8 @@ public class Networking {
                 out.write(fileToSend.getName().strip().getBytes());
 
                 // sending file size
-                //LCCP.logger.debug(id + "Sending file size...");
-                //out.writeBytes(String.valueOf(fileToSend.length()));
-                //dout.writeLong(fileToSend.length());
+                LCCP.logger.debug(id + "Sending file size...");
+                out.write(String.valueOf(fileToSend.length()).getBytes());
 
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step
                 out.flush();
@@ -509,10 +512,10 @@ public class Networking {
                 LCCP.logger.debug(id + "Size: " + (kb ? (byteCount / 1024) + "KB" : byteCount + " Bytes"));
 
                 // sending data size to server
-                //LCCP.logger.debug(id + "Transmitting size...");
-                //out.write(String.valueOf(byteCount).getBytes());
-                //out.flush();
-                //LCCP.logger.debug(id + "Successfully transmitted size to server!");
+                LCCP.logger.debug(id + "Transmitting size...");
+                out.write(String.valueOf(byteCount).getBytes());
+                out.flush();
+                LCCP.logger.debug(id + "Successfully transmitted size to server!");
 
                 // sending yaml data to server
                 LCCP.logger.debug(id + "Transmitting data...");
@@ -521,7 +524,7 @@ public class Networking {
 
                 // closing data streams and socket to free up system resources
                 LCCP.logger.debug(id + "Closing socket and data streams...");
-                socket.close();
+                //socket.close();
 
                 LCCP.logger.debug(id + "---------------------------------------------------------------");
 
@@ -534,31 +537,72 @@ public class Networking {
 
             err = !err;
             if (callb) callback.onFinish(err);
-
-            byte[] bytes;
-
             try {
-                InputStream is = socket.getInputStream();
-                while (true) {
-                    if (is.available() == 0) {
-                    } else {
-                        bytes = is.readAllBytes();
-                        break;
-                    }
-                }
-
-                YAMLConfiguration response = new YAMLConfiguration();
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                new FileHandler().load(new BufferedReader(new InputStreamReader(bais)));
-                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(response)));
-            } catch (IOException | YAMLAssembly.YAMLException | ConfigurationException e) {
+                listenForResponse(socket.getInputStream(), id);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
             return err;
 
         }
     }
+
+    private static LCCPTask listener = null;
+
+    private static void listenForResponse(InputStream is, String id) {
+        if (listener != null) {
+            listener.cancel();
+        }
+        boolean[] cancelled = new boolean[]{false};
+        listener = new LCCPRunnable() {
+            @Override
+            public void run() {
+                if (cancelled[0]) return;
+                try {
+                    LCCP.logger.warn(id + " Response!");
+
+                    // Wrap the InputStream with a BufferedReader for efficient reading
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+                    // Read the first line to get the total number of bytes expected
+                    int totalBytes = Integer.parseInt(br.readLine());
+                    LCCP.logger.debug("Total bytes: " + totalBytes);
+
+                    // Prepare a buffer to read the expected number of bytes
+                    char[] buffer = new char[totalBytes];
+
+                    // Read the actual data into the buffer if not cancelled
+                    if (!cancelled[0]) {
+                        br.read(buffer);
+                    }
+
+                    LCCP.logger.warn(id + " Response!");
+
+                    // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
+                    YAMLConfiguration yaml = new YAMLConfiguration();
+                    new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
+
+                    // Log the YAML properties
+                    for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+                        String s = it.next();
+                        LCCP.logger.debug(s + ": " + yaml.getProperty(s));
+                    }
+
+                    // Fire an event with the parsed YAML data
+                    LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(yaml)));
+
+                    // Mark the task as cancelled and complete
+                    cancel();
+                    cancelled[0] = true;
+
+                } catch (Exception e) {
+                    LCCP.logger.error(e);
+                    throw new RuntimeException(e);
+                }
+            }
+        }.runTaskAsynchronously();
+    }
+
     public static class NetworkException extends Exception {
         private NetworkException(String message) {
             super(message);

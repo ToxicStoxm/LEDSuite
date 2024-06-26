@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
@@ -595,6 +596,7 @@ public class LCCP implements EventListener {
         mainWindow.toastOverlay.addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())
+                        .setTimeout(Adw.DURATION_INFINITE)
                         .build()
         );
     }

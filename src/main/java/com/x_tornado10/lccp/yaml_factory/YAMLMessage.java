@@ -146,6 +146,15 @@ public class YAMLMessage implements YAMLFactoryMessage {
         ERROR_SEVERITY(int value) {
             this.value = value;
         }
+
+        public static ERROR_SEVERITY valueOf(int value) {
+            for (ERROR_SEVERITY severity : values()) {
+                if (severity.value == value) {
+                    return severity;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with value " + value);
+        }
     }
 
     public enum REQUEST_TYPE {

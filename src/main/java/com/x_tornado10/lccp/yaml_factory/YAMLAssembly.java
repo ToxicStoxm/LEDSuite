@@ -309,9 +309,10 @@ public class YAMLAssembly {
 
         yamlMessage.setErrorName(yaml.getString(Paths.NETWORK.YAML.ERROR_NAME));
 
-        String s1 = yaml.getString(Paths.NETWORK.YAML.ERROR_SEVERITY);
-        YAMLMessage.ERROR_SEVERITY eS0;
+        int s1 = -1;
         try {
+            s1 = yaml.getInt(Paths.NETWORK.YAML.ERROR_SEVERITY);
+            YAMLMessage.ERROR_SEVERITY eS0;
             eS0 = YAMLMessage.ERROR_SEVERITY.valueOf(s1);
             yamlMessage.setErrorSeverity(eS0);
         } catch (IllegalArgumentException e) {

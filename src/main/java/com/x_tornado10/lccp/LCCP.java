@@ -240,6 +240,7 @@ public class LCCP implements EventListener {
                         // create buffered reader for the socket input stream
                         try (BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                             // defining Buffer to temp save read data to
+                            /*
                             CharBuffer charBuffer = CharBuffer.allocate(1024);
                             StringBuilder sb = new StringBuilder();
 
@@ -252,6 +253,8 @@ public class LCCP implements EventListener {
 
                             String yaml2 = sb.toString();
                             ByteArrayInputStream byteArrayInputStream =  new ByteArrayInputStream(yaml2.getBytes());
+
+                             */
 
                             // write read data to the buffer
                             //int added = bf.read(charBuffer);
@@ -268,8 +271,7 @@ public class LCCP implements EventListener {
                             // checking if message actually contains data
                             //if (bytes > 0) {
                             // loading data into the yaml config
-                            new FileHandler().load(new BufferedReader(new InputStreamReader(byteArrayInputStream)));
-                            //new FileHandler(yaml).load(bf);
+                            new FileHandler(yaml).load(bf);
 
                             // handling message in new async task to prevent the server socket from blocking
                             new LCCPRunnable() {

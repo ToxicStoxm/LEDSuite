@@ -176,7 +176,7 @@ public class Networking {
                             "[Client]" +
                                     "[Data Output]" +
                                     "[FILE]" +
-                                    "[Destination '" + serverIP4 + "']" +
+                                    "[Destination '" + serverIP4 +"']" +
                                     "[Port '" + serverPort + "']"
                     ) +
                     "] ";
@@ -236,77 +236,90 @@ public class Networking {
                 long transferredSize = 0;
                 long lastTransferredSize = 0;
 
+                double avgBytesPerSecond = 0;
+                double vals = 1;
+
                 // calculating the file size in MB
                 double temp = (double) fileSize / (1024 * 1024);
                 double mbFileSize = (double) Math.round(temp * 1000) / 1000;
                 double mbTransferredSize = (double) transferredSize / (1024 * 1024);
 
-                long delay = 1000;
-                long lastDisplay = System.currentTimeMillis() - 1000;
+                long delay = 100;
+                long lastDisplay = System.currentTimeMillis() - delay;
+
+                long printDelay = 2000;
+                long lastPrint = System.currentTimeMillis() - printDelay;
 
                 LCCP.logger.debug(id + "Sending main file contents...");
                 // reading / writing file contents using the buffer
                 // the app also calculates transfer speed in MB/S and ETA
                 // additionally the app keeps track on how much data was already transferred
                 while ((count = bufferedInputStream.read(buffer)) > 0) {
-                    // calculating speed, eta and transferred data
-                    long bytesTransferredLastSecond = transferredSize - lastTransferredSize;
-                    double bytesPerSecond = (double) bytesTransferredLastSecond / ((double) delay / 1000);
-                    double temp1 = bytesPerSecond / (1024 * 1024);
-                    double mbPerSecond = (double) Math.round(temp1 * 1000) / 1000;
-                    lastDisplay = System.currentTimeMillis();
-                    double percent = ((double) transferredSize / fileSize) * 100;
-                    double estimatedSecondsRemaining = (fileSize - transferredSize) / bytesPerSecond;
-                    if (transferredSize == 0) estimatedSecondsRemaining = 0;
-
-                    Date date = new Date((long) (estimatedSecondsRemaining * 1000));
-
-                    // Create a SimpleDateFormat object for formatting
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                    sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone to UTC to avoid offset
-
-                    // Format the date
-                    String formattedTime = sdf.format(date);
-
-                    String[] parts = formattedTime.split(":");
-
-                    // Check each part and remove if it's zero
-                    StringBuilder result = new StringBuilder();
-                    if (!parts[0].equals("00")) {
-                        result.append(parts[0]).append("h ");
-                    }
-                    if (!parts[1].equals("00")) {
-                        result.append(parts[1]).append("m ");
-                    }
-                    result.append(parts[2]).append("s");
-                    if (track && transferredSize > 0) {
-                        progressTracker.setTotalSizeInBytes(fileSize);
-                        progressTracker.setTotalSizeInMegabytes(mbFileSize);
-                        progressTracker.setTransferredSizeInBytes(transferredSize);
-                        progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
-                        progressTracker.setSpeedInBytes(bytesPerSecond);
-                        progressTracker.setSpeedInMegabytes(mbPerSecond);
-                        progressTracker.setProgressPercentage((double) Math.round(percent * 100) / 10000);
-                        progressTracker.setEta(result.toString());
-                    }
-
                     if (System.currentTimeMillis() - lastDisplay >= delay) {
+                        // calculating speed, eta and transferred data
+                        long bytesTransferredLastSecond = transferredSize - lastTransferredSize;
+                        double bytesPerSecond = (double) bytesTransferredLastSecond / ((double) delay / 1000);
+                        if (avgBytesPerSecond == 0) avgBytesPerSecond = bytesPerSecond;
+                        avgBytesPerSecond = ((avgBytesPerSecond * (vals)) + (bytesPerSecond * (1 / vals))) / vals;
+                        vals++;
+                        double temp1 = bytesPerSecond / (1024 * 1024);
+                        double mbPerSecond = (double) Math.round(temp1 * 1000) / 1000;
+                        lastDisplay = System.currentTimeMillis();
+                        double percent = ((double) transferredSize / fileSize) * 100;
+                        double estimatedSecondsRemaining = (fileSize - transferredSize) / avgBytesPerSecond;
+                        if (transferredSize == 0) estimatedSecondsRemaining = 0;
 
-                        // displaying transfer information message in the console containing speed, eta, file size and transferred data
-                        LCCP.logger.debug(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
+                        Date date = new Date((long) (estimatedSecondsRemaining * 1000));
 
+                        // Create a SimpleDateFormat object for formatting
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone to UTC to avoid offset
+
+                        // Format the date
+                        String formattedTime = sdf.format(date);
+
+                        String[] parts = formattedTime.split(":");
+
+                        // Check each part and remove if it's zero
+                        StringBuilder result = new StringBuilder();
+                        if (!parts[0].equals("00")) {
+                            result.append(parts[0]).append("h ");
+                        }
+                        if (!parts[1].equals("00")) {
+                            result.append(parts[1]).append("m ");
+                        }
+                        result.append(parts[2]).append("s");
+
+                        long current = System.currentTimeMillis();
+                        if (current - lastPrint > printDelay) {
+                            // displaying transfer information message in the console containing speed, eta, file size and transferred data
+                            LCCP.logger.debug(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
+                            lastPrint = current;
+                        }
+                        if (track && transferredSize > 0) {
+                            progressTracker.setUpdated(true);
+                            progressTracker.setTotalSizeInBytes(fileSize);
+                            progressTracker.setTotalSizeInMegabytes(mbFileSize);
+                            progressTracker.setTransferredSizeInBytes(transferredSize);
+                            progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
+                            progressTracker.setSpeedInBytes(avgBytesPerSecond);
+                            progressTracker.setSpeedInMegabytes(avgBytesPerSecond / (1024 * 1024));
+                            progressTracker.setProgressPercentage((double) Math.round(percent * 100) / 10000);
+                            progressTracker.setEta(result.toString());
+                        }
+                        lastTransferredSize = transferredSize;
                     }
-                    lastTransferredSize = transferredSize;
 
                     // writing buffer to output stream and sending it with socket
                     out.write(buffer, 0, count);
                     // keeping track of transferred size
                     transferredSize += buffer.length;
                     // calculating transferred size in MB
-                    double temp2 = (double) transferredSize / (1024 * 1024);
-                    mbTransferredSize = (double) Math.round(temp2 * 1000) / 1000;
+                    double temp1 = (double) transferredSize / (1024 * 1024);
+                    mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
-                if (track) {
+
+                if (track && transferredSize > 0) {
                     progressTracker.setTotalSizeInBytes(fileSize);
                     progressTracker.setTotalSizeInMegabytes(mbFileSize);
                     progressTracker.setTransferredSizeInBytes(transferredSize);
@@ -315,8 +328,8 @@ public class Networking {
                     progressTracker.setSpeedInMegabytes(0);
                     progressTracker.setProgressPercentage(1.0);
                     progressTracker.setEta("N/A");
-                    progressTracker.setUpdated(true);
                 }
+
                 // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
                 out.flush();
                 LCCP.logger.debug(id + "Successfully send file contents!");
@@ -342,6 +355,7 @@ public class Networking {
         @Setter
         @Getter
         public static class ProgressTracker {
+            private boolean started = false;
             private boolean error = false;
             private boolean updated = false;
             private double totalSizeInBytes = 0.0;

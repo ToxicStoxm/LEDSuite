@@ -32,10 +32,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -273,34 +270,39 @@ public class LCCP implements EventListener {
                             // loading data into the yaml config
                             new FileHandler(yaml).load(bf);
 
-                            // handling message in new async task to prevent the server socket from blocking
-                            new LCCPRunnable() {
-                                @Override
-                                public void run() {
-                                    // received data is inspected and printed to console for debugging
-                                    LCCP.logger.debug(id + "Packet Content:");
+                            for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+                                String s = it.next();
+                                System.out.println(s);
+                            }
 
-                                    // yaml object that will further inspect the yaml data
-                                    YAMLMessage yamlMessage = null;
+                                new LCCPRunnable() {
+                                    @Override
+                                    public void run() {
+                                        // received data is inspected and printed to console for debugging
+                                        LCCP.logger.debug(id + "Packet Content:");
 
-                                    // try to load yaml data into yamlMessage object using yamlAssembly class
-                                    try {
-                                        yamlMessage = YAMLAssembly.disassembleYAML(yaml, uuid);
-                                        // print results to config
-                                        LCCP.logger.debug(id + yamlMessage.toString());
-                                    } catch (YAMLAssembly.YAMLException e) {
-                                        // print an error message if something goes wrong while trying to load yaml into wrapper
-                                        LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
+                                        // yaml object that will further inspect the yaml data
+                                        YAMLMessage yamlMessage = null;
+
+                                        // try to load yaml data into yamlMessage object using yamlAssembly class
+                                        try {
+                                            yamlMessage = YAMLAssembly.disassembleYAML(yaml, uuid);
+                                            // print results to config
+                                            LCCP.logger.debug(id + yamlMessage.toString());
+                                        } catch (YAMLAssembly.YAMLException e) {
+                                            // print an error message if something goes wrong while trying to load yaml into wrapper
+                                            LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
+                                        }
+
+                                        // notifying the rest of the application of the received data
+                                        eventManager.fireEvent(new Events.DataIn(yamlMessage));
+
+                                        // general information messages
+                                        LCCP.logger.debug(id + "Successfully received data!");
+                                        LCCP.logger.debug(id + "---------------------------------------------------------------");
                                     }
+                                }.runTaskAsynchronously();
 
-                                    // notifying the rest of the application of the received data
-                                    eventManager.fireEvent(new Events.DataIn(yamlMessage));
-
-                                    // general information messages
-                                    LCCP.logger.debug(id + "Successfully received data!");
-                                    LCCP.logger.debug(id + "---------------------------------------------------------------");
-                                }
-                            }.runTaskAsynchronously();
                             //}
 
                         } catch (IOException ex) {

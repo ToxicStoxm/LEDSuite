@@ -193,7 +193,7 @@ public class Window extends ApplicationWindow implements EventListener {
                     LCCP.logger.debug("User click: status row");
                     StatusDialog sD = new StatusDialog();
                     sD.present(this);
-
+                    /*
                     new LCCPRunnable() {
                         @Override
                         public void run() {
@@ -218,6 +218,7 @@ public class Window extends ApplicationWindow implements EventListener {
                             }
                         }
                     }.runTaskAsynchronously();
+                     */
                 }
                 // opening settings dialog
                 case "settings" -> {

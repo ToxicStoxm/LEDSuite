@@ -236,13 +236,19 @@ public class Networking {
                 long transferredSize = 0;
                 long lastTransferredSize = 0;
 
+                double avgBytesPerSecond = 0;
+                double vals = 1;
+
                 // calculating the file size in MB
                 double temp = (double) fileSize / (1024 * 1024);
                 double mbFileSize = (double) Math.round(temp * 1000) / 1000;
                 double mbTransferredSize = (double) transferredSize / (1024 * 1024);
 
                 long delay = 100;
-                long lastDisplay = System.currentTimeMillis() - 1000;
+                long lastDisplay = System.currentTimeMillis() - delay;
+
+                long printDelay = 2000;
+                long lastPrint = System.currentTimeMillis() - printDelay;
 
                 LCCP.logger.debug(id + "Sending main file contents...");
                 // reading / writing file contents using the buffer
@@ -253,11 +259,14 @@ public class Networking {
                         // calculating speed, eta and transferred data
                         long bytesTransferredLastSecond = transferredSize - lastTransferredSize;
                         double bytesPerSecond = (double) bytesTransferredLastSecond / ((double) delay / 1000);
+                        if (avgBytesPerSecond == 0) avgBytesPerSecond = bytesPerSecond;
+                        avgBytesPerSecond = ((avgBytesPerSecond * (vals)) + (bytesPerSecond * (1 / vals))) / vals;
+                        vals++;
                         double temp1 = bytesPerSecond / (1024 * 1024);
                         double mbPerSecond = (double) Math.round(temp1 * 1000) / 1000;
                         lastDisplay = System.currentTimeMillis();
                         double percent = ((double) transferredSize / fileSize) * 100;
-                        double estimatedSecondsRemaining = (fileSize - transferredSize) / bytesPerSecond;
+                        double estimatedSecondsRemaining = (fileSize - transferredSize) / avgBytesPerSecond;
                         if (transferredSize == 0) estimatedSecondsRemaining = 0;
 
                         Date date = new Date((long) (estimatedSecondsRemaining * 1000));
@@ -281,20 +290,26 @@ public class Networking {
                         }
                         result.append(parts[2]).append("s");
 
-                        // displaying transfer information message in the console containing speed, eta, file size and transferred data
-                        LCCP.logger.debug(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
+                        long current = System.currentTimeMillis();
+                        if (current - lastPrint > printDelay) {
+                            // displaying transfer information message in the console containing speed, eta, file size and transferred data
+                            LCCP.logger.debug(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
+                            lastPrint = current;
+                        }
                         if (track && transferredSize > 0) {
+                            progressTracker.setUpdated(true);
                             progressTracker.setTotalSizeInBytes(fileSize);
                             progressTracker.setTotalSizeInMegabytes(mbFileSize);
                             progressTracker.setTransferredSizeInBytes(transferredSize);
                             progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
-                            progressTracker.setSpeedInBytes(bytesPerSecond);
-                            progressTracker.setSpeedInMegabytes(mbPerSecond);
-                            progressTracker.setProgressPercentage(Math.round(percent / 100));
+                            progressTracker.setSpeedInBytes(avgBytesPerSecond);
+                            progressTracker.setSpeedInMegabytes(avgBytesPerSecond / (1024 * 1024));
+                            progressTracker.setProgressPercentage((double) Math.round(percent * 100) / 10000);
                             progressTracker.setEta(result.toString());
                         }
                         lastTransferredSize = transferredSize;
                     }
+
                     // writing buffer to output stream and sending it with socket
                     out.write(buffer, 0, count);
                     // keeping track of transferred size
@@ -303,6 +318,18 @@ public class Networking {
                     double temp1 = (double) transferredSize / (1024 * 1024);
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
+
+                if (track && transferredSize > 0) {
+                    progressTracker.setTotalSizeInBytes(fileSize);
+                    progressTracker.setTotalSizeInMegabytes(mbFileSize);
+                    progressTracker.setTransferredSizeInBytes(transferredSize);
+                    progressTracker.setTransferredSizeInMegabytes(mbTransferredSize);
+                    progressTracker.setSpeedInBytes(0);
+                    progressTracker.setSpeedInMegabytes(0);
+                    progressTracker.setProgressPercentage(1.0);
+                    progressTracker.setEta("N/A");
+                }
+
                 // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
                 out.flush();
                 LCCP.logger.debug(id + "Successfully send file contents!");
@@ -324,9 +351,11 @@ public class Networking {
             LCCP.logger.debug(id + "---------------------------------------------------------------");
             return true;
         }
+
         @Setter
         @Getter
         public static class ProgressTracker {
+            private boolean started = false;
             private boolean error = false;
             private boolean updated = false;
             private double totalSizeInBytes = 0.0;

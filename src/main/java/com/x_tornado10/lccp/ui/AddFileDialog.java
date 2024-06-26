@@ -13,6 +13,7 @@ import org.gnome.gio.*;
 import org.gnome.gtk.*;
 
 import java.net.URLConnection;
+import java.util.Objects;
 
 public class AddFileDialog extends PreferencesPage {
 
@@ -27,7 +28,9 @@ public class AddFileDialog extends PreferencesPage {
     private final Spinner spinner;
     private String filePath = null;
     private String fileName = null;
-    private final ActionRow statsRow;
+    private final ExpanderRow statsRow;
+    private final ActionRow speed;
+    private final ActionRow eta;
     public AddFileDialog() {
 
         if (VarPool.init) {
@@ -54,7 +57,7 @@ public class AddFileDialog extends PreferencesPage {
 
         var filter = FileFilter.builder()
                 .setSuffixes(new String[]{"so"})
-                .setMimeTypes(new String[]{"image/*","video/*"})
+                .setMimeTypes(new String[]{"image/*", "video/*"})
                 .setName("Animations")
                 .build();
 
@@ -124,24 +127,33 @@ public class AddFileDialog extends PreferencesPage {
 
         file.add(autoPlay);
 
-        statsRow = ActionRow.builder()
-                .setTitle("Upload statistics")
-                .setSubtitle("Upload speed: N/A - ETA: N/A")
+        statsRow = ExpanderRow.builder()
+                .setTitle("Upload Statistics")
+                .setExpanded(false)
+                .setActivatable(false)
                 .build();
 
-        statsRow.setVisible(false);
+        speed = ActionRow.builder()
+                .setTitle("Speed")
+                .setSubtitle("N/A")
+                .build();
+        eta = ActionRow.builder()
+                .setTitle("ETA")
+                .setSubtitle("N/A")
+                .build();
+
+        statsRow.addRow(speed);
+        statsRow.addRow(eta);
 
         file.add(statsRow);
 
         uploadButton = Button.builder()
                 .setCssClasses(new String[]{"suggested-action", "pill"})
-                        .build();
+                .build();
 
         uploadButton.onClicked(() -> {
-            if (uploading) return;
-            new LCCPRunnable() {
-                @Override
-                public void run() {
+                    if (uploading) return;
+
                     upload((error, fileName) -> {
                         if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
                             try {
@@ -167,9 +179,9 @@ public class AddFileDialog extends PreferencesPage {
                             }
                         }
                     });
+
                 }
-            }.runTaskAsynchronously();
-        });
+        );
 
         spinner = Spinner.builder().setSpinning(true).build();
 
@@ -278,35 +290,43 @@ public class AddFileDialog extends PreferencesPage {
         Networking.Communication.ProgressTracker progressTracker = new Networking.Communication.ProgressTracker();
 
         long start = System.currentTimeMillis();
-        long timeout = 500; // time in ms until sending operation times out
+        long timeout = 2000; // time in ms until sending operation times out
         int resetDelay = 500; // time in ms until reset is triggered
         final boolean[] cancelled = {false};
 
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (progressTracker.isUpdated()) {
-                    LCCP.mainWindow.progressBar.setFraction(0.0);
-
-                    cancel();
+                if (!cancelled[0] && progressTracker.isUpdated()) {
                     cancelled[0] = true;
-                    LCCP.logger.debug("Changing button style!");
+                    LCCP.mainWindow.progressBar.setFraction(0.0);
+                    //LCCP.logger.debug("Changing button style!");
                     LCCP.mainWindow.rootView.setRevealBottomBars(true);
-                    statsRow.setVisible(true);
+                    statsRow.setExpanded(true);
                     new LCCPRunnable() {
                         @Override
                         public void run() {
                             boolean error = progressTracker.isError();
-                            if (error || progressTracker.getProgressPercentage() >= 100) {
+                            String speedNew = calculateNewSpeed(progressTracker.getSpeedInBytes());
+                            String etaNew = progressTracker.getEta();
+                            double progressbar = progressTracker.getProgressPercentage();
+                            if (error || progressTracker.getProgressPercentage() >= 1.0) {
+                                if (!error) {
+                                    if (!speed.getSubtitle().equals(speedNew)) speed.setSubtitle(speedNew);
+                                    if (!eta.getSubtitle().equals(etaNew)) eta.setSubtitle(etaNew);
+                                    if (progressbar - LCCP.mainWindow.progressBar.getFraction() > 0.001) LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
+                                }
                                 resetUI(1000, error, false, callback);
                                 cancel();
                             }
-                            statsRow.setSubtitle("Upload speed: " + progressTracker.getSpeedInMegabytes() + "MB/S - ETA: " + progressTracker.getEta());
-                            LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
+                            if (!speed.getSubtitle().equals(speedNew)) speed.setSubtitle(speedNew);
+                            if (!eta.getSubtitle().equals(etaNew)) eta.setSubtitle(etaNew);
+                            if (progressbar - LCCP.mainWindow.progressBar.getFraction() > 0.001) LCCP.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
                         }
-                    }.runTaskTimerAsynchronously(0, 10);
+                    }.runTaskTimerAsynchronously(0, 100);
+                    cancel();
 
-                } else if (System.currentTimeMillis() - start > timeout && !cancelled[0]) {
+                } else if (System.currentTimeMillis() - start > timeout && !cancelled[0] && !progressTracker.isStarted()) {
                     resetUI(resetDelay, false, false, callback);
                     cancel();
                 } else if (progressTracker.isError() && !cancelled[0]) {
@@ -314,10 +334,14 @@ public class AddFileDialog extends PreferencesPage {
                     cancel();
                 }
             }
-        }.runTaskTimerAsynchronously(0, 10);
+        }.runTaskTimerAsynchronously(10, 10);
 
-        Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
-
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
+            }
+        }.runTaskAsynchronously();
     }
 
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
@@ -329,8 +353,9 @@ public class AddFileDialog extends PreferencesPage {
                 uploading = false;
                 spinner.setVisible(false);
                 uploadButton.emitRealize();
-                statsRow.setSubtitle("Upload speed: N/A - ETA: N/A");
-                statsRow.setVisible(false);
+                statsRow.setExpanded(false);
+                speed.setSubtitle("N/A");
+                eta.setSubtitle("N/A");
                 LCCP.mainWindow.progressBar.setFraction(0.0);
                 if (error) {
                     LCCP.mainWindow.toastOverlay.addToast(
@@ -344,6 +369,7 @@ public class AddFileDialog extends PreferencesPage {
                                     )
                                     .build()
                     );
+
                     uploadButton.setCssClasses(new String[]{"destructive-action", "pill"});
                     new LCCPRunnable() {
                         @Override
@@ -357,5 +383,38 @@ public class AddFileDialog extends PreferencesPage {
 
             }
         }.runTaskLaterAsynchronously(delayInMillis);
+    }
+
+    private String calculateNewSpeed(double bytesPerSec) {
+
+        //double bytesPerSec = mbBytesPerSec * (2^20);
+
+        StringBuilder sb = new StringBuilder();
+
+        int decimals = 2;
+
+        double change = Math.pow(10,  decimals);
+
+        double bitsPerSecond = (double) Math.round(
+                (bytesPerSec * Math.pow(2, 3)) * change) / change;
+
+        double kbPerSecond = (double) Math.round(
+                (bytesPerSec / Math.pow(2, 10)) * change) / change;
+
+        double mbPerSecond = (double) Math.round(
+                (bytesPerSec / Math.pow(2, 20)) * change) / change;
+
+        double gbPerSecond = (double) Math.round(
+                (bytesPerSec / Math.pow(2, 30)) * change) / change;
+
+        if (gbPerSecond >= 1) sb.append(gbPerSecond).append(" GB/S");
+        else if (mbPerSecond >= 1) sb.append(mbPerSecond).append(" MB/S");
+        else if (kbPerSecond >= 1) sb.append(kbPerSecond).append(" KB/S");
+        else if (bytesPerSec >= 1) sb.append(bytesPerSec).append( " B/S");
+        else if (bitsPerSecond >= 1) sb.append(bitsPerSecond).append(" b/S");
+        else sb.append("N/A");
+
+
+        return sb.toString();
     }
 }

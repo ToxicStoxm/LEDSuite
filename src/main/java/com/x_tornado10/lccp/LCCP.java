@@ -270,41 +270,34 @@ public class LCCP implements EventListener {
                             // loading data into the yaml config
                             new FileHandler(yaml).load(bf);
 
-                            for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-                                String s = it.next();
-                                System.out.println(s);
-                                System.out.flush();
+                                /*new LCCPRunnable() {
+                                    @Override
+                                    public void run() {*/
+                            // received data is inspected and printed to console for debugging
+                            LCCP.logger.debug(id + "Packet Content:");
+
+                            // yaml object that will further inspect the yaml data
+                            YAMLMessage yamlMessage = null;
+
+                            // try to load yaml data into yamlMessage object using yamlAssembly class
+                            try {
+                                yamlMessage = YAMLAssembly.disassembleYAML(yaml, uuid);
+                                // print results to config
+                                LCCP.logger.debug(id + yamlMessage.toString());
+                            } catch (YAMLAssembly.YAMLException e) {
+                                // print an error message if something goes wrong while trying to load yaml into wrapper
+                                LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
                             }
 
-                                new LCCPRunnable() {
-                                    @Override
-                                    public void run() {
-                                        // received data is inspected and printed to console for debugging
-                                        LCCP.logger.debug(id + "Packet Content:");
+                            // notifying the rest of the application of the received data
+                            eventManager.fireEvent(new Events.DataIn(yamlMessage));
 
-                                        // yaml object that will further inspect the yaml data
-                                        YAMLMessage yamlMessage = null;
+                            // general information messages
+                            LCCP.logger.debug(id + "Successfully received data!");
+                            LCCP.logger.debug(id + "---------------------------------------------------------------");
 
-                                        // try to load yaml data into yamlMessage object using yamlAssembly class
-                                        try {
-                                            yamlMessage = YAMLAssembly.disassembleYAML(yaml, uuid);
-                                            // print results to config
-                                            LCCP.logger.debug(id + yamlMessage.toString());
-                                        } catch (YAMLAssembly.YAMLException e) {
-                                            // print an error message if something goes wrong while trying to load yaml into wrapper
-                                            LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
-                                        }
+                        /*}.runTaskAsynchronously();*/
 
-                                        // notifying the rest of the application of the received data
-                                        eventManager.fireEvent(new Events.DataIn(yamlMessage));
-
-                                        // general information messages
-                                        LCCP.logger.debug(id + "Successfully received data!");
-                                        LCCP.logger.debug(id + "---------------------------------------------------------------");
-                                    }
-                                }.runTaskAsynchronously();
-
-                            //}
 
                         } catch (IOException ex) {
                             // if server socket or data streams fail to read input an error message is displayed

@@ -190,14 +190,14 @@ public class YAMLSerializer {
 
         YAMLMessage yamlMessage = new YAMLMessage().setPacketType(pT);
 
-        try {
+        /*try {
             String networkId = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
             if (networkId != null && networkId.isEmpty()) {
-                yamlMessage.setUUID(UUID.fromString(networkId));
+                yamlMessage = new YAMLMessage(UUID.fromString(networkId)).setPacketType(pT);
             }
         } catch (IllegalArgumentException | NoSuchElementException e) {
             LCCP.logger.warn("Packet didn't contain a network id or it was invalid! Replay can't be associated with corresponding request event by id!");
-        }
+        }*/
 
         try {
             switch (pT) {

@@ -569,9 +569,19 @@ public class Networking {
                                     @Override
                                     public void run(InputStream is) {
                                         YAMLConfiguration input = defaultReceive(is);
+
                                         if (input != null) {
+                                            String replyID = input.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
                                             try {
-                                                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.deserializeYAML(input)));
+                                                try {
+                                                    UUID networkId = UUID.fromString(replyID);
+                                                    LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.deserializeYAML(input, networkId)));
+                                                } catch (IllegalArgumentException e) {
+                                                    LCCP.logger.warn("Packet didn't contain a network id or it was invalid! Reply can't be associated with corresponding request event by id!");
+                                                    LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.deserializeYAML(input)));
+
+                                                }
+
                                             } catch (YAMLSerializer.YAMLException e) {
                                                 LCCP.logger.error("Failed to deserialize yaml!");
                                                 LCCP.logger.error(e);

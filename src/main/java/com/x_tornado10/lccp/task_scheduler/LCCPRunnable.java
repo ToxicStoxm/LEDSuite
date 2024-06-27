@@ -51,13 +51,13 @@ public abstract class LCCPRunnable implements Runnable {
         return val / 10;
     }
 
-    private void checkState() {
+    protected void checkState() {
         if (taskId != -1) {
             throw new IllegalStateException("Already scheduled as " + taskId);
         }
     }
 
-    private LCCPTask setupId(final LCCPTask task) {
+    protected LCCPTask setupId(final LCCPTask task) {
         this.taskId = task.getTaskId();
         return task;
     }

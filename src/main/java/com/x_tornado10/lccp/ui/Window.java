@@ -193,32 +193,6 @@ public class Window extends ApplicationWindow implements EventListener {
                     LCCP.logger.debug("User click: status row");
                     StatusDialog sD = new StatusDialog();
                     sD.present(this);
-                    /*
-                    new LCCPRunnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Networking.Communication.sendYAML("127.0.0.1", 1200,
-                                        new YAMLMessage()
-                                                .setPacketType(YAMLMessage.PACKET_TYPE.reply)
-                                                .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                                                .setFileLoaded(true)
-                                                .setFileState(YAMLMessage.FILE_STATE.playing)
-                                                .setFileSelected("test-file.mp4")
-                                                .setCurrentDraw(40)
-                                                .setVoltage(5)
-                                                .setLidState(false)
-                                                .setAvailableAnimations(constructMap(":", "hansimansi:cat-symbolic", "lol:symbolic","test:symbolic"))
-                                                .build(),
-                                        null
-                                        );
-                            } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException | YAMLAssembly.TODOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        }
-                    }.runTaskAsynchronously();
-                     */
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -340,7 +314,7 @@ public class Window extends ApplicationWindow implements EventListener {
         var box = Box.builder().setHalign(Align.CENTER).build();
         box.append(Spinner.builder().setSpinning(true).build());
 
-        addAnimation(box);
+        animationsList.append(listBoxWrap(box));
 
         addFileList.onRowActivated(_ -> {
             LCCP.logger.debug("Clicked add file row!");
@@ -592,7 +566,23 @@ public class Window extends ApplicationWindow implements EventListener {
     public void onStatus(Events.Status e) {
         StatusUpdate statusUpdate = e.statusUpdate();
 
+        animationsList.unselectAll();
+        animationsList.setSelectionMode(SelectionMode.NONE);
         animationsList.removeAll();
+
+        var box = Box.builder().setHalign(Align.CENTER).build();
+        box.append(Spinner.builder().setSpinning(true).build());
+
+        var spinnerRow = ListBoxRow.builder()
+                .setSelectable(true)
+                .setName(box.getName())
+                .setChild(
+                        box
+                ).build();
+        animationsList.append(spinnerRow);
+
+        List<ListBoxRow> anims = new ArrayList<>();
+
         for (Map.Entry<String, String> entry : statusUpdate.getAvailableAnimations().entrySet()) {
 
             var b = Box.builder()
@@ -609,8 +599,13 @@ public class Window extends ApplicationWindow implements EventListener {
                             .setXalign(0)
                             .build()
             );
-            addAnimation(b);
+            anims.add(listBoxWrap(b));
         }
+        animationsList.remove(spinnerRow);
+        for (ListBoxRow lbr : anims) {
+            animationsList.append(lbr);
+        }
+        animationsList.setSelectionMode(SelectionMode.SINGLE);
 
     }
 
@@ -628,15 +623,13 @@ public class Window extends ApplicationWindow implements EventListener {
 
     }
 
-    public void addAnimation(Widget widget) {
-        animationsList.append(
-                ListBoxRow.builder()
+    public ListBoxRow listBoxWrap(Widget widget) {
+        return ListBoxRow.builder()
                         .setSelectable(true)
                         .setName(widget.getName())
                         .setChild(
                                 widget
-                        ).build()
-        );
+                        ).build();
     }
 
 }

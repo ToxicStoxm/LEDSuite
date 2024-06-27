@@ -4,25 +4,19 @@ import com.x_tornado10.lccp.LCCP;
 
 import java.io.InputStream;
 
-public abstract class LCCPProcessor extends LCCPRunnable {
+public class LCCPProcessor extends LCCPRunnable {
     private InputStream is;
-    private int taskId = -1;
 
     public synchronized LCCPTask runTaskAsynchronously(InputStream is) throws IllegalStateException {
-        this.is = is;
         checkState();
+        this.is = is;
         return setupId(LCCP.getScheduler().runTaskAsynchronously(this));
     }
 
-    private void checkState() {
-        if (taskId != -1) {
-            throw new IllegalStateException("Already scheduled as " + taskId);
-        }
-    }
-
-    private LCCPTask setupId(final LCCPTask task) {
-        this.taskId = task.getTaskId();
-        return task;
+    public synchronized LCCPTask runTask(InputStream is) throws IllegalStateException {
+        checkState();
+        this.is = is;
+        return setupId(LCCP.getScheduler().runTask(this));
     }
 
     @Override
@@ -31,6 +25,10 @@ public abstract class LCCPProcessor extends LCCPRunnable {
     }
 
     public void run(InputStream is) {
+    }
 
+    @Override
+    public void checkState() {
+        super.checkState();
     }
 }

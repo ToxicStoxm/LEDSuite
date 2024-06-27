@@ -9,6 +9,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Paths;
 import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -208,6 +209,12 @@ public class Networking {
 
             try {
 
+                sendYAMLDefaultHost(YAMLMessage.builder()
+                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                        .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
+                        .setRequestFile(fileToSend.getName()).build());
+
+
                 Socket socket = NetworkHandler.getServer();
 
                 // open a new client socket for server:port
@@ -357,7 +364,7 @@ public class Networking {
                 LCCP.logger.debug(id + "Successfully closed socket and streams!");
                 LCCP.logger.debug(id + "Sending complete!");
 
-            } catch (IOException e) {
+            } catch (IOException | YAMLAssembly.YAMLException | ConfigurationException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 LCCP.logger.error(e);
@@ -365,8 +372,7 @@ public class Networking {
             } catch (NetworkException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.fatal(id + "Network error: " + e.getMessage());
-            }
-            finally {
+            } finally {
                 LCCP.logger.debug(id + "---------------------------------------------------------------");
             }
             LCCP.logger.debug(id + "Successfully send file to server!");
@@ -390,7 +396,7 @@ public class Networking {
             private String eta = "";
         }
 
-        private static final long delay = 1; // delay in milliseconds between network packets
+        private static final long delay = 10; // delay in milliseconds between network packets
 
         public static class NetworkHandler {
 
@@ -419,6 +425,7 @@ public class Networking {
                 if (!connected) {
                     try {
                         server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
+                        LCCP.logger.debug("Successfully connected to server!");
                         connected = true;
                     } catch (Exception e) {
                         LCCP.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
@@ -437,7 +444,7 @@ public class Networking {
                 LCCP.logger.debug("Network Handler: started network handle!");
 
                 LCCP.logger.debug("Network Handler: starting manager...");
-                mgr =  new LCCPRunnable() {
+                LCCPRunnable mgr =  new LCCPRunnable() {
                     @Override
                     public void run() {
                         //LCCP.logger.debug("Iteration");
@@ -448,7 +455,8 @@ public class Networking {
                             networkQueue.remove(entry.getKey());
                         }
                     }
-                }.runTaskTimerAsynchronously(0, delay);
+                };
+                NetworkHandler.mgr = mgr.runTaskTimerAsynchronously(0, delay);
                 LCCP.logger.debug("Network Handler: started manager!");
 
                 initListener();
@@ -464,8 +472,19 @@ public class Networking {
                         try {
                             InputStream is = server.getInputStream();
                             while (true) {
-                                if (is.available() > 0) {
-                                    replyListenersQueue.pollFirstEntry().getValue().processFor(is);
+                                if (is.available() > 0 && !replyListenersQueue.isEmpty()) {
+                                    Map.Entry<Long, ReplyListener> entry = replyListenersQueue.pollFirstEntry();
+
+                                    if (entry != null) {
+                                        ReplyListener listener = entry.getValue();
+
+                                        try {
+                                            listener.processor.checkState();
+                                            listener.processFor(is);
+                                        } catch (IllegalStateException e) {
+                                            LCCP.logger.warn("Illegal state");
+                                        }
+                                    }
                                 }
                             }
 
@@ -475,7 +494,7 @@ public class Networking {
                         }
 
                     }
-                }.runTaskTimer(0, delay);
+                }.runTaskTimerAsynchronously(0, delay);
                 LCCP.logger.debug("Network Handler: started master listener!");
             }
 
@@ -532,7 +551,7 @@ public class Networking {
             private record ReplyListener(LCCPProcessor processor) {
 
                 private void processFor(InputStream is) {
-                    processor.runTaskAsynchronously(is);
+                    processor.runTask(is);
                 }
             }
 
@@ -549,14 +568,13 @@ public class Networking {
                                     @Override
                                     public void run(InputStream is) {
                                         try {
-                                            LCCP.logger.warn(id + " Response!");
 
                                             // Wrap the InputStream with a BufferedReader for efficient reading
                                             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
                                             // Read the first line to get the total number of bytes expected
                                             int totalBytes = Integer.parseInt(br.readLine());
-                                            LCCP.logger.debug("Total bytes: " + totalBytes);
+                                            //LCCP.logger.debug("Total bytes: " + totalBytes);
 
                                             // Prepare a buffer to read the expected number of bytes
                                             char[] buffer = new char[totalBytes];
@@ -564,17 +582,15 @@ public class Networking {
                                             // Read the actual data into the buffer if not cancelled
                                             br.read(buffer);
 
-                                            LCCP.logger.warn(id + " Response!");
-
                                             // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
                                             YAMLConfiguration yaml = new YAMLConfiguration();
                                             new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
 
                                             // Log the YAML properties
-                                            for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-                                                String s = it.next();
-                                                LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-                                            }
+                                            //for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+                                            //    String s = it.next();
+                                            //    LCCP.logger.debug(s + ": " + yaml.getProperty(s));
+                                            //}
 
                                             // Fire an event with the parsed YAML data
                                             LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(yaml)));
@@ -604,6 +620,14 @@ public class Networking {
         }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
+            if (!NetworkHandler.connected) {
+                try {
+                    NetworkHandler.init(_ -> {});
+                } catch (NetworkException e) {
+                    LCCP.logger.fatal("Failed to connect to server!");
+                    return false;
+                }
+            }
             LCCP.logger.debug("Appending send request to the network queue!");
             LCCPRunnable sendRequest = new LCCPRunnable() {
                 @Override

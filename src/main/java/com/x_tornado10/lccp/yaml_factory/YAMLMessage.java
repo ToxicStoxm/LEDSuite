@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 public class YAMLMessage implements YAMLFactoryMessage {
 
+    @Getter
     private UUID networkID;
 
     private PACKET_TYPE packetType = PACKET_TYPE.request;
@@ -104,9 +105,6 @@ public class YAMLMessage implements YAMLFactoryMessage {
     protected YAMLMessage setUUID(UUID uuid) {
         this.networkID = uuid;
         return this;
-    }
-    public UUID getNetworkEventID() {
-        return networkID;
     }
 
     public enum PACKET_TYPE {

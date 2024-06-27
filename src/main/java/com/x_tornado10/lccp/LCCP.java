@@ -508,7 +508,7 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onDataReceived(Events.DataIn e) {
         YAMLMessage yaml = e.yamlMessage();
-        String id = "[" + yaml.getNetworkEventID() + "] ";
+        String id = "[" + yaml.getNetworkID() + "] ";
         logger.debug(id + "-------------------- Internal Data Event ----------------------");
         logger.debug(id + "Data stream direction: in");
         logger.debug(id + "Network: Received data!");

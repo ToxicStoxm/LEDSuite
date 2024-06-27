@@ -1,6 +1,5 @@
 package com.x_tornado10.lccp.yaml_factory;
 
-import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -11,8 +10,8 @@ public class YAMLSerializer {
     public static YAMLConfiguration serializeYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
         YAMLMessage.PACKET_TYPE packetType = null;
         YAMLConfiguration result = new YAMLConfiguration();
-        if (yamlMessage.getNetworkEventID() == null) yamlMessage.setUUID(UUID.randomUUID());
-        result.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkEventID()));
+        if (yamlMessage.getNetworkID() == null) yamlMessage.setUUID(UUID.randomUUID());
+        result.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkID()));
         try {
             packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketTypeV());
         } catch (IllegalArgumentException e) {

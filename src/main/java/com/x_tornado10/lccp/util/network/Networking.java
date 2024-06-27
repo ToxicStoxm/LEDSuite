@@ -482,15 +482,18 @@ public class Networking {
                                             yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
 
                                         } catch (IllegalArgumentException e) {
+                                            LCCP.logger.warn("Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
                                             yaml = YAMLSerializer.deserializeYAML(yamlCfg);
 
                                         }
-                                        UUID networkID = yaml.getNetworkEventID();
+                                        UUID networkID = yaml.getNetworkID();
 
                                         Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
                                         if (replyListenerQueue.containsKey(networkID)) {
                                             ReplyListener listener = replyListenerQueue.remove(networkID);
-                                            if (listener != null) listener.processFor(yaml);
+                                            if (listener != null) {
+                                                listener.processFor(yaml);
+                                            }
                                             replyListenerQueue.remove(networkID);
                                         } else {
                                             if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.error)) {
@@ -572,6 +575,8 @@ public class Networking {
 
                 private void processFor(YAMLMessage yaml) {
                     processor.runTask(yaml);
+                    LCCP.logger.debug("Successfully processed received Reply Message with ID[" + yaml.getNetworkID() + "] using predefined LCCPProcessor with ID[" + processor.getTaskId() + "]!");
+
                 }
             }
 

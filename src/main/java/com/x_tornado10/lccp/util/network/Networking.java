@@ -444,7 +444,8 @@ public class Networking {
                 LCCP.logger.debug("Network Handler: started network handle!");
 
                 LCCP.logger.debug("Network Handler: starting manager...");
-                LCCPRunnable mgr =  new LCCPRunnable() {
+                if (mgr != null) mgr.cancel();
+                mgr =  new LCCPRunnable() {
                     @Override
                     public void run() {
                         //LCCP.logger.debug("Iteration");
@@ -455,8 +456,7 @@ public class Networking {
                             networkQueue.remove(entry.getKey());
                         }
                     }
-                };
-                NetworkHandler.mgr = mgr.runTaskTimerAsynchronously(0, delay);
+                }.runTaskTimerAsynchronously(0, delay);
                 LCCP.logger.debug("Network Handler: started manager!");
 
                 initListener();
@@ -466,14 +466,16 @@ public class Networking {
 
             private static void initListener() {
                 LCCP.logger.debug("Network Handler: starting master listener...");
+                if (masterListener != null) masterListener.cancel();
                 masterListener = new LCCPRunnable() {
                     @Override
                     public void run() {
                         try {
                             InputStream is = server.getInputStream();
                             while (true) {
-                                if (is.available() > 0 && !replyListenersQueue.isEmpty()) {
-                                    Map.Entry<Long, ReplyListener> entry = replyListenersQueue.pollFirstEntry();
+
+                                if (is.available() > 0 && !Collections.synchronizedSortedMap(replyListenersQueue).isEmpty()) {
+                                    Map.Entry<Long, ReplyListener> entry = Collections.synchronizedSortedMap(replyListenersQueue).pollFirstEntry();
 
                                     if (entry != null) {
                                         ReplyListener listener = entry.getValue();
@@ -487,14 +489,13 @@ public class Networking {
                                     }
                                 }
                             }
-
                         } catch (Exception e) {
                             LCCP.logger.fatal("Network Handler: master listener: Error: " + e.getMessage());
                             LCCP.logger.error(e);
                         }
 
                     }
-                }.runTaskTimerAsynchronously(0, delay);
+                }.runTaskAsynchronously();
                 LCCP.logger.debug("Network Handler: started master listener!");
             }
 
@@ -570,7 +571,7 @@ public class Networking {
                                         YAMLConfiguration input = defaultReceive(is);
                                         if (input != null) {
                                             try {
-                                                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.disassembleYAML(input)));
+                                                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.deserializeYAML(input)));
                                             } catch (YAMLSerializer.YAMLException e) {
                                                 LCCP.logger.error("Failed to deserialize yaml!");
                                                 LCCP.logger.error(e);

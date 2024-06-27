@@ -174,11 +174,11 @@ public class YAMLSerializer {
         }
     }
 
-    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
-        return disassembleYAML(yaml).setUUID(uuid);
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
+        return deserializeYAML(yaml).setUUID(uuid);
     }
 
-    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml) throws YAMLException {
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml) throws YAMLException {
 
         String s = yaml.getString(Paths.NETWORK.YAML.PACKET_TYPE);
         YAMLMessage.PACKET_TYPE pT;
@@ -201,9 +201,9 @@ public class YAMLSerializer {
 
         try {
             switch (pT) {
-                case request -> disassembleRequestYAML(yaml, yamlMessage);
-                case reply -> disassembleReplyYAML(yaml, yamlMessage);
-                case error -> disassembleErrorYAML(yaml, yamlMessage);
+                case request -> deserializeRequestYAML(yaml, yamlMessage);
+                case reply -> deserializeReplyYAML(yaml, yamlMessage);
+                case error -> deserializeErrorYAML(yaml, yamlMessage);
             }
         } catch (NoSuchElementException e) {
             throw new YAMLException("Couldn't disassemble YAML! Invalid or missing values / keys!");
@@ -212,7 +212,7 @@ public class YAMLSerializer {
         return yamlMessage;
     }
 
-    private static void disassembleRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.REQUEST_TYPE);
         YAMLMessage.REQUEST_TYPE rT;
         try {
@@ -239,7 +239,7 @@ public class YAMLSerializer {
         }
     }
 
-    private static void disassembleReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.REPLY_TYPE);
         YAMLMessage.REPLY_TYPE rT;
         try {
@@ -250,12 +250,12 @@ public class YAMLSerializer {
         }
 
         switch (rT) {
-            case status -> disassembleStatusReplyYAML(yaml, yamlMessage);
-            case menu -> disassembleMenuReplyYAML(yaml, yamlMessage);
+            case status -> deserializeStatusReplyYAML(yaml, yamlMessage);
+            case menu -> deserializeMenuReplyYAML(yaml, yamlMessage);
         }
     }
 
-    private static void disassembleStatusReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeStatusReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         boolean fileIsLoaded = yaml.getBoolean(Paths.NETWORK.YAML.FILE_IS_LOADED);
         yamlMessage.setFileLoaded(fileIsLoaded);
 
@@ -296,14 +296,14 @@ public class YAMLSerializer {
         }
         yamlMessage.setAvailableAnimations(availableAnimations);
     }
-    private static void disassembleMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         yaml.clearProperty(Paths.NETWORK.YAML.PACKET_TYPE);
         yaml.clearProperty(Paths.NETWORK.YAML.REPLY_TYPE);
         yamlMessage.setMenuYaml(yaml);
 
     }
 
-    private static void disassembleErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.ERROR_SOURCE);
         YAMLMessage.ERROR_SOURCE eS;
         try {

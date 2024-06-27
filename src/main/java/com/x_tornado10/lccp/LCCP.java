@@ -557,7 +557,7 @@ public class LCCP implements EventListener {
         }
         logger.debug(id + "Data stream direction: out");
         try {
-            logger.debug(id + "Data: " + YAMLSerializer.disassembleYAML(e.yaml()));
+            logger.debug(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
         } catch (YAMLSerializer.YAMLException ex) {
             logger.warn(id + "Data: failed to deserialize yaml data");
             logger.warn(id + "Error message: " + ex.getMessage());

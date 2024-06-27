@@ -53,7 +53,7 @@ public class LCCPAsyncTask extends LCCPTask {
             thrown = t;
             throw new RuntimeException (
                     String.format(
-                            "Plugin %s generated an exception while executing task %s",
+                            "Thread %s generated an exception while executing task %s",
                             LCCP.class.getName(),
                             getTaskId()),
                     thrown);

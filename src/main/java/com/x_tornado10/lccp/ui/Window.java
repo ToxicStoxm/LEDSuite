@@ -131,17 +131,17 @@ public class Window extends ApplicationWindow implements EventListener {
         var activateAboutRow = SimpleAction.builder().setName("activateAboutRow").build();
         activateAboutRow.onActivate(_ -> {
             aboutRow.emitActivate(); // Emit the activate signal on the aboutRow
-            aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateSettingsRow = SimpleAction.builder().setName("activateSettingsRow").build();
         activateSettingsRow.onActivate(_ -> {
             settingsRow.emitActivate(); // Emit the activate signal on the settingsRow
-            settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateStatusRow = SimpleAction.builder().setName("activateStatusRow").build();
         activateStatusRow.onActivate(_ -> {
             statusRow.emitActivate(); // Emit the activate signal on the statusRow
-            statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
 
         // Add the actions to the window's action group
@@ -175,11 +175,11 @@ public class Window extends ApplicationWindow implements EventListener {
         this.addController(shortcutController);
 
         // listen for about / settings dialog close and shift the focus backwards to focus the main window again
-        getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
-        getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        //getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        //getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
 
         // change menu list selection mode to single so the user can only select one entry at a time
-        menuDropDownList.setSelectionMode(SelectionMode.SINGLE);
+        menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
 
         // adding the list rows to the menu list
         menuDropDownList.append(statusRow);
@@ -210,6 +210,9 @@ public class Window extends ApplicationWindow implements EventListener {
                 }
             }
             // close the popover
+            menuDropDownList.setSelectionMode(SelectionMode.NONE);
+            menuDropDownList.unselectAll();
+            menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
             popover.emitClosed();
         });
 

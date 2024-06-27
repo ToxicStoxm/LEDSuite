@@ -8,7 +8,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 import lombok.Setter;
@@ -364,7 +364,7 @@ public class Networking {
                 LCCP.logger.debug(id + "Successfully closed socket and streams!");
                 LCCP.logger.debug(id + "Sending complete!");
 
-            } catch (IOException | YAMLAssembly.YAMLException | ConfigurationException e) {
+            } catch (IOException | YAMLSerializer.YAMLException | ConfigurationException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 LCCP.logger.error(e);
@@ -567,45 +567,57 @@ public class Networking {
                                 new LCCPProcessor() {
                                     @Override
                                     public void run(InputStream is) {
-                                        try {
-
-                                            // Wrap the InputStream with a BufferedReader for efficient reading
-                                            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-                                            // Read the first line to get the total number of bytes expected
-                                            int totalBytes = Integer.parseInt(br.readLine());
-                                            //LCCP.logger.debug("Total bytes: " + totalBytes);
-
-                                            // Prepare a buffer to read the expected number of bytes
-                                            char[] buffer = new char[totalBytes];
-
-                                            // Read the actual data into the buffer if not cancelled
-                                            br.read(buffer);
-
-                                            // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
-                                            YAMLConfiguration yaml = new YAMLConfiguration();
-                                            new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
-
-                                            // Log the YAML properties
-                                            //for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-                                            //    String s = it.next();
-                                            //    LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-                                            //}
-
-                                            // Fire an event with the parsed YAML data
-                                            LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(yaml)));
-
-                                            // Mark the task as cancelled and complete
-                                            cancel();
-                                        } catch (Exception e) {
-                                            LCCP.logger.error(e);
-                                            throw new RuntimeException(e);
+                                        YAMLConfiguration input = defaultReceive(is);
+                                        if (input != null) {
+                                            try {
+                                                LCCP.eventManager.fireEvent(new Events.DataIn(YAMLSerializer.disassembleYAML(input)));
+                                            } catch (YAMLSerializer.YAMLException e) {
+                                                LCCP.logger.error("Failed to deserialize yaml!");
+                                                LCCP.logger.error(e);
+                                            }
                                         }
                                     }
                                 }
                         )
                 );
             }
+        }
+
+        public static YAMLConfiguration defaultReceive(InputStream is) {
+            YAMLConfiguration yaml;
+            try {
+
+                // Wrap the InputStream with a BufferedReader for efficient reading
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+                // Read the first line to get the total number of bytes expected
+                int totalBytes = Integer.parseInt(br.readLine());
+                //LCCP.logger.debug("Total bytes: " + totalBytes);
+
+                // Prepare a buffer to read the expected number of bytes
+                char[] buffer = new char[totalBytes];
+
+                // Read the actual data into the buffer if not cancelled
+                br.read(buffer);
+
+                // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
+                yaml = new YAMLConfiguration();
+                new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
+
+                // Log the YAML properties
+                //for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+                //    String s = it.next();
+                //    LCCP.logger.debug(s + ": " + yaml.getProperty(s));
+                //}
+
+                // Fire an event with the parsed YAML data
+                //LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(yaml)));
+
+            } catch (Exception e) {
+                LCCP.logger.error(e);
+                return null;
+            }
+            return yaml;
         }
 
         public interface FinishCallback {
@@ -620,6 +632,10 @@ public class Networking {
         }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
+            return sendYAML(host, port, yaml, callback, null);
+        }
+
+        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replayHandle) {
             if (!NetworkHandler.connected) {
                 try {
                     NetworkHandler.init(_ -> {});
@@ -633,14 +649,18 @@ public class Networking {
                 @Override
                 public void run() {
                     LCCP.logger.debug("Sending packet: " + yaml.getProperty(Paths.NETWORK.YAML.PACKET_TYPE));
-                    sendYAMLMessage(host, port, yaml, callback);
+                    sendYAMLMessage(host, port, yaml, callback, replayHandle);
                 }
             };
             return networkQueue.put(System.currentTimeMillis(), sendRequest) == null;
         }
 
-        // function to send YAML packets to the server
         private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback) {
+            return sendYAMLMessage(serverIP4, serverPort, yaml, callback, null);
+        }
+
+        // function to send YAML packets to the server
+        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replayHandle) {
 
             boolean callb = callback != null;
             boolean err = false;
@@ -740,12 +760,8 @@ public class Networking {
 
             err = !err;
             if (callb) callback.onFinish(err);
-            //try {
-            NetworkHandler.listenForReply(id);
-                //listenForResponse(socket.getInputStream(), id);
-            //} catch (IOException e) {
-            //    throw new RuntimeException(e);
-            //}
+            if (replayHandle == null) NetworkHandler.listenForReply(id);
+            else NetworkHandler.listenForReply(replayHandle);
             return err;
 
         }

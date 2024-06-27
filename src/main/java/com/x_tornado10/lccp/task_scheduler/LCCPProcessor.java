@@ -4,7 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 
 import java.io.InputStream;
 
-public class LCCPProcessor extends LCCPRunnable {
+public abstract class LCCPProcessor extends LCCPRunnable {
     private InputStream is;
 
     public synchronized LCCPTask runTaskAsynchronously(InputStream is) throws IllegalStateException {

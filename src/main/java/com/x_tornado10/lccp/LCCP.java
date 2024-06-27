@@ -6,7 +6,6 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
-import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
@@ -17,7 +16,7 @@ import com.x_tornado10.lccp.util.logging.Messages;
 import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
 import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
 import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -29,9 +28,6 @@ import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -360,7 +356,7 @@ public class LCCP implements EventListener {
         logger.info(message);
         try {
             Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
-        } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+        } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
             LCCP.logger.error("Failed to send / get available animations list from the server!");
             LCCP.logger.error(e);
         }
@@ -561,8 +557,8 @@ public class LCCP implements EventListener {
         }
         logger.debug(id + "Data stream direction: out");
         try {
-            logger.debug(id + "Data: " + YAMLAssembly.disassembleYAML(e.yaml()));
-        } catch (YAMLAssembly.YAMLException ex) {
+            logger.debug(id + "Data: " + YAMLSerializer.disassembleYAML(e.yaml()));
+        } catch (YAMLSerializer.YAMLException ex) {
             logger.warn(id + "Data: failed to deserialize yaml data");
             logger.warn(id + "Error message: " + ex.getMessage());
         }

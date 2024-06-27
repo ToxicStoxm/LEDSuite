@@ -1,13 +1,14 @@
 package com.x_tornado10.lccp.yaml_factory;
 
+import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.util.Paths;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.util.*;
 
-public class YAMLAssembly {
-    public static YAMLConfiguration assembleYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
+public class YAMLSerializer {
+    public static YAMLConfiguration serializeYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
         YAMLMessage.PACKET_TYPE packetType = null;
         YAMLConfiguration result = new YAMLConfiguration();
         if (yamlMessage.getNetworkEventID() == null) yamlMessage.setUUID(UUID.randomUUID());
@@ -18,15 +19,15 @@ public class YAMLAssembly {
             throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
         switch (packetType) {
-            case reply -> result = assembleReplyYAML(yamlMessage);
-            case error -> result = assembleErrorYAML(yamlMessage);
-            case request -> result = assembleRequestYAML(yamlMessage);
+            case reply -> result = serializeReplyYAML(yamlMessage);
+            case error -> result = serializeErrorYAML(yamlMessage);
+            case request -> result = serializeRequestYAML(yamlMessage);
             case null, default -> throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
         return result;
     }
 
-    protected static YAMLConfiguration assembleReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
+    protected static YAMLConfiguration serializeReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
         YAMLMessage.REPLY_TYPE replyType = null;
         try {
             replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyTypeV());
@@ -35,22 +36,22 @@ public class YAMLAssembly {
         }
         switch (replyType) {
             case menu -> {
-                return assembleMenuReplyYAML(yamlMessage);
+                return serializeMenuReplyYAML(yamlMessage);
             }
             case status -> {
-                return assembleStatusReplyYAML(yamlMessage);
+                return serializeStatusReplyYAML(yamlMessage);
             }
             case null, default -> throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
         }
     }
-    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeMenuReplyYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration menuYaml = yamlMessage.getMenuYaml();
         if (yamlMessage.getPacketTypeV() != null) menuYaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
         if (yamlMessage.getReplyType() != null) menuYaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getReplyTypeV());
         return menuYaml;
     }
 
-    protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeStatusReplyYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -70,7 +71,7 @@ public class YAMLAssembly {
         return yaml;
     }
 
-    protected static YAMLConfiguration assembleErrorYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeErrorYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -81,7 +82,7 @@ public class YAMLAssembly {
 
         return yaml;
     }
-    protected static YAMLConfiguration assembleRequestYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeRequestYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -188,6 +189,15 @@ public class YAMLAssembly {
         }
 
         YAMLMessage yamlMessage = new YAMLMessage().setPacketType(pT);
+
+        try {
+            String networkId = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+            if (networkId != null && networkId.isEmpty()) {
+                yamlMessage.setUUID(UUID.fromString(networkId));
+            }
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            LCCP.logger.warn("Packet didn't contain a network id or it was invalid! Replay can't be associated with corresponding request event by id!");
+        }
 
         try {
             switch (pT) {

@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,8 +59,8 @@ public class LCCPScheduler implements TaskScheduler {
     }
 
     @Override
-    public LCCPTask runTaskAsynchronously(Runnable runnable, InputStream is) {
-        return runTaskLaterAsynchronously(runnable, is, 0);
+    public LCCPTask runTaskAsynchronously(Runnable runnable, YAMLMessage yaml) {
+        return runTaskLaterAsynchronously(runnable, 0,  yaml);
     }
 
 
@@ -74,8 +75,8 @@ public class LCCPScheduler implements TaskScheduler {
     }
 
     @Override
-    public LCCPTask runTaskLaterAsynchronously(Runnable runnable, InputStream is, long delay) {
-        return runTaskTimerAsynchronously(runnable, is, delay, -1);
+    public LCCPTask runTaskLaterAsynchronously(Runnable runnable, long delay, YAMLMessage yaml) {
+        return runTaskTimerAsynchronously(runnable, delay, -1, yaml);
     }
 
     @Override
@@ -105,7 +106,7 @@ public class LCCPScheduler implements TaskScheduler {
     }
 
     @Override
-    public LCCPTask runTaskTimerAsynchronously(Runnable runnable, InputStream is, long delay, long period) {
+    public LCCPTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period, YAMLMessage yaml) {
         if (delay < 0) {
             delay = 0;
         }
@@ -114,7 +115,7 @@ public class LCCPScheduler implements TaskScheduler {
         } else if (period < -1) {
             period = -1;
         }
-        return handle(new LCCPAsyncTask(runners, runnable, is, nextId(), period), delay);
+        return handle(new LCCPAsyncTask(runners, runnable, nextId(), period, yaml), delay);
     }
 
 

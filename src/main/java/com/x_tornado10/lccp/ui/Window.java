@@ -492,10 +492,8 @@ public class Window extends ApplicationWindow implements EventListener {
                     null,
                     new LCCPProcessor() {
                         @Override
-                        public void run(InputStream is) {
-                            YAMLConfiguration input = Networking.Communication.defaultReceive(is);
-
-
+                        public void run(YAMLMessage yaml) {
+                            LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.fromYAMLMessage(yaml)));
                         }
                     }
             );

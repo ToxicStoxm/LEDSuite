@@ -1,30 +1,30 @@
 package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 
-import java.io.InputStream;
 
 public abstract class LCCPProcessor extends LCCPRunnable {
-    private InputStream is;
+    private YAMLMessage yaml;
 
-    public synchronized LCCPTask runTaskAsynchronously(InputStream is) throws IllegalStateException {
+    public synchronized LCCPTask runTaskAsynchronously(YAMLMessage yaml) throws IllegalStateException {
         checkState();
-        this.is = is;
+        this.yaml = yaml;
         return setupId(LCCP.getScheduler().runTaskAsynchronously(this));
     }
 
-    public synchronized LCCPTask runTask(InputStream is) throws IllegalStateException {
+    public synchronized LCCPTask runTask(YAMLMessage yaml) throws IllegalStateException {
         checkState();
-        this.is = is;
+        this.yaml = yaml;
         return setupId(LCCP.getScheduler().runTask(this));
     }
 
     @Override
     public void run() {
-        run(is);
+        run(yaml);
     }
 
-    public void run(InputStream is) {
+    public void run(YAMLMessage yaml) {
     }
 
     @Override

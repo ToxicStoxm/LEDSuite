@@ -1,6 +1,7 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.util.network.Networking;
@@ -143,6 +144,7 @@ public class SettingsDialog extends PreferencesDialog {
                                 ip = null;
                             }
                             if (ip != null) {
+                                LCCP.eventManager.fireEvent(new Events.HostChanged("Host changed by user through settings dialog! " + LCCP.server_settings.getIPv4() + " -> " + ip));
                                 LCCP.server_settings.setIPv4(ip);
                             }
                         }

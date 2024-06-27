@@ -30,7 +30,7 @@ public class ServerError {
 
     public static ServerError fromYAMLMessage(YAMLMessage yamlMessage) {
         return new ServerError(
-                yamlMessage.getUuid(),
+                yamlMessage.getNetworkID(),
                 yamlMessage.getErrorSource(),
                 yamlMessage.getErrorCode(),
                 yamlMessage.getErrorName(),

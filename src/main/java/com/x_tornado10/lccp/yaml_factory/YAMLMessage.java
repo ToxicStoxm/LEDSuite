@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 public class YAMLMessage implements YAMLFactoryMessage {
 
-    private UUID uuid;
+    private UUID networkID;
 
     private PACKET_TYPE packetType = PACKET_TYPE.request;
     private ERROR_SOURCE errorSource = ERROR_SOURCE.other;
@@ -30,11 +30,11 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private HashMap<String, String> availableAnimations = new HashMap<>();
     private YAMLConfiguration menuYaml = new YAMLConfiguration();
 
-    public YAMLMessage(UUID uuid) {
-        this.uuid = uuid;
+    public YAMLMessage(UUID networkID) {
+        this.networkID = networkID;
     }
     public YAMLMessage() {
-        this.uuid = UUID.randomUUID();
+        this.networkID = UUID.randomUUID();
     }
     public static YAMLMessage defaultStatusRequest() {
         return new YAMLMessage().setPacketType(PACKET_TYPE.request).setRequestType(REQUEST_TYPE.status);
@@ -102,11 +102,11 @@ public class YAMLMessage implements YAMLFactoryMessage {
     }
 
     protected YAMLMessage setUUID(UUID uuid) {
-        this.uuid = uuid;
+        this.networkID = uuid;
         return this;
     }
     public UUID getNetworkEventID() {
-        return uuid;
+        return networkID;
     }
 
     public enum PACKET_TYPE {

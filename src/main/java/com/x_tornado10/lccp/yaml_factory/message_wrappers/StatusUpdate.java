@@ -47,7 +47,7 @@ public class StatusUpdate {
                 yamlMessage.getCurrentDraw(),
                 yamlMessage.getVoltage(),
                 yamlMessage.isLidState(),
-                yamlMessage.getNetworkEventID(),
+                yamlMessage.getNetworkID(),
                 yamlMessage.getAvailableAnimations()
         );
     }

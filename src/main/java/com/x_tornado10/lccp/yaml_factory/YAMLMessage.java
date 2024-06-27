@@ -9,7 +9,8 @@ import java.util.UUID;
 @Getter
 public class YAMLMessage implements YAMLFactoryMessage {
 
-    private UUID uuid;
+    @Getter
+    private UUID networkID;
 
     private PACKET_TYPE packetType = PACKET_TYPE.request;
     private ERROR_SOURCE errorSource = ERROR_SOURCE.other;
@@ -30,11 +31,11 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private HashMap<String, String> availableAnimations = new HashMap<>();
     private YAMLConfiguration menuYaml = new YAMLConfiguration();
 
-    public YAMLMessage(UUID uuid) {
-        this.uuid = uuid;
+    public YAMLMessage(UUID networkID) {
+        this.networkID = networkID;
     }
     public YAMLMessage() {
-        this.uuid = UUID.randomUUID();
+        this.networkID = UUID.randomUUID();
     }
     public static YAMLMessage defaultStatusRequest() {
         return new YAMLMessage().setPacketType(PACKET_TYPE.request).setRequestType(REQUEST_TYPE.status);
@@ -102,36 +103,21 @@ public class YAMLMessage implements YAMLFactoryMessage {
     }
 
     protected YAMLMessage setUUID(UUID uuid) {
-        this.uuid = uuid;
+        this.networkID = uuid;
         return this;
-    }
-    public UUID getNetworkEventID() {
-        return uuid;
     }
 
     public enum PACKET_TYPE {
-        error("error"),
-        request("request"),
-        reply("reply");
-
-        private final String value;
-
-        PACKET_TYPE(String value) {
-            this.value = value;
-        }
+        error,
+        request,
+        reply
     }
 
     public enum ERROR_SOURCE {
-        power("power"),
-        invalid_file("invalid_file"),
-        invalid_request("invalid_request"),
-        other("other");
-
-        private final String value;
-
-        ERROR_SOURCE(String value) {
-            this.value = value;
-        }
+        power,
+        invalid_file,
+        invalid_request,
+        other
     }
 
     @Getter
@@ -146,51 +132,43 @@ public class YAMLMessage implements YAMLFactoryMessage {
         ERROR_SEVERITY(int value) {
             this.value = value;
         }
+
+        public static ERROR_SEVERITY valueOf(int value) {
+            for (ERROR_SEVERITY severity : values()) {
+                if (severity.value == value) {
+                    return severity;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with value " + value);
+        }
     }
 
     public enum REQUEST_TYPE {
-        status("status"),
-        play("play"),
-        pause(""),
-        stop("stop"),
-        menu("menu"),
-        menu_change("menu_change");
-
-        private final String value;
-
-        REQUEST_TYPE(String value) {
-            this.value = value;
-        }
+        status,
+        play,
+        pause,
+        stop,
+        menu,
+        menu_change,
+        file_upload;
     }
 
     public enum REPLY_TYPE {
-        status("status"),
-        menu("menu");
-
-        private final String value;
-
-        REPLY_TYPE(String value) {
-            this.value = value;
-        }
+        status,
+        menu
     }
 
     public enum FILE_STATE {
-        playing("playing"),
-        paused("paused");
-
-        private final String value;
-
-        FILE_STATE(String value) {
-            this.value = value;
-        }
+        playing,
+        paused
     }
 
     public String getPacketTypeV() {
-        return packetType.value;
+        return packetType.name();
     }
 
     public String getErrorSourceV() {
-        return errorSource.value;
+        return errorSource.name();
     }
 
     public int getErrorSeverityV() {
@@ -198,15 +176,15 @@ public class YAMLMessage implements YAMLFactoryMessage {
     }
 
     public String getRequestTypeV() {
-        return requestType.value;
+        return requestType.name();
     }
 
     public String getReplyTypeV() {
-        return replyType.value;
+        return replyType.name();
     }
 
     public String getFileStateV() {
-        return fileState.value;
+        return fileState.name();
     }
 
     public YAMLMessage setPacketType(PACKET_TYPE packetType) {
@@ -300,18 +278,18 @@ public class YAMLMessage implements YAMLFactoryMessage {
         // Include fields based on packet type
         switch (packetType) {
             case error -> {
-                sb.append("packetType=").append(packetType.value).append(", ");
-                sb.append("errorSource=").append(errorSource.value).append(", ");
+                sb.append("packetType=").append(packetType.name()).append(", ");
+                sb.append("errorSource=").append(errorSource.name()).append(", ");
                 if (errorCode != 0) sb.append("errorCode=").append(errorCode).append(", ");
                 if (errorName != null && !errorName.isBlank()) sb.append("errorName='").append(errorName).append("', ");
                 sb.append("errorSeverity=").append(errorSeverity.value).append(", ");
             }
 
             case request -> {
-                sb.append("packetType=").append(packetType.value).append(", ");
-                sb.append("requestType=").append(requestType.value).append(", ");
+                sb.append("packetType=").append(packetType.name()).append(", ");
+                sb.append("requestType=").append(requestType.name()).append(", ");
                 switch (requestType) {
-                    case play, pause, stop, menu, menu_change -> {
+                    case play, pause, stop, menu, menu_change, file_upload -> {
                         sb.append("requestFile='").append(requestFile).append("', ");
                         if (requestType == REQUEST_TYPE.menu_change) {
                             sb.append("objectPath='").append(objectPath).append("', ");
@@ -322,10 +300,10 @@ public class YAMLMessage implements YAMLFactoryMessage {
             }
 
             case reply -> {
-                sb.append("packetType=").append(packetType.value).append(", ");
-                sb.append("replyType=").append(replyType.value).append(", ");
+                sb.append("packetType=").append(packetType.name()).append(", ");
+                sb.append("replyType=").append(replyType.name()).append(", ");
                 sb.append("isFileLoaded=").append(isFileLoaded).append(", ");
-                sb.append("fileState=").append(fileState.value).append(", ");
+                sb.append("fileState=").append(fileState.name()).append(", ");
                 if (fileSelected != null && !fileSelected.isBlank())
                     sb.append("fileSelected='").append(fileSelected).append("', ");
                 if (currentDraw != 0) sb.append("currentDraw=").append(currentDraw).append(", ");

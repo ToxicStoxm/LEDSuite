@@ -69,7 +69,7 @@ public class EventManager {
     private String tryToGetNetworkID(Object event) {
         String id = "";
         try {
-            id = String.valueOf(((Events.DataIn) event).yamlMessage().getNetworkEventID());
+            id = String.valueOf(((Events.DataIn) event).yamlMessage().getNetworkID());
         } catch (Exception e) {
             try {
                 id = String.valueOf(((Events.DataOut) event).yaml().getProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));

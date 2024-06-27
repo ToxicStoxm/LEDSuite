@@ -6,7 +6,6 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
-import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
@@ -17,20 +16,18 @@ import com.x_tornado10.lccp.util.logging.Messages;
 import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
 import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
 import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -52,7 +49,7 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
-    public static boolean server = false;
+    //public static boolean server = false;
 
     // main method
     public static void main(String[] args) {
@@ -200,12 +197,19 @@ public class LCCP implements EventListener {
         lccpScheduler = new LCCPScheduler();
         tickingSystem = new TickingSystem();
 
-        server = true;
-        startServer();
+        //server = true;
+        //startServer();
 
-        Networking.Communication.networkHandler();
+        try {
+            Networking.Communication.NetworkHandler.init(_ -> {
+            });
+        } catch (Networking.NetworkException e) {
+            throw new RuntimeException(e);
+        }
 
     }
+
+    /*
 
     // function to start the internal server, listening on specified port for yaml packets
     private static void startServer() {
@@ -251,7 +255,7 @@ public class LCCP implements EventListener {
                             String yaml2 = sb.toString();
                             ByteArrayInputStream byteArrayInputStream =  new ByteArrayInputStream(yaml2.getBytes());
 
-                             */
+
 
                             // write read data to the buffer
                             //int added = bf.read(charBuffer);
@@ -270,9 +274,9 @@ public class LCCP implements EventListener {
                             // loading data into the yaml config
                             new FileHandler(yaml).load(bf);
 
-                                /*new LCCPRunnable() {
+                                new LCCPRunnable() {
                                     @Override
-                                    public void run() {*/
+                                    public void run() {
                             // received data is inspected and printed to console for debugging
                             LCCP.logger.debug(id + "Packet Content:");
 
@@ -296,7 +300,7 @@ public class LCCP implements EventListener {
                             LCCP.logger.debug(id + "Successfully received data!");
                             LCCP.logger.debug(id + "---------------------------------------------------------------");
 
-                        /*}.runTaskAsynchronously();*/
+                        }.runTaskAsynchronously();
 
 
                         } catch (IOException ex) {
@@ -326,6 +330,7 @@ public class LCCP implements EventListener {
             }
         }.runTaskAsynchronously();
     }
+    */
 
     // activate function
     // this is triggered on libadwaita application activate
@@ -351,7 +356,7 @@ public class LCCP implements EventListener {
         logger.info(message);
         try {
             Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
-        } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+        } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
             LCCP.logger.error("Failed to send / get available animations list from the server!");
             LCCP.logger.error(e);
         }
@@ -496,14 +501,14 @@ public class LCCP implements EventListener {
     public void onShutdown(Events.Shutdown e) {
         // default console message response to a shutdown event
         logger.debug("Fulfilling shutdown request: " + e.message());
-        server = false;
+        //server = false;
         networkLogger.printEvents();
         logger.info("New log file was saved to: '" + Paths.File_System.logFile + "'");
     }
     @EventHandler
     public void onDataReceived(Events.DataIn e) {
         YAMLMessage yaml = e.yamlMessage();
-        String id = "[" + yaml.getNetworkEventID() + "] ";
+        String id = "[" + yaml.getNetworkID() + "] ";
         logger.debug(id + "-------------------- Internal Data Event ----------------------");
         logger.debug(id + "Data stream direction: in");
         logger.debug(id + "Network: Received data!");
@@ -552,8 +557,8 @@ public class LCCP implements EventListener {
         }
         logger.debug(id + "Data stream direction: out");
         try {
-            logger.debug(id + "Data: " + YAMLAssembly.disassembleYAML(e.yaml()));
-        } catch (YAMLAssembly.YAMLException ex) {
+            logger.debug(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
+        } catch (YAMLSerializer.YAMLException ex) {
             logger.warn(id + "Data: failed to deserialize yaml data");
             logger.warn(id + "Error message: " + ex.getMessage());
         }
@@ -592,6 +597,7 @@ public class LCCP implements EventListener {
         mainWindow.toastOverlay.addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())
+                        .setTimeout(Adw.DURATION_INFINITE)
                         .build()
         );
     }

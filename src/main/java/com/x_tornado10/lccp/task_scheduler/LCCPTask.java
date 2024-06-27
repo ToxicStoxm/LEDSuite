@@ -1,6 +1,9 @@
 package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
+
+import java.io.InputStream;
 
 public class LCCPTask implements Task, Runnable {
 
@@ -16,6 +19,7 @@ public class LCCPTask implements Task, Runnable {
     private volatile long period;
     private long nextRun;
     private final Runnable task;
+    private YAMLMessage yaml;
     private final int id;
 
     LCCPTask() {
@@ -27,9 +31,13 @@ public class LCCPTask implements Task, Runnable {
     }
 
     LCCPTask(final Runnable task, final int id, final long period) {
+        this(task, id, period, null);
+    }
+    LCCPTask(final Runnable task, final int id, final long period, YAMLMessage yaml) {
         this.task = task;
         this.id = id;
         this.period = period;
+        this.yaml = yaml;
     }
 
     public final int getTaskId() {

@@ -30,7 +30,7 @@ public class ServerError {
 
     public static ServerError fromYAMLMessage(YAMLMessage yamlMessage) {
         return new ServerError(
-                yamlMessage.getUuid(),
+                yamlMessage.getNetworkID(),
                 yamlMessage.getErrorSource(),
                 yamlMessage.getErrorCode(),
                 yamlMessage.getErrorName(),
@@ -51,7 +51,6 @@ public class ServerError {
     }
     public String humanReadable() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Error: ");
         switch (getErrorSource()) {
             case invalid_request -> sb.append("Invalid request");
             case power -> sb.append("Power");
@@ -59,7 +58,8 @@ public class ServerError {
             case other -> sb.append("Other / Unknown");
             case null, default -> sb.append("N/A");
         }
-        sb.append(" --> ").append(getErrorName());
+        sb.append(" error");
+        if (!getErrorName().isEmpty()) sb.append(": ").append(getErrorName());
         return sb.toString();
     }
 }

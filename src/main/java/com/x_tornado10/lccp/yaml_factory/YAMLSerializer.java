@@ -6,27 +6,27 @@ import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.util.*;
 
-public class YAMLAssembly {
-    public static YAMLConfiguration assembleYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
+public class YAMLSerializer {
+    public static YAMLConfiguration serializeYAML(YAMLMessage yamlMessage) throws InvalidPacketTypeException, InvalidReplyTypeException, TODOException {
         YAMLMessage.PACKET_TYPE packetType = null;
         YAMLConfiguration result = new YAMLConfiguration();
-        if (yamlMessage.getNetworkEventID() == null) yamlMessage.setUUID(UUID.randomUUID());
-        result.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkEventID()));
+        if (yamlMessage.getNetworkID() == null) yamlMessage.setUUID(UUID.randomUUID());
+        result.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkID()));
         try {
             packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketTypeV());
         } catch (IllegalArgumentException e) {
             throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
         switch (packetType) {
-            case reply -> result = assembleReplyYAML(yamlMessage);
-            case error -> result = assembleErrorYAML(yamlMessage);
-            case request -> result = assembleRequestYAML(yamlMessage);
+            case reply -> result = serializeReplyYAML(yamlMessage);
+            case error -> result = serializeErrorYAML(yamlMessage);
+            case request -> result = serializeRequestYAML(yamlMessage);
             case null, default -> throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
         }
         return result;
     }
 
-    protected static YAMLConfiguration assembleReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
+    protected static YAMLConfiguration serializeReplyYAML(YAMLMessage yamlMessage) throws InvalidReplyTypeException, TODOException {
         YAMLMessage.REPLY_TYPE replyType = null;
         try {
             replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyTypeV());
@@ -35,22 +35,22 @@ public class YAMLAssembly {
         }
         switch (replyType) {
             case menu -> {
-                return assembleMenuReplyYAML(yamlMessage);
+                return serializeMenuReplyYAML(yamlMessage);
             }
             case status -> {
-                return assembleStatusReplyYAML(yamlMessage);
+                return serializeStatusReplyYAML(yamlMessage);
             }
             case null, default -> throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
         }
     }
-    protected static YAMLConfiguration assembleMenuReplyYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeMenuReplyYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration menuYaml = yamlMessage.getMenuYaml();
         if (yamlMessage.getPacketTypeV() != null) menuYaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
         if (yamlMessage.getReplyType() != null) menuYaml.setProperty(Paths.NETWORK.YAML.REPLY_TYPE, yamlMessage.getReplyTypeV());
         return menuYaml;
     }
 
-    protected static YAMLConfiguration assembleStatusReplyYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeStatusReplyYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -70,7 +70,7 @@ public class YAMLAssembly {
         return yaml;
     }
 
-    protected static YAMLConfiguration assembleErrorYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeErrorYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -81,7 +81,7 @@ public class YAMLAssembly {
 
         return yaml;
     }
-    protected static YAMLConfiguration assembleRequestYAML(YAMLMessage yamlMessage) {
+    protected static YAMLConfiguration serializeRequestYAML(YAMLMessage yamlMessage) {
         YAMLConfiguration yaml = new YAMLConfiguration();
 
         if (yamlMessage.getPacketTypeV() != null) yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
@@ -173,11 +173,11 @@ public class YAMLAssembly {
         }
     }
 
-    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
-        return disassembleYAML(yaml).setUUID(uuid);
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
+        return deserializeYAML(yaml).setUUID(uuid);
     }
 
-    public static YAMLMessage disassembleYAML(YAMLConfiguration yaml) throws YAMLException {
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml) throws YAMLException {
 
         String s = yaml.getString(Paths.NETWORK.YAML.PACKET_TYPE);
         YAMLMessage.PACKET_TYPE pT;
@@ -189,11 +189,20 @@ public class YAMLAssembly {
 
         YAMLMessage yamlMessage = new YAMLMessage().setPacketType(pT);
 
+        /*try {
+            String networkId = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+            if (networkId != null && networkId.isEmpty()) {
+                yamlMessage = new YAMLMessage(UUID.fromString(networkId)).setPacketType(pT);
+            }
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            LCCP.logger.warn("Packet didn't contain a network id or it was invalid! Replay can't be associated with corresponding request event by id!");
+        }*/
+
         try {
             switch (pT) {
-                case request -> disassembleRequestYAML(yaml, yamlMessage);
-                case reply -> disassembleReplyYAML(yaml, yamlMessage);
-                case error -> disassembleErrorYAML(yaml, yamlMessage);
+                case request -> deserializeRequestYAML(yaml, yamlMessage);
+                case reply -> deserializeReplyYAML(yaml, yamlMessage);
+                case error -> deserializeErrorYAML(yaml, yamlMessage);
             }
         } catch (NoSuchElementException e) {
             throw new YAMLException("Couldn't disassemble YAML! Invalid or missing values / keys!");
@@ -202,7 +211,7 @@ public class YAMLAssembly {
         return yamlMessage;
     }
 
-    private static void disassembleRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.REQUEST_TYPE);
         YAMLMessage.REQUEST_TYPE rT;
         try {
@@ -213,7 +222,7 @@ public class YAMLAssembly {
         }
 
         switch (rT) {
-            case play, pause, stop, menu, menu_change -> {
+            case play, pause, stop, menu, menu_change, file_upload -> {
                 String requestFile = yaml.getString(Paths.NETWORK.YAML.REQUEST_FILE);
                 if (requestFile == null || requestFile.isBlank()) throw new InvalidRequestFileException("Invalid request file name: '" + requestFile + "'. Must be a valid, non empty String!");
                 yamlMessage.setRequestFile(requestFile);
@@ -229,7 +238,7 @@ public class YAMLAssembly {
         }
     }
 
-    private static void disassembleReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.REPLY_TYPE);
         YAMLMessage.REPLY_TYPE rT;
         try {
@@ -240,12 +249,12 @@ public class YAMLAssembly {
         }
 
         switch (rT) {
-            case status -> disassembleStatusReplyYAML(yaml, yamlMessage);
-            case menu -> disassembleMenuReplyYAML(yaml, yamlMessage);
+            case status -> deserializeStatusReplyYAML(yaml, yamlMessage);
+            case menu -> deserializeMenuReplyYAML(yaml, yamlMessage);
         }
     }
 
-    private static void disassembleStatusReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeStatusReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         boolean fileIsLoaded = yaml.getBoolean(Paths.NETWORK.YAML.FILE_IS_LOADED);
         yamlMessage.setFileLoaded(fileIsLoaded);
 
@@ -286,14 +295,14 @@ public class YAMLAssembly {
         }
         yamlMessage.setAvailableAnimations(availableAnimations);
     }
-    private static void disassembleMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         yaml.clearProperty(Paths.NETWORK.YAML.PACKET_TYPE);
         yaml.clearProperty(Paths.NETWORK.YAML.REPLY_TYPE);
         yamlMessage.setMenuYaml(yaml);
 
     }
 
-    private static void disassembleErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
+    private static void deserializeErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
         String s0 = yaml.getString(Paths.NETWORK.YAML.ERROR_SOURCE);
         YAMLMessage.ERROR_SOURCE eS;
         try {
@@ -309,9 +318,10 @@ public class YAMLAssembly {
 
         yamlMessage.setErrorName(yaml.getString(Paths.NETWORK.YAML.ERROR_NAME));
 
-        String s1 = yaml.getString(Paths.NETWORK.YAML.ERROR_SEVERITY);
-        YAMLMessage.ERROR_SEVERITY eS0;
+        int s1 = -1;
         try {
+            s1 = yaml.getInt(Paths.NETWORK.YAML.ERROR_SEVERITY);
+            YAMLMessage.ERROR_SEVERITY eS0;
             eS0 = YAMLMessage.ERROR_SEVERITY.valueOf(s1);
             yamlMessage.setErrorSeverity(eS0);
         } catch (IllegalArgumentException e) {

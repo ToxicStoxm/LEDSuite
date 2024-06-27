@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 
 @Getter
@@ -302,14 +303,26 @@ public class YAMLMessage implements YAMLFactoryMessage {
             case reply -> {
                 sb.append("packetType=").append(packetType.name()).append(", ");
                 sb.append("replyType=").append(replyType.name()).append(", ");
-                sb.append("isFileLoaded=").append(isFileLoaded).append(", ");
-                sb.append("fileState=").append(fileState.name()).append(", ");
-                if (fileSelected != null && !fileSelected.isBlank())
-                    sb.append("fileSelected='").append(fileSelected).append("', ");
-                if (currentDraw != 0) sb.append("currentDraw=").append(currentDraw).append(", ");
-                if (voltage != 0) sb.append("voltage=").append(voltage).append(", ");
-                sb.append("lidState=").append(lidState).append(", ");
-                sb.append("availableAnimations=").append(availableAnimations).append(", ");
+                switch (replyType) {
+                    case status -> {
+                        sb.append("isFileLoaded=").append(isFileLoaded).append(", ");
+                        sb.append("fileState=").append(fileState.name()).append(", ");
+                        if (fileSelected != null && !fileSelected.isBlank())
+                            sb.append("fileSelected='").append(fileSelected).append("', ");
+                        if (currentDraw != 0) sb.append("currentDraw=").append(currentDraw).append(", ");
+                        if (voltage != 0) sb.append("voltage=").append(voltage).append(", ");
+                        sb.append("lidState=").append(lidState).append(", ");
+                        sb.append("availableAnimations=").append(availableAnimations).append(", ");
+                    }
+                    case menu -> {
+                        sb.append("menuYaml={");
+                        for (Iterator<String> it = menuYaml.getKeys(); it.hasNext(); ) {
+                            String s = it.next();
+                            sb.append(s).append(": ").append(menuYaml.getString(s));
+                        }
+                        sb.append("}, ");
+                    }
+                }
             }
         }
 

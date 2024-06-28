@@ -14,12 +14,6 @@ import org.gnome.gtk.Orientation;
 import org.gnome.gtk.Widget;
 
 public class StatusDialog extends PreferencesDialog implements EventListener {
-    private Box statusList;
-    private StatusPage statusPage;
-    private ToolbarView toolbarView;
-    private HeaderBar headerBar1;
-    private Clamp clamp;
-
     public StatusDialog() {
         configure(StatusUpdate.blank());
         this.onClosed(() -> {
@@ -31,10 +25,9 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         });
 
         this.setFollowsContentSize(true);
+
     }
-
     private LCCPTask updateTask = null;
-
     @Override
     public void present(Widget parent) {
         LCCP.logger.debug("Fulfilling StatusDialog present request!");
@@ -43,20 +36,60 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
     }
 
     private void configure(StatusUpdate statusUpdate) {
-        statusList = Box.builder()
-                .setOrientation(Orientation.VERTICAL)
-                .setSpacing(12)
-                .setHexpand(true)
-                .build();
 
         if (statusUpdate.isBlank()) {
+            var statusList = Box.builder()
+                    .setOrientation(Orientation.VERTICAL)
+                    .setSpacing(12)
+                    .setHexpand(true)
+                    .build();
+
             statusList.append(
                     ActionRow.builder().setTitle("Not connected to Cube!").setSubtitle(LCCP.server_settings.getIPv4() + ":" + LCCP.server_settings.getPort() + " is currently not responding!").build()
             );
             statusList.append(
                     ActionRow.builder().setTitle("Possible causes").setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
             );
+
+            /*
+            statusList.append(general);
+            statusList.append(fileStats);
+            statusList.append(powerUsage);
+             */
+
+            var statusPage = StatusPage.builder()
+                    .setIconName("LCCP-logo-256x256")
+                    .setTitle("LED Cube Status")
+                    .setChild(statusList)
+                    .build();
+
+            var clamp = Clamp.builder()
+                    .setMaximumSize(500)
+                    .setTighteningThreshold(400)
+                    .setChild(statusPage)
+                    .build();
+
+            var toolbarView = ToolbarView.builder()
+                    .setContent(clamp)
+                    .build();
+
+            var headerBar1 = HeaderBar.builder()
+                    .setShowTitle(false)
+                    .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                    .build();
+
+            toolbarView.addTopBar(headerBar1);
+
+            this.setChild(toolbarView);
+            this.setSearchEnabled(true);
         } else {
+
+            var statusList = Box.builder()
+                    .setOrientation(Orientation.VERTICAL)
+                    .setSpacing(12)
+                    .setHexpand(true)
+                    .build();
+
             var powerUsage = PreferencesGroup.builder()
                     .setCssClasses(new String[]{"background"})
                     .setTitle("Power")
@@ -81,6 +114,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     .build();
 
             if (statusUpdate.isFileLoaded()) {
+
                 var currentFile = ActionRow.builder()
                         .setTitle("Current File")
                         .setSubtitle(statusUpdate.getFileSelected())
@@ -94,6 +128,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                         .setSubtitleSelectable(true)
                         .setCssClasses(new String[]{"property"})
                         .build();
+
                 fileStats.add(fileState);
             } else {
                 var fileState = ActionRow.builder()
@@ -102,8 +137,10 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                         .setSubtitleSelectable(true)
                         .setCssClasses(new String[]{"property"})
                         .build();
+
                 fileStats.add(fileState);
             }
+
 
             var general = PreferencesGroup.builder()
                     .setTitle("General")
@@ -115,6 +152,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     .setSubtitleSelectable(true)
                     .setCssClasses(new String[]{"property"})
                     .build();
+
             general.add(lidState);
 
             powerUsage.add(voltage);
@@ -123,33 +161,34 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
             statusList.append(general);
             statusList.append(fileStats);
             statusList.append(powerUsage);
+
+
+            var statusPage = StatusPage.builder()
+                    .setIconName("LCCP-logo-256x256")
+                    .setTitle("LED Cube Status")
+                    .setChild(statusList)
+                    .build();
+
+            var clamp = Clamp.builder()
+                    .setMaximumSize(700)
+                    .setTighteningThreshold(600)
+                    .setChild(statusPage)
+                    .build();
+
+            var toolbarView = ToolbarView.builder()
+                    .setContent(clamp)
+                    .build();
+
+            var headerBar1 = HeaderBar.builder()
+                    .setShowTitle(false)
+                    .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                    .build();
+
+            toolbarView.addTopBar(headerBar1);
+
+            this.setChild(toolbarView);
+            this.setSearchEnabled(true);
         }
-
-        statusPage = StatusPage.builder()
-                .setIconName("LCCP-logo-256x256")
-                .setTitle("LED Cube Status")
-                .setChild(statusList)
-                .build();
-
-        clamp = Clamp.builder()
-                .setMaximumSize(statusUpdate.isBlank() ? 500 : 700)
-                .setTighteningThreshold(statusUpdate.isBlank() ? 400 : 600)
-                .setChild(statusPage)
-                .build();
-
-        toolbarView = ToolbarView.builder()
-                .setContent(clamp)
-                .build();
-
-        headerBar1 = HeaderBar.builder()
-                .setShowTitle(false)
-                .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
-                .build();
-
-        toolbarView.addTopBar(headerBar1);
-
-        this.setChild(toolbarView);
-        this.setSearchEnabled(true);
     }
 
     private void updateStatus(StatusUpdate statusUpdate) {

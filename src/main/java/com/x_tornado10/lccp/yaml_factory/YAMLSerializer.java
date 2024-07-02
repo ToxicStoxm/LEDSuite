@@ -182,11 +182,11 @@ public class YAMLSerializer {
         }
     }
 
-    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
-        return deserializeYAML(yaml).setUUID(uuid);
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml) throws YAMLException {
+        return deserializeYAML(yaml, null);
     }
 
-    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml) throws YAMLException {
+    public static YAMLMessage deserializeYAML(YAMLConfiguration yaml, UUID uuid) throws YAMLException {
 
         String s = yaml.getString(Paths.NETWORK.YAML.PACKET_TYPE);
         YAMLMessage.PACKET_TYPE pT;
@@ -196,7 +196,9 @@ public class YAMLSerializer {
             throw new InvalidPacketTypeException("Invalid packet type: '" + s + "'");
         }
 
-        YAMLMessage yamlMessage = new YAMLMessage().setPacketType(pT);
+        YAMLMessage yamlMessage;
+        if (uuid != null) yamlMessage = new YAMLMessage(uuid).setPacketType(pT);
+        else yamlMessage = new YAMLMessage().setPacketType(pT);
 
         /*try {
             String networkId = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
@@ -299,35 +301,43 @@ public class YAMLSerializer {
 
         Configuration availableAnimationsSection = yaml.subset(Paths.NETWORK.YAML.AVAILABLE_ANIMATIONS);
 
+        String id = "[" + yamlMessage.getNetworkID() + "] ";
+        LCCP.logger.debug(id + "Available animations update:");
+
         for (Iterator<String> it = availableAnimationsSection.getKeys(); it.hasNext(); ) {
             String s = it.next();
-            LCCP.logger.debug(s + ": " + availableAnimationsSection.getString(s));
+            LCCP.logger.debug(id + s + ": " + availableAnimationsSection.getString(s));
             availableAnimations.put(s, availableAnimationsSection.getString(s));
         }
         yamlMessage.setAvailableAnimations(availableAnimations);
+        LCCP.logger.debug(id + "Available animations updated!");
     }
     private static void deserializeMenuReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) {
 
-        LCCP.logger.fatal("Received deserialize request for: " + yamlMessage.getNetworkID());
+        UUID networkID = yamlMessage.getNetworkID();
+        String id = "[" + networkID + "] ";
 
-        for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+        LCCP.logger.debug(id + "Received deserialize request!");
+
+        /*for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
             String s = it.next();
             LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-        }
+        }*/
 
-        LCCP.logger.fatal("Removed packet type and reply type for: " + yamlMessage.getNetworkID());
+        LCCP.logger.debug(id + "Removed packet type and reply type!");
 
         yaml.clearProperty(Paths.NETWORK.YAML.PACKET_TYPE);
         yaml.clearProperty(Paths.NETWORK.YAML.REPLY_TYPE);
 
-        for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+        /*for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
             String s = it.next();
             LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-        }
+        }*/
 
-        LCCP.logger.fatal("Requesting new animation menu from yaml for: " + yamlMessage.getNetworkID());
+        LCCP.logger.debug(id + "Initializing new animation menu and loading context from yaml!");
 
         yamlMessage.setAnimationMenu(AnimationMenu.fromYAML(yaml));
+        LCCP.logger.debug(id + "Finished deserialization!");
     }
 
     private static void deserializeErrorYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {

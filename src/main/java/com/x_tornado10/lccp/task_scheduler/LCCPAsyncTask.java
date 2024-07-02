@@ -1,7 +1,9 @@
 package com.x_tornado10.lccp.task_scheduler;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -13,6 +15,10 @@ public class LCCPAsyncTask extends LCCPTask {
 
     LCCPAsyncTask(final Map<Integer, LCCPTask> runners, final Runnable task, final int id, final long delay) {
         super(task, id, delay);
+        this.runners = runners;
+    }
+    LCCPAsyncTask(final Map<Integer, LCCPTask> runners, final Runnable task, final int id, final long delay, final YAMLMessage yaml) {
+        super(task, id, delay, yaml);
         this.runners = runners;
     }
 
@@ -48,7 +54,7 @@ public class LCCPAsyncTask extends LCCPTask {
             thrown = t;
             throw new RuntimeException (
                     String.format(
-                            "Plugin %s generated an exception while executing task %s",
+                            "Thread %s generated an exception while executing task %s",
                             LCCP.class.getName(),
                             getTaskId()),
                     thrown);

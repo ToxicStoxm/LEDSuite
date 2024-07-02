@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.event_handling;
 
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
@@ -23,5 +23,7 @@ public class Events {
     public record Status(StatusUpdate statusUpdate) {
     }
     public record Error(ServerError serverError) {
+    }
+    public record HostChanged(String message) {
     }
 }

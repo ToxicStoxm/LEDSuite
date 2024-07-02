@@ -1,5 +1,8 @@
 package com.x_tornado10.lccp.task_scheduler;
 
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
+
+import java.io.InputStream;
 import java.util.List;
 
 public interface TaskScheduler {
@@ -20,13 +23,19 @@ public interface TaskScheduler {
 
     LCCPTask runTaskAsynchronously(Runnable task) throws IllegalStateException;
 
+    LCCPTask runTaskAsynchronously(Runnable runnable, YAMLMessage yaml);
+
     LCCPTask runTaskLater(Runnable task, long delay) throws IllegalStateException;
 
     LCCPTask runTaskLaterAsynchronously(Runnable task, long delay) throws IllegalStateException;
 
+    LCCPTask runTaskLaterAsynchronously(Runnable runnable, long delay, YAMLMessage yaml);
+
     LCCPTask runTaskTimer(Runnable task, long delay, long period) throws IllegalStateException;
 
     LCCPTask runTaskTimerAsynchronously(Runnable task, long delay, long period) throws IllegalStateException;
+
+    LCCPTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period, YAMLMessage yaml);
 }
 
 

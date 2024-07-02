@@ -1,7 +1,9 @@
+# TODO switch pos and name to allow for multiple widgets of the same type in one group
 package_type: reply
 reply_type: menu
 group0-name:
   pos: 0 # group position
+
 
   suffix:
     button:
@@ -24,6 +26,7 @@ group0-name:
       style: "style1,style2,style3"
       tooltip: "some text"
 
+# experimental
       prefixes: # prefix widget/s for expander
         button:
           pos: 0

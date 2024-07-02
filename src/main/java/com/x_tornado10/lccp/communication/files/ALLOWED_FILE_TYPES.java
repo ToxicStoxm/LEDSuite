@@ -1,6 +1,4 @@
-package com.x_tornado10.lccp.util;
-
-import com.x_tornado10.lccp.LCCP;
+package com.x_tornado10.lccp.communication.files;
 
 import java.util.HashSet;
 import java.util.Set;

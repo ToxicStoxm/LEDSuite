@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.yaml_factory.message_wrappers;
+package com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers;
 
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
@@ -47,7 +47,7 @@ public class StatusUpdate {
                 yamlMessage.getCurrentDraw(),
                 yamlMessage.getVoltage(),
                 yamlMessage.isLidState(),
-                yamlMessage.getNetworkEventID(),
+                yamlMessage.getNetworkID(),
                 yamlMessage.getAvailableAnimations()
         );
     }

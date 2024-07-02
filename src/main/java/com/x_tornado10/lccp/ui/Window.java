@@ -4,12 +4,13 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.EventHandler;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
+import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.network.Networking;
-import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.AboutDialog;
@@ -37,6 +38,7 @@ public class Window extends ApplicationWindow implements EventListener {
     private Box addFile = null;
     public ToolbarView rootView = null;
     public ProgressBar progressBar = null;
+    private Revealer SidebarSpinner = null;
 
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
@@ -127,17 +129,17 @@ public class Window extends ApplicationWindow implements EventListener {
         var activateAboutRow = SimpleAction.builder().setName("activateAboutRow").build();
         activateAboutRow.onActivate(_ -> {
             aboutRow.emitActivate(); // Emit the activate signal on the aboutRow
-            aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateSettingsRow = SimpleAction.builder().setName("activateSettingsRow").build();
         activateSettingsRow.onActivate(_ -> {
             settingsRow.emitActivate(); // Emit the activate signal on the settingsRow
-            settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
         var activateStatusRow = SimpleAction.builder().setName("activateStatusRow").build();
         activateStatusRow.onActivate(_ -> {
             statusRow.emitActivate(); // Emit the activate signal on the statusRow
-            statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
+            //statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
         });
 
         // Add the actions to the window's action group
@@ -171,11 +173,11 @@ public class Window extends ApplicationWindow implements EventListener {
         this.addController(shortcutController);
 
         // listen for about / settings dialog close and shift the focus backwards to focus the main window again
-        getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
-        getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        //getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        //getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
 
         // change menu list selection mode to single so the user can only select one entry at a time
-        menuDropDownList.setSelectionMode(SelectionMode.SINGLE);
+        menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
 
         // adding the list rows to the menu list
         menuDropDownList.append(statusRow);
@@ -193,32 +195,6 @@ public class Window extends ApplicationWindow implements EventListener {
                     LCCP.logger.debug("User click: status row");
                     StatusDialog sD = new StatusDialog();
                     sD.present(this);
-                    /*
-                    new LCCPRunnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Networking.Communication.sendYAML("127.0.0.1", 1200,
-                                        new YAMLMessage()
-                                                .setPacketType(YAMLMessage.PACKET_TYPE.reply)
-                                                .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                                                .setFileLoaded(true)
-                                                .setFileState(YAMLMessage.FILE_STATE.playing)
-                                                .setFileSelected("test-file.mp4")
-                                                .setCurrentDraw(40)
-                                                .setVoltage(5)
-                                                .setLidState(false)
-                                                .setAvailableAnimations(constructMap(":", "hansimansi:cat-symbolic", "lol:symbolic","test:symbolic"))
-                                                .build(),
-                                        null
-                                        );
-                            } catch (ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                                     YAMLAssembly.InvalidPacketTypeException | YAMLAssembly.TODOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        }
-                    }.runTaskAsynchronously();
-                     */
                 }
                 // opening settings dialog
                 case "settings" -> {
@@ -232,6 +208,9 @@ public class Window extends ApplicationWindow implements EventListener {
                 }
             }
             // close the popover
+            menuDropDownList.setSelectionMode(SelectionMode.NONE);
+            menuDropDownList.unselectAll();
+            menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
             popover.emitClosed();
         });
 
@@ -269,10 +248,15 @@ public class Window extends ApplicationWindow implements EventListener {
         // adding the toast overlay to the south box
         southBox.append(toastOverlay);
 
+        var NorthRevealer = Revealer.builder().setChild(northBox).setRevealChild(true).build();
+        var CenterRevealer = Revealer.builder().setChild(centerBox).setRevealChild(true).build();
+        var SouthRevealer = Revealer.builder().setChild(southBox).setRevealChild(true).build();
+
+
         // adding all alignment boxes to the main window container
-        mainContent.append(northBox);
-        mainContent.append(centerBox);
-        mainContent.append(southBox);
+        mainContent.append(NorthRevealer);
+        mainContent.append(CenterRevealer);
+        mainContent.append(SouthRevealer);
 
         var mainView = ToolbarView.builder().setContent(mainContent).build();
         mainView.addTopBar(headerBar);
@@ -337,10 +321,14 @@ public class Window extends ApplicationWindow implements EventListener {
                 )
                 .build();
 
-        var box = Box.builder().setHalign(Align.CENTER).build();
-        box.append(Spinner.builder().setSpinning(true).build());
+        var spinnerBox = Box.builder().setHalign(Align.CENTER).build();
+        spinnerBox.append(Spinner.builder().setSpinning(true).build());
 
-        addAnimation(box);
+        SidebarSpinner = Revealer.builder().setChild(spinnerBox).setRevealChild(true).build();
+        SidebarSpinner.setTransitionType(RevealerTransitionType.CROSSFADE);
+
+        final ListBoxRow[] current = new ListBoxRow[]{new ListBoxRow()};
+
 
         addFileList.onRowActivated(_ -> {
             LCCP.logger.debug("Clicked add file row!");
@@ -352,7 +340,13 @@ public class Window extends ApplicationWindow implements EventListener {
         });
 
         animationsList.onRowActivated(row -> {
-            if (centerBox.getFirstChild() != null) centerBox.remove(centerBox.getFirstChild());
+            if (current[0] == row) return;
+            current[0] = row;
+            if (!row.getSelectable()) return;
+            if (centerBox.getFirstChild() != null) {
+                CenterRevealer.setRevealChild(false);
+                centerBox.remove(centerBox.getFirstChild());
+            }
             String rowName = row.getName();
             try {
                 Networking.Communication.sendYAMLDefaultHost(
@@ -362,21 +356,22 @@ public class Window extends ApplicationWindow implements EventListener {
                                 .setRequestFile(rowName)
                                 .build()
                 );
-            } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+            } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
                 LCCP.logger.error("Failed to send / get menu request for: " + rowName);
+                animationsList.remove(row);
                 LCCP.logger.error(e);
             }
             LCCP.logger.debug("AnimationSelected: " + rowName);
             addFileList.setSelectionMode(SelectionMode.NONE);
             addFileList.setSelectionMode(SelectionMode.BROWSE);
-            animationActivate();
+            CenterRevealer.setRevealChild(true);
+            //animationActivate();
         });
         sidebarContentBox.append(addFileList);
         sidebarContentBox.append(Separator.builder().build());
         sidebarContentBox.append(Animations);
         sidebarContentBox.append(animationsList);
-
-        //southBox.append(progressBar);
+        sidebarContentBox.append(SidebarSpinner);
 
         var sidebarMainBox = new Box(Orientation.VERTICAL, 0);
         sidebarMainBox.append(smallHeaderBar);
@@ -408,6 +403,7 @@ public class Window extends ApplicationWindow implements EventListener {
 
         int min = 680;
 
+        // TODO replace with breakpoint
         new LCCPRunnable() {
             @Override
             public void run() {
@@ -488,13 +484,19 @@ public class Window extends ApplicationWindow implements EventListener {
     protected void getStatus() {
         try {
             Networking.Communication.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
-                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                    .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                    .build(),
-                    null
+                            .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                            .setReplyType(YAMLMessage.REPLY_TYPE.status)
+                            .build(),
+                    null,
+                    new LCCPProcessor() {
+                        @Override
+                        public void run(YAMLMessage yaml) {
+                            LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.fromYAMLMessage(yaml)));
+                        }
+                    }
             );
-        } catch (YAMLAssembly.TODOException | ConfigurationException | YAMLAssembly.InvalidReplyTypeException |
-                 YAMLAssembly.InvalidPacketTypeException e) {
+        } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                 YAMLSerializer.InvalidPacketTypeException e) {
             LCCP.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
             LCCP.logger.error(e);
         }
@@ -592,8 +594,32 @@ public class Window extends ApplicationWindow implements EventListener {
     public void onStatus(Events.Status e) {
         StatusUpdate statusUpdate = e.statusUpdate();
 
+        ListBoxRow selectedRow = animationsList.getSelectedRow();
+        String name = "";
+        if (selectedRow != null) name = selectedRow.getName();
+        animationsList.unselectAll();
+        animationsList.setSelectionMode(SelectionMode.NONE);
         animationsList.removeAll();
+
+        SidebarSpinner.setRevealChild(true);
+
+        //var box = Box.builder().setHalign(Align.CENTER).build();
+        //box.append(Spinner.builder().setSpinning(true).build());
+
+        /*var spinnerRow = ListBoxRow.builder()
+                .setSelectable(true)
+                .setName(box.getName())
+                .setSelectable(false)
+                .setFocusable(false)
+                .setChild(
+                        box
+                ).build();
+        animationsList.append(spinnerRow);*/
+
+        List<ListBoxRow> anims = new ArrayList<>();
+
         for (Map.Entry<String, String> entry : statusUpdate.getAvailableAnimations().entrySet()) {
+
 
             var b = Box.builder()
                     .setOrientation(Orientation.HORIZONTAL)
@@ -609,9 +635,17 @@ public class Window extends ApplicationWindow implements EventListener {
                             .setXalign(0)
                             .build()
             );
-            addAnimation(b);
+            ListBoxRow row = listBoxWrap(b);
+            if (entry.getKey().equals(name)) selectedRow = row;
+            anims.add(row);
         }
-
+        SidebarSpinner.setRevealChild(false);
+        //animationsList.remove(spinnerRow);
+        for (ListBoxRow lbr : anims) {
+            animationsList.append(lbr);
+        }
+        animationsList.setSelectionMode(SelectionMode.BROWSE);
+        animationsList.selectRow(selectedRow);
     }
 
     @EventHandler
@@ -628,15 +662,13 @@ public class Window extends ApplicationWindow implements EventListener {
 
     }
 
-    public void addAnimation(Widget widget) {
-        animationsList.append(
-                ListBoxRow.builder()
+    public ListBoxRow listBoxWrap(Widget widget) {
+        return ListBoxRow.builder()
                         .setSelectable(true)
                         .setName(widget.getName())
                         .setChild(
                                 widget
-                        ).build()
-        );
+                        ).build();
     }
 
 }

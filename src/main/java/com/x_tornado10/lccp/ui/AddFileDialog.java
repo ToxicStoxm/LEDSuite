@@ -2,9 +2,9 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
-import com.x_tornado10.lccp.util.ALLOWED_FILE_TYPES;
-import com.x_tornado10.lccp.util.network.Networking;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.communication.files.ALLOWED_FILE_TYPES;
+import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -13,7 +13,6 @@ import org.gnome.gio.*;
 import org.gnome.gtk.*;
 
 import java.net.URLConnection;
-import java.util.Objects;
 
 public class AddFileDialog extends PreferencesPage {
 
@@ -151,37 +150,45 @@ public class AddFileDialog extends PreferencesPage {
                 .setCssClasses(new String[]{"suggested-action", "pill"})
                 .build();
 
+        final long[] last = new long[]{System.currentTimeMillis()};
+        long cooldown = 500;
+
         uploadButton.onClicked(() -> {
-                    if (uploading) return;
+            if (!(System.currentTimeMillis() - last[0] >= cooldown)) {
+                last[0] = System.currentTimeMillis();
+                return;
+            }
+            if (uploading) return;
 
-                    upload((error, fileName) -> {
-                        if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
-                            try {
-                                Networking.Communication
-                                        .sendYAMLDefaultHost(
-                                                YAMLMessage.builder()
-                                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
-                                                        .setRequestFile(fileName)
-                                                        .build(),
-                                                success -> {
-                                                    if (!success) displayPlayRequestError(
-                                                            new Networking.ServerCommunicationException(
-                                                                    "Failed to communicate with server! Possible cause: Invalid or no response!"
-                                                            ),
-                                                            fileName
-                                                    );
-                                                }
-                                        );
-                            } catch (YAMLAssembly.YAMLException | ConfigurationException e) {
-                                displayPlayRequestError(e, fileName);
+            upload((error, fileName) -> {
+                if (!error && LCCP.settings.isAutoPlayAfterUpload()) {
+                    try {
+                        Networking.Communication
+                                .sendYAMLDefaultHost(
+                                        YAMLMessage.builder()
+                                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                                .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                                .setRequestFile(fileName)
+                                                .build(),
+                                        success -> {
+                                            if (!success) displayPlayRequestError(
+                                                    new Networking.ServerCommunicationException(
+                                                            "Failed to communicate with server! Possible cause: Invalid or no response!"
+                                                    ),
+                                                    fileName
+                                            );
+                                        }
+                                );
+                    } catch (YAMLSerializer.YAMLException | ConfigurationException e) {
+                        displayPlayRequestError(e, fileName);
 
-                            }
-                        }
-                    });
-
+                    }
                 }
-        );
+            });
+
+            last[0] = System.currentTimeMillis();
+
+        });
 
         spinner = Spinner.builder().setSpinning(true).build();
 

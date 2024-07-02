@@ -6,36 +6,29 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
-import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
-import com.x_tornado10.lccp.util.network.Networking;
-import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.util.logging.Logger;
-import com.x_tornado10.lccp.util.logging.Messages;
-import com.x_tornado10.lccp.util.logging.network.NetworkLogger;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
-import com.x_tornado10.lccp.yaml_factory.YAMLAssembly;
+import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.logging.Logger;
+import com.x_tornado10.lccp.logging.Messages;
+import com.x_tornado10.lccp.logging.network.NetworkLogger;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -55,7 +48,7 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
-    public static boolean server = false;
+    //public static boolean server = false;
 
     // main method
     public static void main(String[] args) {
@@ -203,132 +196,16 @@ public class LCCP implements EventListener {
         lccpScheduler = new LCCPScheduler();
         tickingSystem = new TickingSystem();
 
-        server = true;
-        startServer();
+        //server = true;
+        //startServer();
 
-        Networking.Communication.networkHandler();
+        try {
+            Networking.Communication.NetworkHandler.init(_ -> {
+            });
+        } catch (Networking.NetworkException e) {
+            throw new RuntimeException(e);
+        }
 
-    }
-
-    // function to start the internal server, listening on specified port for yaml packets
-    private static void startServer() {
-        // creating new async thread
-        new LCCPRunnable() {
-            @Override
-            public void run() {
-                // create a new server socket listening on specified port
-                try (ServerSocket server = new ServerSocket(server_settings.getPort())) {
-                    // loop, stops when LCCP.server is set to false (at shutdown)
-                    while (LCCP.server) {
-                        // check if socket can receive data
-                        Socket socket = server.accept();
-                        // if socket can currently receive data (incoming data)
-                        // get a new network event id from networkLogger
-                        UUID uuid = networkLogger.getRandomUUID(
-                                "[Internal Server]" +
-                                        "[Data Input]" +
-                                        "[YAML]" +
-                                        "[Sender '" + socket.getInetAddress().getHostAddress() + "']" +
-                                        "[Port '" + server.getLocalPort() + "']"
-                        );
-                        String id = "[" + uuid + "] ";
-
-                        // general information messages
-                        LCCP.logger.debug(id + "-------------------- Network Communication --------------------");
-                        LCCP.logger.debug(id + "Type: server - data in");
-
-                        // create buffered reader for the socket input stream
-                        try (BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                            // defining Buffer to temp save read data to
-                            /*
-                            CharBuffer charBuffer = CharBuffer.allocate(1024);
-                            StringBuilder sb = new StringBuilder();
-
-                            int added = 0;
-
-                            while ((added = bf.read(charBuffer)) > 0) {
-                                charBuffer.flip();
-                                sb.append(charBuffer.subSequence(0, added));
-                            }
-
-                            String yaml2 = sb.toString();
-                            ByteArrayInputStream byteArrayInputStream =  new ByteArrayInputStream(yaml2.getBytes());
-
-                             */
-
-                            // write read data to the buffer
-                            //int added = bf.read(charBuffer);
-                            // flip the buffer as prep for reading it
-
-                            // get read chars from buffer and try to pare byte count
-                            //int bytes = Integer.parseInt(charBuffer.subSequence(0, added).toString());
-                            // print byte count to console
-                            //LCCP.logger.debug(id + "Bytes: " + bytes);
-
-                            // define new yaml config to hold the rest of the data
-                            YAMLConfiguration yaml = new YAMLConfiguration();
-
-                            // checking if message actually contains data
-                            //if (bytes > 0) {
-                            // loading data into the yaml config
-                            new FileHandler(yaml).load(bf);
-
-                            // handling message in new async task to prevent the server socket from blocking
-                            new LCCPRunnable() {
-                                @Override
-                                public void run() {
-                                    // received data is inspected and printed to console for debugging
-                                    LCCP.logger.debug(id + "Packet Content:");
-
-                                    // yaml object that will further inspect the yaml data
-                                    YAMLMessage yamlMessage = null;
-
-                                    // try to load yaml data into yamlMessage object using yamlAssembly class
-                                    try {
-                                        yamlMessage = YAMLAssembly.disassembleYAML(yaml, uuid);
-                                        // print results to config
-                                        LCCP.logger.debug(id + yamlMessage.toString());
-                                    } catch (YAMLAssembly.YAMLException e) {
-                                        // print an error message if something goes wrong while trying to load yaml into wrapper
-                                        LCCP.logger.debug("Failed to disassemble YAML! Error message: " + e.getMessage());
-                                    }
-
-                                    // notifying the rest of the application of the received data
-                                    eventManager.fireEvent(new Events.DataIn(yamlMessage));
-
-                                    // general information messages
-                                    LCCP.logger.debug(id + "Successfully received data!");
-                                    LCCP.logger.debug(id + "---------------------------------------------------------------");
-                                }
-                            }.runTaskAsynchronously();
-                            //}
-
-                        } catch (IOException ex) {
-                            // if server socket or data streams fail to read input an error message is displayed
-                            LCCP.logger.error(id + "Server receive socket failed to read input!");
-                        } catch (ConfigurationException e) {
-                            // if the application fails to parse yaml from incoming data an error message is printed
-                            LCCP.logger.error(id + "Error while trying to parse YAML from received data! Error Message: " + e.getMessage());
-                            LCCP.logger.error(e);
-                        } finally {
-                            // try to close the receiving socket
-                            try {
-                                socket.close();
-                            } catch (IOException ex) {
-                                // if receiving socket fails to close print error message to console
-                                LCCP.logger.warn(id + "Server receive socket failed to close!");
-                                LCCP.logger.error(ex);
-                            }
-                        }
-
-                    }
-                } catch (IOException e) {
-                    // if server socket fails to start print error message to console
-                    LCCP.logger.fatal("Server socket failed to start!");
-                    LCCP.logger.error(e);
-                }
-            }
-        }.runTaskAsynchronously();
     }
 
     // activate function
@@ -355,36 +232,10 @@ public class LCCP implements EventListener {
         logger.info(message);
         try {
             Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
-        } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
+        } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
             LCCP.logger.error("Failed to send / get available animations list from the server!");
             LCCP.logger.error(e);
         }
-
-        /*
-        new LCCPRunnable() {
-            @Override
-            public void run() {
-                try {
-                    Networking.Communication.sendYAML("127.0.0.1", 1200,
-                            new YAMLMessage()
-                                    .setPacketType(YAMLMessage.PACKET_TYPE.reply)
-                                    .setReplyType(YAMLMessage.REPLY_TYPE.status)
-                                    .setFileLoaded(true)
-                                    .setFileState(YAMLMessage.FILE_STATE.playing)
-                                    .setFileSelected("test-file.mp4")
-                                    .setCurrentDraw(40)
-                                    .setVoltage(5)
-                                    .setLidState(false)
-                                    .setAvailableAnimations(LCCP.mainWindow.constructMap(":", "hansimansi:ac-adapter-symbolic", "lol:battery-level-90-charging-symbolic","test:battery-empty-symbolic"))
-                                    .build(),
-                            null
-                    );
-                } catch (ConfigurationException | YAMLAssembly.YAMLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }.runTaskLaterAsynchronously(1000);
-         */
     }
 
     // exiting program with specified status code
@@ -500,14 +351,14 @@ public class LCCP implements EventListener {
     public void onShutdown(Events.Shutdown e) {
         // default console message response to a shutdown event
         logger.debug("Fulfilling shutdown request: " + e.message());
-        server = false;
+        //server = false;
         networkLogger.printEvents();
         logger.info("New log file was saved to: '" + Paths.File_System.logFile + "'");
     }
     @EventHandler
     public void onDataReceived(Events.DataIn e) {
         YAMLMessage yaml = e.yamlMessage();
-        String id = "[" + yaml.getNetworkEventID() + "] ";
+        String id = "[" + yaml.getNetworkID() + "] ";
         logger.debug(id + "-------------------- Internal Data Event ----------------------");
         logger.debug(id + "Data stream direction: in");
         logger.debug(id + "Network: Received data!");
@@ -556,8 +407,8 @@ public class LCCP implements EventListener {
         }
         logger.debug(id + "Data stream direction: out");
         try {
-            logger.debug(id + "Data: " + YAMLAssembly.disassembleYAML(e.yaml()));
-        } catch (YAMLAssembly.YAMLException ex) {
+            logger.debug(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
+        } catch (YAMLSerializer.YAMLException ex) {
             logger.warn(id + "Data: failed to deserialize yaml data");
             logger.warn(id + "Error message: " + ex.getMessage());
         }
@@ -596,6 +447,7 @@ public class LCCP implements EventListener {
         mainWindow.toastOverlay.addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())
+                        .setTimeout(Adw.DURATION_INFINITE)
                         .build()
         );
     }

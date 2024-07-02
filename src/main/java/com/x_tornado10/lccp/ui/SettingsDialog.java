@@ -1,9 +1,10 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.network.Networking;
+import com.x_tornado10.lccp.communication.network.Networking;
 import org.gnome.adw.*;
 import org.gnome.gtk.*;
 
@@ -124,23 +125,30 @@ public class SettingsDialog extends PreferencesDialog {
                 new LCCPRunnable() {
                     @Override
                     public void run() {
+
                         String ip;
                         String text = ipv4Row.getText();
-                        try {
-                            ip = Networking.General.getValidIP(text, false);
-                        } catch (IOException e) {
-                            LCCP.sysBeep();
-                            addToast(
-                                    Toast.builder()
-                                            .setTitle("Server unreachable!")
-                                            .setTimeout(10)
-                                            .build()
-                            );
-                            ip = null;
+
+                        if (!LCCP.server_settings.getIPv4().equals(text)) {
+
+                            try {
+                                ip = Networking.General.getValidIP(text, false);
+                            } catch (IOException e) {
+                                LCCP.sysBeep();
+                                addToast(
+                                        Toast.builder()
+                                                .setTitle("Server unreachable!")
+                                                .setTimeout(10)
+                                                .build()
+                                );
+                                ip = null;
+                            }
+                            if (ip != null) {
+                                LCCP.eventManager.fireEvent(new Events.HostChanged("Host changed by user through settings dialog! " + LCCP.server_settings.getIPv4() + " -> " + ip));
+                                LCCP.server_settings.setIPv4(ip);
+                            }
                         }
-                        if (ip != null) {
-                            LCCP.server_settings.setIPv4(ip);
-                        }
+
                         spinner.setSpinning(false);
                         ipv4Row.remove(spinner);
                         ipv4Row.setEditable(true);

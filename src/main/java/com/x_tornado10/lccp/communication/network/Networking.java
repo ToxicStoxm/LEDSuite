@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.util.network;
+package com.x_tornado10.lccp.communication.network;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.EventHandler;
@@ -7,10 +7,10 @@ import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.Paths;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -462,7 +462,6 @@ public class Networking {
 
                 LCCP.logger.debug("Network Handler started!");
             }
-
             private static void initListener() {
                 LCCP.logger.debug("Network Handler: starting master listener...");
                 if (masterListener != null) masterListener.cancel();
@@ -476,13 +475,20 @@ public class Networking {
                                     YAMLConfiguration yamlCfg = defaultReceive(is);
                                     if (yamlCfg != null) {
 
+                                        /*for (Iterator<String> it = yamlCfg.getKeys(); it.hasNext(); ) {
+                                            String s = it.next();
+                                            LCCP.logger.warn(s + ": " + yamlCfg.getProperty(s));
+
+                                        }*/
+
                                         YAMLMessage yaml;
                                         try {
                                             UUID networkID0 = UUID.fromString(yamlCfg.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
+                                            //LCCP.logger.fatal(String.valueOf(networkID0));
                                             yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
-
                                         } catch (IllegalArgumentException e) {
-                                            LCCP.logger.warn("Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
+                                            LCCP.logger.error(e);
+                                            LCCP.logger.warn(System.currentTimeMillis() + " Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
                                             yaml = YAMLSerializer.deserializeYAML(yamlCfg);
 
                                         }
@@ -658,7 +664,7 @@ public class Networking {
             return sendYAML(host, port, yaml, callback, null);
         }
 
-        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replayHandler) {
+        public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
             if (!NetworkHandler.connected) {
                 try {
                     NetworkHandler.init(_ -> {});
@@ -672,7 +678,7 @@ public class Networking {
                 @Override
                 public void run() {
                     LCCP.logger.debug("Sending packet: " + yaml.getProperty(Paths.NETWORK.YAML.PACKET_TYPE));
-                    sendYAMLMessage(host, port, yaml, callback, replayHandler);
+                    sendYAMLMessage(host, port, yaml, callback, replyHandler);
                 }
             };
             return networkQueue.put(System.currentTimeMillis(), sendRequest) == null;
@@ -740,6 +746,9 @@ public class Networking {
                                 .strip()
 
                 );
+
+                //LCCP.logger.fatal("NetworkID0 = " + networkID0);
+                //LCCP.logger.fatal("ID = " + id);
 
                 if (replyHandle != null) {
                     NetworkHandler.listenForReply(

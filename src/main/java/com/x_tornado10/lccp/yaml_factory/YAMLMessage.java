@@ -1,10 +1,8 @@
 package com.x_tornado10.lccp.yaml_factory;
 
 import lombok.Getter;
-import org.apache.commons.configuration2.YAMLConfiguration;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.UUID;
 
 @Getter
@@ -30,7 +28,7 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private double voltage = 0;
     private boolean lidState = false;
     private HashMap<String, String> availableAnimations = new HashMap<>();
-    private YAMLConfiguration menuYaml = new YAMLConfiguration();
+    private AnimationMenu animationMenu = AnimationMenu.empty();
 
     public YAMLMessage(UUID networkID) {
         this.networkID = networkID;
@@ -95,12 +93,12 @@ public class YAMLMessage implements YAMLFactoryMessage {
     }
 
     public static YAMLMessage replyMenuMsg(
-            YAMLConfiguration menuYaml
+            AnimationMenu animationMenu
     ) {
         return builder()
                 .setPacketType(PACKET_TYPE.reply)
                 .setReplyType(REPLY_TYPE.menu)
-                .setMenuYaml(menuYaml);
+                .setAnimationMenu(animationMenu);
     }
 
     protected YAMLMessage setUUID(UUID uuid) {
@@ -267,8 +265,8 @@ public class YAMLMessage implements YAMLFactoryMessage {
         this.availableAnimations = availableAnimations;
         return this;
     }
-    public YAMLMessage setMenuYaml(YAMLConfiguration menuYaml) {
-        this.menuYaml = menuYaml;
+    public YAMLMessage setAnimationMenu(AnimationMenu animationMenu) {
+        this.animationMenu = animationMenu;
         return this;
     }
 
@@ -315,12 +313,7 @@ public class YAMLMessage implements YAMLFactoryMessage {
                         sb.append("availableAnimations=").append(availableAnimations).append(", ");
                     }
                     case menu -> {
-                        sb.append("menuYaml={");
-                        for (Iterator<String> it = menuYaml.getKeys(); it.hasNext(); ) {
-                            String s = it.next();
-                            sb.append(s).append(": ").append(menuYaml.getString(s));
-                        }
-                        sb.append("}, ");
+                        sb.append("menuYaml=").append(animationMenu).append("}, ");
                     }
                 }
             }

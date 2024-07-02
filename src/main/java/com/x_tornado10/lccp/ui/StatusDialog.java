@@ -6,7 +6,7 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import org.gnome.adw.*;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Label;

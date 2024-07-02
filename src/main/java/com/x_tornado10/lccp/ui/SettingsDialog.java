@@ -4,7 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.network.Networking;
+import com.x_tornado10.lccp.communication.network.Networking;
 import org.gnome.adw.*;
 import org.gnome.gtk.*;
 

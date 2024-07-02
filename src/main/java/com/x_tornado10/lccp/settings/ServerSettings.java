@@ -1,9 +1,9 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.util.network.Networking;
-import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.util.logging.Messages;
+import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.logging.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;

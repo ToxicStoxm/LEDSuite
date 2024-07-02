@@ -1,6 +1,6 @@
-package com.x_tornado10.lccp.util.logging;
+package com.x_tornado10.lccp.logging;
 
-import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.Paths;
 
 // Static class which contains most common logging messages
 public final class Messages {

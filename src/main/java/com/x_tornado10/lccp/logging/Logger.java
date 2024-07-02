@@ -1,7 +1,7 @@
-package com.x_tornado10.lccp.util.logging;
+package com.x_tornado10.lccp.logging;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.Paths;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 

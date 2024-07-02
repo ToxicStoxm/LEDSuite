@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.util;
+package com.x_tornado10.lccp;
 
 // static utility class for storing paths
 public final class Paths {
@@ -71,6 +71,42 @@ public final class Paths {
             public static final String ERROR_SEVERITY = "error_severity";
             public static final String INTERNAL_NETWORK_EVENT_ID = "internal_network_event_id";
             public static final String AVAILABLE_ANIMATIONS = "available_animations";
+            public static final class MENU {
+                public static final String GROUP_PREFIX = "group";
+                public static final String GROUP_SUFFIX_WIDGET = "suffix";
+
+                public static final String WIDGET_PREFIX = "widget";
+                public static final String WIDGET_TYPE = "widget";
+                public static final String WIDGET_STYLE = "style";
+                public static final String WIDGET_LABEL = "label";
+                public static final String WIDGET_TOOLTIP = "tooltip";
+                public static final String WIDGET_CONTENT = "content";
+                public static final String WIDGET_VALUE = "value";
+
+                public static final String BUTTON_ICON = "icon";
+                public static final String BUTTON_ROW = "row";
+
+                public static final String SLIDER_MIN = "min";
+                public static final String SLIDER_MAX = "max";
+                public static final String SLIDER_STEP = "step";
+                public static final String SLIDER_CLIMB_RATE = "climb_rate";
+                public static final String SLIDER_DIGITS = "digits";
+                public static final String SLIDER_NUMERIC = "numeric";
+                public static final String SLIDER_SNAP = "snap";
+                public static final String SLIDER_WRAPAROUND = "wraparound";
+
+                public static final String ENTRY_APPLY_BUTTON = "apply_button";
+                public static final String ENTRY_EDITABLE = "editable";
+
+                public static final String EXPANDER_TOGGLEABLE = "toggleable";
+
+                public static final String DROPDOWN_DISPLAY_SELECTED = "display_selected";
+                public static final String DROPDOWN_SEARCHABLE = "searchable";
+                public static final String DROPDOWN_SELECTED = "selected";
+                public static final String DROPDOWN = "dropdown";
+
+                public static final String SPINNER_TIME = "time";
+            }
         }
     }
 }

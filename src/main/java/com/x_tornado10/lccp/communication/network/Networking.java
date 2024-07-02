@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.util.network;
+package com.x_tornado10.lccp.communication.network;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.EventHandler;
@@ -7,10 +7,10 @@ import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.Paths;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.ServerError;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -462,7 +462,6 @@ public class Networking {
 
                 LCCP.logger.debug("Network Handler started!");
             }
-
             private static void initListener() {
                 LCCP.logger.debug("Network Handler: starting master listener...");
                 if (masterListener != null) masterListener.cancel();

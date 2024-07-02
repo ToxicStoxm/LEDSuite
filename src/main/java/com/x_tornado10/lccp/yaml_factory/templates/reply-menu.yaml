@@ -1,10 +1,9 @@
 # TODO switch pos and name to allow for multiple widgets of the same type in one group
-
-
 package_type: reply
 reply_type: menu
 group0-name:
   pos: 0 # group position
+
 
   suffix:
     button:

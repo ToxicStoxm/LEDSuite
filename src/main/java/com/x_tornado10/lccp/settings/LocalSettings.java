@@ -1,8 +1,8 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.util.logging.Messages;
+import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.logging.Messages;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;

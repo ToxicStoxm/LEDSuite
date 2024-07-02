@@ -7,12 +7,11 @@ import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.util.network.Networking;
-import com.x_tornado10.lccp.util.Paths;
-import com.x_tornado10.lccp.yaml_factory.message_wrappers.StatusUpdate;
+import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
-import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
@@ -26,7 +25,6 @@ import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
 
-import java.io.InputStream;
 import java.util.*;
 
 // main application window

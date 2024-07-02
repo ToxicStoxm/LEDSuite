@@ -2,8 +2,8 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
-import com.x_tornado10.lccp.util.ALLOWED_FILE_TYPES;
-import com.x_tornado10.lccp.util.network.Networking;
+import com.x_tornado10.lccp.communication.files.ALLOWED_FILE_TYPES;
+import com.x_tornado10.lccp.communication.network.Networking;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import io.github.jwharm.javagi.base.GErrorException;

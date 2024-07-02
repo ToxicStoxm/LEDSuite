@@ -2,7 +2,7 @@ package com.x_tornado10.lccp.event_handling;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
-import com.x_tornado10.lccp.util.Paths;
+import com.x_tornado10.lccp.Paths;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

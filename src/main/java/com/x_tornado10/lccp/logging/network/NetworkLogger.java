@@ -1,4 +1,4 @@
-package com.x_tornado10.lccp.util.logging.network;
+package com.x_tornado10.lccp.logging.network;
 
 import com.x_tornado10.lccp.LCCP;
 

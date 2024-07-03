@@ -16,6 +16,7 @@ import java.net.URLConnection;
 
 public class AddFileDialog extends PreferencesPage {
 
+    // global storage for file metadata
     public static class VarPool {
         public static boolean init = false;
         public static String filePath = null;

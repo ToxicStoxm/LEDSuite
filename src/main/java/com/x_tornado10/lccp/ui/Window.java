@@ -232,7 +232,11 @@ public class Window extends ApplicationWindow implements EventListener {
         mainContent.setHomogeneous(false);
         // creating north / center / south containers to correctly align window content
         var northBox = new Box(Orientation.VERTICAL, 0);
-        var centerBox = new Box(Orientation.VERTICAL, 0);
+        var centerBox = Box.builder()
+                .setOrientation(Orientation.VERTICAL)
+                .setSpacing(0)
+                .setValign(Align.CENTER)
+                .build();
         var southBox = new Box(Orientation.VERTICAL, 0);
         // set vertical expanding to true for the center box, so it pushed the north box to the top of the window and the south box to the bottom
         centerBox.setVexpand(true);
@@ -332,11 +336,13 @@ public class Window extends ApplicationWindow implements EventListener {
 
         addFileList.onRowActivated(_ -> {
             LCCP.logger.debug("Clicked add file row!");
+            CenterRevealer.setRevealChild(false);
             if (centerBox.getFirstChild() != null) centerBox.remove(centerBox.getFirstChild());
+            centerBox.setValign(Align.START);
             centerBox.append(new AddFileDialog());
             animationsList.setSelectionMode(SelectionMode.NONE);
             animationsList.setSelectionMode(SelectionMode.BROWSE);
-            addFileActivate();
+            CenterRevealer.setRevealChild(true);
         });
 
         animationsList.onRowActivated(row -> {
@@ -347,6 +353,10 @@ public class Window extends ApplicationWindow implements EventListener {
                 CenterRevealer.setRevealChild(false);
                 centerBox.remove(centerBox.getFirstChild());
             }
+            centerBox.setValign(Align.CENTER);
+            var spinner = Spinner.builder().setSpinning(true).build();
+            centerBox.append(spinner);
+            CenterRevealer.setRevealChild(true);
             String rowName = row.getName();
             try {
                 Networking.Communication.sendYAMLDefaultHost(
@@ -354,7 +364,24 @@ public class Window extends ApplicationWindow implements EventListener {
                                 .setPacketType(YAMLMessage.PACKET_TYPE.request)
                                 .setRequestType(YAMLMessage.REQUEST_TYPE.menu)
                                 .setRequestFile(rowName)
-                                .build()
+                                .build(),
+                        result -> {
+                            if (result) {
+                                toastOverlay.addToast(
+                                        Toast.builder()
+                                                .setTimeout(3)
+                                                .setTitle("Loading menu for '" + rowName + "'...")
+                                                .build()
+                                );
+                            } else {
+                                toastOverlay.addToast(
+                                        Toast.builder()
+                                                .setTimeout(0)
+                                                .setTitle("Failed to load menu for '" + rowName + "'!")
+                                                .build()
+                                );
+                            }
+                        }
                 );
             } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
                 LCCP.logger.error("Failed to send / get menu request for: " + rowName);
@@ -364,7 +391,6 @@ public class Window extends ApplicationWindow implements EventListener {
             LCCP.logger.debug("AnimationSelected: " + rowName);
             addFileList.setSelectionMode(SelectionMode.NONE);
             addFileList.setSelectionMode(SelectionMode.BROWSE);
-            CenterRevealer.setRevealChild(true);
             //animationActivate();
         });
         sidebarContentBox.append(addFileList);
@@ -407,6 +433,10 @@ public class Window extends ApplicationWindow implements EventListener {
         new LCCPRunnable() {
             @Override
             public void run() {
+                if (getHeight() <= 500) {
+                    setSizeRequest(getWidth(), 501);
+                    return;
+                }
                 if (getWidth() <= min) {
                     if (!temp[0]) {
                         temp[0] = true;
@@ -464,7 +494,7 @@ public class Window extends ApplicationWindow implements EventListener {
                     .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
                     .setVersion(LCCP.version)
                     .setLicenseType(License.GPL_3_0)
-                    .setApplicationIcon("LCCP-logo-256x256")
+                    .setApplicationIcon("com.x_tornado10.lccp")
                     .setIssueUrl(Paths.Links.PROJECT_GITHUB + "issues")
                     .setWebsite(Paths.Links.PROJECT_GITHUB)
                     .setApplicationName(LCCP.settings.getWindowTitle())
@@ -653,13 +683,6 @@ public class Window extends ApplicationWindow implements EventListener {
         addFileList.emitRowSelected(addFileList.getRowAtIndex(0));
         addFileList.emitRowActivated(addFileList.getRowAtIndex(0));
         addFileList.emitSelectedRowsChanged();
-    }
-
-    private void addFileActivate() {
-
-    }
-    private void animationActivate() {
-
     }
 
     public ListBoxRow listBoxWrap(Widget widget) {

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.YAMLConfiguration;
+import org.apache.commons.configuration2.ex.ConversionException;
 
 import java.util.*;
 
@@ -89,7 +90,7 @@ public class AnimationMenu implements Container {
                 if (suffixSubset.getKeys().hasNext()) {
                     // setting the groups suffix to the one specified in the suffix yaml section
                     group.suffix = new Widget(
-                            WidgetType.valueOf(suffixSubset.getString(Paths.NETWORK.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from yaml
+                            WidgetType.enumOf(suffixSubset.getString(Paths.NETWORK.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from yaml
                     ).deserialize(suffixSubset, id); // deserializing the suffix widget using the corresponding deserialization function for the specific widget type
                 }
 
@@ -113,7 +114,7 @@ public class AnimationMenu implements Container {
                 button.setTooltip(initialWidget.tooltip);
                 button.setStyle(initialWidget.style);
 
-                button.icon = yaml.getString(Paths.NETWORK.YAML.MENU.BUTTON_ICON);
+                button.icon =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.BUTTON_ICON) );
                 button.row = yaml.getBoolean(Paths.NETWORK.YAML.MENU.BUTTON_ROW);
 
                 return button;
@@ -129,7 +130,7 @@ public class AnimationMenu implements Container {
                 property.setTooltip(initialWidget.tooltip);
                 property.setStyle(initialWidget.style);
 
-                property.content = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
+                property.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
 
                 return property;
             }
@@ -187,7 +188,7 @@ public class AnimationMenu implements Container {
                 entry.setTooltip(initialWidget.tooltip);
                 entry.setStyle(initialWidget.style);
 
-                entry.content = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
+                entry.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
                 entry.applyButton = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_APPLY_BUTTON);
                 entry.editable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_EDITABLE);
 
@@ -206,7 +207,7 @@ public class AnimationMenu implements Container {
 
                 expander.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
                 expander.toggleable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.EXPANDER_TOGGLEABLE);
-                YAMLConfiguration contentSubset = (YAMLConfiguration) yaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
+                Configuration contentSubset = yaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
                 expander.deserialize_children(contentSubset, id);
 
                 return expander;
@@ -222,8 +223,12 @@ public class AnimationMenu implements Container {
                 dropdown.setTooltip(initialWidget.tooltip);
                 dropdown.setStyle(initialWidget.style);
 
-                dropdown.content = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
-                dropdown.display_selected = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_DISPLAY_SELECTED);
+                dropdown.content = validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
+                try {
+                    dropdown.display_selected = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_DISPLAY_SELECTED);
+                } catch (NoSuchElementException e) {
+                    LCCP.logger.debug(id + "Dropdown display_selected not set. Using default value instead!");
+                }
                 dropdown.searchable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_SEARCHABLE);
                 dropdown.selected = yaml.getInt(Paths.NETWORK.YAML.MENU.DROPDOWN_SELECTED);
                 dropdown.dropdown = yaml.getList(String.class, Paths.NETWORK.YAML.MENU.DROPDOWN);
@@ -246,7 +251,14 @@ public class AnimationMenu implements Container {
                 return spinner;
 
             }
-        },
+        };
+        public static WidgetType enumOf(String s) {
+            for (WidgetType widgetType : values()) {
+                //LCCP.logger.fatal(widgetType.name().replace("_", "") + " -- " + s);
+                if (widgetType.name().replace("_", "").equalsIgnoreCase(s)) return widgetType;
+            }
+            throw new IllegalArgumentException();
+        }
     }
 
     @Getter
@@ -262,11 +274,32 @@ public class AnimationMenu implements Container {
         }
         public WidgetMain deserialize(Configuration yaml, String id) {
             LCCP.logger.debug(id + "Deserializing generic values for child: " + type);
-            this.label = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_LABEL);
-            this.tooltip = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_TOOLTIP);
-            this.style = yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_STYLE);
+            this.label =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_LABEL) );
+            this.tooltip =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_TOOLTIP) );
+            this.style =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_STYLE) );
             LCCP.logger.debug(id + "Requesting specific deserialization for child " + type);
-            return type.deserialize(this, yaml, id);
+
+            WidgetMain result = new WidgetMain(WidgetType.property);
+
+            try {
+                result = type.deserialize(this, yaml, id);
+            } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException e) {
+                LCCP.logger.error(id + "Failed to deserialize " + type + " from yaml! Error message: " + e.getMessage());
+                LCCP.logger.warn("Replacing entry with default missing value placeholder!");
+                LCCP.logger.debug("Possible causes: missing or malformed values");
+                LCCP.logger.error(e);
+                Configuration config = new YAMLConfiguration();
+                config.setProperty(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + e.getMessage());
+                try {
+                    result = result.deserialize(config, id);
+
+                } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException ex) {
+                    LCCP.logger.error(e);
+                    LCCP.logger.fatal("FAILED TO DISPLAY MISSING VALUE PLACEHOLDER!");
+                    LCCP.exit(1);
+                }
+            }
+            return result;
         }
     }
 
@@ -297,15 +330,15 @@ public class AnimationMenu implements Container {
 
     protected static class Widgets {
         protected static class Button extends WidgetMain {
-            private String icon;
-            private boolean row;
+            private String icon = "";
+            private boolean row = true;
             public Button() {
                 super(WidgetType.button);
             }
         }
 
         protected static class Property extends WidgetMain {
-            private String content;
+            private String content = "";
             public Property() {
                 super(WidgetType.property);
             }
@@ -320,15 +353,15 @@ public class AnimationMenu implements Container {
         }
 
         protected static class Slider extends WidgetMain {
-            private double min;
-            private double max;
-            private double step;
-            private double value;
-            private double climb_rate;
-            private int digits;
-            private boolean numeric;
-            private boolean snap;
-            private boolean wraparound;
+            private double min = 0;
+            private double max = 100;
+            private double step = 1;
+            private double value = 0;
+            private double climb_rate = 2;
+            private int digits = 0;
+            private boolean numeric = true;
+            private boolean snap = true;
+            private boolean wraparound = true;
 
             public Slider() {
                 super(WidgetType.slider);
@@ -336,9 +369,9 @@ public class AnimationMenu implements Container {
         }
 
         protected static class Entry extends WidgetMain {
-            private String content;
-            private boolean editable;
-            private boolean applyButton;
+            private String content = "";
+            private boolean editable = true;
+            private boolean applyButton = true;
 
             public Entry() {
                 super(WidgetType.entry);
@@ -346,8 +379,8 @@ public class AnimationMenu implements Container {
         }
 
         protected static class Expander extends WidgetMain implements Container {
-            private boolean toggleable;
-            private boolean value;
+            private boolean toggleable = false;
+            private boolean value = false;
 
             public Expander(){
                 super(WidgetType.expander);
@@ -355,10 +388,10 @@ public class AnimationMenu implements Container {
         }
 
         protected static class Dropdown extends WidgetMain {
-            private String content;
-            private boolean display_selected;
-            private boolean searchable;
-            private int selected;
+            private String content = "";
+            private boolean display_selected = false;
+            private boolean searchable = true;
+            private int selected = -1;
             private List<String> dropdown;
 
             public Dropdown() {
@@ -400,8 +433,9 @@ public class AnimationMenu implements Container {
                 }
                 sb.append("}");
             }
-            sb.append("}");
+            sb.append("}, ");
         }
+        sb.replace(sb.length() - 2, sb.length(), "");
         sb.append("}");
         sb.append("}");
         return sb.toString();
@@ -422,5 +456,9 @@ public class AnimationMenu implements Container {
             return str;
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    private static String validate(String subject) {
+        return subject == null ? "" : subject;
     }
 }

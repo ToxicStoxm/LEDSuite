@@ -58,7 +58,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
              */
 
             var statusPage = StatusPage.builder()
-                    .setIconName("LCCP-logo-256x256")
+                    .setIconName("com.x_tornado10.lccp")
                     .setTitle("LED Cube Status")
                     .setChild(statusList)
                     .build();

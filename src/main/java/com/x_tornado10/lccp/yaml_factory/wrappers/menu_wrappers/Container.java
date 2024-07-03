@@ -57,7 +57,7 @@ public interface Container {
                 LCCP.logger.debug(id + "Getting child " + System.currentTimeMillis() + "_" + i + " type.");
 
                 // getting widget type from widget yaml
-                AnimationMenu.WidgetType type = AnimationMenu.WidgetType.valueOf(
+                AnimationMenu.WidgetType type = AnimationMenu.WidgetType.enumOf(
                         widgetSubset.getString(Paths.NETWORK.YAML.MENU.WIDGET_TYPE)
                 );
 

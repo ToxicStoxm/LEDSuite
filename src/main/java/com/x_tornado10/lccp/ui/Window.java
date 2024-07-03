@@ -354,8 +354,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 centerBox.remove(centerBox.getFirstChild());
             }
             centerBox.setValign(Align.CENTER);
-            var spinner = Spinner.builder().setSpinning(true).build();
-            centerBox.append(spinner);
+            centerBox.append(Spinner.builder().setSpinning(true).build());
             CenterRevealer.setRevealChild(true);
             String rowName = row.getName();
             try {
@@ -380,6 +379,24 @@ public class Window extends ApplicationWindow implements EventListener {
                                                 .setTitle("Failed to load menu for '" + rowName + "'!")
                                                 .build()
                                 );
+                            }
+                        },
+                        new LCCPProcessor() {
+                            @Override
+                            public void run(YAMLMessage yaml) {
+                                if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.reply) && yaml.getReplyType().equals(YAMLMessage.REPLY_TYPE.menu)) {
+                                    String id = "[" + yaml.getNetworkID() + "] ";
+                                    LCCP.logger.debug(id + "Converting animation menu to displayable menu!");
+                                    CenterRevealer.setRevealChild(false);
+                                    if (centerBox.getFirstChild() != null) {
+                                        CenterRevealer.setRevealChild(false);
+                                        centerBox.remove(centerBox.getFirstChild());
+                                    }
+                                    centerBox.setValign(Align.START);
+                                    centerBox.append(AnimationMenu.display(yaml.getAnimationMenu()));
+                                    LCCP.logger.debug(id + "Displaying converted menu!");
+                                    CenterRevealer.setRevealChild(true);
+                                }
                             }
                         }
                 );

@@ -660,6 +660,10 @@ public class Networking {
             return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback);
         }
 
+        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
+            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback, replyHandler);
+        }
+
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
             return sendYAML(host, port, yaml, callback, null);
         }

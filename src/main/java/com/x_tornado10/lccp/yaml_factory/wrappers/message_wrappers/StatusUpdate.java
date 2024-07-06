@@ -102,4 +102,9 @@ public class StatusUpdate {
 
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isFileLoaded, fileState, fileSelected, currentDraw, voltage, lidState, availableAnimations);
+    }
 }

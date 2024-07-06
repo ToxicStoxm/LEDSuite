@@ -366,19 +366,21 @@ public class Window extends ApplicationWindow implements EventListener {
                                 .build(),
                         result -> {
                             if (result) {
-                                toastOverlay.addToast(
+                                LCCP.logger.debug("Requesting animation menu for '" + rowName + "' from server.");
+                                /*toastOverlay.addToast(
                                         Toast.builder()
                                                 .setTimeout(3)
                                                 .setTitle("Loading menu for '" + rowName + "'...")
                                                 .build()
-                                );
+                                );*/
                             } else {
-                                toastOverlay.addToast(
+                                LCCP.logger.error("Failed to load menu for '" + rowName + "'!");
+                                /*toastOverlay.addToast(
                                         Toast.builder()
                                                 .setTimeout(0)
                                                 .setTitle("Failed to load menu for '" + rowName + "'!")
                                                 .build()
-                                );
+                                );*/
                             }
                         },
                         new LCCPProcessor() {
@@ -450,8 +452,8 @@ public class Window extends ApplicationWindow implements EventListener {
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (getHeight() <= 500) {
-                    setSizeRequest(getWidth(), 501);
+                if (getHeight() <= 499) {
+                    setSizeRequest(getWidth(), 500);
                     return;
                 }
                 if (getWidth() <= min) {

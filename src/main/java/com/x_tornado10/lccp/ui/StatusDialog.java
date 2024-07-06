@@ -14,8 +14,43 @@ import org.gnome.gtk.Orientation;
 import org.gnome.gtk.Widget;
 
 public class StatusDialog extends PreferencesDialog implements EventListener {
+    private static int checksum = 0;
+    private final static ActionRow currentDraw = ActionRow.builder()
+            .setTitle("Current Draw")
+            .setSubtitleSelectable(true)
+            .setCssClasses(new String[]{"property"})
+            .build();
+    private final static ActionRow voltage = ActionRow.builder()
+            .setTitle("Voltage")
+            .setSubtitleSelectable(true)
+            .setCssClasses(new String[]{"property"})
+            .build();
+
+    private final static ActionRow currentFile = ActionRow.builder()
+            .setTitle("Current File")
+            .setSubtitleSelectable(true)
+            .setCssClasses(new String[]{"property"})
+            .build();
+    private final static ActionRow fileState = ActionRow.builder()
+            .setTitle("Current State")
+            .setSubtitleSelectable(true)
+            .setCssClasses(new String[]{"property"})
+            .build();
+
+    private final static ActionRow lidState = ActionRow.builder()
+            .setTitle("Lid State")
+            .setSubtitleSelectable(true)
+            .setCssClasses(new String[]{"property"})
+            .build();
+    private final static StatusPage statusPage = StatusPage.builder()
+            .setIconName("com.x_tornado10.lccp")
+            .setTitle("LED Cube Status")
+            .build();
+    private static boolean init = false;
+
     public StatusDialog() {
         configure(StatusUpdate.blank());
+        this.init();
         this.onClosed(() -> {
             if (updateTask != null) {
                 LCCP.eventManager.unregisterEvents(this);
@@ -35,9 +70,74 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         super.present(parent);
     }
 
+    private void init() {
+
+        var statusList = Box.builder()
+                .setOrientation(Orientation.VERTICAL)
+                .setSpacing(12)
+                .setHexpand(true)
+                .build();
+
+        var powerUsage = PreferencesGroup.builder()
+                .setCssClasses(new String[]{"background"})
+                .setTitle("Power")
+                .build();
+
+        var fileStats = PreferencesGroup.builder()
+                .setCssClasses(new String[]{"background"})
+                .setTitle("Animation")
+                .build();
+
+        fileStats.add(currentFile);
+        fileStats.add(fileState);
+
+        var general = PreferencesGroup.builder()
+                .setTitle("General")
+                .build();
+
+        general.add(lidState);
+
+        powerUsage.add(voltage);
+        powerUsage.add(currentDraw);
+
+        statusList.append(general);
+        statusList.append(fileStats);
+        statusList.append(powerUsage);
+
+        statusPage.setChild(statusList);
+
+        var clamp = Clamp.builder()
+                .setMaximumSize(700)
+                .setTighteningThreshold(600)
+                .setChild(statusPage)
+                .build();
+
+        var toolbarView = ToolbarView.builder()
+                .setContent(clamp)
+                .build();
+
+        var headerBar1 = HeaderBar.builder()
+                .setShowTitle(false)
+                .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                .build();
+
+        toolbarView.addTopBar(headerBar1);
+
+        this.setChild(toolbarView);
+        this.setSearchEnabled(true);
+        init = true;
+    }
+
     private void configure(StatusUpdate statusUpdate) {
+        int checksum = statusUpdate.hashCode();
+        if (StatusDialog.checksum == checksum) {
+            LCCP.logger.debug("Skipping display request for status update '" + statusUpdate.getNetworkEventID() + "' because checksum '" + checksum + "' didn't change");
+            return;
+        } else StatusDialog.checksum = checksum;
 
         if (statusUpdate.isBlank()) {
+            init = false;
+
             var statusList = Box.builder()
                     .setOrientation(Orientation.VERTICAL)
                     .setSpacing(12)
@@ -51,144 +151,24 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                     ActionRow.builder().setTitle("Possible causes").setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
             );
 
-            /*
-            statusList.append(general);
-            statusList.append(fileStats);
-            statusList.append(powerUsage);
-             */
-
-            var statusPage = StatusPage.builder()
-                    .setIconName("com.x_tornado10.lccp")
-                    .setTitle("LED Cube Status")
-                    .setChild(statusList)
-                    .build();
-
-            var clamp = Clamp.builder()
-                    .setMaximumSize(500)
-                    .setTighteningThreshold(400)
-                    .setChild(statusPage)
-                    .build();
-
-            var toolbarView = ToolbarView.builder()
-                    .setContent(clamp)
-                    .build();
-
-            var headerBar1 = HeaderBar.builder()
-                    .setShowTitle(false)
-                    .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
-                    .build();
-
-            toolbarView.addTopBar(headerBar1);
-
-            this.setChild(toolbarView);
-            this.setSearchEnabled(true);
-        } else {
-
-            var statusList = Box.builder()
-                    .setOrientation(Orientation.VERTICAL)
-                    .setSpacing(12)
-                    .setHexpand(true)
-                    .build();
-
-            var powerUsage = PreferencesGroup.builder()
-                    .setCssClasses(new String[]{"background"})
-                    .setTitle("Power")
-                    .build();
-
-            var currentDraw = ActionRow.builder()
-                    .setTitle("Current Draw")
-                    .setSubtitle(statusUpdate.getCurrentDraw() + "A")
-                    .setSubtitleSelectable(true)
-                    .setCssClasses(new String[]{"property"})
-                    .build();
-            var voltage = ActionRow.builder()
-                    .setTitle("Voltage")
-                    .setSubtitle(statusUpdate.getVoltage() + "V")
-                    .setSubtitleSelectable(true)
-                    .setCssClasses(new String[]{"property"})
-                    .build();
-
-            var fileStats = PreferencesGroup.builder()
-                    .setCssClasses(new String[]{"background"})
-                    .setTitle("Animation")
-                    .build();
-
-            if (statusUpdate.isFileLoaded()) {
-
-                var currentFile = ActionRow.builder()
-                        .setTitle("Current File")
-                        .setSubtitle(statusUpdate.getFileSelected())
-                        .setSubtitleSelectable(true)
-                        .setCssClasses(new String[]{"property"})
-                        .build();
-                fileStats.add(currentFile);
-                var fileState = ActionRow.builder()
-                        .setTitle("Current State")
-                        .setSubtitle(statusUpdate.getFileState().name())
-                        .setSubtitleSelectable(true)
-                        .setCssClasses(new String[]{"property"})
-                        .build();
-
-                fileStats.add(fileState);
-            } else {
-                var fileState = ActionRow.builder()
-                        .setTitle("Current State")
-                        .setSubtitle("No animation selected!")
-                        .setSubtitleSelectable(true)
-                        .setCssClasses(new String[]{"property"})
-                        .build();
-
-                fileStats.add(fileState);
-            }
-
-
-            var general = PreferencesGroup.builder()
-                    .setTitle("General")
-                    .build();
-
-            var lidState = ActionRow.builder()
-                    .setTitle("Lid State")
-                    .setSubtitle(statusUpdate.humanReadableLidState(statusUpdate.isLidState()))
-                    .setSubtitleSelectable(true)
-                    .setCssClasses(new String[]{"property"})
-                    .build();
-
-            general.add(lidState);
-
-            powerUsage.add(voltage);
-            powerUsage.add(currentDraw);
-
-            statusList.append(general);
-            statusList.append(fileStats);
-            statusList.append(powerUsage);
-
-
-            var statusPage = StatusPage.builder()
-                    .setIconName("LCCP-logo-256x256")
-                    .setTitle("LED Cube Status")
-                    .setChild(statusList)
-                    .build();
-
-            var clamp = Clamp.builder()
-                    .setMaximumSize(700)
-                    .setTighteningThreshold(600)
-                    .setChild(statusPage)
-                    .build();
-
-            var toolbarView = ToolbarView.builder()
-                    .setContent(clamp)
-                    .build();
-
-            var headerBar1 = HeaderBar.builder()
-                    .setShowTitle(false)
-                    .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
-                    .build();
-
-            toolbarView.addTopBar(headerBar1);
-
-            this.setChild(toolbarView);
-            this.setSearchEnabled(true);
+            statusPage.setChild(statusList);
+            return;
         }
+
+        if (!init) init();
+
+        currentDraw.setSubtitle(statusUpdate.getCurrentDraw() + "A");
+        voltage.setSubtitle(statusUpdate.getVoltage() + "V");
+        if (statusUpdate.isFileLoaded()) {
+            currentFile.setSubtitle(statusUpdate.getFileSelected());
+            fileState.setSubtitle(statusUpdate.getFileState().name());
+        } else {
+            currentFile.setSubtitle("N/A");
+            fileState.setSubtitle(statusUpdate.getFileState().name());
+            fileState.setSubtitle("No animation selected!");
+        }
+
+        lidState.setSubtitle(statusUpdate.humanReadableLidState(statusUpdate.isLidState()));
     }
 
     private void updateStatus(StatusUpdate statusUpdate) {

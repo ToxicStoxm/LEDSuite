@@ -4,6 +4,8 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.Paths;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
+import org.gnome.adw.Toast;
+import org.gnome.adw.ToastOverlay;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +43,11 @@ public class Logger {
     }
     // formatting error message
     public void error(String message) {
-        if (log_level.ERROR.isEnabled()) cError( "[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.ERROR.isEnabled()) {
+            cError( "[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+            // displaying toast in the user interface
+            visualFeedback(message, 0);
+        }
     }
     public void error(Exception e) {
         StackTraceElement[] stackTrace = e.getStackTrace();
@@ -67,6 +73,8 @@ public class Logger {
     // formatting fatal message
     public void fatal(String message) {
         if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        // displaying toast in the user interface
+        visualFeedback(message, 0);
     }
     // sending a fatal error message to console and log file
     public void cFatal(String message) {
@@ -109,6 +117,26 @@ public class Logger {
             System.out.println("Error while trying to write log to log file!");
             System.out.println("If this message is displayed repeatedly:");
             System.out.println(Messages.WARN.OPEN_GITHUB_ISSUE);
+        }
+    }
+
+    // display a toast containing a message, with standard 5s timeout
+    private void visualFeedback(String message) {
+       visualFeedback(message, 5);
+    }
+    // display a toast containing a message, with specific timeout
+    private void visualFeedback(String message, int timeout) {
+        // null check for toast overlay
+        ToastOverlay toastOverlay = LCCP.mainWindow.toastOverlay;
+        if (toastOverlay != null) {
+            // create new toast containing the message and specific timeout
+            toastOverlay
+                    .addToast(
+                            Toast.builder()
+                                    .setTimeout(timeout)
+                                    .setTitle(message)
+                                    .build()
+                    );
         }
     }
 

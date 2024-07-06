@@ -4,7 +4,7 @@ package com.x_tornado10.lccp;
 public final class Paths {
     // file paths
     public static final class File_System {
-        private static final String getConfigDir() {
+        private static String getConfigDir() {
             if (System.getenv("XDG_CONFIG_HOME") == null) { // Check if the config home (mainly for flatpak) contains anything
                 return System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/"; // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
             } else { // If it exists
@@ -12,7 +12,7 @@ public final class Paths {
             }
         }
 
-        private static final String getTmpDir() {
+        private static String getTmpDir() {
             if (System.getenv("XDG_CACHE_HOME") == null) { // Check if the cache home or just temp directory (mainly for flatpak) contains anything
                 return System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/"; // If not it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as path
             } else { // If it exists

@@ -354,8 +354,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 centerBox.remove(centerBox.getFirstChild());
             }
             centerBox.setValign(Align.CENTER);
-            var spinner = Spinner.builder().setSpinning(true).build();
-            centerBox.append(spinner);
+            centerBox.append(Spinner.builder().setSpinning(true).build());
             CenterRevealer.setRevealChild(true);
             String rowName = row.getName();
             try {
@@ -367,19 +366,39 @@ public class Window extends ApplicationWindow implements EventListener {
                                 .build(),
                         result -> {
                             if (result) {
-                                toastOverlay.addToast(
+                                LCCP.logger.debug("Requesting animation menu for '" + rowName + "' from server.");
+                                /*toastOverlay.addToast(
                                         Toast.builder()
                                                 .setTimeout(3)
                                                 .setTitle("Loading menu for '" + rowName + "'...")
                                                 .build()
-                                );
+                                );*/
                             } else {
-                                toastOverlay.addToast(
+                                LCCP.logger.error("Failed to load menu for '" + rowName + "'!");
+                                /*toastOverlay.addToast(
                                         Toast.builder()
                                                 .setTimeout(0)
                                                 .setTitle("Failed to load menu for '" + rowName + "'!")
                                                 .build()
-                                );
+                                );*/
+                            }
+                        },
+                        new LCCPProcessor() {
+                            @Override
+                            public void run(YAMLMessage yaml) {
+                                if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.reply) && yaml.getReplyType().equals(YAMLMessage.REPLY_TYPE.menu)) {
+                                    String id = "[" + yaml.getNetworkID() + "] ";
+                                    LCCP.logger.debug(id + "Converting animation menu to displayable menu!");
+                                    CenterRevealer.setRevealChild(false);
+                                    if (centerBox.getFirstChild() != null) {
+                                        CenterRevealer.setRevealChild(false);
+                                        centerBox.remove(centerBox.getFirstChild());
+                                    }
+                                    centerBox.setValign(Align.START);
+                                    centerBox.append(AnimationMenu.display(yaml.getAnimationMenu()));
+                                    LCCP.logger.debug(id + "Displaying converted menu!");
+                                    CenterRevealer.setRevealChild(true);
+                                }
                             }
                         }
                 );
@@ -433,8 +452,8 @@ public class Window extends ApplicationWindow implements EventListener {
         new LCCPRunnable() {
             @Override
             public void run() {
-                if (getHeight() <= 500) {
-                    setSizeRequest(getWidth(), 501);
+                if (getHeight() <= 499) {
+                    setSizeRequest(getWidth(), 500);
                     return;
                 }
                 if (getWidth() <= min) {

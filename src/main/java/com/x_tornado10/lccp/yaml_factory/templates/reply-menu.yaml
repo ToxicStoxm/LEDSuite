@@ -104,7 +104,7 @@ group0-name:
 
       suffixes:
         button:
-          pos: 0
+          pos:
         switch:
           pos: 1
 

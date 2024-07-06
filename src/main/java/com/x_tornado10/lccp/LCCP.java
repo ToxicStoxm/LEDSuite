@@ -17,6 +17,7 @@ import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
+import io.github.jwharm.javagi.base.GErrorException;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -24,7 +25,9 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
+import org.gnome.gdk.GLError;
 import org.gnome.gio.ApplicationFlags;
+import org.gnome.gobject.GError;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -65,7 +68,6 @@ public class LCCP implements EventListener {
     // constructor method
     public LCCP(String[] args) {
         instance = this;
-
         // create new libadwaita application object
         app = new Application("com.x_tornado10.lccp", ApplicationFlags.DEFAULT_FLAGS);
         // define function to be executed on application start

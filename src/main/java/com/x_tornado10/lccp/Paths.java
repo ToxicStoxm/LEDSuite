@@ -4,11 +4,27 @@ package com.x_tornado10.lccp;
 public final class Paths {
     // file paths
     public static final class File_System {
-        public static final String appDir = System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/";
+        private static final String getConfigDir() {
+            if (System.getenv("XDG_CONFIG_HOME") == null) { // Check if the config home (mainly for flatpak) contains anything
+                return System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/"; // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
+            } else { // If it exists
+                return System.getenv("XDG_CONFIG_HOME") + "/"; //  If yes it gets the enviorment variable and appends / because if it is missing it will error but when there are two it will st>
+            }
+        }
+
+        private static final String getTmpDir() {
+            if (System.getenv("XDG_CACHE_HOME") == null) { // Check if the cache home or just temp directory (mainly for flatpak) contains anything
+                return System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/"; // If not it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as path
+            } else { // If it exists
+                return System.getenv("XDG_CACHE_HOME") + "/"; // If yes it gets the enviorment variable and appends / because if it is missing it will error but when there are two it will still>
+            }
+        }
+
+  	    public static final String tmpDir = getTmpDir();
+        public static final String appDir = getConfigDir();
         public static final String logFile = appDir + "latest.log";
         public static final String server_config = appDir + "server_config.yaml";
         public static final String config = appDir + "config.yaml";
-        public static final String tmpDir = System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/";
     }
     // yaml paths for config
     public static final class Config {

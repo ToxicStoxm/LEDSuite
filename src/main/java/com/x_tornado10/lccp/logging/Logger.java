@@ -127,6 +127,7 @@ public class Logger {
     // display a toast containing a message, with specific timeout
     private void visualFeedback(String message, int timeout) {
         // null check for toast overlay
+        if (LCCP.mainWindow == null) return;
         ToastOverlay toastOverlay = LCCP.mainWindow.toastOverlay;
         if (toastOverlay != null) {
             // create new toast containing the message and specific timeout

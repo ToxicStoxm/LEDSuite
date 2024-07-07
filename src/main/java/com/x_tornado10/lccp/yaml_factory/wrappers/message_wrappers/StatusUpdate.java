@@ -23,7 +23,6 @@ public class StatusUpdate {
     @Getter
     private HashMap<String, String> availableAnimations;
 
-
     public UUID getNetworkEventID() {
         return uuid;
     }
@@ -51,7 +50,7 @@ public class StatusUpdate {
                 yamlMessage.getAvailableAnimations()
         );
     }
-    public static StatusUpdate blank() {
+    public static StatusUpdate notConnected() {
         return new StatusUpdate(
                 false,
                 null,
@@ -63,15 +62,15 @@ public class StatusUpdate {
                 null
         );
     }
-    private static final List<UUID> blanks = new ArrayList<>();
+    private static final List<UUID> notConnected = new ArrayList<>();
     private static UUID blankUUID() {
         UUID uuid1 = UUID.randomUUID();
-        blanks.add(uuid1);
+        notConnected.add(uuid1);
         return uuid1;
     }
 
-    public boolean isBlank() {
-        return blanks.contains(uuid);
+    public boolean isNotConnected() {
+        return notConnected.contains(uuid);
     }
 
     public String humanReadableLidState(boolean lidState) {
@@ -105,6 +104,7 @@ public class StatusUpdate {
 
     @Override
     public int hashCode() {
+        if (notConnected.contains(this.uuid)) return -1;
         return Objects.hash(isFileLoaded, fileState, fileSelected, currentDraw, voltage, lidState, availableAnimations);
     }
 }

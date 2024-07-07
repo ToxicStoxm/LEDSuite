@@ -30,6 +30,8 @@ import org.gnome.gio.ApplicationFlags;
 import org.gnome.gobject.GError;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -155,6 +157,7 @@ public class LCCP implements EventListener {
             }
             // check if log file already exists
             if (!log_file.exists()) {
+                Files.createDirectories(Path.of(log_file.getParent()));
                 // if it does not exist, a new one will be created
                 if (log_file.createNewFile()) {
                     logger.debug("New log config file was successfully created: " + log_file.getAbsolutePath());

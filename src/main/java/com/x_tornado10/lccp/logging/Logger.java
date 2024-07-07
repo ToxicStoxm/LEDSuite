@@ -117,6 +117,7 @@ public class Logger {
             System.out.println("Error while trying to write log to log file!");
             System.out.println("If this message is displayed repeatedly:");
             System.out.println(Messages.WARN.OPEN_GITHUB_ISSUE);
+            throw new RuntimeException(e);
         }
     }
 

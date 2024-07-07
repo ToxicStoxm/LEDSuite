@@ -1,5 +1,6 @@
 # LED-Cube-Control-Panel
-<img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">  
+<img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
+
  - Front-End for any LED Cube with the matching backend
  - Back-End: https://github.com/hannescam/NeoSPI  
 ## WARNING: prototype software does currently not work properly

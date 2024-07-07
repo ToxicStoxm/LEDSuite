@@ -1,69 +1,37 @@
-# TODO switch pos and name to allow for multiple widgets of the same type in one group
 package_type: reply
 reply_type: menu
-group0-name:
-  pos: 0 # group position
-
-
+group0:
   suffix:
-    button:
+    widget0:
+      widget: button
       label: "groupSuffixButton"
 
   content: # group content
 
-    button:
-      pos: 0 # widget position in group
+    widget0:
+      widget: button
       label: "ButtonLabel" # text inside the button
       icon: "" # gnome icon name (replaces label)
       style: "style1,style2,style3" # libadwaita style String (see adwaita-1-demo/Style Classes for reference)
       tooltip: "some text" # text that is displayed when hovering over the object
       row: true / false # if button should be inside a row (if true, style arguments are handled internally and the style entry will be ignored)
 
-    property:
-      pos: 1
+    widget1:
+      widget: property
       label: "EntryTitle" # text above
       content: "EntryContent" # text below (main text)
       style: "style1,style2,style3"
       tooltip: "some text"
 
-# experimental
-      prefixes: # prefix widget/s for expander
-        button:
-          pos: 0
-          label: ""
-          icon: "share symbolic"
-        switch:
-          pos: 1
-
-      suffixes: # suffix widget/s for expander
-        button:
-          pos: 0
-          label: ""
-          icon: "copy-symbolic"
-        switch:
-          pos: 1
-
-    switch:
-      pos: 2
+    widget2:
+      widget: switch
       label: "SwitchLabel"
       value: true / false # switch position on / off
       style: "style1,style2,style3"
       tooltip: "some text"
 
-      prefixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-      suffixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-    slider:
-      pos: 3
+    widget3:
+      widget: slider
       label: "SliderLabel"
       min: 0 # min value
       max: 100 # max value
@@ -75,20 +43,8 @@ group0-name:
       snap: true / false # if invalid input value should snap to nearest valid value
       wraparound: true / false # wraparound to min when max is reached and vice versa
 
-      prefixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-      suffixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-    entry: # text box
-      pos: 4
+    widget4: # text box
+      widget: entry
       label: "Entry Label"
       content: "Content text"
       editable: true / false
@@ -96,34 +52,10 @@ group0-name:
       style: "style1,style2,style3"
       tooltip: "some text"
 
-      prefixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-      suffixes:
-        button:
-          pos:
-        switch:
-          pos: 1
-
-    expander: # dropdown but with rows (nested shit)
-      pos: 5
+    widget5: # dropdown but with rows (nested shit)
+      widget: expander
       toggleable: true / false # displays toggle for the expander row
       label: "Entry Label"
-
-      prefixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
-
-      suffixes:
-        button:
-          pos: 0
-        switch:
-          pos: 1
 
       content: # rows in expander
         switch:
@@ -131,8 +63,8 @@ group0-name:
         slider:
           pos: 1
 
-    dropdown:
-      pos: 6
+    widget6:
+      widget: dropdown
       label: "dropdown label"
       content: "some text"
       display_selected: true / false # if current selected value should be displayed as content (if true content value will be ignored)
@@ -146,22 +78,18 @@ group0-name:
       pos: 8
       time: -1 # how long the spinner is displayed and spinning, -1 = infinite
 
-group1-name:
-  pos: 1
+group1:
   content:
     ...
 
-group2-name:
-  pos: 2
+group2:
   content:
     ...
 
-group3-name:
-  pos: 3
+group3:
   content:
     ...
 
-group4-name:
-  pos: 4
+group4:
   content:
     ...

@@ -387,6 +387,7 @@ public class Window extends ApplicationWindow implements EventListener {
                             @Override
                             public void run(YAMLMessage yaml) throws DefaultHandleException {
                                 if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.reply) && yaml.getReplyType().equals(YAMLMessage.REPLY_TYPE.menu)) {
+                                    LCCP.logger.debug(yaml.getAnimationMenu().toString());
                                     String id = "[" + yaml.getNetworkID() + "] ";
                                     LCCP.logger.debug(id + "Converting animation menu to displayable menu!");
                                     CenterRevealer.setRevealChild(false);

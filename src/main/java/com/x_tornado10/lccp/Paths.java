@@ -101,6 +101,7 @@ public final class Paths {
                 public static final String WIDGET_TOOLTIP = "tooltip";
                 public static final String WIDGET_CONTENT = "content";
                 public static final String WIDGET_VALUE = "value";
+                public static final String WIDGET_NAME = "widget-name";
 
                 public static final String BUTTON_ICON = "icon";
                 public static final String BUTTON_ROW = "row";

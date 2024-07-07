@@ -12,11 +12,13 @@ import org.apache.commons.configuration2.ex.ConversionException;
 import java.util.*;
 
 public class AnimationMenu implements Container {
+    private TreeMap<Integer, WidgetMain> content;
     private UUID networkID;
     private boolean empty = false;
 
     public AnimationMenu(UUID networkID) {
         this.networkID = networkID;
+        content = new TreeMap<>();
     }
 
     public static AnimationMenu empty() {
@@ -51,7 +53,7 @@ public class AnimationMenu implements Container {
 
         LCCP.logger.debug(id + "Requesting deserialization for children!");
 
-        menu.deserialize_children(yaml, id);
+        menu.deserialize_children(yaml, id, "menu");
         return menu;
     }
 
@@ -84,6 +86,8 @@ public class AnimationMenu implements Container {
                 group.setLabel(initialWidget.label);
                 group.setTooltip(initialWidget.tooltip);
                 group.setStyle(initialWidget.style);
+                //group.setWidgetName(initialWidget.widgetName);
+
 
                 // getting yaml section for group suffix from the group yaml
                 Configuration suffixSubset = groupYaml.subset(Paths.NETWORK.YAML.MENU.GROUP_SUFFIX_WIDGET);
@@ -98,7 +102,7 @@ public class AnimationMenu implements Container {
                 Configuration contentSubset = groupYaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
 
                 // deserialize all child widgets contained in this group
-                group.deserialize_children(contentSubset, id);
+                group.deserialize_children(contentSubset, id,  initialWidget.type.name());
 
                 // returning group
                 return group;
@@ -113,6 +117,8 @@ public class AnimationMenu implements Container {
                 button.setLabel(initialWidget.label);
                 button.setTooltip(initialWidget.tooltip);
                 button.setStyle(initialWidget.style);
+                //button.setWidgetName(initialWidget.widgetName);
+
 
                 button.icon =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.BUTTON_ICON) );
                 button.row = yaml.getBoolean(Paths.NETWORK.YAML.MENU.BUTTON_ROW);
@@ -129,6 +135,8 @@ public class AnimationMenu implements Container {
                 property.setLabel(initialWidget.label);
                 property.setTooltip(initialWidget.tooltip);
                 property.setStyle(initialWidget.style);
+                //property.setWidgetName(initialWidget.widgetName);
+
 
                 property.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
 
@@ -144,6 +152,8 @@ public class AnimationMenu implements Container {
                 _switch.setLabel(initialWidget.label);
                 _switch.setTooltip(initialWidget.tooltip);
                 _switch.setStyle(initialWidget.style);
+                //_switch.setWidgetName(initialWidget.widgetName);
+
 
                 _switch.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
 
@@ -164,6 +174,8 @@ public class AnimationMenu implements Container {
                 slider.setLabel(initialWidget.label);
                 slider.setTooltip(initialWidget.tooltip);
                 slider.setStyle(initialWidget.style);
+                //slider.setWidgetName(initialWidget.widgetName);
+
 
                 slider.min = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MIN);
                 slider.max = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MAX);
@@ -187,6 +199,8 @@ public class AnimationMenu implements Container {
                 entry.setLabel(initialWidget.label);
                 entry.setTooltip(initialWidget.tooltip);
                 entry.setStyle(initialWidget.style);
+                //entry.setWidgetName(initialWidget.widgetName);
+
 
                 entry.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
                 entry.applyButton = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_APPLY_BUTTON);
@@ -204,11 +218,13 @@ public class AnimationMenu implements Container {
                 expander.setLabel(initialWidget.label);
                 expander.setTooltip(initialWidget.tooltip);
                 expander.setStyle(initialWidget.style);
+                //expander.setWidgetName(initialWidget.widgetName);
+
 
                 expander.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
                 expander.toggleable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.EXPANDER_TOGGLEABLE);
                 Configuration contentSubset = yaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
-                expander.deserialize_children(contentSubset, id);
+                expander.deserialize_children(contentSubset, id, initialWidget.type.name());
 
                 return expander;
             }
@@ -222,6 +238,7 @@ public class AnimationMenu implements Container {
                 dropdown.setLabel(initialWidget.label);
                 dropdown.setTooltip(initialWidget.tooltip);
                 dropdown.setStyle(initialWidget.style);
+                //dropdown.setWidgetName(initialWidget.widgetName);
 
                 dropdown.content = validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
                 try {
@@ -282,6 +299,7 @@ public class AnimationMenu implements Container {
             WidgetMain result = new WidgetMain(WidgetType.property);
 
             try {
+                LCCP.logger.fatal("deserialize: " + type.name());
                 result = type.deserialize(this, yaml, id);
             } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException e) {
                 LCCP.logger.error(id + "Failed to deserialize " + type + " from yaml! Error message: " + e.getMessage());
@@ -301,6 +319,10 @@ public class AnimationMenu implements Container {
             }
             return result;
         }
+
+        public String toString(Integer pos) {
+            return stringifyWidget(this, pos);
+        }
     }
 
     public static class Widget {
@@ -318,17 +340,24 @@ public class AnimationMenu implements Container {
     }
 
 
-    protected static class AnimationMenuGroup extends WidgetMain implements Container {
+    public static class AnimationMenuGroup extends WidgetMain implements Container {
+        private TreeMap<Integer, WidgetMain> content;
         private WidgetMain suffix;
 
         public AnimationMenuGroup() {
             super(WidgetType.group);
+            content = new TreeMap<>();
+            LCCP.logger.fatal("new group created!");
+        }
+        @Override
+        public TreeMap<Integer, WidgetMain> content() {
+            return content;
         }
     }
 
 
 
-    protected static class Widgets {
+    public static class Widgets {
         protected static class Button extends WidgetMain {
             private String icon = "";
             private boolean row = true;
@@ -379,11 +408,17 @@ public class AnimationMenu implements Container {
         }
 
         protected static class Expander extends WidgetMain implements Container {
+            private TreeMap<Integer, WidgetMain> content;
             private boolean toggleable = false;
             private boolean value = false;
 
             public Expander(){
                 super(WidgetType.expander);
+                content = new TreeMap<>();
+            }
+            @Override
+            public TreeMap<Integer, WidgetMain> content() {
+                return content;
             }
         }
 
@@ -412,46 +447,48 @@ public class AnimationMenu implements Container {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("AnimationMenu {");
-        sb.append("NetworkID=").append(networkID).append(", ");
-        sb.append("Content {");
+        sb.append("AnimationMenu:").append("\n");
+        sb.append("NetworkID:").append(networkID).append("\n");
+        sb.append("Content:").append("\n");
+        TreeMap<Integer, WidgetMain> content = content();
         for (Map.Entry<Integer, WidgetMain> entry : content.entrySet()) {
             WidgetMain widget = entry.getValue();
             sb.append(stringifyWidget(widget, entry.getKey()));
-            if (widget.type.equals(WidgetType.group)) {
-                sb.append(", ");
-                sb.append("Content {");
-
-                AnimationMenuGroup group = new AnimationMenuGroup();
-                group.setLabel(widget.label);
-                group.setTooltip(widget.tooltip);
-                group.setStyle(widget.style);
-
-                for (Map.Entry<Integer, WidgetMain> entry0 : group.getContent().entrySet()) {
-                    WidgetMain widget0 = entry.getValue();
-                    sb.append(stringifyWidget(widget0, entry0.getKey()));
-                }
-                sb.append("}");
-            }
-            sb.append("}, ");
+            sb.append("Content:").append("\n");
+            stringifyChildren((Container) widget, sb);
+            sb.append("\n");
         }
-        sb.replace(sb.length() - 2, sb.length(), "");
-        sb.append("}");
-        sb.append("}");
+
         return sb.toString();
     }
 
-    private String stringifyWidget(WidgetMain widget, int pos) {
+    public static String stringifyWidget(WidgetMain widget, int pos) {
         StringBuilder sb = new StringBuilder();
-        sb.append(capitalizeFirstLetter(widget.type.name())).append(" {");
-        sb.append("Position=").append(pos).append(", ");
-        sb.append("Label=").append(widget.label).append(", ");
-        sb.append("Tooltip=").append(widget.tooltip).append(", ");
-        sb.append("Style=").append(widget.style);
+        sb.append(capitalizeFirstLetter(widget.type.name())).append(":").append("\n");
+        //sb.append("Name=").append(widget.widgetName).append(", ");
+        sb.append("Position:").append(pos).append("\n");
+        sb.append("Label:").append(widget.label).append("\n");
+        sb.append("Tooltip:").append(widget.tooltip).append("\n");
+        sb.append("Style:").append(widget.style).append("\n");
         return sb.toString();
     }
 
-    private String capitalizeFirstLetter(String str) {
+    public static void stringifyChildren(Container c, StringBuilder sb) {
+        for (Map.Entry<Integer, AnimationMenu.WidgetMain> entry : c.content().entrySet()) {
+            AnimationMenu.WidgetMain widget = entry.getValue();
+            LCCP.logger.warn(c.getClass().getName() + ": " + widget);
+            LCCP.logger.fatal("sub type: " + widget.type.name());
+            sb.append(stringifyWidget(widget, entry.getKey()));
+            if (widget instanceof Container) {
+                sb.append("Content:").append("\n");
+                stringifyChildren((Container) widget, sb);
+                sb.append("\n");
+
+            }
+        }
+    }
+
+    private static String capitalizeFirstLetter(String str) {
         if (str == null || str.isEmpty()) {
             return str;
         }
@@ -460,5 +497,9 @@ public class AnimationMenu implements Container {
 
     private static String validate(String subject) {
         return subject == null ? "" : subject;
+    }
+    @Override
+    public TreeMap<Integer, WidgetMain> content() {
+        return content;
     }
 }

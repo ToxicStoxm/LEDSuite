@@ -14,43 +14,75 @@ import org.gnome.gtk.Orientation;
 import org.gnome.gtk.Widget;
 
 public class StatusDialog extends PreferencesDialog implements EventListener {
-    private static int checksum = 0;
-    private final static ActionRow currentDraw = ActionRow.builder()
-            .setTitle("Current Draw")
-            .setSubtitleSelectable(true)
-            .setCssClasses(new String[]{"property"})
-            .build();
-    private final static ActionRow voltage = ActionRow.builder()
-            .setTitle("Voltage")
-            .setSubtitleSelectable(true)
-            .setCssClasses(new String[]{"property"})
-            .build();
+    private int checksum = 0;
+    private ActionRow currentDraw;
+    private ActionRow voltage;
+    private ActionRow currentFile;
+    private ActionRow fileState;
+    private ActionRow lidState;
+    private StatusPage statusPage;
+    private boolean statusInit = false;
+    private boolean reboot = false;
+    private long lastUpdate;
 
-    private final static ActionRow currentFile = ActionRow.builder()
-            .setTitle("Current File")
-            .setSubtitleSelectable(true)
-            .setCssClasses(new String[]{"property"})
-            .build();
-    private final static ActionRow fileState = ActionRow.builder()
-            .setTitle("Current State")
-            .setSubtitleSelectable(true)
-            .setCssClasses(new String[]{"property"})
-            .build();
+    private void initialize() {
+        currentDraw = ActionRow.builder()
+                .setTitle("Current Draw")
+                .setSubtitleSelectable(true)
+                .setCssClasses(new String[]{"property"})
+                .build();
+        voltage = ActionRow.builder()
+                .setTitle("Voltage")
+                .setSubtitleSelectable(true)
+                .setCssClasses(new String[]{"property"})
+                .build();
+        currentFile = ActionRow.builder()
+                .setTitle("Current File")
+                .setSubtitleSelectable(true)
+                .setCssClasses(new String[]{"property"})
+                .build();
+        fileState = ActionRow.builder()
+                .setTitle("Current State")
+                .setSubtitleSelectable(true)
+                .setCssClasses(new String[]{"property"})
+                .build();
+        lidState = ActionRow.builder()
+                .setTitle("Lid State")
+                .setSubtitleSelectable(true)
+                .setCssClasses(new String[]{"property"})
+                .build();
+        statusPage = StatusPage.builder()
+                .setIconName("com.x_tornado10.lccp")
+                .setTitle("LED Cube Status")
+                .build();
 
-    private final static ActionRow lidState = ActionRow.builder()
-            .setTitle("Lid State")
-            .setSubtitleSelectable(true)
-            .setCssClasses(new String[]{"property"})
-            .build();
-    private final static StatusPage statusPage = StatusPage.builder()
-            .setIconName("com.x_tornado10.lccp")
-            .setTitle("LED Cube Status")
-            .build();
-    private static boolean init = false;
+    }
 
     public StatusDialog() {
-        configure(StatusUpdate.blank());
-        this.init();
+
+        initialize();
+
+        var clamp = Clamp.builder()
+                .setMaximumSize(700)
+                .setTighteningThreshold(600)
+                .setChild(statusPage)
+                .build();
+
+        var toolbarView = ToolbarView.builder()
+                .setContent(clamp)
+                .build();
+
+        var headerBar1 = HeaderBar.builder()
+                .setShowTitle(false)
+                .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                .build();
+
+        toolbarView.addTopBar(headerBar1);
+
+        this.setChild(toolbarView);
+        this.setSearchEnabled(true);
+
+        configure(StatusUpdate.notConnected());
         this.onClosed(() -> {
             if (updateTask != null) {
                 LCCP.eventManager.unregisterEvents(this);
@@ -60,18 +92,17 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         });
 
         this.setFollowsContentSize(true);
-
     }
     private LCCPTask updateTask = null;
     @Override
     public void present(Widget parent) {
         LCCP.logger.debug("Fulfilling StatusDialog present request!");
+        //checksum = 0;
         updateTask = updateLoop();
         super.present(parent);
     }
 
-    private void init() {
-
+    private void initStatus() {
         var statusList = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
                 .setSpacing(12)
@@ -105,39 +136,19 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         statusList.append(powerUsage);
 
         statusPage.setChild(statusList);
-
-        var clamp = Clamp.builder()
-                .setMaximumSize(700)
-                .setTighteningThreshold(600)
-                .setChild(statusPage)
-                .build();
-
-        var toolbarView = ToolbarView.builder()
-                .setContent(clamp)
-                .build();
-
-        var headerBar1 = HeaderBar.builder()
-                .setShowTitle(false)
-                .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
-                .build();
-
-        toolbarView.addTopBar(headerBar1);
-
-        this.setChild(toolbarView);
-        this.setSearchEnabled(true);
-        init = true;
+        statusInit = true;
     }
 
     private void configure(StatusUpdate statusUpdate) {
+        if (!statusUpdate.isNotConnected()) lastUpdate = System.currentTimeMillis();
         int checksum = statusUpdate.hashCode();
-        if (StatusDialog.checksum == checksum) {
+        if (this.checksum == checksum) {
             LCCP.logger.debug("Skipping display request for status update '" + statusUpdate.getNetworkEventID() + "' because checksum '" + checksum + "' didn't change");
             return;
-        } else StatusDialog.checksum = checksum;
+        } else this.checksum = checksum;
 
-        if (statusUpdate.isBlank()) {
-            init = false;
-
+        if (statusUpdate.isNotConnected()) {
+            if (statusInit) reboot = true;
             var statusList = Box.builder()
                     .setOrientation(Orientation.VERTICAL)
                     .setSpacing(12)
@@ -155,7 +166,17 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
             return;
         }
 
-        if (!init) init();
+        if (reboot) {
+            this.close();
+            StatusDialog dialog = new StatusDialog();
+            dialog.configure(statusUpdate);
+            dialog.present(LCCP.mainWindow);
+            return;
+        }
+
+        if (!statusInit) {
+            initStatus();
+        }
 
         currentDraw.setSubtitle(statusUpdate.getCurrentDraw() + "A");
         voltage.setSubtitle(statusUpdate.getVoltage() + "V");
@@ -175,6 +196,8 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         configure(statusUpdate);
     }
 
+    private long maxDelay = 10000;
+
     private LCCPTask updateLoop() {
         LCCP.eventManager.registerEvents(this);
         if (!LCCP.mainWindow.isBannerVisible()) {
@@ -182,6 +205,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                 @Override
                 public void run() {
                     LCCP.mainWindow.getStatus();
+                    if (System.currentTimeMillis() - lastUpdate >= maxDelay) configure(StatusUpdate.notConnected());
                 }
             }.runTaskTimerAsynchronously(0, 1000);
         }
@@ -195,6 +219,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
 
     @EventHandler
     public void onStatus(Events.Status e) {
+        //LCCP.logger.fatal(String.valueOf(e.statusUpdate().isBlank()));
         updateStatus(e.statusUpdate());
     }
 }

@@ -4,10 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -282,7 +279,9 @@ public class LCCPScheduler implements TaskScheduler {
                                     "Task #%s for %s generated an exception",
                                     task.getTaskId(),
                                     LCCP.class.getName()));
-
+                    System.out.println(Arrays.toString(throwable.getStackTrace()));
+                    System.out.println(throwable.getLocalizedMessage());
+                    System.out.println(throwable.getCause().getLocalizedMessage());
                 }
                 parsePending();
             } else {

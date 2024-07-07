@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.event_handling.Events;
+import com.x_tornado10.lccp.logging.Logger;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.communication.network.Networking;
@@ -115,6 +116,7 @@ public class SettingsDialog extends PreferencesDialog {
         ipv4Row.setShowApplyButton(true);
         ipv4Row.setText(LCCP.server_settings.getIPv4());
         ipv4Row.setEnableUndo(true);
+        String prevIPv4 = LCCP.server_settings.getIPv4();
         ipv4Row.onApply(() -> {
             if (!LCCP.settings.isCheckIPv4()) {
                 LCCP.server_settings.setIPv4(ipv4Row.getText());
@@ -125,33 +127,44 @@ public class SettingsDialog extends PreferencesDialog {
                 new LCCPRunnable() {
                     @Override
                     public void run() {
+                        try {
+                            String ip;
+                            String text = ipv4Row.getText();
 
-                        String ip;
-                        String text = ipv4Row.getText();
+                            if (!LCCP.server_settings.getIPv4().equals(text)) {
 
-                        if (!LCCP.server_settings.getIPv4().equals(text)) {
-
-                            try {
-                                ip = Networking.General.getValidIP(text, false);
-                            } catch (IOException e) {
-                                LCCP.sysBeep();
-                                addToast(
-                                        Toast.builder()
-                                                .setTitle("Server unreachable!")
-                                                .setTimeout(10)
-                                                .build()
-                                );
-                                ip = null;
+                                try {
+                                    ip = Networking.General.getValidIP(text, false);
+                                } catch (IOException e) {
+                                    LCCP.sysBeep();
+                                    addToast(
+                                            Toast.builder()
+                                                    .setTitle("Server unreachable!")
+                                                    .setTimeout(10)
+                                                    .build()
+                                    );
+                                    ip = null;
+                                }
+                                if (ip != null) {
+                                    try {
+                                        LCCP.server_settings.setIPv4(ip);
+                                        Networking.Communication.NetworkHandler.hostChanged();
+                                    } catch (Networking.NetworkException e) {
+                                        LCCP.server_settings.setIPv4(prevIPv4);
+                                        try {
+                                            Networking.Communication.NetworkHandler.hostChanged();
+                                        } catch (Networking.NetworkException ex) {
+                                            LCCP.logger.error("Fallback connection failed! Stopping network communication!");
+                                            Networking.Communication.NetworkHandler.cancel();
+                                        }
+                                    }
+                                }
                             }
-                            if (ip != null) {
-                                LCCP.eventManager.fireEvent(new Events.HostChanged("Host changed by user through settings dialog! " + LCCP.server_settings.getIPv4() + " -> " + ip));
-                                LCCP.server_settings.setIPv4(ip);
-                            }
+                        } finally {
+                            spinner.setSpinning(false);
+                            ipv4Row.remove(spinner);
+                            ipv4Row.setEditable(true);
                         }
-
-                        spinner.setSpinning(false);
-                        ipv4Row.remove(spinner);
-                        ipv4Row.setEditable(true);
                     }
                 }.runTask();
             }

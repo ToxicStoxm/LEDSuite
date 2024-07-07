@@ -23,9 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -412,7 +410,7 @@ public class Networking {
             }
 
             protected static Socket getServer() throws NetworkException {
-                if (!connected) {
+                if (!connected || server == null || server.isClosed()) {
                     init(success -> {
                         if (!success) throw new NetworkException("Failed to establish connection to the server!");
                     });
@@ -422,19 +420,23 @@ public class Networking {
 
             public static void init(SuccessCallback callback) throws NetworkException {
 
-                if (!connected) {
+                //if (!connected ) {
                     try {
-                        server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
+                        if (server == null || server.isClosed()) {
+                            server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
+                        } else {
+                            server.connect(new InetSocketAddress(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort()));
+                        }
                         LCCP.logger.debug("Successfully connected to server!");
                         connected = true;
                     } catch (Exception e) {
                         LCCP.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
                         LCCP.logger.error(e);
+                        callback.getResult(false);
                         return;
-                    } finally {
-                        callback.getResult(connected);
                     }
-                }
+
+                //}
 
                 LCCP.logger.debug("Fulfilling init request for Network Handler!");
 
@@ -448,7 +450,7 @@ public class Networking {
                     @Override
                     public void run() {
                         //LCCP.logger.debug("Iteration");
-                        if (!networkQueue.isEmpty()) {
+                        if (!networkQueue.isEmpty() && server != null && !server.isClosed()) {
                             Map.Entry<Long, LCCPRunnable> entry = networkQueue.firstEntry();
                             LCCP.logger.debug("Handling request: " + entry.getKey());
                             entry.getValue().runTaskAsynchronously();
@@ -461,6 +463,7 @@ public class Networking {
                 initListener();
 
                 LCCP.logger.debug("Network Handler started!");
+                callback.getResult(true);
             }
             private static void initListener() {
                 LCCP.logger.debug("Network Handler: starting master listener...");
@@ -469,8 +472,9 @@ public class Networking {
                     @Override
                     public void run() {
                         try {
+                            if (server == null || server.isClosed()) return;
                             InputStream is = server.getInputStream();
-                            while (true) {
+                            while (server != null && !server.isClosed()) {
                                 if (is.available() > 0) {
                                     YAMLConfiguration yamlCfg = defaultReceive(is);
                                     if (yamlCfg != null) {
@@ -502,11 +506,7 @@ public class Networking {
                                             }
                                             replyListenerQueue.remove(networkID);
                                         } else {
-                                            if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.error)) {
-                                                LCCP.eventManager.fireEvent(new Events.Error(ServerError.fromYAMLMessage(yaml)));
-                                            } else {
-                                                LCCP.eventManager.fireEvent(new Events.DataIn(yaml));
-                                            }
+                                            defaultHandle(yaml);
                                         }
 
                                     }
@@ -522,10 +522,10 @@ public class Networking {
                 LCCP.logger.debug("Network Handler: started master listener!");
             }
 
-            private static void cancel() {
+            public static void cancel() {
                 LCCP.logger.debug("Network Handler: Fulfilling cancel request!");
-                mgr.cancel();
-                masterListener.cancel();
+                if (mgr != null) mgr.cancel();
+                if (masterListener != null) masterListener.cancel();
             }
 
             private static void clearQueues() {
@@ -536,16 +536,33 @@ public class Networking {
 
             }
 
-            public static void reboot() {
+            public static void reboot() throws Networking.NetworkException {
                 LCCP.logger.debug("Network Handler: Fulfilling reboot request!");
-                cancel();
-                clearQueues();
                 try {
-                    init(_ -> {
+                    LCCP.logger.debug("Network Handler: Closing socket");
+                    server.close();
+                } catch (Exception e) {
+                    LCCP.logger.debug("Network Handler: Closing failed, overwriting connection");
+
+                    //throw new NetworkException("failed to close server");
+                }
+
+                LCCP.logger.debug("Network Handler: Stopping mgr and listener tasks");
+                cancel();
+                LCCP.logger.debug("Network Handler: Clearing queues");
+                clearQueues();
+
+                try {
+                    LCCP.logger.debug("Network Handler: initializing...");
+                    init(success -> {
+                        LCCP.logger.debug("Network Handler: success: " + success);
+                        if (!success) throw new NetworkException("connection failed");
                     });
                 } catch (NetworkException e) {
                     LCCP.logger.fatal("Network Handler: reboot failed!");
                     LCCP.logger.error(e);
+                    throw new NetworkException("connection failed!");
+                    //throw new RuntimeException();
                 }
             }
 
@@ -556,7 +573,7 @@ public class Networking {
                 initListener();
             }
 
-            public static void hostChanged() {
+            public static void hostChanged() throws Networking.NetworkException {
                 reboot();
             }
 
@@ -573,7 +590,11 @@ public class Networking {
                 @EventHandler
                 public void onHostChanged(Events.HostChanged e) {
                     LCCP.logger.debug("Network Handler: network handle detected host change");
-                    hostChanged();
+                    try {
+                        hostChanged();
+                    } catch (NetworkException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
 
@@ -649,6 +670,14 @@ public class Networking {
             return yaml;
         }
 
+        public static void defaultHandle(YAMLMessage yaml) {
+            if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.error)) {
+                LCCP.eventManager.fireEvent(new Events.Error(ServerError.fromYAMLMessage(yaml)));
+            } else {
+                LCCP.eventManager.fireEvent(new Events.DataIn(yaml));
+            }
+        }
+
         public interface FinishCallback {
             void onFinish(boolean success);
         }
@@ -669,11 +698,16 @@ public class Networking {
         }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
-            if (!NetworkHandler.connected) {
+            if (!NetworkHandler.connected || NetworkHandler.server == null || NetworkHandler.server.isClosed()) {
                 try {
-                    NetworkHandler.init(_ -> {});
+                    NetworkHandler.init(success -> {
+                        if (!success) {
+                            throw new NetworkException("Reconnection attempt to previous server failed!");
+                        } else LCCP.logger.debug("Successfully reconnected to previous server!");
+                    });
                 } catch (NetworkException e) {
-                    LCCP.logger.fatal("Failed to connect to server!");
+                    //LCCP.logger.fatal("Failed to connect to server!");
+                    LCCP.logger.fatal(e.getMessage());
                     return false;
                 }
             }
@@ -801,10 +835,16 @@ public class Networking {
                 LCCP.logger.debug(id + "---------------------------------------------------------------");
 
             } catch (IOException | ConfigurationException e) {
-                // if an error occurs print an error message
-                LCCP.logger.error(id + "Error occurred! Transmission terminated!");
-                LCCP.logger.error(e);
-                err = true;
+                // try restarting network communication and retry sending
+                try {
+                    NetworkHandler.reboot();
+                    sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle);
+                } catch (NetworkException ex) {
+                    // if an error occurs print an error message
+                    LCCP.logger.error(id + "Error occurred! Transmission terminated!");
+                    LCCP.logger.error(e);
+                    err = true;
+                }
             } catch (NetworkException e) {
                 LCCP.logger.fatal(id + "Network error: " + e.getMessage());
             }

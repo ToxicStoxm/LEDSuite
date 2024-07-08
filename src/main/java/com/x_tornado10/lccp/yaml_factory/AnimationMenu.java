@@ -74,11 +74,6 @@ public class AnimationMenu implements Container {
             public WidgetMain deserialize(WidgetMain initialWidget, Configuration groupYaml, String id) {
                 LCCP.logger.debug(id + "Deserializing " + this.name());
 
-                /*for (Iterator<String> it = groupYaml.getKeys(); it.hasNext(); ) {
-                    String s = it.next();
-                    LCCP.logger.debug(s + ": " + groupYaml.getProperty(s));
-                }*/
-
                 // casting the base widget to a group
                 // (base widget is not a group object initially to allow for processing multiple widget types with the same functions)
                 //AnimationMenuGroup group = (AnimationMenuGroup) initialWidget;
@@ -135,7 +130,6 @@ public class AnimationMenu implements Container {
                 property.setLabel(initialWidget.label);
                 property.setTooltip(initialWidget.tooltip);
                 property.setStyle(initialWidget.style);
-                //property.setWidgetName(initialWidget.widgetName);
 
 
                 property.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
@@ -152,7 +146,6 @@ public class AnimationMenu implements Container {
                 _switch.setLabel(initialWidget.label);
                 _switch.setTooltip(initialWidget.tooltip);
                 _switch.setStyle(initialWidget.style);
-                //_switch.setWidgetName(initialWidget.widgetName);
 
 
                 _switch.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
@@ -174,8 +167,6 @@ public class AnimationMenu implements Container {
                 slider.setLabel(initialWidget.label);
                 slider.setTooltip(initialWidget.tooltip);
                 slider.setStyle(initialWidget.style);
-                //slider.setWidgetName(initialWidget.widgetName);
-
 
                 slider.min = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MIN);
                 slider.max = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MAX);
@@ -199,8 +190,6 @@ public class AnimationMenu implements Container {
                 entry.setLabel(initialWidget.label);
                 entry.setTooltip(initialWidget.tooltip);
                 entry.setStyle(initialWidget.style);
-                //entry.setWidgetName(initialWidget.widgetName);
-
 
                 entry.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
                 entry.applyButton = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_APPLY_BUTTON);
@@ -218,8 +207,6 @@ public class AnimationMenu implements Container {
                 expander.setLabel(initialWidget.label);
                 expander.setTooltip(initialWidget.tooltip);
                 expander.setStyle(initialWidget.style);
-                //expander.setWidgetName(initialWidget.widgetName);
-
 
                 expander.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
                 expander.toggleable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.EXPANDER_TOGGLEABLE);
@@ -238,7 +225,6 @@ public class AnimationMenu implements Container {
                 dropdown.setLabel(initialWidget.label);
                 dropdown.setTooltip(initialWidget.tooltip);
                 dropdown.setStyle(initialWidget.style);
-                //dropdown.setWidgetName(initialWidget.widgetName);
 
                 dropdown.content = validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
                 try {
@@ -271,7 +257,6 @@ public class AnimationMenu implements Container {
         };
         public static WidgetType enumOf(String s) {
             for (WidgetType widgetType : values()) {
-                //LCCP.logger.fatal(widgetType.name().replace("_", "") + " -- " + s);
                 if (widgetType.name().replace("_", "").equalsIgnoreCase(s)) return widgetType;
             }
             throw new IllegalArgumentException();
@@ -299,7 +284,6 @@ public class AnimationMenu implements Container {
             WidgetMain result = new WidgetMain(WidgetType.property);
 
             try {
-                LCCP.logger.fatal("deserialize: " + type.name());
                 result = type.deserialize(this, yaml, id);
             } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException e) {
                 LCCP.logger.error(id + "Failed to deserialize " + type + " from yaml! Error message: " + e.getMessage());
@@ -347,7 +331,6 @@ public class AnimationMenu implements Container {
         public AnimationMenuGroup() {
             super(WidgetType.group);
             content = new TreeMap<>();
-            LCCP.logger.fatal("new group created!");
         }
         @Override
         public TreeMap<Integer, WidgetMain> content() {
@@ -447,45 +430,55 @@ public class AnimationMenu implements Container {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("AnimationMenu:").append("\n");
-        sb.append("NetworkID:").append(networkID).append("\n");
-        sb.append("Content:").append("\n");
+        sb.append("AnimationMenu {");
+        sb.append("NetworkID: ").append(networkID).append(", ");
+        sb.append("Content {");
         TreeMap<Integer, WidgetMain> content = content();
         for (Map.Entry<Integer, WidgetMain> entry : content.entrySet()) {
             WidgetMain widget = entry.getValue();
             sb.append(stringifyWidget(widget, entry.getKey()));
-            sb.append("Content:").append("\n");
-            stringifyChildren((Container) widget, sb);
-            sb.append("\n");
+            //sb.replace(sb.length() - 1, sb.length(), "");
+            //sb.append(", Content {");
+            //stringifyChildren((Container) widget, sb);
+            //sb.append("}");
         }
+        sb.append("}}");
 
         return sb.toString();
     }
 
     public static String stringifyWidget(WidgetMain widget, int pos) {
         StringBuilder sb = new StringBuilder();
-        sb.append(capitalizeFirstLetter(widget.type.name())).append(":").append("\n");
+        sb.append(capitalizeFirstLetter(widget.type.name())).append(" {");
         //sb.append("Name=").append(widget.widgetName).append(", ");
-        sb.append("Position:").append(pos).append("\n");
-        sb.append("Label:").append(widget.label).append("\n");
-        sb.append("Tooltip:").append(widget.tooltip).append("\n");
-        sb.append("Style:").append(widget.style).append("\n");
+        sb.append("Position: ").append(pos).append(", ");
+        sb.append("Label: ").append(widget.label).append(", ");
+        sb.append("Tooltip: ").append(widget.tooltip);
+        if (widget.style != null && !widget.style.isEmpty()) sb.append(", ").append("Style: ").append(widget.style);
+        if (widget instanceof Container) {
+            sb.append(", ").append("Content {");
+            stringifyChildren((Container) widget, sb);
+            sb.append("}");
+        }
+        sb.append("}");
         return sb.toString();
     }
 
     public static void stringifyChildren(Container c, StringBuilder sb) {
         for (Map.Entry<Integer, AnimationMenu.WidgetMain> entry : c.content().entrySet()) {
             AnimationMenu.WidgetMain widget = entry.getValue();
-            LCCP.logger.warn(c.getClass().getName() + ": " + widget);
-            LCCP.logger.fatal("sub type: " + widget.type.name());
-            sb.append(stringifyWidget(widget, entry.getKey()));
-            if (widget instanceof Container) {
-                sb.append("Content:").append("\n");
-                stringifyChildren((Container) widget, sb);
-                sb.append("\n");
-
-            }
+            //LCCP.logger.warn(c.getClass().getName() + ": " + widget);
+            //LCCP.logger.fatal("sub type: " + widget.type.name());
+            sb.append(stringifyWidget(widget, entry.getKey())).append(", ");
+            //if (widget instanceof Container) {
+                //sb.replace(sb.length() - 3, sb.length(), "");
+                //sb.append("Content {");
+                //stringifyChildren((Container) widget, sb);
+                //sb.append("}");
+                //sb.append("}, ");
+            //}
         }
+        sb.replace(sb.length() - 2, sb.length(), "");
     }
 
     private static String capitalizeFirstLetter(String str) {

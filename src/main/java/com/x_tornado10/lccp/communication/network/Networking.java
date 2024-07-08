@@ -188,6 +188,7 @@ public class Networking {
                             .setPacketType(YAMLMessage.PACKET_TYPE.request)
                             .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
                             .setRequestFile(fileToSend.getName())
+                            .setObjectNewValue(String.valueOf(fileToSend.length()))
                             .build(),
                     success ->  {
                         if (success) sendFileToServer(serverIP4, serverPort, progressTracker, fileToSend);

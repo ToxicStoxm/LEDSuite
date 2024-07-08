@@ -215,9 +215,7 @@ public class Networking {
                                 .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
                                 .setRequestFile(fileToSend.getName())
                                 .build(),
-                        success -> {
-                            con[0] = true;
-                        }
+                        _ -> con[0] = true
                 );
 
                 while (!con[0]) {}

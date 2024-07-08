@@ -205,13 +205,22 @@ public class Networking {
 
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
+            boolean[] con = new boolean[]{false};
+
             try {
 
-                sendYAMLDefaultHost(YAMLMessage.builder()
-                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                        .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
-                        .setRequestFile(fileToSend.getName()).build());
+                sendYAMLDefaultHost(
+                        YAMLMessage.builder()
+                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
+                                .setRequestFile(fileToSend.getName())
+                                .build(),
+                        success -> {
+                            con[0] = true;
+                        }
+                );
 
+                while (!con[0]) {}
 
                 Socket socket = NetworkHandler.getServer();
 
@@ -231,8 +240,8 @@ public class Networking {
                 //out.write((fileToSend.length()+ "\n").getBytes());
 
                 // sending file name
-                LCCP.logger.debug(id + "Sending file name...");
-                out.write((fileToSend.getName().strip() + "\n").getBytes());
+                //LCCP.logger.debug(id + "Sending file name...");
+                //out.write((fileToSend.getName().strip() + "\n").getBytes());
 
 
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step

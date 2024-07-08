@@ -177,12 +177,32 @@ public class Networking {
             return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, null);
         }
 
-        // send file to server using sockets
         public static boolean sendFile(String serverIP4, int serverPort, String fileToSendPath, ProgressTracker progressTracker) {
-            boolean track = progressTracker != null;
-
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
+            try {
+
+
+            sendYAMLDefaultHost(
+                    YAMLMessage.builder()
+                            .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                            .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
+                            .setRequestFile(fileToSend.getName())
+                            .build(),
+                    success ->  {
+                        if (success) sendFileToServer(serverIP4, serverPort, progressTracker, fileToSend);
+                    }
+            );
+            } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                     YAMLSerializer.InvalidPacketTypeException e) {
+                LCCP.logger.error(e);
+                return false;
+            }
+            return true;
+        }
+        // send file to server using sockets
+        public static boolean sendFileToServer(String serverIP4, int serverPort, ProgressTracker progressTracker, File fileToSend) {
+            boolean track = progressTracker != null;
 
             // getting new network event id from networkLogger
             String id = "[" +
@@ -205,20 +225,7 @@ public class Networking {
 
             LCCP.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIP4 + ":" + serverPort);
 
-            boolean[] con = new boolean[]{false};
-
             try {
-
-                sendYAMLDefaultHost(
-                        YAMLMessage.builder()
-                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
-                                .setRequestFile(fileToSend.getName())
-                                .build(),
-                        _ -> con[0] = true
-                );
-
-                while (!con[0]) {}
 
                 Socket socket = NetworkHandler.getServer();
 
@@ -369,7 +376,7 @@ public class Networking {
                 LCCP.logger.debug(id + "Successfully closed socket and streams!");
                 LCCP.logger.debug(id + "Sending complete!");
 
-            } catch (IOException | YAMLSerializer.YAMLException | ConfigurationException e) {
+            } catch (IOException e) {
                 if (track) progressTracker.setError(true);
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 LCCP.logger.error(e);

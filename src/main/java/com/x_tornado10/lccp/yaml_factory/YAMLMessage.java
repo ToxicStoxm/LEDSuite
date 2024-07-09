@@ -27,6 +27,7 @@ public class YAMLMessage implements YAMLFactoryMessage {
     private double currentDraw = 0;
     private double voltage = 0;
     private boolean lidState = false;
+    private HashMap<String, Object> additionalEntries = new HashMap<>();
     private HashMap<String, String> availableAnimations = new HashMap<>();
     private AnimationMenu animationMenu = AnimationMenu.empty();
 
@@ -149,7 +150,9 @@ public class YAMLMessage implements YAMLFactoryMessage {
         stop,
         menu,
         menu_change,
-        file_upload;
+        file_upload,
+        settings_change,
+        keepalive
     }
 
     public enum REPLY_TYPE {
@@ -269,6 +272,14 @@ public class YAMLMessage implements YAMLFactoryMessage {
         this.animationMenu = animationMenu;
         return this;
     }
+    public YAMLMessage setAdditionalEntries(HashMap<String, Object> additionalEntries) {
+        this.additionalEntries = additionalEntries;
+        return this;
+    }
+    public YAMLMessage addAdditionalEntry(String key, Object value) {
+        additionalEntries.put(key, value);
+        return this;
+    }
 
     @Override
     public String toString() {
@@ -288,12 +299,12 @@ public class YAMLMessage implements YAMLFactoryMessage {
                 sb.append("packetType=").append(packetType.name()).append(", ");
                 sb.append("requestType=").append(requestType.name()).append(", ");
                 switch (requestType) {
-                    case play, pause, stop, menu, menu_change, file_upload -> {
+                    case play, pause, stop, menu, file_upload -> {
                         sb.append("requestFile='").append(requestFile).append("', ");
-                        if (requestType == REQUEST_TYPE.menu_change) {
-                            sb.append("objectPath='").append(objectPath).append("', ");
-                            sb.append("objectNewValue='").append(objectNewValue).append("', ");
-                        }
+                    }
+                    case menu_change, settings_change -> {
+                        sb.append("objectPath='").append(objectPath).append("', ");
+                        sb.append("objectNewValue='").append(objectNewValue).append("', ");
                     }
                 }
             }
@@ -321,6 +332,10 @@ public class YAMLMessage implements YAMLFactoryMessage {
 
         // Remove trailing comma and space
         if (sb.length() > 12) sb.setLength(sb.length() - 2);
+
+        if (!additionalEntries.isEmpty()) {
+            sb.append(", additionalEntries=").append(additionalEntries);
+        }
 
         sb.append('}');
         return sb.toString();

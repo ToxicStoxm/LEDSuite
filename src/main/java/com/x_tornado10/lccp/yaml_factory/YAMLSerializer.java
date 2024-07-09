@@ -2,6 +2,7 @@ package com.x_tornado10.lccp.yaml_factory;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.event_handling.Events;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
@@ -98,6 +99,18 @@ public class YAMLSerializer {
         if (yamlMessage.getRequestFile() != null && !yamlMessage.getRequestFile().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.REQUEST_FILE, yamlMessage.getRequestFile());
         if (yamlMessage.getObjectPath() != null && !yamlMessage.getObjectPath().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_PATH, yamlMessage.getObjectPath());
         if (yamlMessage.getObjectNewValue() != null && !yamlMessage.getObjectNewValue().isBlank()) yaml.setProperty(Paths.NETWORK.YAML.OBJECT_NEW_VALUE, yamlMessage.getObjectNewValue());
+        if (yamlMessage.getRequestType().equals(YAMLMessage.REQUEST_TYPE.settings_change)) {
+            HashMap<String, Object> additionalEntries = yamlMessage.getAdditionalEntries();
+            if (additionalEntries != null && !additionalEntries.isEmpty()) {
+                for (Map.Entry<String, Object> entry : additionalEntries.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    if (key != null && !key.isEmpty() && !key.isBlank() && value != null) {
+                        yaml.setProperty(key, value);
+                    }
+                }
+            }
+        }
         return yaml;
     }
 
@@ -224,13 +237,13 @@ public class YAMLSerializer {
     }
 
     private static void deserializeRequestYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
-        String s0 = yaml.getString(Paths.NETWORK.YAML.REQUEST_TYPE);
+        String replayType = yaml.getString(Paths.NETWORK.YAML.REQUEST_TYPE);
         YAMLMessage.REQUEST_TYPE rT;
         try {
-            rT = YAMLMessage.REQUEST_TYPE.valueOf(s0);
+            rT = YAMLMessage.REQUEST_TYPE.valueOf(replayType);
             yamlMessage.setRequestType(rT);
         } catch (IllegalArgumentException e) {
-            throw new InvalidRequestTypeException("Invalid request type: '" + s0 + "'");
+            throw new InvalidRequestTypeException("Invalid request type: '" + replayType + "'");
         }
 
         switch (rT) {
@@ -247,17 +260,30 @@ public class YAMLSerializer {
                     yamlMessage.setObjectNewValue(objectNewValue);
                 }
             }
+            case settings_change -> {
+                yaml.clearProperty(Paths.NETWORK.YAML.PACKET_TYPE);
+                yaml.clearProperty(Paths.NETWORK.YAML.REQUEST_TYPE);
+                yaml.clearProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+                for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
+                    String key = it.next();
+                    yamlMessage.addAdditionalEntry(key, yaml.getProperty(key));
+                }
+                yaml.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, yamlMessage.getNetworkID().toString());
+                yaml.setProperty(Paths.NETWORK.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
+                yaml.setProperty(Paths.NETWORK.YAML.REQUEST_TYPE, yamlMessage.getRequestTypeV());
+            }
         }
     }
 
     private static void deserializeReplyYAML(YAMLConfiguration yaml, YAMLMessage yamlMessage) throws YAMLException {
-        String s0 = yaml.getString(Paths.NETWORK.YAML.REPLY_TYPE);
+        String replayType = yaml.getString(Paths.NETWORK.YAML.REPLY_TYPE);
+
         YAMLMessage.REPLY_TYPE rT;
         try {
-            rT = YAMLMessage.REPLY_TYPE.valueOf(s0);
+            rT = YAMLMessage.REPLY_TYPE.valueOf(replayType);
             yamlMessage.setReplyType(rT);
         } catch (IllegalArgumentException e) {
-            throw new InvalidReplyTypeException("Invalid reply type: '" + s0 + "'");
+            throw new InvalidReplyTypeException("Invalid reply type: '" + replayType + "'");
         }
 
         switch (rT) {
@@ -270,19 +296,19 @@ public class YAMLSerializer {
         boolean fileIsLoaded = yaml.getBoolean(Paths.NETWORK.YAML.FILE_IS_LOADED);
         yamlMessage.setFileLoaded(fileIsLoaded);
 
-        String s1 = yaml.getString(Paths.NETWORK.YAML.FILE_STATE);
-        String s2 = yaml.getString(Paths.NETWORK.YAML.FILE_SELECTED);
-        if (!s1.isBlank()) {
+        String fileState = yaml.getString(Paths.NETWORK.YAML.FILE_STATE);
+        String fileSelected = yaml.getString(Paths.NETWORK.YAML.FILE_SELECTED);
+        if (!fileState.isBlank()) {
             YAMLMessage.FILE_STATE fS;
             try {
-                fS = YAMLMessage.FILE_STATE.valueOf(s1);
+                fS = YAMLMessage.FILE_STATE.valueOf(fileState);
                 yamlMessage.setFileState(fS);
             } catch (IllegalArgumentException e) {
-                throw new InvalidFileStateException("Invalid file state: '" + s1 + "'");
+                throw new InvalidFileStateException("Invalid file state: '" + fileState + "'");
             }
-            if (s2.isBlank()) throw new InvalidFileSelectedException("Selected file name mustn't be empty if file state is given!");
+            if (fileSelected.isBlank()) throw new InvalidFileSelectedException("Selected file name mustn't be empty if file state is given!");
             else {
-                yamlMessage.setFileSelected(s2);
+                yamlMessage.setFileSelected(fileSelected);
             }
         }
 

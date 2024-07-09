@@ -25,12 +25,9 @@ Local-Settings:
     # Toggles automatic IPv4 check that is performed when changing the cube IPv4
     # If disabled, connection may fail on the next remote update attempt
     Check-IPv4: true
-    # If the app should try to automatically update remote settings after changes were detected
-    # If set to false the user needs to manually press sync settings button
-    Auto-Update-Remote: false
-    # Time interval between sending update packages to cube
-    # Value in seconds
-    Auto-Update-Remote-Tick: 1.5
+    # Minimum delay between network packets (Seconds)
+    # Increasing this number may help if you're experiencing issues with network connection
+    Network-Communication-Clock-Speed: 0.01
   User-Preferences:
     # Default directory to open when selecting files
     # You can change this as you like, but it will also be updated automatically based on the last pick:

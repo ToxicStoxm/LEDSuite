@@ -91,7 +91,7 @@ public class StatusUpdate {
         if (!availableAnimations.isEmpty()) {
             sb.append("Available Animations: [");
             for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
-                sb.append("Name: '").append(entry.getKey()).append("' Gnome Icon Name: '").append(entry.getValue()).append("', ");
+                sb.append("Name: '").append(entry.getKey()).append("' GNOME Icon Name: '").append(entry.getValue()).append("', ");
             }
             sb.deleteCharAt(sb.length() - 1);
             sb.deleteCharAt(sb.length() - 1);
@@ -106,5 +106,15 @@ public class StatusUpdate {
     public int hashCode() {
         if (notConnected.contains(this.uuid)) return -1;
         return Objects.hash(isFileLoaded, fileState, fileSelected, currentDraw, voltage, lidState, availableAnimations);
+    }
+
+    public String minimal() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("State: ");
+        if (isFileLoaded) {
+            sb.append(fileState.name());
+            sb.append("  |   Filename: ").append(fileSelected);
+        } else sb.append("idle");
+        return sb.toString();
     }
 }

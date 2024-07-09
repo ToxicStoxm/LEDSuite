@@ -54,7 +54,7 @@ public class Window extends ApplicationWindow implements EventListener {
         this.setIconName("LCCP-logo-256x256");
 
         // settings auto update to user specified value
-        setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
+        //setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
 
         // toast overlay used to display toasts (notification) to the user
         toastOverlay = new ToastOverlay();
@@ -613,7 +613,7 @@ public class Window extends ApplicationWindow implements EventListener {
         return sD != null;
     }
     // toggle auto update option for the settings dialog
-    public void setAutoUpdate(boolean active) {
+    /*public void setAutoUpdate(boolean active) {
         if (autoUpdate == active) return;
         LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
         // if auto updating isn't active and should be activated
@@ -630,14 +630,14 @@ public class Window extends ApplicationWindow implements EventListener {
         }
         // current auto updating status is set based on the provided value 'active'
         autoUpdate = active;
-    }
+    }*/
 
     public void resetSettingsDialog() {
         this.sD = null;
     }
 
     public void updateStatus(StatusUpdate statusUpdate) {
-        status.setTitle(statusUpdate.toString());
+        status.setTitle(statusUpdate.minimal());
     }
 
     @EventHandler

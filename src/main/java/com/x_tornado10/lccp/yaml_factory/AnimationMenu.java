@@ -10,10 +10,14 @@ import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConversionException;
 
 import java.util.*;
-
+@Getter
 public class AnimationMenu implements Container {
     private TreeMap<Integer, WidgetMain> content;
     private UUID networkID;
+    @Setter
+    private String label;
+    @Setter
+    private String icon;
     private boolean empty = false;
 
     public AnimationMenu(UUID networkID) {
@@ -35,6 +39,10 @@ public class AnimationMenu implements Container {
         UUID networkID = UUID.fromString(yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
         AnimationMenu menu = new AnimationMenu(networkID);
         yaml.clearProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+        menu.setLabel(Paths.NETWORK.YAML.MENU.WIDGET_LABEL);
+        menu.setIcon(Paths.NETWORK.YAML.MENU.WIDGET_ICON);
+        yaml.clearProperty(Paths.NETWORK.YAML.MENU.WIDGET_LABEL);
+        yaml.clearProperty(Paths.NETWORK.YAML.MENU.WIDGET_ICON);
         String id = "[" + networkID + "] ";
 
         LCCP.logger.debug(id + "Fulfilling deserialization request!");
@@ -115,7 +123,7 @@ public class AnimationMenu implements Container {
                 //button.setWidgetName(initialWidget.widgetName);
 
 
-                button.icon =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.BUTTON_ICON) );
+                button.icon =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_ICON) );
                 button.row = yaml.getBoolean(Paths.NETWORK.YAML.MENU.BUTTON_ROW);
 
                 return button;
@@ -227,11 +235,6 @@ public class AnimationMenu implements Container {
                 dropdown.setStyle(initialWidget.style);
 
                 dropdown.content = validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
-                try {
-                    dropdown.display_selected = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_DISPLAY_SELECTED);
-                } catch (NoSuchElementException e) {
-                    LCCP.logger.debug(id + "Dropdown display_selected not set. Using default value instead!");
-                }
                 dropdown.searchable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_SEARCHABLE);
                 dropdown.selected = yaml.getInt(Paths.NETWORK.YAML.MENU.DROPDOWN_SELECTED);
                 dropdown.dropdown = yaml.getList(String.class, Paths.NETWORK.YAML.MENU.DROPDOWN);
@@ -324,6 +327,7 @@ public class AnimationMenu implements Container {
     }
 
 
+    @Getter
     public static class AnimationMenuGroup extends WidgetMain implements Container {
         private TreeMap<Integer, WidgetMain> content;
         private WidgetMain suffix;
@@ -341,7 +345,9 @@ public class AnimationMenu implements Container {
 
 
     public static class Widgets {
-        protected static class Button extends WidgetMain {
+
+        @Getter
+        public static class Button extends WidgetMain {
             private String icon = "";
             private boolean row = true;
             public Button() {
@@ -349,14 +355,16 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Property extends WidgetMain {
+        @Getter
+        public static class Property extends WidgetMain {
             private String content = "";
             public Property() {
                 super(WidgetType.property);
             }
         }
 
-        protected static class Switch extends WidgetMain {
+        @Getter
+        public static class Switch extends WidgetMain {
             private boolean value;
 
             public Switch() {
@@ -364,7 +372,8 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Slider extends WidgetMain {
+        @Getter
+        public static class Slider extends WidgetMain {
             private double min = 0;
             private double max = 100;
             private double step = 1;
@@ -380,7 +389,8 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Entry extends WidgetMain {
+        @Getter
+        public static class Entry extends WidgetMain {
             private String content = "";
             private boolean editable = true;
             private boolean applyButton = true;
@@ -390,7 +400,8 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Expander extends WidgetMain implements Container {
+        @Getter
+        public static class Expander extends WidgetMain implements Container {
             private TreeMap<Integer, WidgetMain> content;
             private boolean toggleable = false;
             private boolean value = false;
@@ -405,9 +416,9 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Dropdown extends WidgetMain {
+        @Getter
+        public static class Dropdown extends WidgetMain {
             private String content = "";
-            private boolean display_selected = false;
             private boolean searchable = true;
             private int selected = -1;
             private List<String> dropdown;
@@ -418,7 +429,8 @@ public class AnimationMenu implements Container {
             }
         }
 
-        protected static class Spinner extends WidgetMain {
+        @Getter
+        public static class Spinner extends WidgetMain {
             private double time;
 
             public Spinner() {

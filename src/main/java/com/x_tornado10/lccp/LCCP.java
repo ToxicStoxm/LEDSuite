@@ -333,7 +333,7 @@ public class LCCP implements EventListener {
         // reloading values that may've changed
         mainWindow.setTitle(settings.getWindowTitle());
         mainWindow.setResizable(settings.isWindowResizeable());
-        mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
+        //mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
     }
     // listener function for startup event
     @EventHandler

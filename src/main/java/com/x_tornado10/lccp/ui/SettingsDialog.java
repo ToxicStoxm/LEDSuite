@@ -1,8 +1,8 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.Paths;
 import com.x_tornado10.lccp.event_handling.Events;
-import com.x_tornado10.lccp.logging.Logger;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.communication.network.Networking;
@@ -32,7 +32,7 @@ public class SettingsDialog extends PreferencesDialog {
         temp = new Boolean[3];
         temp[0] = true;
         temp[1] = LCCP.settings.isDisplayStatusBar();
-        temp[2] = LCCP.settings.isAutoUpdateRemote();
+        //temp[2] = LCCP.settings.isAutoUpdateRemote();
 
         this.onClosed(() -> LCCP.mainWindow.resetSettingsDialog());
     }
@@ -50,7 +50,7 @@ public class SettingsDialog extends PreferencesDialog {
         // creating switch row to toggle the status bar
         var statusBarToggle = SwitchRow.builder()
                 .setActive(LCCP.mainWindow.isBannerVisible())
-                .setTitle("Toggle status bar")
+                .setTitle("Status Bar")
                 .setTooltipText("Toggles the small status bar on the main window.")
                 .build();
         // enabled the status bar if it's not already activated
@@ -68,7 +68,7 @@ public class SettingsDialog extends PreferencesDialog {
         generalSettings.add(statusBarToggle);
 
         //
-        var autoUpdateRemoteToggle = SwitchRow.builder()
+        /*var autoUpdateRemoteToggle = SwitchRow.builder()
                 .setActive(LCCP.settings.isAutoUpdateRemote())
                 .setTitle("Toggle autoupdate remote")
                 .setTooltipText("Toggles autoupdates for the cube settings. Manual / Auto")
@@ -81,7 +81,7 @@ public class SettingsDialog extends PreferencesDialog {
                 temp[2] = active;
             }
         });
-        generalSettings.add(autoUpdateRemoteToggle);
+        generalSettings.add(autoUpdateRemoteToggle);*/
 
         user_pref_page.add(generalSettings);
 
@@ -100,14 +100,16 @@ public class SettingsDialog extends PreferencesDialog {
         brightnessRow.onOutput(() -> {
             double val = brightnessRow.getValue();
             if (prev1 != val) {
-                LCCP.logger.debug(String.valueOf(brightnessRow.getValue()));
-                LCCP.server_settings.setLED_Brightness((float) val);
+                float newValue = (float) val;
+                LCCP.logger.debug("Brightness changed: -> " + brightnessRow.getValue());
+                LCCP.server_settings.setLED_Brightness(newValue);
+                LCCP.eventManager.fireEvent(new Events.SettingChanged(Paths.Server_Config.BRIGHTNESS, newValue));
                 prev1 = val;
             }
             return false;
         });
         this.setCanClose(true);
-        onClosed(this::stopRemoteUpdate);
+        //onClosed(this::stopRemoteUpdate);
         serverSettings.add(brightnessRow);
 
         var spinner = new Spinner();
@@ -208,13 +210,13 @@ public class SettingsDialog extends PreferencesDialog {
         });
         serverSettings.add(port);
 
-        if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
+        //if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
 
         user_pref_page.add(serverSettings);
         return user_pref_page;
     }
 
-    private ActionRow manualRemoteApplySwitchRow = null;
+    /*private ActionRow manualRemoteApplySwitchRow = null;
     private ActionRow getManualRemoteApplySwitchRow() {
         if (manualRemoteApplySwitchRow == null) {
             manualRemoteApplySwitchRow = new ActionRow();
@@ -246,12 +248,12 @@ public class SettingsDialog extends PreferencesDialog {
 
     public void removeManualRemoteApplySwitch() {
         if (serverSettings != null) serverSettings.remove(getManualRemoteApplySwitchRow());
-    }
+    }*/
 
     @Override
     public void present(Widget parent) {
         LCCP.logger.debug("Fulfilling SettingsDialog present request!");
-        if (LCCP.settings.isAutoUpdateRemote()) startRemoteUpdate();
+        //if (LCCP.settings.isAutoUpdateRemote()) startRemoteUpdate();
         if (temp[0]) {
             add(get_user_pref_page());
             temp[0] = false;
@@ -259,7 +261,7 @@ public class SettingsDialog extends PreferencesDialog {
         super.present(parent);
     }
 
-    public void startRemoteUpdate() {
+    /*public void startRemoteUpdate() {
         autoUpdateRemote = new LCCPRunnable() {
             @Override
             public void run() {
@@ -273,5 +275,5 @@ public class SettingsDialog extends PreferencesDialog {
             autoUpdateRemote.cancel();
             LCCP.logger.debug("Stopped autoRemoteUpdateTask " + autoUpdateRemote + " !");
         }
-    }
+    }*/
 }

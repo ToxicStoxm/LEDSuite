@@ -46,10 +46,11 @@ public final class Paths {
         public static final String WINDOW_DEFAULT_HEIGHT = WINDOW_SECTION + SEPARATOR + "Window-Default-Height";
         public static final String LOG_LEVEL = LOGGING_SECTION + SEPARATOR + "Log-Level";
         public static final String SELECTION_DIR = USER_PREFERENCES_SECTION + SEPARATOR + "Default-Selection-Dir";
-        public static final String AUTO_UPDATE_REMOTE = NETWORK_SECTION + SEPARATOR + "Auto-Update-Remote";
+        //public static final String AUTO_UPDATE_REMOTE = NETWORK_SECTION + SEPARATOR + "Auto-Update-Remote";
         public static final String DISPLAY_STATUS_BAR = USER_PREFERENCES_SECTION + SEPARATOR + "Display-Status-Bar";
-        public static final String AUTO_UPDATE_REMOTE_TICK = NETWORK_SECTION + SEPARATOR + "Auto-Update-Remote-Tick";
+        //public static final String AUTO_UPDATE_REMOTE_TICK = NETWORK_SECTION + SEPARATOR + "Auto-Update-Remote-Tick";
         public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
+        public static final String NETWORK_COMMUNICATION_CLOCK_SPEED = NETWORK_SECTION + SEPARATOR + "Network-Communication-Clock-Speed";
         public static final String AUTO_PLAY_AFTER_UPLOAD = USER_PREFERENCES_SECTION + SEPARATOR + "Auto-Play-After-Upload";
     }
     // yaml paths for server_config
@@ -75,6 +76,7 @@ public final class Paths {
             public static final String PACKET_TYPE = "packet_type";
             public static final String REQUEST_TYPE = "request_type";
             public static final String REQUEST_FILE = "request_file";
+            public static final String KEEPALIVE = "keepalive";
             public static final String OBJECT_PATH = "object_path";
             public static final String OBJECT_NEW_VALUE = "object_new_value";
             public static final String REPLY_TYPE = "reply_type";
@@ -101,9 +103,7 @@ public final class Paths {
                 public static final String WIDGET_TOOLTIP = "tooltip";
                 public static final String WIDGET_CONTENT = "content";
                 public static final String WIDGET_VALUE = "value";
-                public static final String WIDGET_NAME = "widget-name";
-
-                public static final String BUTTON_ICON = "icon";
+                public static final String WIDGET_ICON = "icon";
                 public static final String BUTTON_ROW = "row";
 
                 public static final String SLIDER_MIN = "min";

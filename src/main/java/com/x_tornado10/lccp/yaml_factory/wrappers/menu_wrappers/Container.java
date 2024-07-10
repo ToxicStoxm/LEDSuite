@@ -3,31 +3,29 @@ package com.x_tornado10.lccp.yaml_factory.wrappers.menu_wrappers;
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.Paths;
 import com.x_tornado10.lccp.yaml_factory.AnimationMenu;
-import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.Configuration;
 
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.UUID;
 
 public interface Container {
-    TreeMap<String, TreeMap<Integer, AnimationMenu.WidgetMain>> contents = new TreeMap<>();
-    default TreeMap<Integer, AnimationMenu.WidgetMain> content() {
+    TreeMap<String, TreeMap<Integer, AnimationMenu.LCCPWidget>> contents = new TreeMap<>();
+    default TreeMap<Integer, AnimationMenu.LCCPWidget> content() {
         contents.putIfAbsent(getClass().getName(), new TreeMap<>());
         return contents.get(getClass().getName());
     }
 
-    default void putWidget(Integer pos, AnimationMenu.WidgetMain widgetMain, String id) {
-        LCCP.logger.debug(id + "Putting widget [" + widgetMain + " (Gist: " + AnimationMenu.stringifyWidget(widgetMain, pos) + ")] into parent widget [" + getClass().getName() + "]!");
-        putWidget(pos, widgetMain, false);
+    default void putWidget(Integer pos, AnimationMenu.LCCPWidget LCCPWidget, String id) {
+        LCCP.logger.debug(id + "Putting widget [" + LCCPWidget + " (Gist: " + AnimationMenu.stringifyWidget(LCCPWidget, pos) + ")] into parent widget [" + getClass().getName() + "]!");
+        putWidget(pos, LCCPWidget, false);
     }
 
-    default void putWidget(Integer pos, AnimationMenu.WidgetMain widgetMain, boolean force) {
-        if (force) content().put(pos, widgetMain);
-        else content().putIfAbsent(pos, widgetMain);
+    default void putWidget(Integer pos, AnimationMenu.LCCPWidget LCCPWidget, boolean force) {
+        if (force) content().put(pos, LCCPWidget);
+        else content().putIfAbsent(pos, LCCPWidget);
     }
 
-    default void deserialize_children(Configuration contentSubset, String id, String parent) {
+    default void deserialize_children(Configuration contentSubset, String id, String parent, String parentPath) {
 
         LCCP.logger.debug(id + "Received request to deserialize children.");
         int i = 0;
@@ -54,16 +52,17 @@ public interface Container {
                 String child = System.currentTimeMillis() + "_" + i + ": Type: " + type;
 
                 LCCP.logger.debug(id + "Requesting deserialization for child " + child + " (Parent: [" + parent + "])!");
+                String path = parentPath.isBlank() ? s : parentPath + "." + s;
 
                 // using the widgets deserialization function to deserialize the widget
-                AnimationMenu.WidgetMain widgetMain = widget.deserialize(widgetSubset, id);
+                AnimationMenu.LCCPWidget LCCPWidget = widget.deserialize(widgetSubset, id, path);
 
                 //LCCP.logger.debug(id + "Putting deserialized child " + child + " into " + parent + "!");
 
                 // adding the widget to the corresponding group at the specified position
                 this.putWidget(
                         Integer.parseInt(s.replace(Paths.NETWORK.YAML.MENU.WIDGET_PREFIX, "").replace(Paths.NETWORK.YAML.MENU.GROUP_PREFIX, "")), // getting widget position from yaml
-                        widgetMain,
+                        LCCPWidget,
                         id
                 );
                 i++;

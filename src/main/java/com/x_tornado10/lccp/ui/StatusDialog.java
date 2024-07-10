@@ -204,7 +204,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
             return new LCCPRunnable() {
                 @Override
                 public void run() {
-                    LCCP.mainWindow.getStatus();
+                    LCCP.mainWindow.getStatus(_ -> {});
                     if (System.currentTimeMillis() - lastUpdate >= maxDelay) configure(StatusUpdate.notConnected());
                 }
             }.runTaskTimerAsynchronously(0, 1000);

@@ -80,6 +80,7 @@ public class StatusUpdate {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        if (this.isNotConnected()) return "Not connected!";
         sb.append("Current File: ");
         if (isFileLoaded) {
             sb.append("'").append(fileSelected).append("' ");
@@ -111,10 +112,14 @@ public class StatusUpdate {
     public String minimal() {
         StringBuilder sb = new StringBuilder();
         sb.append("State: ");
-        if (isFileLoaded) {
-            sb.append(fileState.name());
-            sb.append("  |   Filename: ").append(fileSelected);
-        } else sb.append("idle");
+        if (this.isNotConnected()) {
+            sb.append("not connected");
+        } else {
+            if (isFileLoaded) {
+                sb.append(fileState.name());
+                sb.append("  |   Filename: ").append(fileSelected);
+            } else sb.append("idle");
+        }
         return sb.toString();
     }
 }

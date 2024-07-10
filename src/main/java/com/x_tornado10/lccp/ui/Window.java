@@ -9,6 +9,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.communication.network.Networking;
 import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
@@ -26,6 +27,10 @@ import org.gnome.pango.EllipsizeMode;
 import org.gnome.pango.Pango;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.x_tornado10.lccp.yaml_factory.AnimationMenu.capitalizeFirstLetter;
 
 // main application window
 public class Window extends ApplicationWindow implements EventListener {
@@ -39,6 +44,8 @@ public class Window extends ApplicationWindow implements EventListener {
     public ToolbarView rootView = null;
     public ProgressBar progressBar = null;
     private Revealer SidebarSpinner = null;
+    private HashMap<String, String> availableAnimations;
+    private Map.Entry<String, String> currentAnimation = null;
 
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
@@ -57,7 +64,7 @@ public class Window extends ApplicationWindow implements EventListener {
         //setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
 
         // toast overlay used to display toasts (notification) to the user
-        toastOverlay = new ToastOverlay();
+        toastOverlay = ToastOverlay.builder().build();
 
         // the applications header bar
         var headerBar = new HeaderBar();
@@ -73,6 +80,8 @@ public class Window extends ApplicationWindow implements EventListener {
             wipToast.setTimeout(1);
             toastOverlay.addToast(wipToast);
         });
+
+        availableAnimations = new HashMap<>();
 
         // creating and configuring menu button
         var mbutton = new MenuButton();
@@ -231,60 +240,184 @@ public class Window extends ApplicationWindow implements EventListener {
         var mainContent = new Box(Orientation.VERTICAL, 0);
         mainContent.setHomogeneous(false);
         // creating north / center / south containers to correctly align window content
-        var northBox = new Box(Orientation.VERTICAL, 0);
-        var centerBox = Box.builder()
+        var TopBox = new Box(Orientation.VERTICAL, 0);
+        var CenterBox = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
                 .setSpacing(0)
                 .setValign(Align.CENTER)
                 .build();
-        var southBox = new Box(Orientation.VERTICAL, 0);
         // set vertical expanding to true for the center box, so it pushed the north box to the top of the window and the south box to the bottom
-        centerBox.setVexpand(true);
+        CenterBox.setVexpand(true);
         // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
-        southBox.setValign(Align.END);
 
         // toggling status bar visibility depending on user preferences
         setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
         // adding the header bar container to the north box
-        northBox.append(status);
+        TopBox.append(status);
 
-        // adding the toast overlay to the south box
-        southBox.append(toastOverlay);
-
-
-        var NorthRevealer = Revealer.builder()
-                .setChild(northBox)
+        var TopRevealer = Revealer.builder()
+                .setChild(TopBox)
                 .setRevealChild(true)
                 .build();
-        NorthRevealer.setTransitionType(RevealerTransitionType.SLIDE_DOWN);
+        TopRevealer.setTransitionType(RevealerTransitionType.SLIDE_DOWN);
         var CenterRevealer = Revealer.builder()
-                .setChild(centerBox)
+                .setChild(CenterBox)
                 .setRevealChild(true)
                 .build();
         CenterRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
-        var SouthRevealer = Revealer.builder()
-                .setChild(southBox)
-                .setRevealChild(true)
-                .build();
-        SouthRevealer.setTransitionType(RevealerTransitionType.SLIDE_UP);
-
-
 
         // adding all alignment boxes to the main window container
-        mainContent.append(NorthRevealer);
+        mainContent.append(TopRevealer);
         mainContent.append(CenterRevealer);
-        mainContent.append(
-                Clamp.builder()
-                        .setChild(SouthRevealer)
-                        .setOrientation(Orientation.VERTICAL)
-                        .setMaximumSize(85)
-                        .setTighteningThreshold(85)
-                        .build()
-        );
 
-        var mainView = ToolbarView.builder().setContent(mainContent).build();
+        var playPauseButton = Button.builder()
+                .setIconName("media-playback-start-symbolic")
+                .setName("play")
+                .setCssClasses(new String[]{"osd", "circular"})
+                .build();
+        var stopButton = Button.builder()
+                .setIconName("media-playback-stop-symbolic")
+                .setName("stop")
+                .setCssClasses(new String[]{"osd", "circular"})
+                .build();
+
+        var StopRevealer = Revealer.builder()
+                .setRevealChild(false)
+                .setChild(stopButton)
+                .build();
+        StopRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
+
+        TimeManager.initTimeTracker("control_buttons", 500);
+
+        AtomicBoolean allowPlayPause = new AtomicBoolean(true);
+        String playState = "play";
+        String pauseState = "pause";
+        playPauseButton.onClicked(() -> {
+            if (!TimeManager.call("control_buttons")) return;
+            String state = playPauseButton.getName();
+            if (allowPlayPause.get() && currentAnimation != null && availableAnimations.containsKey(currentAnimation.getKey())) {
+                if (state.equals(playState)) {
+                    try {
+                        Networking.Communication.sendYAMLDefaultHost(
+                                YAMLMessage.builder()
+                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                        .setRequestFile(currentAnimation.getKey())
+                                        .build(),
+                                success -> {
+                                    if (!success) {
+                                        errorFeedback(playPauseButton, allowPlayPause);
+                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                                    } else {
+                                        playPauseButton.setName("pause");
+                                        playPauseButton.setIconName("media-playback-pause-symbolic");
+                                        LCCP.logger.debug("Successfully send " + state + " request for " + currentAnimation.getKey() + "!");
+                                        StopRevealer.setRevealChild(true);
+                                    }
+                                }
+                        );
+                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
+                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                    }
+                } else if (state.equals(pauseState)) {
+                    try {
+                        Networking.Communication.sendYAMLDefaultHost(
+                                YAMLMessage.builder()
+                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                        .setRequestType(YAMLMessage.REQUEST_TYPE.pause)
+                                        .setRequestFile(currentAnimation.getKey())
+                                        .build(),
+                                success -> {
+                                    if (!success) {
+                                        errorFeedback(playPauseButton, allowPlayPause);
+                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                                    } else {
+                                        playPauseButton.setName("play");
+                                        playPauseButton.setIconName("media-playback-start-symbolic");
+                                        LCCP.logger.debug("Successfully send " + state + " request for " + currentAnimation.getKey() + "!");
+                                    }
+
+                                }
+                        );
+                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
+                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                    }
+                }
+            } else errorFeedback(playPauseButton, allowPlayPause);
+        });
+        AtomicBoolean allowStop = new AtomicBoolean(true);
+        stopButton.onClicked(() -> {
+            if (!TimeManager.call("control_buttons")) return;
+            if (allowStop.get() && currentAnimation != null && availableAnimations.containsKey(currentAnimation.getKey())) {
+                try {
+                    Networking.Communication.sendYAMLDefaultHost(
+                            YAMLMessage.builder()
+                                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                    .setRequestType(YAMLMessage.REQUEST_TYPE.stop)
+                                    .setRequestFile(currentAnimation.getKey())
+                                    .build(),
+                            success -> {
+                                if (!success) {
+                                    errorFeedback(stopButton, allowStop);
+                                    LCCP.logger.error("Stop request for " + currentAnimation.getKey() + " failed!");
+                                } else {
+                                    StopRevealer.setRevealChild(false);
+                                    playPauseButton.setIconName("media-playback-start-symbolic");
+                                    playPauseButton.setName("play");
+                                    LCCP.logger.debug("Successfully send Stop request for " + currentAnimation.getKey() + "!");
+                                }
+                            }
+                    );
+                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
+                    LCCP.logger.error("Stop request for " + currentAnimation.getKey() + " failed!");
+
+                }
+            } else errorFeedback(stopButton, allowStop);
+        });
+
+        var controlButtons = Box.builder()
+                .setOrientation(Orientation.HORIZONTAL)
+                .setSpacing(10)
+                .build();
+        controlButtons.append(StopRevealer);
+        controlButtons.append(playPauseButton);
+
+        var controlButtonsRevealer = Revealer.builder()
+                .setChild(controlButtons)
+                .setRevealChild(false)
+                .build();
+        controlButtonsRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
+
+        var controlButtonsWrapper = Clamp.builder()
+                .setChild(controlButtonsRevealer)
+                .setOrientation(Orientation.VERTICAL)
+                .setMaximumSize(30)
+                .setMarginEnd(30)
+                .setMarginBottom(25)
+                .setTighteningThreshold(30)
+                .setHalign(Align.END)
+                .build();
+
+        toastOverlay.setValign(Align.END);
+        toastOverlay.setHalign(Align.CENTER);
+        var mainView = ToolbarView.builder()
+                .setContent(mainContent)
+                .build();
+        mainView.setBottomBarStyle(ToolbarStyle.FLAT);
+
         mainView.addTopBar(headerBar);
+
+        var overlay = Overlay.builder().setChild(mainView).build();
+        overlay.addOverlay(toastOverlay);
+        controlButtonsWrapper.setHalign(Align.END);
+        controlButtonsWrapper.setValign(Align.END);
+        overlay.addOverlay(controlButtonsWrapper);
+
         mainView.setTopBarStyle(ToolbarStyle.FLAT);
 
         var overlaySplitView = new OverlaySplitView();
@@ -292,7 +425,7 @@ public class Window extends ApplicationWindow implements EventListener {
         overlaySplitView.setEnableHideGesture(true);
         overlaySplitView.setEnableShowGesture(true);
 
-        overlaySplitView.setContent(mainView);
+        overlaySplitView.setContent(overlay);
         overlaySplitView.setSidebarWidthUnit(LengthUnit.PX);
         overlaySplitView.setSidebarWidthFraction(0.2);
         overlaySplitView.setShowSidebar(sideBarVisible);
@@ -352,40 +485,46 @@ public class Window extends ApplicationWindow implements EventListener {
         SidebarSpinner = Revealer.builder().setChild(spinnerBox).setRevealChild(true).build();
         SidebarSpinner.setTransitionType(RevealerTransitionType.CROSSFADE);
 
-        final ListBoxRow[] current = new ListBoxRow[]{new ListBoxRow()};
-
+        AtomicReference<ListBoxRow> current = new AtomicReference<>(new ListBoxRow());
 
         addFileList.onRowActivated(_ -> {
+            controlButtonsRevealer.setRevealChild(false);
             LCCP.logger.debug("Clicked add file row!");
             CenterRevealer.setRevealChild(false);
-            if (centerBox.getFirstChild() != null) centerBox.remove(centerBox.getFirstChild());
-            centerBox.setValign(Align.START);
-            centerBox.append(new AddFileDialog());
+            if (CenterBox.getFirstChild() != null) CenterBox.remove(CenterBox.getFirstChild());
+            CenterBox.setValign(Align.START);
+            CenterBox.append(new AddFileDialog());
             animationsList.setSelectionMode(SelectionMode.NONE);
             animationsList.setSelectionMode(SelectionMode.BROWSE);
             CenterRevealer.setRevealChild(true);
         });
 
         animationsList.onRowActivated(row -> {
-            if (current[0] == row) return;
-            current[0] = row;
+            controlButtonsRevealer.setRevealChild(true);
+            if (current.get() == row) return;
+            current.set(row);
             if (!row.getSelectable()) return;
-            if (centerBox.getFirstChild() != null) {
+            if (CenterBox.getFirstChild() != null) {
                 CenterRevealer.setRevealChild(false);
-                centerBox.remove(centerBox.getFirstChild());
+                CenterBox.remove(CenterBox.getFirstChild());
             }
-            centerBox.setValign(Align.CENTER);
-            boolean[] spinner = new boolean[]{true};
+            CenterBox.setValign(Align.CENTER);
+            AtomicBoolean spinner = new AtomicBoolean(true);
             new LCCPRunnable() {
                 @Override
                 public void run() {
-                    if (spinner[0]) {
-                        centerBox.append(Spinner.builder().setSpinning(true).build());
+                    if (spinner.get()) {
+                        CenterBox.append(Spinner.builder().setSpinning(true).build());
                         CenterRevealer.setRevealChild(true);
                     }
                 }
             }.runTaskLaterAsynchronously(500);
             String rowName = row.getName();
+            if (!availableAnimations.containsKey(rowName)) LCCP.logger.warn("Requesting menu for unknown animation menu! Name: '" + rowName + "'");
+            else {
+                String icon = availableAnimations.get(rowName);
+                currentAnimation = new AbstractMap.SimpleEntry<>(rowName, icon);
+            }
             try {
                 Networking.Communication.sendYAMLDefaultHost(
                         YAMLMessage.builder()
@@ -419,14 +558,14 @@ public class Window extends ApplicationWindow implements EventListener {
                                     LCCP.logger.debug(yaml.getAnimationMenu().toString());
                                     String id = "[" + yaml.getNetworkID() + "] ";
                                     LCCP.logger.debug(id + "Converting animation menu to displayable menu!");
-                                    spinner[0] = false;
+                                    spinner.set(false);
                                     CenterRevealer.setRevealChild(false);
-                                    if (centerBox.getFirstChild() != null) {
+                                    if (CenterBox.getFirstChild() != null) {
                                         CenterRevealer.setRevealChild(false);
-                                        centerBox.remove(centerBox.getFirstChild());
+                                        CenterBox.remove(CenterBox.getFirstChild());
                                     }
-                                    centerBox.setValign(Align.START);
-                                    centerBox.append(AnimationMenu.display(yaml.getAnimationMenu()));
+                                    CenterBox.setValign(Align.START);
+                                    CenterBox.append(AnimationMenu.display(yaml.getAnimationMenu()));
                                     LCCP.logger.debug(id + "Displaying converted menu!");
                                     CenterRevealer.setRevealChild(true);
                                 } else throw new DefaultHandleException("Unexpected response!");
@@ -441,7 +580,6 @@ public class Window extends ApplicationWindow implements EventListener {
             LCCP.logger.debug("AnimationSelected: " + rowName);
             addFileList.setSelectionMode(SelectionMode.NONE);
             addFileList.setSelectionMode(SelectionMode.BROWSE);
-            //animationActivate();
         });
         sidebarContentBox.append(addFileList);
         sidebarContentBox.append(Separator.builder().build());
@@ -475,7 +613,7 @@ public class Window extends ApplicationWindow implements EventListener {
             }
         });
 
-        final boolean[] temp = {false};
+        AtomicBoolean temp = new AtomicBoolean(false);
 
         int min = 680;
 
@@ -488,14 +626,14 @@ public class Window extends ApplicationWindow implements EventListener {
                     return;
                 }
                 if (getWidth() <= min) {
-                    if (!temp[0]) {
-                        temp[0] = true;
+                    if (!temp.get()) {
+                        temp.set(true);
                         overlaySplitView.setCollapsed(true);
                         sideBarToggleButton.setVisible(true);
                         LCCP.logger.debug("Window with <= " + min + ". Collapsing sidebar");
                     }
                 } else {
-                    temp[0] = false;
+                    temp.set(false);
                     overlaySplitView.setCollapsed(false);
                     sideBarToggleButton.setVisible(false);
                 }
@@ -518,6 +656,19 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // adding the main container to the window
         this.setContent(rootView);
+    }
+
+    public void errorFeedback(Button button, AtomicBoolean bool) {
+        if (!bool.get()) return;
+        bool.set(false);
+        button.setCssClasses(new String[]{"circular", "destructive-action"});
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                button.setCssClasses(new String[]{"circular", "osd"});
+                bool.set(true);
+            }
+        }.runTaskLaterAsynchronously(750);
     }
 
     public HashMap<String, String> constructMap(String regex, String... entries) {
@@ -561,13 +712,13 @@ public class Window extends ApplicationWindow implements EventListener {
         attr.change(Pango.attrScaleNew(1));
         return attr;
     }
-    protected void getStatus() {
+    protected void getStatus(Networking.Communication.FinishCallback callback) {
         try {
             Networking.Communication.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
                             .setPacketType(YAMLMessage.PACKET_TYPE.request)
                             .setReplyType(YAMLMessage.REPLY_TYPE.status)
                             .build(),
-                    null,
+                    callback,
                     new LCCPProcessor() {
                         @Override
                         public void run(YAMLMessage yaml) {
@@ -590,7 +741,9 @@ public class Window extends ApplicationWindow implements EventListener {
             @Override
             public void run() {
                 if (!status.getRevealed()) return;
-                getStatus();
+                getStatus(success -> {
+                    if (!success) updateStatus(StatusUpdate.notConnected());
+                });
                 // updating status bar to show current status
                 //status.setTitle("LED-Cube-Status: " + getStatus());
             }
@@ -698,24 +851,24 @@ public class Window extends ApplicationWindow implements EventListener {
 
         List<ListBoxRow> anims = new ArrayList<>();
 
-        for (Map.Entry<String, String> entry : statusUpdate.getAvailableAnimations().entrySet()) {
+        availableAnimations = statusUpdate.getAvailableAnimations();
 
-
-            var b = Box.builder()
+        for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
+            var availableAnimation = Box.builder()
                     .setOrientation(Orientation.HORIZONTAL)
                     .setTooltipText("Open " + entry.getKey() + " settings menu")
                     .setName(entry.getKey())
                     .setSpacing(10)
                     .build();
-            b.append(Image.fromIconName(entry.getValue()));
-            b.append(
+            availableAnimation.append(Image.fromIconName(entry.getValue()));
+            availableAnimation.append(
                     Label.builder()
                             .setLabel(entry.getKey())
                             .setEllipsize(EllipsizeMode.END)
                             .setXalign(0)
                             .build()
             );
-            ListBoxRow row = listBoxWrap(b);
+            ListBoxRow row = listBoxWrap(availableAnimation);
             if (entry.getKey().equals(name)) selectedRow = row;
             anims.add(row);
         }

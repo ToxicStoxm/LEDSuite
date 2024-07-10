@@ -8,6 +8,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
@@ -181,19 +182,17 @@ public class Networking {
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
             try {
-
-
-            sendYAMLDefaultHost(
-                    YAMLMessage.builder()
-                            .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                            .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
-                            .setRequestFile(fileToSend.getName())
-                            .setObjectNewValue(String.valueOf(fileToSend.length()))
-                            .build(),
-                    success ->  {
-                        if (success) sendFileToServer(serverIP4, serverPort, progressTracker, fileToSend);
-                    }
-            );
+                sendYAMLDefaultHost(
+                        YAMLMessage.builder()
+                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                .setRequestType(YAMLMessage.REQUEST_TYPE.file_upload)
+                                .setRequestFile(fileToSend.getName())
+                                .setObjectNewValue(String.valueOf(fileToSend.length()))
+                                .build(),
+                        success -> {
+                            if (success) sendFileToServer(serverIP4, serverPort, progressTracker, fileToSend);
+                        }
+                );
             } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                      YAMLSerializer.InvalidPacketTypeException e) {
                 LCCP.logger.error(e);
@@ -434,24 +433,20 @@ public class Networking {
             }
 
             public static void init(SuccessCallback callback) throws NetworkException {
-
-                //if (!connected ) {
-                    try {
-                        if (server == null || server.isClosed()) {
-                            server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
-                        } else {
-                            server.connect(new InetSocketAddress(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort()));
-                        }
-                        LCCP.logger.debug("Successfully connected to server!");
-                        connected = true;
-                    } catch (Exception e) {
-                        LCCP.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
-                        LCCP.logger.error(e);
-                        callback.getResult(false);
-                        return;
+                try {
+                    if (server == null || server.isClosed()) {
+                        server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
+                    } else {
+                        server.connect(new InetSocketAddress(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort()));
                     }
-
-                //}
+                    LCCP.logger.debug("Successfully connected to server!");
+                    connected = true;
+                } catch (Exception e) {
+                    LCCP.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
+                    LCCP.logger.error(e);
+                    callback.getResult(false);
+                    return;
+                }
 
                 LCCP.logger.debug("Fulfilling init request for Network Handler!");
 
@@ -462,14 +457,22 @@ public class Networking {
                 LCCP.logger.debug("Network Handler: starting manager...");
                 if (mgr != null) mgr.cancel();
                 long keepalive = 500;
-                long[] last = new long[]{System.currentTimeMillis() - 101};
+                TimeManager.clearTimeTracker("keepalive");
+                TimeManager.initTimeTracker("keepalive", keepalive);
                 mgr = new LCCPRunnable() {
                     @Override
                     public void run() {
-                        //LCCP.logger.debug("Iteration");
-                        long current = System.currentTimeMillis();
-                        if (current - last[0] >= keepalive) {
-                            last[0] = current;
+                        if (TimeManager.call("keepalive")) {
+                            if (!TimeManager.alternativeCall("status")) {
+                                try {
+                                    sendYAMLDefaultHost(
+                                            YAMLMessage.defaultStatusRequest().build()
+                                    );
+                                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
+                                    LCCP.logger.debug("Auto status request attempt failed!");
+                                }
+                            }
                             try {
                                 sendKeepalive(
                                         YAMLMessage.builder()
@@ -479,7 +482,8 @@ public class Networking {
                                         false
                                 );
                             } catch (YAMLSerializer.TODOException | ConfigurationException |
-                                     YAMLSerializer.InvalidReplyTypeException | YAMLSerializer.InvalidPacketTypeException e) {
+                                     YAMLSerializer.InvalidReplyTypeException |
+                                     YAMLSerializer.InvalidPacketTypeException e) {
                                 LCCP.logger.fatal("Failed to send keepalive!");
                                 LCCP.logger.error(e);
                             }
@@ -499,6 +503,7 @@ public class Networking {
                 LCCP.logger.debug("Network Handler started!");
                 callback.getResult(true);
             }
+
             private static void initListener() {
                 LCCP.logger.debug("Network Handler: starting master listener...");
                 if (masterListener != null) masterListener.cancel();
@@ -577,8 +582,6 @@ public class Networking {
                     server.close();
                 } catch (Exception e) {
                     LCCP.logger.debug("Network Handler: Closing failed, overwriting connection");
-
-                    //throw new NetworkException("failed to close server");
                 }
 
                 LCCP.logger.debug("Network Handler: Stopping mgr and listener tasks");
@@ -596,7 +599,6 @@ public class Networking {
                     LCCP.logger.fatal("Network Handler: reboot failed!");
                     LCCP.logger.error(e);
                     throw new NetworkException("connection failed!");
-                    //throw new RuntimeException();
                 }
             }
 
@@ -609,6 +611,10 @@ public class Networking {
 
             public static void hostChanged() throws NetworkException {
                 reboot();
+            }
+
+            public static boolean connectedAndRunning() {
+                return server != null && server.isConnected() && !server.isClosed();
             }
 
             public static class NetworkHandle implements EventListener {
@@ -714,7 +720,6 @@ public class Networking {
         public static YAMLConfiguration defaultReceive(InputStream is) {
             YAMLConfiguration yaml;
             try {
-
                 // Wrap the InputStream with a BufferedReader for efficient reading
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
@@ -787,12 +792,14 @@ public class Networking {
                 try {
                     NetworkHandler.init(success -> {
                         if (!success) {
+                            if (callback != null) callback.onFinish(false);
                             throw new NetworkException("Reconnection attempt to previous server failed!");
                         } else LCCP.logger.debug("Successfully reconnected to previous server!");
                     });
                 } catch (NetworkException e) {
                     //LCCP.logger.fatal("Failed to connect to server!");
                     LCCP.logger.fatal(e.getMessage());
+                    if (callback != null) callback.onFinish(false);
                     return false;
                 }
             }
@@ -878,9 +885,6 @@ public class Networking {
 
                     );
                 }
-
-                //LCCP.logger.fatal("NetworkID0 = " + networkID0);
-                //LCCP.logger.fatal("ID = " + id);
 
                 if (replyHandle != null) {
                     NetworkHandler.listenForReply(

@@ -192,7 +192,7 @@ public class LocalSettings extends Settings {
             //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
             conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
-            conf.setProperty(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed);
+            conf.setProperty(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed / 1000);
             conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
             conf.setProperty(Paths.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
             // saving settings

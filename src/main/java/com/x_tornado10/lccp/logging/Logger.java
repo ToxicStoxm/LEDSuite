@@ -41,13 +41,17 @@ public class Logger {
         writeLog(message);
         log(ansi().fgRgb(227, 163, 0).a(message).reset());
     }
-    // formatting error message
     public void error(String message) {
+        error(message, false);
+    }
+    // formatting error message
+    public void error(String message, boolean visualFeedback) {
         if (log_level.ERROR.isEnabled()) {
             cError( "[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message);
             // displaying toast in the user interface
-            visualFeedback(message, 0);
+
         }
+        if (visualFeedback) visualFeedback(message, 0);
     }
     public void error(Exception e) {
         StackTraceElement[] stackTrace = e.getStackTrace();
@@ -72,9 +76,12 @@ public class Logger {
     }
     // formatting fatal message
     public void fatal(String message) {
+        fatal(message, false);
+    }
+    public void fatal(String message, boolean visualFeedback) {
         if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + LCCP.settings.getWindowTitle() + "] " + message);
         // displaying toast in the user interface
-        visualFeedback(message, 0);
+        if (visualFeedback) visualFeedback(message, 0);
     }
     // sending a fatal error message to console and log file
     public void cFatal(String message) {

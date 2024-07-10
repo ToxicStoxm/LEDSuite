@@ -5,6 +5,8 @@ import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import org.apache.commons.configuration2.YAMLConfiguration;
 
+import java.util.HashMap;
+
 public class Events {
     public record Reload(String message) {
     }
@@ -25,5 +27,9 @@ public class Events {
     public record Error(ServerError serverError) {
     }
     public record HostChanged(String message) {
+    }
+    public record SettingChanged(String key, Object value) {
+    }
+    public record SettingsChanged(HashMap<String, Object> changedSettings) {
     }
 }

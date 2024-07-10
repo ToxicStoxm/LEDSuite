@@ -6,6 +6,7 @@ import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.settings.LocalSettings;
 import com.x_tornado10.lccp.settings.ServerSettings;
+import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPScheduler;
 import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
@@ -13,11 +14,11 @@ import com.x_tornado10.lccp.communication.network.Networking;
 import com.x_tornado10.lccp.logging.Logger;
 import com.x_tornado10.lccp.logging.Messages;
 import com.x_tornado10.lccp.logging.network.NetworkLogger;
+import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
-import io.github.jwharm.javagi.base.GErrorException;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -25,9 +26,7 @@ import org.apache.commons.configuration2.io.FileHandler;
 import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
-import org.gnome.gdk.GLError;
 import org.gnome.gio.ApplicationFlags;
-import org.gnome.gobject.GError;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -211,6 +210,23 @@ public class LCCP implements EventListener {
             throw new RuntimeException(e);
         }
 
+        TimeManager.initTimeTracker("status", 5000);
+
+        new LCCPRunnable() {
+            @Override
+            public void run() {
+                if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
+                    try {
+                        Networking.Communication.sendYAMLDefaultHost(
+                                YAMLMessage.defaultStatusRequest().build()
+                        );
+                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                        LCCP.logger.debug("Auto status request attempt failed!");
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(10000, 5000);
     }
 
     // activate function
@@ -333,7 +349,7 @@ public class LCCP implements EventListener {
         // reloading values that may've changed
         mainWindow.setTitle(settings.getWindowTitle());
         mainWindow.setResizable(settings.isWindowResizeable());
-        mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
+        //mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
     }
     // listener function for startup event
     @EventHandler
@@ -426,6 +442,7 @@ public class LCCP implements EventListener {
         logger.debug(id + "Received status update from server!");
         logger.debug(id + "Status: " + status);
         mainWindow.updateStatus(status);
+        TimeManager.ping("status");
     }
     @EventHandler
     public void onSend(Events.DataOut e) {

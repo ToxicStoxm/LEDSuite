@@ -26,11 +26,12 @@ public class LocalSettings extends Settings {
     private int WindowDefHeight = 720;
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
-    private boolean AutoUpdateRemote = false;
+    //private boolean AutoUpdateRemote = false;
     private boolean DisplayStatusBar = false;
-    private double AutoUpdateRemoteTick = 1.5;
+    //private double AutoUpdateRemoteTick = 1.5;
     private boolean CheckIPv4 = true;
     private boolean AutoPlayAfterUpload = true;
+    private int NetworkingCommunicationClockSpeed = 10;
 
     private LocalSettings backup;
 
@@ -87,16 +88,24 @@ public class LocalSettings extends Settings {
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
-            try {
+            /*try {
                 this.AutoUpdateRemoteTick = config.getDouble(Paths.Config.AUTO_UPDATE_REMOTE_TICK);
             } catch (ConversionException e) {
                 LCCP.logger.error("Error while parsing Auto-Update-Remote-Tick! Not a valid Number!");
+                LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }*/
+
+            try {
+                double temp = config.getDouble(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED);
+                this.NetworkingCommunicationClockSpeed = (int) Math.round(temp * 1000);
+            } catch (ClassCastException | ConversionException e) {
+                LCCP.logger.error("Error while parsing NetworkingCommunicationClockSpeed! Not a valid time argument (seconds)!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
             this.selectionDir = config.getString(Paths.Config.SELECTION_DIR);
 
-            AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
+            //AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
             DisplayStatusBar = config.getBoolean(Paths.Config.DISPLAY_STATUS_BAR);
             CheckIPv4 = config.getBoolean(Paths.Config.CHECK_IPV4);
             AutoPlayAfterUpload = config.getBoolean(Paths.Config.AUTO_PLAY_AFTER_UPLOAD);
@@ -137,9 +146,10 @@ public class LocalSettings extends Settings {
         this.WindowDefHeight = settings.getWindowDefHeight();
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
-        this.AutoUpdateRemote = settings.AutoUpdateRemote;
+        //this.AutoUpdateRemote = settings.AutoUpdateRemote;
         this.DisplayStatusBar = settings.DisplayStatusBar;
-        this.AutoUpdateRemoteTick = settings.AutoUpdateRemoteTick;
+        //this.AutoUpdateRemoteTick = settings.AutoUpdateRemoteTick;
+        this.NetworkingCommunicationClockSpeed = settings.NetworkingCommunicationClockSpeed;
         this.CheckIPv4 = settings.CheckIPv4;
         this.AutoPlayAfterUpload = settings.AutoPlayAfterUpload;
         LCCP.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
@@ -179,9 +189,10 @@ public class LocalSettings extends Settings {
             conf.setProperty(Paths.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
             conf.setProperty(Paths.Config.LOG_LEVEL, LogLevel);
             conf.setProperty(Paths.Config.SELECTION_DIR, selectionDir);
-            conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
+            //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
             conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
-            conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
+            //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
+            conf.setProperty(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed / 1000);
             conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
             conf.setProperty(Paths.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
             // saving settings
@@ -238,19 +249,24 @@ public class LocalSettings extends Settings {
         reload("selectionDir -> " + selectionDir);
     }
 
-    public void setAutoUpdateRemote(boolean autoUpdateRemote) {
+    /*public void setAutoUpdateRemote(boolean autoUpdateRemote) {
         AutoUpdateRemote = autoUpdateRemote;
         reload("AutoUpdateRemote -> " + autoUpdateRemote);
-    }
+    }*/
 
     public void setDisplayStatusBar(boolean displayStatusBar) {
         DisplayStatusBar = displayStatusBar;
         reload("DisplayStatusBar -> " + displayStatusBar);
     }
 
-    public void setAutoUpdateRemoteTick(double autoUpdateRemoteTick) {
+    /*public void setAutoUpdateRemoteTick(double autoUpdateRemoteTick) {
         AutoUpdateRemoteTick = autoUpdateRemoteTick;
         reload("AutoUpdateRemoteTick -> " + autoUpdateRemoteTick);
+    }*/
+
+    public void setNetworkingCommunicationClockSpeed(int networkingCommunicationClockSpeed) {
+        NetworkingCommunicationClockSpeed = networkingCommunicationClockSpeed;
+        reload("NetworkingCommunicationClockSpeed -> " + networkingCommunicationClockSpeed);
     }
 
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
@@ -288,19 +304,20 @@ public class LocalSettings extends Settings {
                 WindowDefWidth == other.WindowDefWidth &&
                 WindowDefHeight == other.WindowDefHeight &&
                 LogLevel == other.LogLevel &&
-                AutoUpdateRemote == other.AutoUpdateRemote &&
+                //AutoUpdateRemote == other.AutoUpdateRemote &&
                 DisplayStatusBar == other.DisplayStatusBar &&
                 CheckIPv4 == other.CheckIPv4 &&
                 AutoPlayAfterUpload == other.AutoPlayAfterUpload &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(WindowTitle, other.WindowTitle) &&
-                Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
+                Objects.equals(NetworkingCommunicationClockSpeed, other.NetworkingCommunicationClockSpeed);
+                //Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
     }
 
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, AutoUpdateRemote, DisplayStatusBar, AutoUpdateRemoteTick, CheckIPv4, AutoPlayAfterUpload);
+        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, /*AutoUpdateRemote,*/ DisplayStatusBar, /*AutoUpdateRemoteTick,*/ CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
     }
 
 }

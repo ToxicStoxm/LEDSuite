@@ -1,5 +1,7 @@
 package_type: reply
 reply_type: menu
+label: ""
+icon: ""
 group0:
   suffix:
     widget0:
@@ -67,7 +69,6 @@ group0:
       widget: dropdown
       label: "dropdown label"
       content: "some text"
-      display_selected: true / false # if current selected value should be displayed as content (if true content value will be ignored)
       searchable: true / false # toggle search function
       selected: -1 # index of selected entry. -1 = nothing selected
       dropdown:

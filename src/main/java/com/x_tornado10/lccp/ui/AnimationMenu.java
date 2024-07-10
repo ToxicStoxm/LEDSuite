@@ -1,15 +1,19 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
+import com.x_tornado10.lccp.communication.network.Networking;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
+import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
+import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.wrappers.menu_wrappers.Container;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.*;
-import org.gnome.gio.ListModel;
 import org.gnome.gtk.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AnimationMenu extends PreferencesPage {
     public static AnimationMenu display(com.x_tornado10.lccp.yaml_factory.AnimationMenu animationMenu) {
@@ -86,12 +90,35 @@ public class AnimationMenu extends PreferencesPage {
     public void insertExpander(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Expander expander, PreferencesGroup prefGroup) {
         var expanderRow = ExpanderRow.builder()
                 .setShowEnableSwitch(expander.isToggleable())
-                .setExpanded(expander.isValue())
+                .setEnableExpansion(expander.isValue())
                 .setTitle(expander.getLabel())
                 .build();
         insertSdtWithoutStyle(expanderRow, expander);
         insertChildren(expanderRow, expander);
+        attachHandle(expanderRow, expander);
         prefGroup.add(expanderRow);
+    }
+
+    private void attachHandle(ExpanderRow expander, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Expander _expander) {
+        boolean[] temp = new boolean[]{expander.getEnableExpansion()};
+        expander.onStateFlagsChanged(_ -> {
+           if (temp[0] != expander.getEnableExpansion()) {
+               temp[0] = expander.getEnableExpansion();
+               try {
+                   Networking.Communication.sendYAMLDefaultHost(
+                           YAMLMessage.builder()
+                                   .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                   .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                   .setObjectPath(_expander.getPath())
+                                   .setObjectNewValue(String.valueOf(temp[0]))
+                                   .build()
+                   );
+               } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                        YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                   throw new RuntimeException(e);
+               }
+           }
+        });
     }
 
     public Widget getButton(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Button button) {
@@ -101,6 +128,7 @@ public class AnimationMenu extends PreferencesPage {
                     .setLabel(button.getLabel())
                     .build();
             insertSdt(_button, button);
+            attachHandle(_button, button);
             var buttonRow = ActionRow.builder()
                     .setTitle(button.getLabel())
                     .build();
@@ -113,6 +141,7 @@ public class AnimationMenu extends PreferencesPage {
             var _button = Button.builder()
                     .build();
             insertSdt(_button, button);
+            attachHandle(_button, button);
 
             var buttonBox = Box.builder().setOrientation(Orientation.HORIZONTAL).setSpacing(5).build();
             buttonBox.append(Label.builder().setLabel(button.getLabel()).build());
@@ -135,6 +164,24 @@ public class AnimationMenu extends PreferencesPage {
         }
     }
 
+    private void attachHandle(Button button, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Button _button) {
+        button.onClicked(() -> {
+            try {
+                Networking.Communication.sendYAMLDefaultHost(
+                        YAMLMessage.builder()
+                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                .setObjectPath(_button.getPath())
+                                .setObjectNewValue("")
+                                .build()
+                );
+            } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                     YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     public void insertButton(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Button button, ExpanderRow expander) {
         expander.addRow(getButton(button));
     }
@@ -151,7 +198,30 @@ public class AnimationMenu extends PreferencesPage {
                 .setEditable(entry.isEditable())
                 .build();
         insertSdtWithoutStyle(_entry, entry);
+        attachHandle(_entry, entry);
         return _entry;
+    }
+
+    public void attachHandle(EntryRow entry, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Entry _entry) {
+        String[] temp = new String[]{entry.getText()};
+        entry.onApply(() -> {
+            if (!Objects.equals(temp[0], entry.getText())) {
+                temp[0] = entry.getText();
+                try {
+                    Networking.Communication.sendYAMLDefaultHost(
+                            YAMLMessage.builder()
+                                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                    .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                    .setObjectPath(_entry.getPath())
+                                    .setObjectNewValue(temp[0])
+                                    .build()
+                    );
+                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void insertEntry(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Entry entry, ExpanderRow expander) {
@@ -174,7 +244,26 @@ public class AnimationMenu extends PreferencesPage {
                 .build();
         _slider.setRange(slider.getMin(), slider.getMax());
         insertSdtWithoutStyle(_slider, slider);
+        attachHandle(_slider, slider);
         return _slider;
+    }
+
+    private void attachHandle(SpinRow slider, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Slider _slider) {
+        slider.onChanged(() -> {
+            try {
+                Networking.Communication.sendYAMLDefaultHost(
+                        YAMLMessage.builder()
+                                .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                .setObjectPath(_slider.getPath())
+                                .setObjectNewValue(String.valueOf(slider.getValue()))
+                                .build()
+                );
+            } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                     YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void insertSlider(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Slider slider, ExpanderRow expander) {
@@ -191,7 +280,31 @@ public class AnimationMenu extends PreferencesPage {
                 .setActive(_switch.isValue())
                 .build();
         insertSdtWithoutStyle(__switch, _switch);
+        attachHandle(__switch, _switch);
         return __switch;
+    }
+
+    private void attachHandle(SwitchRow _switch, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Switch __switch) {
+        boolean[] temp = new boolean[]{_switch.getActive()};
+        _switch.getActivatableWidget().onStateFlagsChanged(_ -> {
+            boolean active = __switch.isValue();
+            if (!temp[0] == active) {
+                temp[0] = active;
+                try {
+                    Networking.Communication.sendYAMLDefaultHost(
+                            YAMLMessage.builder()
+                                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                    .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                    .setObjectPath(__switch.getPath())
+                                    .setObjectNewValue(String.valueOf(active))
+                                    .build()
+                    );
+                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void insertSwitch(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Switch _switch, ExpanderRow expander) {
@@ -246,7 +359,30 @@ public class AnimationMenu extends PreferencesPage {
                 .setSelected(dropdown.getSelected())
                 .build();
         insertSdtWithoutStyle(_dropdown, dropdown);
+        attachHandle(_dropdown, dropdown);
         return _dropdown;
+    }
+
+    private void attachHandle(ComboRow dropdown, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Dropdown _dropdown) {
+        int[] pos = new int[]{_dropdown.getSelected()};
+        dropdown.onStateFlagsChanged(_ -> {
+            if (dropdown.getSelected() != pos[0]) {
+                pos[0] = dropdown.getSelected();
+                try {
+                    Networking.Communication.sendYAMLDefaultHost(
+                            YAMLMessage.builder()
+                                    .setPacketType(YAMLMessage.PACKET_TYPE.request)
+                                    .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
+                                    .setObjectPath(_dropdown.getPath())
+                                    .setObjectNewValue(_dropdown.getByIndex(pos[0]))
+                                    .build()
+                    );
+                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void insertDropdown(com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Dropdown dropdown, ExpanderRow expander) {
@@ -281,7 +417,6 @@ public class AnimationMenu extends PreferencesPage {
 
     public static String[] styleStringToCSSArray(String styleString, String regex) {
         String[] result = styleString.split(regex);
-        LCCP.logger.fatal(Arrays.toString(result));
         List<String> _result = new java.util.ArrayList<>(Arrays.stream(result).toList());
         _result.removeIf(s -> s == null || s.isEmpty() || s.isBlank());
         return _result.toArray(new String[0]);

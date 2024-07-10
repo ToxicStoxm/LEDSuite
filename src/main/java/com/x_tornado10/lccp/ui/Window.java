@@ -252,15 +252,36 @@ public class Window extends ApplicationWindow implements EventListener {
         // adding the toast overlay to the south box
         southBox.append(toastOverlay);
 
-        var NorthRevealer = Revealer.builder().setChild(northBox).setRevealChild(true).build();
-        var CenterRevealer = Revealer.builder().setChild(centerBox).setRevealChild(true).build();
-        var SouthRevealer = Revealer.builder().setChild(southBox).setRevealChild(true).build();
+
+        var NorthRevealer = Revealer.builder()
+                .setChild(northBox)
+                .setRevealChild(true)
+                .build();
+        NorthRevealer.setTransitionType(RevealerTransitionType.SLIDE_DOWN);
+        var CenterRevealer = Revealer.builder()
+                .setChild(centerBox)
+                .setRevealChild(true)
+                .build();
+        CenterRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
+        var SouthRevealer = Revealer.builder()
+                .setChild(southBox)
+                .setRevealChild(true)
+                .build();
+        SouthRevealer.setTransitionType(RevealerTransitionType.SLIDE_UP);
+
 
 
         // adding all alignment boxes to the main window container
         mainContent.append(NorthRevealer);
         mainContent.append(CenterRevealer);
-        mainContent.append(SouthRevealer);
+        mainContent.append(
+                Clamp.builder()
+                        .setChild(SouthRevealer)
+                        .setOrientation(Orientation.VERTICAL)
+                        .setMaximumSize(85)
+                        .setTighteningThreshold(85)
+                        .build()
+        );
 
         var mainView = ToolbarView.builder().setContent(mainContent).build();
         mainView.addTopBar(headerBar);
@@ -354,8 +375,16 @@ public class Window extends ApplicationWindow implements EventListener {
                 centerBox.remove(centerBox.getFirstChild());
             }
             centerBox.setValign(Align.CENTER);
-            centerBox.append(Spinner.builder().setSpinning(true).build());
-            CenterRevealer.setRevealChild(true);
+            boolean[] spinner = new boolean[]{true};
+            new LCCPRunnable() {
+                @Override
+                public void run() {
+                    if (spinner[0]) {
+                        centerBox.append(Spinner.builder().setSpinning(true).build());
+                        CenterRevealer.setRevealChild(true);
+                    }
+                }
+            }.runTaskLaterAsynchronously(500);
             String rowName = row.getName();
             try {
                 Networking.Communication.sendYAMLDefaultHost(
@@ -390,6 +419,7 @@ public class Window extends ApplicationWindow implements EventListener {
                                     LCCP.logger.debug(yaml.getAnimationMenu().toString());
                                     String id = "[" + yaml.getNetworkID() + "] ";
                                     LCCP.logger.debug(id + "Converting animation menu to displayable menu!");
+                                    spinner[0] = false;
                                     CenterRevealer.setRevealChild(false);
                                     if (centerBox.getFirstChild() != null) {
                                         CenterRevealer.setRevealChild(false);

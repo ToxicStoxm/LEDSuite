@@ -272,6 +272,7 @@ public class AnimationMenu implements Container {
         private String label;
         private String tooltip;
         private String style;
+        private String path;
         private final WidgetType type;
 
         public WidgetMain(WidgetType type) {
@@ -309,6 +310,10 @@ public class AnimationMenu implements Container {
 
         public String toString(Integer pos) {
             return stringifyWidget(this, pos);
+        }
+        public String getPath() {
+            path = String.valueOf(UUID.randomUUID());
+            return path;
         }
     }
 
@@ -426,6 +431,9 @@ public class AnimationMenu implements Container {
             public Dropdown() {
                 super(WidgetType.dropdown);
                 dropdown = new ArrayList<>();
+            }
+            public String getByIndex(int index) {
+                return dropdown.get(index);
             }
         }
 

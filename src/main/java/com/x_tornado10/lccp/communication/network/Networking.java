@@ -461,7 +461,7 @@ public class Networking {
 
                 LCCP.logger.debug("Network Handler: starting manager...");
                 if (mgr != null) mgr.cancel();
-                long keepalive = 5000;
+                long keepalive = 500;
                 long[] last = new long[]{System.currentTimeMillis() - 101};
                 mgr = new LCCPRunnable() {
                     @Override

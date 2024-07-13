@@ -335,20 +335,10 @@ public class YAMLSerializer {
 
         LCCP.logger.debug(id + "Received deserialize request!");
 
-        /*for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-            String s = it.next();
-            LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-        }*/
-
         LCCP.logger.debug(id + "Removed packet type and reply type!");
 
         yaml.clearProperty(Constants.Network.YAML.PACKET_TYPE);
         yaml.clearProperty(Constants.Network.YAML.REPLY_TYPE);
-
-        /*for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-            String s = it.next();
-            LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-        }*/
 
         LCCP.logger.debug(id + "Initializing new animation menu and loading context from yaml!");
 

@@ -46,26 +46,34 @@ public class EventManager {
 
         LCCP.logger.debug(id + "Firing event: " + event);
         List<RegisteredListener> registeredListeners = listeners.get(event.getClass());
+        List<RegisteredListener> toRemove = new ArrayList<>();
         if (registeredListeners != null) {
             // loops through all registeredListeners
             for (RegisteredListener registeredListener : registeredListeners) {
                 try {
                     // calls all methods from the current listener that listen for this specific event
+                    Class<?> eventType = registeredListener.method.getParameterTypes()[0];
+                    LCCP.logger.debug("Registering listener method: " +
+                            registeredListener.eventListener.toString().split("@")[0] +
+                            "." +
+                            registeredListener.method.getName() +
+                            "(" + eventType.getName().split("event_handling.")[1].replace("$", ".") +  ")");
+                    LCCP.logger.fatal(registeredListener.eventListener.getClass().getName() + "@" + registeredListener.method.getName());
                     registeredListener.method.invoke(registeredListener.eventListener, event);
                 } catch (Exception e) {
                     try {
                         LCCP.logger.warn(id + "Error while trying to fire event: " + event);
                         LCCP.logger.warn(id + "This warning can be ignored!");
                         LCCP.logger.debug(id + "Stack trace: ");
-                        for (StackTraceElement s : e.getStackTrace()) {
-                            LCCP.logger.debug(id + s.toString());
-                            registeredListeners.remove(registeredListener);
-                        }
+                        LCCP.logger.error(e);
+                        toRemove.add(registeredListener);
+                        //registeredListeners.remove(registeredListener);
                     } catch (Exception ex) {
                         LCCP.logger.warn("Error getting error message!");
                     }
                 }
             }
+            registeredListeners.removeAll(toRemove);
         }
     }
 

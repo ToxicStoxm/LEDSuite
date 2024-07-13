@@ -401,7 +401,7 @@ public class AnimationMenu extends PreferencesPage {
                                     .setRequestType(YAMLMessage.REQUEST_TYPE.menu_change)
                                     .setRequestFile(this.getTitle())
                                     .setObjectPath(_dropdown.getPath())
-                                    .setObjectNewValue(_dropdown.getByIndex(pos.get()))
+                                    .setObjectNewValue(String.valueOf(pos.get()))
                                     .build()
                     );
                 } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |

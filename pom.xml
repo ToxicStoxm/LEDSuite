@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.x_tornado10</groupId>
+    <groupId>com.toxicstoxm</groupId>
     <artifactId>lccp</artifactId>
     <version>0.1.0</version>
 
@@ -49,7 +49,7 @@
                             <transformers>
                                 <!-- specify main class to the compiler -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.x_tornado10.lccp.LCCP</mainClass>
+                                    <mainClass>com.toxicstoxm.lccp.LCCP</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

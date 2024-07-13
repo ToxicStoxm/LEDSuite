@@ -25,7 +25,7 @@ public class Logger {
     }
     // formatting info message
     public void info(String message) {
-        if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + LCCP.ApplicationName + "] " + message);
+        if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + Constants.Application.NAME + "] " + message);
     }
     // sending and info message to console and log file
     public void cInfo(String message) {
@@ -34,7 +34,7 @@ public class Logger {
     }
     // formatting warn message
     public void warn(String message) {
-        if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + LCCP.ApplicationName + "] " + message);
+        if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + Constants.Application.NAME + "] " + message);
     }
     // sending a warning message to console and log file
     public void cWarn(String message) {
@@ -47,7 +47,7 @@ public class Logger {
     // formatting error message
     public void error(String message, boolean visualFeedback) {
         if (log_level.ERROR.isEnabled()) {
-            cError( "[ERROR]: [" + LCCP.ApplicationName + "] " + message);
+            cError( "[ERROR]: [" + Constants.Application.NAME + "] " + message);
             // displaying toast in the user interface
 
         }
@@ -79,7 +79,7 @@ public class Logger {
         fatal(message, false);
     }
     public void fatal(String message, boolean visualFeedback) {
-        if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + LCCP.ApplicationName + "] " + message);
+        if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + Constants.Application.NAME + "] " + message);
         // displaying toast in the user interface
         if (visualFeedback) visualFeedback(message, 0);
     }
@@ -90,7 +90,7 @@ public class Logger {
     }
     // formatting debug message
     public void debug(String message) {
-        if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + LCCP.ApplicationName + "] " + message);
+        if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + Constants.Application.NAME + "] " + message);
     }
     // sending debug message to console and log file
     public void cDebug(String message) {

@@ -58,6 +58,7 @@ public class AnimationMenu implements Container {
         LCCP.logger.debug(id + "Requesting deserialization for children!");
         menu.deserialize_children(yaml, id, "menu", "");
 
+
         return menu;
     }
 

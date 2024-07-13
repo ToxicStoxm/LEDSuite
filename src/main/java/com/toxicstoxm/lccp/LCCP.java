@@ -200,7 +200,7 @@ public class LCCP implements EventListener {
         tickingSystem = new TickingSystem();
 
         TimeManager.initTimeTracker("status", 5000, 10000);
-        TimeManager.initTimeTracker("animations", 5000, System.currentTimeMillis() - 10000);
+        TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
 
 
         try {
@@ -375,13 +375,9 @@ public class LCCP implements EventListener {
 
         switch (yaml.getPacketType()) {
             case reply -> {
-
                 switch (yaml.getReplyType()) {
-                    case status -> {
-                    }
-                    case menu -> {
-
-                    }
+                    case status -> eventManager.fireEvent(new Events.Status(StatusUpdate.fromYAMLMessage(yaml)));
+                    case menu -> LCCP.logger.fatal("Redundancy catcher caught a menu reply while not expecting it!");
                 }
 
             }

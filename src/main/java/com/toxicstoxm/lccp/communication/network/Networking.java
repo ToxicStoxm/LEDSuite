@@ -549,9 +549,10 @@ public class Networking {
 
             public static void cancel() {
                 LCCP.logger.debug("Network Handler: Fulfilling cancel request!");
-                LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                 if (mgr != null) mgr.cancel();
                 if (masterListener != null) masterListener.cancel();
+                clearQueues();
+                LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
             }
 
             private static void clearQueues() {
@@ -833,7 +834,7 @@ public class Networking {
                     yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
                     // if an id is give, pass it on to the network logger
                 } else {
-                    id = "[" + networkID + "]";
+                    id = "[" + networkID + "] ";
                     LCCP.networkLogger.addEvent(UUID.fromString(networkID), description);
                 }
 

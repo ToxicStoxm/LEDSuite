@@ -20,7 +20,6 @@ import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
 import org.gnome.gio.*;
-import org.gnome.glib.GLib;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
@@ -431,11 +430,11 @@ public class Window extends ApplicationWindow implements EventListener {
                 @Override
                 public void run() {
                     if (spinner.get()) {
-                        GLib.idleAdd(GLib.PRIORITY_HIGH, () -> {
-                            CenterBox.append(Spinner.builder().setSpinning(true).build());
+                        //GLib.idleAdd(GLib.PRIORITY_DEFAULT, () -> {
+                          //  CenterBox.append(Spinner.builder().setSpinning(true).build());
                             CenterRevealer.setRevealChild(true);
-                            return true;
-                        });
+                            //return true;
+                        //});
 
                     }
                 }
@@ -462,6 +461,7 @@ public class Window extends ApplicationWindow implements EventListener {
                                                 .setTitle("Loading menu for '" + rowName + "'...")
                                                 .build()
                                 );*/
+                                getStatus(null);
                             } else {
                                 LCCP.logger.error("Failed to load menu for '" + rowName + "'!");
                                 /*toastOverlay.addToast(
@@ -470,8 +470,8 @@ public class Window extends ApplicationWindow implements EventListener {
                                                 .setTitle("Failed to load menu for '" + rowName + "'!")
                                                 .build()
                                 );*/
+                                //LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                             }
-                            getStatus(null);
                         },
                         new LCCPProcessor() {
                             @Override
@@ -631,11 +631,11 @@ public class Window extends ApplicationWindow implements EventListener {
         new LCCPRunnable() {
             @Override
             public void run() {
-                GLib.idleAdd(GLib.PRIORITY_HIGH, () -> {
+                //GLib.idleAdd(GLib.PRIORITY_DEFAULT, () -> {
                     button.setCssClasses(new String[]{"circular", "osd"});
                     bool.set(true);
-                    return true;
-                });
+                    //return true;
+                //});
             }
         }.runTaskLaterAsynchronously(750);
     }
@@ -712,7 +712,7 @@ public class Window extends ApplicationWindow implements EventListener {
             public void run() {
                 if (!status.getRevealed()) return;
                 getStatus(success -> {
-                    if (!success) LCCP.eventManager.fireEvent(StatusUpdate.notConnected());
+                    if (!success) LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                 });
                 // updating status bar to show current status
                 //status.setTitle("LED-Cube-Status: " + getStatus());
@@ -768,54 +768,60 @@ public class Window extends ApplicationWindow implements EventListener {
 
     public void updateStatus(StatusUpdate statusUpdate) {
         status.setTitle(statusUpdate.minimal());
+        if (statusUpdate.isNotConnected() && controlButtonsRevealer != null) controlButtonsRevealer.setRevealChild(false);
     }
 
     @EventHandler
     public void onStatus(Events.Status e) {
-        StatusUpdate statusUpdate = e.statusUpdate();
+        try {
+            StatusUpdate statusUpdate = e.statusUpdate();
+            updateStatus(statusUpdate);
 
-        updateStatus(statusUpdate);
+            ListBoxRow selectedRow = animationsList.getSelectedRow();
+            String name = "";
+            if (selectedRow != null) name = selectedRow.getName();
+            if (!name.isBlank()) setControlButtons(statusUpdate, currentAnimation);
+            if (name.isBlank() || TimeManager.call("animations")) {
+                animationsList.unselectAll();
+                animationsList.setSelectionMode(SelectionMode.NONE);
+                animationsList.removeAll();
 
-        ListBoxRow selectedRow = animationsList.getSelectedRow();
-        String name = "";
-        if (selectedRow != null) name = selectedRow.getName();
-        if (!name.isBlank()) setControlButtons(statusUpdate, currentAnimation);
-        if (TimeManager.call("animations")) {
-            animationsList.unselectAll();
-            animationsList.setSelectionMode(SelectionMode.NONE);
-            animationsList.removeAll();
+                SidebarSpinner.setRevealChild(true);
 
-            SidebarSpinner.setRevealChild(true);
+                List<ListBoxRow> anims = new ArrayList<>();
 
-            List<ListBoxRow> anims = new ArrayList<>();
-
-            availableAnimations = statusUpdate.getAvailableAnimations();
-
-            for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
-                var availableAnimation = Box.builder()
-                        .setOrientation(Orientation.HORIZONTAL)
-                        .setTooltipText("Open " + entry.getKey() + " settings menu")
-                        .setName(entry.getKey())
-                        .setSpacing(10)
-                        .build();
-                availableAnimation.append(Image.fromIconName(entry.getValue()));
-                availableAnimation.append(
-                        Label.builder()
-                                .setLabel(entry.getKey())
-                                .setEllipsize(EllipsizeMode.END)
-                                .setXalign(0)
-                                .build()
-                );
-                ListBoxRow row = listBoxWrap(availableAnimation);
-                if (entry.getKey().equals(name)) selectedRow = row;
-                anims.add(row);
+                availableAnimations = statusUpdate.getAvailableAnimations();
+                if (availableAnimations != null) {
+                    for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
+                        var availableAnimation = Box.builder()
+                                .setOrientation(Orientation.HORIZONTAL)
+                                .setTooltipText("Open " + entry.getKey() + " settings menu")
+                                .setName(entry.getKey())
+                                .setSpacing(10)
+                                .build();
+                        availableAnimation.append(Image.fromIconName(entry.getValue()));
+                        availableAnimation.append(
+                                Label.builder()
+                                        .setLabel(entry.getKey())
+                                        .setEllipsize(EllipsizeMode.END)
+                                        .setXalign(0)
+                                        .build()
+                        );
+                        ListBoxRow row = listBoxWrap(availableAnimation);
+                        if (entry.getKey().equals(name)) selectedRow = row;
+                        anims.add(row);
+                    }
+                    SidebarSpinner.setRevealChild(false);
+                    for (ListBoxRow lbr : anims) {
+                        animationsList.append(lbr);
+                    }
+                }
+                animationsList.setSelectionMode(SelectionMode.BROWSE);
+                animationsList.selectRow(selectedRow);
             }
-            SidebarSpinner.setRevealChild(false);
-            for (ListBoxRow lbr : anims) {
-                animationsList.append(lbr);
-            }
-            animationsList.setSelectionMode(SelectionMode.BROWSE);
-            animationsList.selectRow(selectedRow);
+        } catch (NumberFormatException ex) {
+            LCCP.logger.warn("Status update failed!");
+            LCCP.logger.error(ex);
         }
     }
 

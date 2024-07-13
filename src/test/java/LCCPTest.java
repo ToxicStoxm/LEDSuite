@@ -1,4 +1,4 @@
-import com.x_tornado10.lccp.LCCP;
+import com.toxicstoxm.lccp.LCCP;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

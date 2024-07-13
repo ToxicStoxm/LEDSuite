@@ -2,8 +2,7 @@ package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.communication.network.Networking;
-import com.x_tornado10.lccp.Paths;
-import com.x_tornado10.lccp.logging.Messages;
+import com.x_tornado10.lccp.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -34,7 +33,7 @@ public class ServerSettings extends Settings{
         LCCP.logger.debug("Loading default server config values...");
         LCCP.logger.debug("Note: this only happens if server_config.yaml does not exist or couldn't be found!");
         LCCP.logger.debug("If your settings don't work and this message is shown");
-        LCCP.logger.debug(Messages.WARN.OPEN_GITHUB_ISSUE);
+        LCCP.logger.debug(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("server_config.yaml");
         // if the path is null or not found an exception is thrown
@@ -42,7 +41,7 @@ public class ServerSettings extends Settings{
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
             // defining config.yaml file to save the values to
-            File outputFile = new File(Paths.File_System.server_config);
+            File outputFile = new File(Constants.File_System.server_config);
             // try to open a new output stream to save the values to the new config file
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
                 byte[] buffer = new byte[1024];
@@ -85,8 +84,8 @@ public class ServerSettings extends Settings{
     public void load(YAMLConfiguration config) {
         // loading settings
         try {
-            this.IPv4 = config.getString(Paths.Server_Config.IPV4);
-            int tempPort = config.getInt(Paths.Server_Config.PORT);
+            this.IPv4 = config.getString(Constants.Server_Config.IPV4);
+            int tempPort = config.getInt(Constants.Server_Config.PORT);
             // checking if provided port is in the valid port range
             if (!Networking.General.isValidPORT(String.valueOf(tempPort))) {
                 LCCP.logger.error("Error while parsing Server-Port! Invalid Port!");
@@ -100,7 +99,7 @@ public class ServerSettings extends Settings{
             LCCP.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
             LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
         }
-        this.LED_Brightness = (float) config.getInt(Paths.Server_Config.BRIGHTNESS) / 100;
+        this.LED_Brightness = (float) config.getInt(Constants.Server_Config.BRIGHTNESS) / 100;
     }
 
     // save current settings to config file
@@ -119,8 +118,8 @@ public class ServerSettings extends Settings{
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
-            fH.load(Paths.File_System.server_config);
-            comments = new HashMap<>(CommentPreservation.extractComments(Paths.File_System.server_config));
+            fH.load(Constants.File_System.server_config);
+            comments = new HashMap<>(CommentPreservation.extractComments(Constants.File_System.server_config));
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing server-config values to server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -129,12 +128,12 @@ public class ServerSettings extends Settings{
 
         // writing config settings to file
         try {
-            conf.setProperty(Paths.Server_Config.BRIGHTNESS, Math.round(LED_Brightness * 100));
-            conf.setProperty(Paths.Server_Config.IPV4, IPv4);
-            conf.setProperty(Paths.Server_Config.PORT, Port);
+            conf.setProperty(Constants.Server_Config.BRIGHTNESS, Math.round(LED_Brightness * 100));
+            conf.setProperty(Constants.Server_Config.IPV4, IPv4);
+            conf.setProperty(Constants.Server_Config.PORT, Port);
             // saving settings
-            fH.save(Paths.File_System.server_config);
-            CommentPreservation.insertComments(Paths.File_System.server_config, comments);
+            fH.save(Constants.File_System.server_config);
+            CommentPreservation.insertComments(Constants.File_System.server_config, comments);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for server-config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");

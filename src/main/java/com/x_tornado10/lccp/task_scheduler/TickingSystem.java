@@ -4,8 +4,10 @@ import com.x_tornado10.lccp.LCCP;
 
 public class TickingSystem {
 
-    private static final int TICKS_PER_SECOND = 100;
-    private static final long TICK_DELAY_MS = 1000 / TICKS_PER_SECOND;
+    private static final int conversionNumber = 1000;
+
+    private static final int TICKS_PER_SECOND = 1000;
+    private static final long TICK_DELAY_MS = conversionNumber / TICKS_PER_SECOND;
 
     private boolean running;
     private Thread tickThread;
@@ -14,6 +16,10 @@ public class TickingSystem {
     public TickingSystem() {
         running = false;
         this.start();
+    }
+
+    public static long translate(long val) {
+        return val / TICK_DELAY_MS;
     }
 
     public void start() {

@@ -8,12 +8,11 @@ import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import org.gnome.adw.*;
-import org.gnome.gtk.Box;
-import org.gnome.gtk.Label;
-import org.gnome.gtk.Orientation;
-import org.gnome.gtk.Widget;
+import org.gnome.adw.Dialog;
+import org.gnome.adw.HeaderBar;
+import org.gnome.gtk.*;
 
-public class StatusDialog extends PreferencesDialog implements EventListener {
+public class StatusDialog extends Dialog implements EventListener {
     private int checksum = 0;
     private ActionRow currentDraw;
     private ActionRow voltage;
@@ -77,10 +76,13 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
                 .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
                 .build();
 
+
+
+
         toolbarView.addTopBar(headerBar1);
 
         this.setChild(toolbarView);
-        this.setSearchEnabled(true);
+        //this.setSearchEnabled(true);
 
         configure(StatusUpdate.notConnected());
         this.onClosed(() -> {
@@ -212,6 +214,7 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
         return new LCCPRunnable() {
             @Override
             public void run() {
+                LCCP.mainWindow.getStatus(_ -> {});
                 LCCP.logger.debug("Status updater already active. Terminating new instance");
             }
         }.runTask();
@@ -220,6 +223,6 @@ public class StatusDialog extends PreferencesDialog implements EventListener {
     @EventHandler
     public void onStatus(Events.Status e) {
         //LCCP.logger.fatal(String.valueOf(e.statusUpdate().isBlank()));
-        updateStatus(e.statusUpdate());
+        if (this.getVisible()) updateStatus(e.statusUpdate());
     }
 }

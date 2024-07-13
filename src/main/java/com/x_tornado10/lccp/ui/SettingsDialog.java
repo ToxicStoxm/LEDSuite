@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.ui;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import com.x_tornado10.lccp.event_handling.Events;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
@@ -67,24 +67,7 @@ public class SettingsDialog extends PreferencesDialog {
         // adding the status bar toggle to the general settings group
         generalSettings.add(statusBarToggle);
 
-        //
-        /*var autoUpdateRemoteToggle = SwitchRow.builder()
-                .setActive(LCCP.settings.isAutoUpdateRemote())
-                .setTitle("Toggle autoupdate remote")
-                .setTooltipText("Toggles autoupdates for the cube settings. Manual / Auto")
-                .build();
-        autoUpdateRemoteToggle.getActivatableWidget().onStateFlagsChanged(_ -> {
-            boolean active = autoUpdateRemoteToggle.getActive();
-            if (!temp[2] == active) {
-                LCCP.logger.debug("AutoUpdateRemoteToggle: " + active);
-                LCCP.settings.setAutoUpdateRemote(active);
-                temp[2] = active;
-            }
-        });
-        generalSettings.add(autoUpdateRemoteToggle);*/
-
         user_pref_page.add(generalSettings);
-
 
         serverSettings = new PreferencesGroup();
         serverSettings.setTitle("Cube Settings");
@@ -103,13 +86,12 @@ public class SettingsDialog extends PreferencesDialog {
                 float newValue = (float) val;
                 LCCP.logger.debug("Brightness changed: -> " + brightnessRow.getValue());
                 LCCP.server_settings.setLED_Brightness(newValue);
-                LCCP.eventManager.fireEvent(new Events.SettingChanged(Paths.Server_Config.BRIGHTNESS, newValue));
+                LCCP.eventManager.fireEvent(new Events.SettingChanged(Constants.Server_Config.BRIGHTNESS, newValue));
                 prev1 = val;
             }
             return false;
         });
         this.setCanClose(true);
-        //onClosed(this::stopRemoteUpdate);
         serverSettings.add(brightnessRow);
 
         var spinner = new Spinner();
@@ -210,45 +192,9 @@ public class SettingsDialog extends PreferencesDialog {
         });
         serverSettings.add(port);
 
-        //if (!LCCP.settings.isAutoUpdateRemote()) addManualRemoteApplySwitch();
-
         user_pref_page.add(serverSettings);
         return user_pref_page;
     }
-
-    /*private ActionRow manualRemoteApplySwitchRow = null;
-    private ActionRow getManualRemoteApplySwitchRow() {
-        if (manualRemoteApplySwitchRow == null) {
-            manualRemoteApplySwitchRow = new ActionRow();
-            manualRemoteApplySwitchRow.setTitle("Apply");
-
-            var applyButton = new Button();
-            applyButton.setSizeRequest(40, 40);
-            applyButton.setLabel("Apply");
-            applyButton.setIconName("emblem-synchronizing-symbolic");
-            manualRemoteApplySwitchRow.addSuffix(
-                    Clamp.builder()
-                            .setMaximumSize(40)
-                            .setTighteningThreshold(40)
-                            .setOrientation(Orientation.VERTICAL)
-                            .setChild(applyButton)
-                            .build()
-            );
-            manualRemoteApplySwitchRow.setActivatableWidget(applyButton);
-            applyButton.onClicked(() -> {
-                LCCP.logger.debug("Apply remote request through manual button press");
-                LCCP.updateRemoteConfig();
-            });
-        }
-        return manualRemoteApplySwitchRow;
-    }
-    public void addManualRemoteApplySwitch() {
-        if (serverSettings != null) serverSettings.add(getManualRemoteApplySwitchRow());
-    }
-
-    public void removeManualRemoteApplySwitch() {
-        if (serverSettings != null) serverSettings.remove(getManualRemoteApplySwitchRow());
-    }*/
 
     @Override
     public void present(Widget parent) {
@@ -260,20 +206,4 @@ public class SettingsDialog extends PreferencesDialog {
         }
         super.present(parent);
     }
-
-    /*public void startRemoteUpdate() {
-        autoUpdateRemote = new LCCPRunnable() {
-            @Override
-            public void run() {
-                LCCP.updateRemoteConfig();
-            }
-        }.runTaskTimerAsynchronously(0, Math.round(LCCP.settings.getAutoUpdateRemoteTick() * 1000));
-        LCCP.logger.debug("Started autoRemoteUpdateTask!");
-    }
-    public void stopRemoteUpdate() {
-        if (autoUpdateRemote != null) {
-            autoUpdateRemote.cancel();
-            LCCP.logger.debug("Stopped autoRemoteUpdateTask " + autoUpdateRemote + " !");
-        }
-    }*/
 }

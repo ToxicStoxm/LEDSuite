@@ -7,6 +7,9 @@ public class TimeManager {
     public static void initTimeTracker(String id, long debounce) {
         lastCallTracker.putIfAbsent(id, new CallTracker(debounce));
     }
+    public static void initTimeTracker(String id, long debounce, long last) {
+        lastCallTracker.putIfAbsent(id, new CallTracker(debounce, last));
+    }
     public static void initTimeTracker(String id) {
         lastCallTracker.putIfAbsent(id, new CallTracker());
     }
@@ -24,6 +27,10 @@ public class TimeManager {
     public static void ping(String id) {
         if (lastCallTracker.containsKey(id)) lastCallTracker.get(id).ping();
     }
+    public static void setTimeTracker(String id, long last) {
+        if (!lastCallTracker.containsKey(id)) return;
+        lastCallTracker.get(id).last = last;
+    }
     public static boolean call(String id, long current) {
         if (!lastCallTracker.containsKey(id)) return false;
         return lastCallTracker.get(id).call(current);
@@ -32,6 +39,7 @@ public class TimeManager {
     public static class CallTracker {
         private final long debounce;
         public long last;
+        private boolean lock = false;
         public CallTracker() {
             this.debounce = 500;
             this.last = System.currentTimeMillis();
@@ -60,9 +68,12 @@ public class TimeManager {
             return false;
         }
         public boolean alternativeCall() {
-            return System.currentTimeMillis() - last <= debounce;
+            if (lock) return false;
+            boolean bool = (System.currentTimeMillis() - last) >= debounce;
+            return lock = bool;
         }
         public void ping() {
+            lock = false;
             this.last = System.currentTimeMillis();
         }
     }

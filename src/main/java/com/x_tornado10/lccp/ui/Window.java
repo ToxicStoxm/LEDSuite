@@ -8,7 +8,7 @@ import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
 import com.x_tornado10.lccp.communication.network.Networking;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
@@ -19,8 +19,7 @@ import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
 import org.gnome.adw.*;
-import org.gnome.gio.SimpleAction;
-import org.gnome.gio.SimpleActionGroup;
+import org.gnome.gio.*;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
@@ -43,25 +42,25 @@ public class Window extends ApplicationWindow implements EventListener {
     private Box addFile = null;
     public ToolbarView rootView = null;
     public ProgressBar progressBar = null;
+    public Button playPauseButton = null;
+    public Button stopButton = null;
+    private Revealer controlButtonsRevealer = null;
+    private Revealer StopRevealer = null;
     private Revealer SidebarSpinner = null;
     private HashMap<String, String> availableAnimations;
     private Map.Entry<String, String> currentAnimation = null;
 
     // booleans to keep track of autoUpdate and statusBarEnabled settings
     private boolean statusBarCurrentState = false;
-    private boolean autoUpdate = false;
-    private boolean sideBarVisible = true;
 
     // constructor for the main window
     public Window(Application app) {
         super(app);
         // setting title and default size
-        this.setTitle(LCCP.settings.getWindowTitle());
+        this.setTitle(LCCP.ApplicationName);
         this.setDefaultSize(LCCP.settings.getWindowDefWidth(), LCCP.settings.getWindowDefHeight());
+        this.setSizeRequest(300, 500);
         this.setIconName("LCCP-logo-256x256");
-
-        // settings auto update to user specified value
-        //setAutoUpdate(LCCP.settings.isAutoUpdateRemote());
 
         // toast overlay used to display toasts (notification) to the user
         toastOverlay = ToastOverlay.builder().build();
@@ -89,148 +88,75 @@ public class Window extends ApplicationWindow implements EventListener {
         // setting the icon name to gnome icon name
         mbutton.setIconName("open-menu-symbolic");
 
-        // defining menu drop down list, witch will be displayed when the menu button is clicked
-        var menuDropDownList = new ListBox();
-        // defining and configuring list rows
-        // settings row (open settings dialog on click)
-        var settingsRow = ListBoxRow.builder()
-                .setChild(Label.builder()
-                        .setLabel("Settings")
-                        // setting font attributes
-                        .setAttributes(getAttrDef())
-                        // align the label
-                        .setHalign(Align.START)
-                        .setMarginEnd(10)
-                        .setMarginBottom(5)
-                        .build())
-                .setName("settings")
-                .setSelectable(false)
-                .build();
-        // status row (opens status dialog on click)
-        var statusRow = ListBoxRow.builder()
-                .setChild(Label.builder()
-                        .setLabel("Status")
-                        // setting font attributes
-                        .setAttributes(getAttrDef())
-                        // align the label
-                        .setHalign(Align.START)
-                        .setMarginEnd(10)
-                        .setMarginBottom(5)
-                        .build())
-                .setName("status")
-                .setSelectable(false)
-                .build();
-        // about row (opens about dialog on click)
-        var aboutRow = ListBoxRow.builder()
-                .setChild(Label.builder()
-                        .setLabel("About")
-                        // setting font attributes
-                        .setAttributes(getAttrDef())
-                        // align the label
-                        .setHalign(Align.START)
-                        .setMarginEnd(10)
-                        .build())
-                .setName("about")
-                .setSelectable(false)
-                .build();
+        var mainMenu = Menu.builder().build();
+        var _status = MenuItem.builder().build();
+        _status.setLabel("Status");
+        _status.setDetailedAction("menu.status");
+        mainMenu.appendItem(_status);
+        var settings = MenuItem.builder().build();
+        settings.setLabel("Settings");
+        settings.setDetailedAction("menu.settings");
+        mainMenu.appendItem(settings);
+        var generalMenu = Menu.builder().build();
+        var shortcuts = MenuItem.builder().build();
+        shortcuts.setLabel("Shortcuts");
+        shortcuts.setDetailedAction("menu.shortcuts");
+        generalMenu.appendItem(shortcuts);
+        var about = MenuItem.builder().build();
+        about.setLabel("About");
+        about.setDetailedAction("menu.about");
+        generalMenu.appendItem(about);
+        mainMenu.appendSection(null, generalMenu);
 
         // Creating actions used for keyboard shortcuts
-        var activateAboutRow = SimpleAction.builder().setName("activateAboutRow").build();
-        activateAboutRow.onActivate(_ -> {
-            aboutRow.emitActivate(); // Emit the activate signal on the aboutRow
-            //aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
-        });
-        var activateSettingsRow = SimpleAction.builder().setName("activateSettingsRow").build();
-        activateSettingsRow.onActivate(_ -> {
-            settingsRow.emitActivate(); // Emit the activate signal on the settingsRow
-            //settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
-        });
-        var activateStatusRow = SimpleAction.builder().setName("activateStatusRow").build();
-        activateStatusRow.onActivate(_ -> {
-            statusRow.emitActivate(); // Emit the activate signal on the statusRow
-            //statusRow.emitMoveFocus(DirectionType.TAB_BACKWARD); // deselect current row to close menu list and shift focus to new window
-        });
+        var aboutRowAction = SimpleAction.builder().setName("about").build();
+        aboutRowAction.onActivate(_ -> triggerAboutRow());
+        var settingsRowAction = SimpleAction.builder().setName("settings").build();
+        settingsRowAction.onActivate(_ -> triggerSettingsRow());
+        var statusRowAction = SimpleAction.builder().setName("status").build();
+        statusRowAction.onActivate(_ -> triggerStatusRow());
+        var shortcutAction = SimpleAction.builder().setName("shortcuts").build();
+        shortcutAction.onActivate(_ -> triggerShortcutRow());
 
         // Add the actions to the window's action group
         var actionGroup = new SimpleActionGroup();
-        actionGroup.addAction(activateAboutRow);
-        actionGroup.addAction(activateSettingsRow);
-        actionGroup.addAction(activateStatusRow);
-        this.insertActionGroup("main", actionGroup);
+        actionGroup.addAction(aboutRowAction);
+        actionGroup.addAction(settingsRowAction);
+        actionGroup.addAction(shortcutAction);
+        actionGroup.addAction(statusRowAction);
+        this.insertActionGroup("menu", actionGroup);
 
         // Set up a shortcut controller
-        var shortcutController = new ShortcutController();
-
+        var shortcutController = ShortcutController.builder().setScope(ShortcutScope.MANAGED).build();
         // Define and add the shortcuts to the controller
-        var shortcutAboutRow = new Shortcut(
-                ShortcutTrigger.parseString("<Alt>a"), // ALT + A
-                ShortcutAction.parseString("action(main.activateAboutRow)") // trigger previously defined action for about row
-        );
-        var shortcutSettingsRow = new Shortcut(
-                ShortcutTrigger.parseString("<Alt>s"), // ALT + S
-                ShortcutAction.parseString("action(main.activateSettingsRow)") // trigger previously defined action for settings row
-        );
-        var shortcutStatusRow = new Shortcut(
-                ShortcutTrigger.parseString("<Control>s"), // CTRL + S
-                ShortcutAction.parseString("action(main.activateStatusRow)") // trigger previously defined action for status row
-        );
-        shortcutController.addShortcut(shortcutAboutRow);
-        shortcutController.addShortcut(shortcutSettingsRow);
+        var shortcutStatusRow = Shortcut.builder()
+                .setTrigger(ShortcutTrigger.parseString("<Control>s")) // CTRL + S
+                .setAction(ShortcutAction.parseString("action(menu.status)")) // trigger previously defined action for status row
+                .build();
+        var shortcutSettingsRow = Shortcut.builder()
+                .setTrigger(ShortcutTrigger.parseString("<Alt>s")) // ALT + S
+                .setAction(ShortcutAction.parseString("action(menu.settings)")) // trigger previously defined action for settings row
+                .build();
+        var shortcutShortcutsRow = Shortcut.builder()
+                .setTrigger(ShortcutTrigger.parseString("<Control>question"))
+                .setAction(ShortcutAction.parseString("action(menu.shortcuts)"))
+                .build();
+        var shortcutAboutRow = Shortcut.builder()
+                .setTrigger(ShortcutTrigger.parseString("<Alt>a"))
+                .setAction(ShortcutAction.parseString("action(menu.about)"))
+                .build();
+
         shortcutController.addShortcut(shortcutStatusRow);
+        shortcutController.addShortcut(shortcutSettingsRow);
+        shortcutController.addShortcut(shortcutShortcutsRow);
+        shortcutController.addShortcut(shortcutAboutRow);
 
         // Add the controller to the window
         this.addController(shortcutController);
 
-        // listen for about / settings dialog close and shift the focus backwards to focus the main window again
-        //getAboutDialog().onClosed(() -> aboutRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
-        //getSettingsDialog().onClosed(() -> settingsRow.emitMoveFocus(DirectionType.TAB_BACKWARD));
+        mbutton.setMenuModel(mainMenu);
 
-        // change menu list selection mode to single so the user can only select one entry at a time
-        menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
-
-        // adding the list rows to the menu list
-        menuDropDownList.append(statusRow);
-        menuDropDownList.append(settingsRow);
-        menuDropDownList.append(aboutRow);
-
-        // creating new popover (small popup)
-        var popover = new Popover();
-
-        // listening for menu list entry click events and opening the window / dialog associated with the licked row
-        menuDropDownList.onRowActivated(e -> {
-            if (e == null) return;
-            switch (e.getName()) {
-                case "status" -> {
-                    LCCP.logger.debug("User click: status row");
-                    StatusDialog sD = new StatusDialog();
-                    sD.present(this);
-                }
-                // opening settings dialog
-                case "settings" -> {
-                    LCCP.logger.debug("User click: settings row");
-                    getSettingsDialog().present(this);
-                }
-                // opening about dialog
-                case "about" -> {
-                    LCCP.logger.debug("User click: about row");
-                    getAboutDialog().present(this);
-                }
-            }
-            // close the popover
-            menuDropDownList.setSelectionMode(SelectionMode.NONE);
-            menuDropDownList.unselectAll();
-            menuDropDownList.setSelectionMode(SelectionMode.BROWSE);
-            popover.emitClosed();
-        });
-
-        // adding the menu list to the popover
-        popover.setChild(menuDropDownList);
-        // adding popover to menu button, so it is displayed when the button is clicked
-        mbutton.setPopover(popover);
-
-        mbutton.onActivate(() -> {
-           LCCP.logger.debug("Menu button clicked");
-        });
+        mbutton.onActivate(() -> LCCP.logger.debug("Menu button clicked"));
 
         // adding the search button to the start of the header bar and the menu button to its end
         //headerBar.packStart(sbutton);
@@ -253,6 +179,8 @@ public class Window extends ApplicationWindow implements EventListener {
         // toggling status bar visibility depending on user preferences
         setBannerVisible(LCCP.settings.isDisplayStatusBar());
 
+        updateStatus(StatusUpdate.notConnected());
+
         // adding the header bar container to the north box
         TopBox.append(status);
 
@@ -271,18 +199,18 @@ public class Window extends ApplicationWindow implements EventListener {
         mainContent.append(TopRevealer);
         mainContent.append(CenterRevealer);
 
-        var playPauseButton = Button.builder()
+        playPauseButton = Button.builder()
                 .setIconName("media-playback-start-symbolic")
                 .setName("play")
                 .setCssClasses(new String[]{"osd", "circular"})
                 .build();
-        var stopButton = Button.builder()
+        stopButton = Button.builder()
                 .setIconName("media-playback-stop-symbolic")
                 .setName("stop")
                 .setCssClasses(new String[]{"osd", "circular"})
                 .build();
 
-        var StopRevealer = Revealer.builder()
+        StopRevealer = Revealer.builder()
                 .setRevealChild(false)
                 .setChild(stopButton)
                 .build();
@@ -295,59 +223,37 @@ public class Window extends ApplicationWindow implements EventListener {
         String pauseState = "pause";
         playPauseButton.onClicked(() -> {
             if (!TimeManager.call("control_buttons")) return;
-            String state = playPauseButton.getName();
+            AtomicReference<String> state = new AtomicReference<>(playPauseButton.getName());
             if (allowPlayPause.get() && currentAnimation != null && availableAnimations.containsKey(currentAnimation.getKey())) {
-                if (state.equals(playState)) {
+                //if (state.equals(playState)) {
                     try {
                         Networking.Communication.sendYAMLDefaultHost(
                                 YAMLMessage.builder()
                                         .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                        .setRequestType(YAMLMessage.REQUEST_TYPE.play)
+                                        .setRequestType(YAMLMessage.REQUEST_TYPE.valueOf(state.get()))
                                         .setRequestFile(currentAnimation.getKey())
                                         .build(),
                                 success -> {
                                     if (!success) {
+                                        idle();
                                         errorFeedback(playPauseButton, allowPlayPause);
-                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
-                                    } else {
-                                        playPauseButton.setName("pause");
-                                        playPauseButton.setIconName("media-playback-pause-symbolic");
-                                        LCCP.logger.debug("Successfully send " + state + " request for " + currentAnimation.getKey() + "!");
-                                        StopRevealer.setRevealChild(true);
+                                        LCCP.logger.error(capitalizeFirstLetter(state.get())  + " request for " + currentAnimation.getKey() + " failed!");
                                     }
                                 }
                         );
                     } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                              YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
-                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
+                        LCCP.logger.error(capitalizeFirstLetter(state.get())  + " request for " + currentAnimation.getKey() + " failed!");
                     }
-                } else if (state.equals(pauseState)) {
-                    try {
-                        Networking.Communication.sendYAMLDefaultHost(
-                                YAMLMessage.builder()
-                                        .setPacketType(YAMLMessage.PACKET_TYPE.request)
-                                        .setRequestType(YAMLMessage.REQUEST_TYPE.pause)
-                                        .setRequestFile(currentAnimation.getKey())
-                                        .build(),
-                                success -> {
-                                    if (!success) {
-                                        errorFeedback(playPauseButton, allowPlayPause);
-                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
-                                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
-                                    } else {
-                                        playPauseButton.setName("play");
-                                        playPauseButton.setIconName("media-playback-start-symbolic");
-                                        LCCP.logger.debug("Successfully send " + state + " request for " + currentAnimation.getKey() + "!");
-                                    }
-
-                                }
-                        );
-                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
-                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
-                        LCCP.logger.error(capitalizeFirstLetter(state)  + " request for " + currentAnimation.getKey() + " failed!");
-                    }
-                }
-            } else errorFeedback(playPauseButton, allowPlayPause);
+            } else {
+                idle();
+                errorFeedback(playPauseButton, allowPlayPause);
+            }
+            boolean bool = state.get().equals(playState);
+            playPauseButton.setName(bool ? pauseState : playState);
+            playPauseButton.setIconName("media-playback-" + (bool ? "pause" : "start")  + "-symbolic");
+            LCCP.logger.debug("Successfully send " + state + " request for " + currentAnimation.getKey() + "!");
+            StopRevealer.setRevealChild(true);
         });
         AtomicBoolean allowStop = new AtomicBoolean(true);
         stopButton.onClicked(() -> {
@@ -364,11 +270,6 @@ public class Window extends ApplicationWindow implements EventListener {
                                 if (!success) {
                                     errorFeedback(stopButton, allowStop);
                                     LCCP.logger.error("Stop request for " + currentAnimation.getKey() + " failed!");
-                                } else {
-                                    StopRevealer.setRevealChild(false);
-                                    playPauseButton.setIconName("media-playback-start-symbolic");
-                                    playPauseButton.setName("play");
-                                    LCCP.logger.debug("Successfully send Stop request for " + currentAnimation.getKey() + "!");
                                 }
                             }
                     );
@@ -378,6 +279,8 @@ public class Window extends ApplicationWindow implements EventListener {
 
                 }
             } else errorFeedback(stopButton, allowStop);
+            idle();
+            LCCP.logger.debug("Successfully send Stop request for " + currentAnimation.getKey() + "!");
         });
 
         var controlButtons = Box.builder()
@@ -387,7 +290,7 @@ public class Window extends ApplicationWindow implements EventListener {
         controlButtons.append(StopRevealer);
         controlButtons.append(playPauseButton);
 
-        var controlButtonsRevealer = Revealer.builder()
+        controlButtonsRevealer = Revealer.builder()
                 .setChild(controlButtons)
                 .setRevealChild(false)
                 .build();
@@ -428,7 +331,7 @@ public class Window extends ApplicationWindow implements EventListener {
         overlaySplitView.setContent(overlay);
         overlaySplitView.setSidebarWidthUnit(LengthUnit.PX);
         overlaySplitView.setSidebarWidthFraction(0.2);
-        overlaySplitView.setShowSidebar(sideBarVisible);
+        overlaySplitView.setShowSidebar(true);
 
         var smallHeaderBar = HeaderBar.builder().build();
         smallHeaderBar.setTitleWidget(Label.builder().setLabel("File Management").build());
@@ -487,7 +390,14 @@ public class Window extends ApplicationWindow implements EventListener {
 
         AtomicReference<ListBoxRow> current = new AtomicReference<>(new ListBoxRow());
 
+        TimeManager.initTimeTracker("sidebarClickDebounce", 200, System.currentTimeMillis() - 1000);
+
         addFileList.onRowActivated(_ -> {
+            if (!TimeManager.call("sidebarClickDebounce")) {
+                addFileList.setSelectionMode(SelectionMode.NONE);
+                addFileList.setSelectionMode(SelectionMode.BROWSE);
+                return;
+            }
             controlButtonsRevealer.setRevealChild(false);
             LCCP.logger.debug("Clicked add file row!");
             CenterRevealer.setRevealChild(false);
@@ -502,6 +412,12 @@ public class Window extends ApplicationWindow implements EventListener {
         animationsList.onRowActivated(row -> {
             controlButtonsRevealer.setRevealChild(true);
             if (current.get() == row) return;
+            if (!TimeManager.call("sidebarClickDebounce")) {
+                animationsList.setSelectionMode(SelectionMode.NONE);
+                animationsList.unselectAll();
+                animationsList.setSelectionMode(SelectionMode.BROWSE);
+                return;
+            }
             current.set(row);
             if (!row.getSelectable()) return;
             if (CenterBox.getFirstChild() != null) {
@@ -550,6 +466,7 @@ public class Window extends ApplicationWindow implements EventListener {
                                                 .build()
                                 );*/
                             }
+                            getStatus(null);
                         },
                         new LCCPProcessor() {
                             @Override
@@ -598,52 +515,41 @@ public class Window extends ApplicationWindow implements EventListener {
         var sideBarToggleButton = new ToggleButton();
         sideBarToggleButton.setIconName("sidebar-show-symbolic");
         headerBar.packStart(sideBarToggleButton);
-        sideBarToggleButton.setVisible(overlaySplitView.getShowSidebar());
+        sideBarToggleButton.setVisible(overlaySplitView.getCollapsed());
 
         sideBarToggleButton.onToggled(() -> {
-            boolean active = sideBarToggleButton.getActive();
-            if (active && !overlaySplitView.getShowSidebar()) {
-                sideBarVisible = true;
-                overlaySplitView.setShowSidebar(true);
+            if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
                 LCCP.logger.debug("Sidebar show button pressed (toggle:true)");
-            } else if (!active && overlaySplitView.getShowSidebar()) {
-                sideBarVisible = false;
-                overlaySplitView.setCollapsed(false);
-                LCCP.logger.debug("Sidebar show button pressed (toggle:false)");
+                overlaySplitView.setShowSidebar(true);
+                // resetting button to avoid checking continuously for sidebar hide signal
+                sideBarToggleButton.setActive(false);
             }
         });
 
-        AtomicBoolean temp = new AtomicBoolean(false);
-
         int min = 680;
 
-        // TODO replace with breakpoint
-        new LCCPRunnable() {
-            @Override
-            public void run() {
-                if (getHeight() <= 499) {
-                    setSizeRequest(getWidth(), 500);
-                    return;
-                }
-                if (getWidth() <= min) {
-                    if (!temp.get()) {
-                        temp.set(true);
-                        overlaySplitView.setCollapsed(true);
-                        sideBarToggleButton.setVisible(true);
-                        LCCP.logger.debug("Window with <= " + min + ". Collapsing sidebar");
-                    }
-                } else {
-                    temp.set(false);
-                    overlaySplitView.setCollapsed(false);
-                    sideBarToggleButton.setVisible(false);
-                }
-                if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
-                    sideBarToggleButton.setActive(false);
-                }
+        var sideBarBreakpoint = Breakpoint.builder()
+                .setCondition(
+                        BreakpointCondition.parse("max-width: 600px")
+                )
+                .build();
+        sideBarBreakpoint.onApply(() -> {
+            overlaySplitView.setCollapsed(true);
+            sideBarToggleButton.setVisible(true);
+            LCCP.logger.debug("Window with <= " + min + ". Collapsing sidebar");
+        });
+        sideBarBreakpoint.onUnapply(() -> {
+            overlaySplitView.setCollapsed(false);
+            sideBarToggleButton.setVisible(false);
+        });
+        this.addBreakpoint(sideBarBreakpoint);
+        overlaySplitView.getSidebar().onStateFlagsChanged(_ -> {
+            if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
+                sideBarToggleButton.setActive(false);
             }
-        }.runTaskTimerAsynchronously(0, 10);
+        });
 
-        status.onButtonClicked(statusRow::emitActivate);
+        status.onButtonClicked(this::triggerStatusRow);
         status.setButtonLabel("LED Cube Status");
 
         progressBar = ProgressBar.builder().setFraction(0.0).build();
@@ -656,6 +562,60 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // adding the main container to the window
         this.setContent(rootView);
+    }
+
+    private void triggerStatusRow() {
+        LCCP.logger.debug("User click: status row");
+        new StatusDialog().present(this);
+    }
+    private void triggerSettingsRow() {
+        LCCP.logger.debug("User click: settings row");
+        getSettingsDialog().present(this);
+    }
+    private void triggerShortcutRow() {
+        LCCP.logger.debug("User click: shortcut row");
+        var shortcuts = ShortcutsWindow.builder().build();
+        var shortcutSection = ShortcutsSection.builder().build();
+        var shortcutGroup = ShortcutsGroup.builder().setTitle("General").build();
+        shortcutGroup.addShortcut(
+                ShortcutsShortcut.builder()
+                        .setShortcutType(ShortcutType.ACCELERATOR)
+                        .setAccelerator("<Alt>S")
+                        .setTitle("Open status dialog")
+                        .build()
+        );
+        shortcutGroup.addShortcut(
+                ShortcutsShortcut.builder()
+                        .setShortcutType(ShortcutType.ACCELERATOR)
+                        .setAccelerator("<Control>S")
+                        .setTitle("Open settings dialog")
+                        .build()
+        );
+        shortcutGroup.addShortcut(
+                ShortcutsShortcut.builder()
+                        .setShortcutType(ShortcutType.ACCELERATOR)
+                        .setAccelerator("<Control>question")
+                        .setTitle("Open this dialog")
+                        .build()
+        );
+        shortcutGroup.addShortcut(
+                ShortcutsShortcut.builder()
+                        .setShortcutType(ShortcutType.ACCELERATOR)
+                        .setAccelerator("<Alt>A")
+                        .setTitle("Open about dialog")
+                        .build()
+        );
+
+        shortcutSection.addGroup(shortcutGroup);
+        shortcuts.addSection(shortcutSection);
+        shortcuts.setModal(true);
+        shortcuts.setTransientFor(this);
+        shortcuts.present();
+
+    }
+    private void triggerAboutRow() {
+        LCCP.logger.debug("User click: about row");
+        getAboutDialog().present(this);
     }
 
     public void errorFeedback(Button button, AtomicBoolean bool) {
@@ -682,6 +642,7 @@ public class Window extends ApplicationWindow implements EventListener {
         return result;
     }
 
+
     // about dialog
     private AboutDialog aDialog = null;
     // method to either create a new about dialog or get an already existing one
@@ -693,12 +654,12 @@ public class Window extends ApplicationWindow implements EventListener {
             aDialog = AboutDialog.builder()
                     .setDevelopers(new String[]{"x_Tornado10", "Bukkit GitHub Repo", "CraftBukkit GitHub Repo"})
                     .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
-                    .setVersion(LCCP.version)
+                    .setVersion(LCCP.getInstance().getApp().getVersion())
                     .setLicenseType(License.GPL_3_0)
                     .setApplicationIcon("com.x_tornado10.lccp")
-                    .setIssueUrl(Paths.Links.PROJECT_GITHUB + "issues")
-                    .setWebsite(Paths.Links.PROJECT_GITHUB)
-                    .setApplicationName(LCCP.settings.getWindowTitle())
+                    .setIssueUrl(Constants.Links.PROJECT_GITHUB + "issues")
+                    .setWebsite(Constants.Links.PROJECT_GITHUB)
+                    .setApplicationName(LCCP.ApplicationName)
                     .build();
         }
          return aDialog;
@@ -712,7 +673,7 @@ public class Window extends ApplicationWindow implements EventListener {
         attr.change(Pango.attrScaleNew(1));
         return attr;
     }
-    protected void getStatus(Networking.Communication.FinishCallback callback) {
+    public void getStatus(Networking.Communication.FinishCallback callback) {
         try {
             Networking.Communication.sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), new YAMLMessage()
                             .setPacketType(YAMLMessage.PACKET_TYPE.request)
@@ -742,7 +703,7 @@ public class Window extends ApplicationWindow implements EventListener {
             public void run() {
                 if (!status.getRevealed()) return;
                 getStatus(success -> {
-                    if (!success) updateStatus(StatusUpdate.notConnected());
+                    if (!success) LCCP.eventManager.fireEvent(StatusUpdate.notConnected());
                 });
                 // updating status bar to show current status
                 //status.setTitle("LED-Cube-Status: " + getStatus());
@@ -791,29 +752,6 @@ public class Window extends ApplicationWindow implements EventListener {
         }
         return sD;
     }
-    // check if the settings dialog is currently visible
-    public boolean isSettingsDialogVisible() {
-        return sD != null;
-    }
-    // toggle auto update option for the settings dialog
-    /*public void setAutoUpdate(boolean active) {
-        if (autoUpdate == active) return;
-        LCCP.logger.debug("Fulfilling autoUpdateToggle request -> " + active);
-        // if auto updating isn't active and should be activated
-        if (!autoUpdate && active) {
-            // if the settings dialog is already visible
-            if (isSettingsDialogVisible()) getSettingsDialog().startRemoteUpdate(); // start the remote updating loop within the settings dialog
-            getSettingsDialog().removeManualRemoteApplySwitch(); // remove the manual updating button from the settings dialog
-        // if auto updating is active and should be deactivated
-        } else if (autoUpdate && !active) {
-            // the manual updating button is re added to the settings dialog
-            getSettingsDialog().addManualRemoteApplySwitch();
-            // if the settings dialog is currently visible the remote updating task is stopped
-            if (isSettingsDialogVisible()) getSettingsDialog().stopRemoteUpdate();
-        }
-        // current auto updating status is set based on the provided value 'active'
-        autoUpdate = active;
-    }*/
 
     public void resetSettingsDialog() {
         this.sD = null;
@@ -827,58 +765,49 @@ public class Window extends ApplicationWindow implements EventListener {
     public void onStatus(Events.Status e) {
         StatusUpdate statusUpdate = e.statusUpdate();
 
+        updateStatus(statusUpdate);
+
         ListBoxRow selectedRow = animationsList.getSelectedRow();
         String name = "";
         if (selectedRow != null) name = selectedRow.getName();
-        animationsList.unselectAll();
-        animationsList.setSelectionMode(SelectionMode.NONE);
-        animationsList.removeAll();
+        if (!name.isBlank()) setControlButtons(statusUpdate, currentAnimation);
+        if (TimeManager.call("animations")) {
+            animationsList.unselectAll();
+            animationsList.setSelectionMode(SelectionMode.NONE);
+            animationsList.removeAll();
 
-        SidebarSpinner.setRevealChild(true);
+            SidebarSpinner.setRevealChild(true);
 
-        //var box = Box.builder().setHalign(Align.CENTER).build();
-        //box.append(Spinner.builder().setSpinning(true).build());
+            List<ListBoxRow> anims = new ArrayList<>();
 
-        /*var spinnerRow = ListBoxRow.builder()
-                .setSelectable(true)
-                .setName(box.getName())
-                .setSelectable(false)
-                .setFocusable(false)
-                .setChild(
-                        box
-                ).build();
-        animationsList.append(spinnerRow);*/
+            availableAnimations = statusUpdate.getAvailableAnimations();
 
-        List<ListBoxRow> anims = new ArrayList<>();
-
-        availableAnimations = statusUpdate.getAvailableAnimations();
-
-        for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
-            var availableAnimation = Box.builder()
-                    .setOrientation(Orientation.HORIZONTAL)
-                    .setTooltipText("Open " + entry.getKey() + " settings menu")
-                    .setName(entry.getKey())
-                    .setSpacing(10)
-                    .build();
-            availableAnimation.append(Image.fromIconName(entry.getValue()));
-            availableAnimation.append(
-                    Label.builder()
-                            .setLabel(entry.getKey())
-                            .setEllipsize(EllipsizeMode.END)
-                            .setXalign(0)
-                            .build()
-            );
-            ListBoxRow row = listBoxWrap(availableAnimation);
-            if (entry.getKey().equals(name)) selectedRow = row;
-            anims.add(row);
+            for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
+                var availableAnimation = Box.builder()
+                        .setOrientation(Orientation.HORIZONTAL)
+                        .setTooltipText("Open " + entry.getKey() + " settings menu")
+                        .setName(entry.getKey())
+                        .setSpacing(10)
+                        .build();
+                availableAnimation.append(Image.fromIconName(entry.getValue()));
+                availableAnimation.append(
+                        Label.builder()
+                                .setLabel(entry.getKey())
+                                .setEllipsize(EllipsizeMode.END)
+                                .setXalign(0)
+                                .build()
+                );
+                ListBoxRow row = listBoxWrap(availableAnimation);
+                if (entry.getKey().equals(name)) selectedRow = row;
+                anims.add(row);
+            }
+            SidebarSpinner.setRevealChild(false);
+            for (ListBoxRow lbr : anims) {
+                animationsList.append(lbr);
+            }
+            animationsList.setSelectionMode(SelectionMode.BROWSE);
+            animationsList.selectRow(selectedRow);
         }
-        SidebarSpinner.setRevealChild(false);
-        //animationsList.remove(spinnerRow);
-        for (ListBoxRow lbr : anims) {
-            animationsList.append(lbr);
-        }
-        animationsList.setSelectionMode(SelectionMode.BROWSE);
-        animationsList.selectRow(selectedRow);
     }
 
     @EventHandler
@@ -895,6 +824,40 @@ public class Window extends ApplicationWindow implements EventListener {
                         .setChild(
                                 widget
                         ).build();
+    }
+    public void playing() {
+        StopRevealer.setRevealChild(true);
+        playPauseButton.setName("pause");
+        playPauseButton.setIconName("media-playback-pause-symbolic");
+    }
+    public void paused() {
+        StopRevealer.setRevealChild(true);
+        playPauseButton.setName("play");
+        playPauseButton.setIconName("media-playback-start-symbolic");
+    }
+    public void idle() {
+        StopRevealer.setRevealChild(false);
+        playPauseButton.setName("play");
+        playPauseButton.setIconName("media-playback-start-symbolic");
+    }
+    public void setControlButtons(StatusUpdate statusUpdate, Map.Entry<String, String> name) {
+        controlButtonsRevealer.setRevealChild(false);
+        if (statusUpdate.isNotConnected()) {
+            return;
+        }
+        if (statusUpdate.isFileLoaded()) {
+            if (!statusUpdate.getFileSelected().equals(name.getKey())) {
+                idle();
+                controlButtonsRevealer.setRevealChild(true);
+                return;
+            }
+            switch (statusUpdate.getFileState()) {
+                case playing -> playing();
+                case paused -> paused();
+                default -> idle();
+            }
+        } else idle();
+        controlButtonsRevealer.setRevealChild(true);
     }
 
 }

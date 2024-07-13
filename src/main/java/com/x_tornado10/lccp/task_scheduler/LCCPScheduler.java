@@ -279,13 +279,9 @@ public class LCCPScheduler implements TaskScheduler {
                                     "Task #%s for %s generated an exception",
                                     task.getTaskId(),
                                     LCCP.class.getName()));
-                    System.out.println(Arrays.toString(throwable.getStackTrace()));
-                    System.out.println(throwable.getLocalizedMessage());
-                    System.out.println(throwable.getCause().getLocalizedMessage());
                 }
                 parsePending();
             } else {
-                //debugTail = debugTail.setNext(new LCCPAsyncDebugger(currentTick + RECENT_TICKS, task.getTaskClass()));
                 executor.execute(task);
                 // We don't need to parse pending
                 // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
@@ -300,7 +296,6 @@ public class LCCPScheduler implements TaskScheduler {
         }
         pending.addAll(temp);
         temp.clear();
-        //debugHead = debugHead.getNextHead(currentTick);
     }
     
     private void addTask(final LCCPTask task) {

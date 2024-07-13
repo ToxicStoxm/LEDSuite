@@ -12,7 +12,6 @@ import com.x_tornado10.lccp.task_scheduler.TickingSystem;
 import com.x_tornado10.lccp.ui.Window;
 import com.x_tornado10.lccp.communication.network.Networking;
 import com.x_tornado10.lccp.logging.Logger;
-import com.x_tornado10.lccp.logging.Messages;
 import com.x_tornado10.lccp.logging.network.NetworkLogger;
 import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
@@ -41,6 +40,7 @@ public class LCCP implements EventListener {
 
     @Getter
     private static LCCP instance;
+    public static final String ApplicationName;
     public static LocalSettings settings;
     public static ServerSettings server_settings;
     public static Logger logger;
@@ -52,7 +52,10 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
-    //public static boolean server = false;
+
+    static {
+        ApplicationName = "LED-Cube Control Panel";
+    }
 
     // main method
     public static void main(String[] args) {
@@ -71,6 +74,7 @@ public class LCCP implements EventListener {
         instance = this;
         // create new libadwaita application object
         app = new Application("com.x_tornado10.lccp", ApplicationFlags.DEFAULT_FLAGS);
+        app.setVersion(version);
         // define function to be executed on application start
         app.onActivate(this::activate);
         // trigger exit() function
@@ -117,15 +121,15 @@ public class LCCP implements EventListener {
             LCCP.logger.fatal("Wasn't able to get app version!");
             LCCP.logger.warn("Application was halted!");
             LCCP.logger.warn("If this message is displayed repeatedly this version of the program is likely faulty!");
-            LCCP.logger.warn(Messages.WARN.OPEN_GITHUB_ISSUE);
+            LCCP.logger.warn(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
             LCCP.logger.warn("Please restart the application!");
             LCCP.exit(1);
         }
 
         // defining config files and log file
-        File config_file = new File(Paths.File_System.config);
-        File server_config_file = new File(Paths.File_System.server_config);
-        File log_file = new File(Paths.File_System.logFile);
+        File config_file = new File(Constants.File_System.config);
+        File server_config_file = new File(Constants.File_System.server_config);
+        File log_file = new File(Constants.File_System.logFile);
         try {
             // checking if the config file already exists
             if (!config_file.exists()) {
@@ -203,14 +207,16 @@ public class LCCP implements EventListener {
         //server = true;
         //startServer();
 
+        TimeManager.initTimeTracker("status", 5000, 10000);
+        TimeManager.initTimeTracker("animations", 5000, System.currentTimeMillis() - 10000);
+
+
         try {
             Networking.Communication.NetworkHandler.init(_ -> {
             });
         } catch (Networking.NetworkException e) {
             throw new RuntimeException(e);
         }
-
-        TimeManager.initTimeTracker("status", 5000);
 
         new LCCPRunnable() {
             @Override
@@ -287,7 +293,7 @@ public class LCCP implements EventListener {
     // sends a .yaml file to the server using a java socket
     public static void updateRemoteConfig() {
         LCCP.logger.debug("Updating RemoteConfig...");
-        Networking.Communication.sendFile(server_settings.getIPv4(), server_settings.getPort(), Paths.File_System.server_config, null);
+        Networking.Communication.sendFile(server_settings.getIPv4(), server_settings.getPort(), Constants.File_System.server_config, null);
         LCCP.logger.debug("Successfully updatedRemoteConfig!");
     }
 
@@ -301,7 +307,7 @@ public class LCCP implements EventListener {
 
             // Loading the YAML file from disk using a file handler
             FileHandler fileHandler = new FileHandler(yamlConfig);
-            fileHandler.load(Paths.File_System.config);
+            fileHandler.load(Constants.File_System.config);
 
             // settings are loaded into the current instance of the settings class, so they can be used during runtime without any IO-Calls
             settings.load(yamlConfig);
@@ -322,7 +328,7 @@ public class LCCP implements EventListener {
 
             // Load the YAML file from disk using file manager
             FileHandler fileHandler = new FileHandler(yamlConfig);
-            fileHandler.load(Paths.File_System.server_config);
+            fileHandler.load(Constants.File_System.server_config);
 
             // settings are loaded into the current instance of the settings class, so they can be used during runtime without any IO-Calls
             server_settings.load(yamlConfig);
@@ -347,9 +353,7 @@ public class LCCP implements EventListener {
         // default console message response to a reload event
         logger.debug("Fulfilling reload request: " + e.message());
         // reloading values that may've changed
-        mainWindow.setTitle(settings.getWindowTitle());
         mainWindow.setResizable(settings.isWindowResizeable());
-        //mainWindow.setAutoUpdate(settings.isAutoUpdateRemote());
     }
     // listener function for startup event
     @EventHandler
@@ -374,7 +378,7 @@ public class LCCP implements EventListener {
         logger.debug("Fulfilling shutdown request: " + e.message());
         //server = false;
         networkLogger.printEvents();
-        logger.info("New log file was saved to: '" + Paths.File_System.logFile + "'");
+        logger.info("New log file was saved to: '" + Constants.File_System.logFile + "'");
     }
     @EventHandler
     public void onDataReceived(Events.DataIn e) {
@@ -390,11 +394,6 @@ public class LCCP implements EventListener {
 
                 switch (yaml.getReplyType()) {
                     case status -> {
-                        eventManager.fireEvent(
-                                new Events.Status(
-                                        StatusUpdate.fromYAMLMessage(yaml)
-                                )
-                        );
                     }
                     case menu -> {
 
@@ -418,7 +417,7 @@ public class LCCP implements EventListener {
         YAMLConfiguration yaml = e.yaml();
         String id;
         try {
-            id = "[" + yaml.getProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
+            id = "[" + yaml.getProperty(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
             logger.debug(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";
@@ -436,20 +435,19 @@ public class LCCP implements EventListener {
         logger.debug(id + "---------------------------------------------------------------");
     }
     @EventHandler
-    public void onStatusUpdate(Events.Status e) {
+    public void onStatus(Events.Status e) {
         StatusUpdate status = e.statusUpdate();
+        TimeManager.ping("status");
         String id = "[" + status.getNetworkEventID() + "] ";
         logger.debug(id + "Received status update from server!");
         logger.debug(id + "Status: " + status);
-        mainWindow.updateStatus(status);
-        TimeManager.ping("status");
     }
     @EventHandler
     public void onSend(Events.DataOut e) {
         YAMLConfiguration yaml = e.yaml();
         String id;
         try {
-            id = "[" + yaml.getProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
+            id = "[" + yaml.getProperty(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
             logger.debug(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";

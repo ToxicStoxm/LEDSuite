@@ -7,7 +7,7 @@ import com.x_tornado10.lccp.event_handling.listener.EventListener;
 import com.x_tornado10.lccp.task_scheduler.LCCPProcessor;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.task_scheduler.LCCPTask;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
@@ -32,12 +32,11 @@ import java.util.*;
 
 public class Networking {
 
-    //private static final TreeMap<Integer, NetworkQueueElement> networkQueue = new TreeMap<>();
     private static final TreeMap<Long, LCCPRunnable> networkQueue = new TreeMap<>();
     private static final HashMap<UUID, Communication.NetworkHandler.ReplyListener> replyListenerQueue = new HashMap<>();
-    //private static final Map<UUID, Communication.NetworkHandler.ReplyListener> replyListenersQueue = Collections.synchronizedMap(replyListenersQueue0);
 
     public static class General {
+        private static final int timeout = 3;
 
         // try to check a provided IPv4 for connectivity using the ping command in the linux terminal
         // this is kind of a workaround since the default Java function normally used for this (InetAddress.isReachable()) requires root to work properly
@@ -45,8 +44,8 @@ public class Networking {
         // also, using echo port 7 can lead to false positives since most routers / firewalls are configured to respond to closed / non-existing addresses with a reset (RST) response,
         // this will lead to InetAddress.isReachable() returning true because it interprets any kind of response as reachable even though
         // the InetAddress.getByName() works just fine for host names though
-        private static boolean ping(String ip, int timeout) {
-            LCCP.logger.debug("Received ping request for '" + ip + "'" + " timeout: '" + timeout + "'");
+        private static boolean ping(String ip) {
+            LCCP.logger.debug("Received ping request for '" + ip + "'" + " timeout: '" + 3 + "'");
             try {
                 // formatting ping command with specified timeout and IPv4 / host name
                 LCCP.logger.debug("Formatting ping command...");
@@ -116,7 +115,7 @@ public class Networking {
                     // try to ping ip with custom ping function
                     // if the ping times out or fails throw new UnknownHostException
                     // this is done so the error can be handled differently for different use cases
-                    if (!ping(ip, 3)) throw new UnknownHostException("Connection timed out!");
+                    if (!ping(ip)) throw new UnknownHostException("Connection timed out!");
 
                     // if the ping is successful the IPv4 is pares by InetAddress
                     host = InetAddress.ofLiteral(ip);
@@ -145,14 +144,14 @@ public class Networking {
 
         // validate an IP4 address format
         public static boolean isValidIP(final String ip) {
-            return ip.matches(Paths.Patterns.IPV4);
+            return ip.matches(Constants.Patterns.IPV4);
         }
 
         // validate Port number format
         public static boolean isValidPORT(final String port) {
             LCCP.logger.debug("Fulfilling port validation request for: '" + port + "'");
             // valid port format
-            boolean result = port.matches(Paths.Patterns.PORT);
+            boolean result = port.matches(Constants.Patterns.PORT);
             // print result to console
             if (result) {
                 LCCP.logger.debug("Port validation successful!");
@@ -170,15 +169,11 @@ public class Networking {
     // custom file sender that sends a file to a server using java sockets
     public static class Communication {
 
-        public static boolean sendFileDefaultHost(String fileToSendPath, ProgressTracker progressTracker) {
-            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, progressTracker);
+        public static void sendFileDefaultHost(String fileToSendPath, ProgressTracker progressTracker) {
+            sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, progressTracker);
         }
 
-        public static boolean sendFileDefaultHost(String fileToSendPath) {
-            return sendFile(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), fileToSendPath, null);
-        }
-
-        public static boolean sendFile(String serverIP4, int serverPort, String fileToSendPath, ProgressTracker progressTracker) {
+        public static void sendFile(String serverIP4, int serverPort, String fileToSendPath, ProgressTracker progressTracker) {
             // loading file to memory
             File fileToSend = new File(fileToSendPath);
             try {
@@ -190,18 +185,20 @@ public class Networking {
                                 .setObjectNewValue(String.valueOf(fileToSend.length()))
                                 .build(),
                         success -> {
-                            if (success) sendFileToServer(serverIP4, serverPort, progressTracker, fileToSend);
+                            if (success) {
+                                if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
+                                    LCCP.logger.error("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
+                                }
+                            }
                         }
                 );
             } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                      YAMLSerializer.InvalidPacketTypeException e) {
                 LCCP.logger.error(e);
-                return false;
             }
-            return true;
         }
         // send file to server using sockets
-        public static boolean sendFileToServer(String serverIP4, int serverPort, ProgressTracker progressTracker, File fileToSend) {
+        public static boolean sendFile(String serverIP4, int serverPort, ProgressTracker progressTracker, File fileToSend) {
             boolean track = progressTracker != null;
 
             // getting new network event id from networkLogger
@@ -247,7 +244,6 @@ public class Networking {
                 // sending file name
                 //LCCP.logger.debug(id + "Sending file name...");
                 //out.write((fileToSend.getName().strip() + "\n").getBytes());
-
 
                 // flushing steam to make sure the server received all the metadata before the file contents are sent in the next step
                 out.flush();
@@ -463,30 +459,24 @@ public class Networking {
                     @Override
                     public void run() {
                         if (TimeManager.call("keepalive")) {
-                            if (!TimeManager.alternativeCall("status")) {
-                                try {
-                                    sendYAMLDefaultHost(
-                                            YAMLMessage.defaultStatusRequest().build()
-                                    );
-                                } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
-                                         YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
-                                    LCCP.logger.debug("Auto status request attempt failed!");
-                                }
-                            }
                             try {
-                                sendKeepalive(
+                               if (!sendKeepalive(
                                         YAMLMessage.builder()
                                                 .setPacketType(YAMLMessage.PACKET_TYPE.request)
                                                 .setRequestType(YAMLMessage.REQUEST_TYPE.keepalive)
                                                 .build(),
                                         false
-                                );
+                                )) throw new NetworkException("Failed to send Keepalive!");
                             } catch (YAMLSerializer.TODOException | ConfigurationException |
                                      YAMLSerializer.InvalidReplyTypeException |
-                                     YAMLSerializer.InvalidPacketTypeException e) {
+                                     YAMLSerializer.InvalidPacketTypeException |
+                                     NetworkException e) {
                                 LCCP.logger.fatal("Failed to send keepalive!");
                                 LCCP.logger.error(e);
                             }
+                        }
+                        if (TimeManager.call("status")) {
+                            if (LCCP.mainWindow != null) LCCP.mainWindow.getStatus(null);
                         }
                         if (!networkQueue.isEmpty() && server != null && !server.isClosed()) {
                             Map.Entry<Long, LCCPRunnable> entry = networkQueue.firstEntry();
@@ -513,20 +503,14 @@ public class Networking {
                         try {
                             if (server == null || server.isClosed()) return;
                             InputStream is = server.getInputStream();
-                            while (server != null && !server.isClosed()) {
+                            //while (server != null && !server.isClosed()) {
                                 if (is.available() > 0) {
                                     YAMLConfiguration yamlCfg = defaultReceive(is);
                                     if (yamlCfg != null) {
 
-                                        /*for (Iterator<String> it = yamlCfg.getKeys(); it.hasNext(); ) {
-                                            String s = it.next();
-                                            LCCP.logger.warn(s + ": " + yamlCfg.getProperty(s));
-
-                                        }*/
-
                                         YAMLMessage yaml;
                                         try {
-                                            UUID networkID0 = UUID.fromString(yamlCfg.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
+                                            UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
                                             //LCCP.logger.fatal(String.valueOf(networkID0));
                                             yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
                                         } catch (IllegalArgumentException e) {
@@ -550,14 +534,15 @@ public class Networking {
 
                                     }
                                 }
-                            }
+                                //Thread.sleep(1);
+                           // }
                         } catch (Exception e) {
                             LCCP.logger.fatal("Network Handler: master listener: Error: " + e.getMessage());
                             LCCP.logger.error(e);
                         }
 
                     }
-                }.runTaskAsynchronously();
+                }.runTaskTimerAsynchronously(0, 1);
                 LCCP.logger.debug("Network Handler: started master listener!");
             }
 
@@ -600,13 +585,6 @@ public class Networking {
                     LCCP.logger.error(e);
                     throw new NetworkException("connection failed!");
                 }
-            }
-
-            private static void rebootListener() {
-                masterListener.cancel();
-                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
-                replyListenerQueue.clear();
-                initListener();
             }
 
             public static void hostChanged() throws NetworkException {
@@ -731,21 +709,11 @@ public class Networking {
                 char[] buffer = new char[totalBytes];
 
                 // Read the actual data into the buffer if not cancelled
-                br.read(buffer);
+                if (br.read(buffer) < 1) throw new NullPointerException();
 
                 // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
                 yaml = new YAMLConfiguration();
                 new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
-
-                // Log the YAML properties
-                //for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-                //    String s = it.next();
-                //    LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-                //}
-
-                // Fire an event with the parsed YAML data
-                //LCCP.eventManager.fireEvent(new Events.DataIn(YAMLAssembly.disassembleYAML(yaml)));
-
             } catch (Exception e) {
                 LCCP.logger.error(e);
                 return null;
@@ -768,15 +736,21 @@ public class Networking {
             return sendYAMLMessage(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null, null, displayLog);
         }
 
-        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml) {
-            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null);
+        public static void sendYAMLDefaultHost(YAMLConfiguration yaml) {
+            if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null)) {
+                LCCP.logger.error("Failed to send YAML message to server! Callback = false | ReplyHandler = false");
+            }
         }
-        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback) {
-            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback);
+        public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback) {
+            if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback)) {
+                LCCP.logger.error("Failed to send YAML message with callback to server! Callback = true | ReplyHandler = false");
+            }
         }
 
-        public static boolean sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
-            return sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback, replyHandler);
+        public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
+            if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback, replyHandler)) {
+                LCCP.logger.error("Failed to send YAML message with to server! Callback = true | ReplyHandler = true");
+            }
         }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
@@ -797,7 +771,6 @@ public class Networking {
                         } else LCCP.logger.debug("Successfully reconnected to previous server!");
                     });
                 } catch (NetworkException e) {
-                    //LCCP.logger.fatal("Failed to connect to server!");
                     LCCP.logger.fatal(e.getMessage());
                     if (callback != null) callback.onFinish(false);
                     return false;
@@ -807,24 +780,23 @@ public class Networking {
             LCCPRunnable sendRequest = new LCCPRunnable() {
                 @Override
                 public void run() {
-                    LCCP.logger.debug("Sending packet: " + yaml.getProperty(Paths.NETWORK.YAML.PACKET_TYPE));
+                    LCCP.logger.debug("Sending packet: " + yaml.getProperty(Constants.NETWORK.YAML.PACKET_TYPE));
                     sendYAMLMessage(host, port, yaml, callback, replyHandler);
                 }
             };
             long current = System.currentTimeMillis();
-            return networkQueue.put(priority ? current - 1000 : current, sendRequest) == null;
+            networkQueue.put(priority ? current - 1000 : current, sendRequest);
+            return true;
         }
 
-        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback) {
-            return sendYAMLMessage(serverIP4, serverPort, yaml, callback, null);
-        }
-        private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandle) {
-            return sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle, true);
+        private static void sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandle) {
+            if (!sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle, true)) {
+                LCCP.logger.error("Failed to send YAML message to server!");
+            }
         }
 
         // function to send YAML packets to the server
         private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandle, boolean displayLog) {
-
             boolean callb = callback != null;
             boolean err = false;
 
@@ -842,7 +814,7 @@ public class Networking {
                                 "[Port '" + serverPort + "']";
                 try {
                     // try to get network event id from the yaml file
-                    networkID = yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
+                    networkID = yaml.getString(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
                     // if no id is given trigger creation of a new one
                     if (networkID == null || networkID.isBlank()) noID = true;
                 } catch (NoSuchElementException e) {
@@ -856,7 +828,7 @@ public class Networking {
                     id = "[" +
                             uuid +
                             "] ";
-                    yaml.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
+                    yaml.setProperty(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
                     // if an id is give, pass it on to the network logger
                 } else {
                     id = "[" + networkID + "]";
@@ -871,7 +843,7 @@ public class Networking {
 
 
                 LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
-            } else yaml.setProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(UUID.randomUUID()));
+            } else yaml.setProperty(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(UUID.randomUUID()));
 
             try {
                 Socket socket = NetworkHandler.getServer();
@@ -938,6 +910,7 @@ public class Networking {
                 try {
                     NetworkHandler.reboot();
                     sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle);
+                    LCCP.logger.error(e);
                 } catch (NetworkException ex) {
                     // if an error occurs print an error message
                     if (displayLog) {

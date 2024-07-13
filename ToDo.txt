@@ -1,0 +1,5 @@
+languages
+Path -> Filename DONE
+error toasts
+upload button not getting red
+display shortcuts in hamburger menu DONE

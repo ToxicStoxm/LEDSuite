@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.yaml_factory;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import com.x_tornado10.lccp.yaml_factory.wrappers.menu_wrappers.Container;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +12,8 @@ import org.apache.commons.configuration2.ex.ConversionException;
 import java.util.*;
 @Getter
 public class AnimationMenu implements Container {
-    private TreeMap<Integer, LCCPWidget> content;
-    private UUID networkID;
+    private final TreeMap<Integer, LCCPWidget> content;
+    private final UUID networkID;
     @Setter
     private String label;
     @Setter
@@ -36,32 +36,28 @@ public class AnimationMenu implements Container {
     }
 
     public static AnimationMenu fromYAML(YAMLConfiguration yaml) {
-        UUID networkID = UUID.fromString(yaml.getString(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
-        AnimationMenu menu = new AnimationMenu(networkID);
-        yaml.clearProperty(Paths.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
-        menu.setLabel(yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_LABEL));
-        menu.setIcon(yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_ICON));
-        yaml.clearProperty(Paths.NETWORK.YAML.MENU.WIDGET_LABEL);
-        yaml.clearProperty(Paths.NETWORK.YAML.MENU.WIDGET_ICON);
+        UUID networkID = UUID.fromString(yaml.getString(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID));
         String id = "[" + networkID + "] ";
 
         LCCP.logger.debug(id + "Fulfilling deserialization request!");
 
-
         LCCP.logger.debug(id + "Removing network id!");
+        yaml.clearProperty(Constants.NETWORK.YAML.INTERNAL_NETWORK_EVENT_ID);
 
-        /*for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
-            String s = it.next();
-            LCCP.logger.debug(s + ": " + yaml.getProperty(s));
-        }*/
+        AnimationMenu menu = new AnimationMenu(networkID);
+
+        menu.setLabel(yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_LABEL));
+        menu.setIcon(yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_ICON));
+
+        yaml.clearProperty(Constants.NETWORK.YAML.MENU.WIDGET_LABEL);
+        yaml.clearProperty(Constants.NETWORK.YAML.MENU.WIDGET_ICON);
 
         LCCP.logger.debug(id + "Removing widget tooltip!");
-
-        yaml.clearProperty(Paths.NETWORK.YAML.MENU.WIDGET_TOOLTIP);
+        yaml.clearProperty(Constants.NETWORK.YAML.MENU.WIDGET_TOOLTIP);
 
         LCCP.logger.debug(id + "Requesting deserialization for children!");
-
         menu.deserialize_children(yaml, id, "menu", "");
+
         return menu;
     }
 
@@ -84,26 +80,23 @@ public class AnimationMenu implements Container {
 
                 // casting the base widget to a group
                 // (base widget is not a group object initially to allow for processing multiple widget types with the same functions)
-                //AnimationMenuGroup group = (AnimationMenuGroup) initialWidget;
                 AnimationMenuGroup group = new AnimationMenuGroup();
                 group.setLabel(initialWidget.label);
                 group.setTooltip(initialWidget.tooltip);
                 group.setStyle(initialWidget.style);
                 group.setPath(initialWidget.path);
-                //group.setWidgetName(initialWidget.widgetName);
-
 
                 // getting yaml section for group suffix from the group yaml
-                Configuration suffixSubset = groupYaml.subset(Paths.NETWORK.YAML.MENU.GROUP_SUFFIX_WIDGET);
+                Configuration suffixSubset = groupYaml.subset(Constants.NETWORK.YAML.MENU.GROUP_SUFFIX_WIDGET);
                 if (suffixSubset.getKeys().hasNext()) {
                     // setting the groups suffix to the one specified in the suffix yaml section
                     group.suffix = new Widget(
-                            WidgetType.enumOf(suffixSubset.getString(Paths.NETWORK.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from yaml
+                            WidgetType.enumOf(suffixSubset.getString(Constants.NETWORK.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from yaml
                     ).deserialize(suffixSubset, id,  initialWidget.path + ".suffix"); // deserializing the suffix widget using the corresponding deserialization function for the specific widget type
                 }
 
                 // getting yaml section for the groups content
-                Configuration contentSubset = groupYaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
+                Configuration contentSubset = groupYaml.subset(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT);
 
                 // deserialize all child widgets contained in this group
                 group.deserialize_children(contentSubset, id,  initialWidget.type.name(), initialWidget.path);
@@ -124,8 +117,8 @@ public class AnimationMenu implements Container {
                 button.setPath(initialWidget.path);
 
 
-                button.icon =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_ICON) );
-                button.row = yaml.getBoolean(Paths.NETWORK.YAML.MENU.BUTTON_ROW);
+                button.icon =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_ICON) );
+                button.row = yaml.getBoolean(Constants.NETWORK.YAML.MENU.BUTTON_ROW);
 
                 return button;
             }
@@ -141,8 +134,7 @@ public class AnimationMenu implements Container {
                 property.setStyle(initialWidget.style);
                 property.setPath(initialWidget.path);
 
-
-                property.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
+                property.content =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT) );
 
                 return property;
             }
@@ -158,8 +150,7 @@ public class AnimationMenu implements Container {
                 _switch.setStyle(initialWidget.style);
                 _switch.setPath(initialWidget.path);
 
-
-                _switch.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
+                _switch.value = yaml.getBoolean(Constants.NETWORK.YAML.MENU.WIDGET_VALUE);
 
                 return _switch;
             }
@@ -180,15 +171,15 @@ public class AnimationMenu implements Container {
                 slider.setStyle(initialWidget.style);
                 slider.setPath(initialWidget.path);
 
-                slider.min = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MIN);
-                slider.max = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_MAX);
-                slider.step = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_STEP);
-                slider.climb_rate = yaml.getDouble(Paths.NETWORK.YAML.MENU.SLIDER_CLIMB_RATE);
-                slider.digits = yaml.getInt(Paths.NETWORK.YAML.MENU.SLIDER_DIGITS);
-                slider.numeric = yaml.getBoolean(Paths.NETWORK.YAML.MENU.SLIDER_NUMERIC);
-                slider.snap = yaml.getBoolean(Paths.NETWORK.YAML.MENU.SLIDER_SNAP);
-                slider.wraparound = yaml.getBoolean(Paths.NETWORK.YAML.MENU.SLIDER_WRAPAROUND);
-                slider.value = yaml.getDouble(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
+                slider.min = yaml.getDouble(Constants.NETWORK.YAML.MENU.SLIDER_MIN);
+                slider.max = yaml.getDouble(Constants.NETWORK.YAML.MENU.SLIDER_MAX);
+                slider.step = yaml.getDouble(Constants.NETWORK.YAML.MENU.SLIDER_STEP);
+                slider.climb_rate = yaml.getDouble(Constants.NETWORK.YAML.MENU.SLIDER_CLIMB_RATE);
+                slider.digits = yaml.getInt(Constants.NETWORK.YAML.MENU.SLIDER_DIGITS);
+                slider.numeric = yaml.getBoolean(Constants.NETWORK.YAML.MENU.SLIDER_NUMERIC);
+                slider.snap = yaml.getBoolean(Constants.NETWORK.YAML.MENU.SLIDER_SNAP);
+                slider.wraparound = yaml.getBoolean(Constants.NETWORK.YAML.MENU.SLIDER_WRAPAROUND);
+                slider.value = yaml.getDouble(Constants.NETWORK.YAML.MENU.WIDGET_VALUE);
 
                 return slider;
             }
@@ -204,9 +195,9 @@ public class AnimationMenu implements Container {
                 entry.setStyle(initialWidget.style);
                 entry.setPath(initialWidget.path);
 
-                entry.content =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
-                entry.applyButton = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_APPLY_BUTTON);
-                entry.editable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.ENTRY_EDITABLE);
+                entry.content =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT) );
+                entry.applyButton = yaml.getBoolean(Constants.NETWORK.YAML.MENU.ENTRY_APPLY_BUTTON);
+                entry.editable = yaml.getBoolean(Constants.NETWORK.YAML.MENU.ENTRY_EDITABLE);
 
                 return entry;
             }
@@ -222,9 +213,9 @@ public class AnimationMenu implements Container {
                 expander.setStyle(initialWidget.style);
                 expander.setPath(initialWidget.path);
 
-                expander.value = yaml.getBoolean(Paths.NETWORK.YAML.MENU.WIDGET_VALUE);
-                expander.toggleable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.EXPANDER_TOGGLEABLE);
-                Configuration contentSubset = yaml.subset(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT);
+                expander.value = yaml.getBoolean(Constants.NETWORK.YAML.MENU.WIDGET_VALUE);
+                expander.toggleable = yaml.getBoolean(Constants.NETWORK.YAML.MENU.EXPANDER_TOGGLEABLE);
+                Configuration contentSubset = yaml.subset(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT);
                 expander.deserialize_children(contentSubset, id, initialWidget.type.name(), initialWidget.path);
 
                 return expander;
@@ -240,10 +231,10 @@ public class AnimationMenu implements Container {
                 dropdown.setTooltip(initialWidget.tooltip);
                 dropdown.setStyle(initialWidget.style);
 
-                dropdown.content = validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT) );
-                dropdown.searchable = yaml.getBoolean(Paths.NETWORK.YAML.MENU.DROPDOWN_SEARCHABLE);
-                dropdown.selected = yaml.getInt(Paths.NETWORK.YAML.MENU.DROPDOWN_SELECTED);
-                dropdown.dropdown = yaml.getList(String.class, Paths.NETWORK.YAML.MENU.DROPDOWN);
+                dropdown.content = validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT) );
+                dropdown.searchable = yaml.getBoolean(Constants.NETWORK.YAML.MENU.DROPDOWN_SEARCHABLE);
+                dropdown.selected = yaml.getInt(Constants.NETWORK.YAML.MENU.DROPDOWN_SELECTED);
+                dropdown.dropdown = yaml.getList(String.class, Constants.NETWORK.YAML.MENU.DROPDOWN);
                 dropdown.setPath(initialWidget.path);
 
                 return dropdown;
@@ -260,7 +251,7 @@ public class AnimationMenu implements Container {
                 spinner.setStyle(initialWidget.style);
                 spinner.setPath(initialWidget.path);
 
-                spinner.time = yaml.getDouble(Paths.NETWORK.YAML.MENU.SPINNER_TIME);
+                spinner.time = yaml.getDouble(Constants.NETWORK.YAML.MENU.SPINNER_TIME);
 
                 return spinner;
 
@@ -280,7 +271,6 @@ public class AnimationMenu implements Container {
         private String label;
         private String tooltip;
         private String style;
-        //path = String.valueOf(UUID.randomUUID());
         @Getter
         private String path;
         private final WidgetType type;
@@ -291,9 +281,9 @@ public class AnimationMenu implements Container {
         }
         public LCCPWidget deserialize(Configuration yaml, String id, String path) {
             LCCP.logger.debug(id + "Deserializing generic values for child: " + type);
-            this.label =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_LABEL) );
-            this.tooltip =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_TOOLTIP) );
-            this.style =  validate( yaml.getString(Paths.NETWORK.YAML.MENU.WIDGET_STYLE) );
+            this.label =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_LABEL) );
+            this.tooltip =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_TOOLTIP) );
+            this.style =  validate( yaml.getString(Constants.NETWORK.YAML.MENU.WIDGET_STYLE) );
             this.path = path;
             LCCP.logger.debug(id + "Requesting specific deserialization for child " + type);
 
@@ -307,7 +297,7 @@ public class AnimationMenu implements Container {
                 LCCP.logger.debug("Possible causes: missing or malformed values");
                 LCCP.logger.error(e);
                 Configuration config = new YAMLConfiguration();
-                config.setProperty(Paths.NETWORK.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + e.getMessage());
+                config.setProperty(Constants.NETWORK.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + e.getMessage());
                 try {
                     result = result.deserialize(config, id, "missing-value-" + System.currentTimeMillis());
 
@@ -339,10 +329,9 @@ public class AnimationMenu implements Container {
         }
     }
 
-
     @Getter
     public static class AnimationMenuGroup extends LCCPWidget implements Container {
-        private TreeMap<Integer, LCCPWidget> content;
+        private final TreeMap<Integer, LCCPWidget> content;
         private LCCPWidget suffix;
 
         public AnimationMenuGroup() {
@@ -354,8 +343,6 @@ public class AnimationMenu implements Container {
             return content;
         }
     }
-
-
 
     public static class Widgets {
 
@@ -415,7 +402,7 @@ public class AnimationMenu implements Container {
 
         @Getter
         public static class Expander extends LCCPWidget implements Container {
-            private TreeMap<Integer, LCCPWidget> content;
+            private final TreeMap<Integer, LCCPWidget> content;
             private boolean toggleable = false;
             private boolean value = false;
 
@@ -465,10 +452,6 @@ public class AnimationMenu implements Container {
         for (Map.Entry<Integer, LCCPWidget> entry : content.entrySet()) {
             LCCPWidget widget = entry.getValue();
             sb.append(stringifyWidget(widget, entry.getKey()));
-            //sb.replace(sb.length() - 1, sb.length(), "");
-            //sb.append(", Content {");
-            //stringifyChildren((Container) widget, sb);
-            //sb.append("}");
         }
         sb.append("}}");
 
@@ -495,16 +478,7 @@ public class AnimationMenu implements Container {
     public static void stringifyChildren(Container c, StringBuilder sb) {
         for (Map.Entry<Integer, LCCPWidget> entry : c.content().entrySet()) {
             LCCPWidget widget = entry.getValue();
-            //LCCP.logger.warn(c.getClass().getName() + ": " + widget);
-            //LCCP.logger.fatal("sub type: " + widget.type.name());
             sb.append(stringifyWidget(widget, entry.getKey())).append(", ");
-            //if (widget instanceof Container) {
-                //sb.replace(sb.length() - 3, sb.length(), "");
-                //sb.append("Content {");
-                //stringifyChildren((Container) widget, sb);
-                //sb.append("}");
-                //sb.append("}, ");
-            //}
         }
         sb.replace(sb.length() - 2, sb.length(), "");
     }

@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.logging;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.gnome.adw.Toast;
@@ -25,7 +25,7 @@ public class Logger {
     }
     // formatting info message
     public void info(String message) {
-        if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + LCCP.ApplicationName + "] " + message);
     }
     // sending and info message to console and log file
     public void cInfo(String message) {
@@ -34,7 +34,7 @@ public class Logger {
     }
     // formatting warn message
     public void warn(String message) {
-        if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + LCCP.ApplicationName + "] " + message);
     }
     // sending a warning message to console and log file
     public void cWarn(String message) {
@@ -47,7 +47,7 @@ public class Logger {
     // formatting error message
     public void error(String message, boolean visualFeedback) {
         if (log_level.ERROR.isEnabled()) {
-            cError( "[ERROR]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+            cError( "[ERROR]: [" + LCCP.ApplicationName + "] " + message);
             // displaying toast in the user interface
 
         }
@@ -79,7 +79,7 @@ public class Logger {
         fatal(message, false);
     }
     public void fatal(String message, boolean visualFeedback) {
-        if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.FATAL.isEnabled()) cFatal("[FATAL]: [" + LCCP.ApplicationName + "] " + message);
         // displaying toast in the user interface
         if (visualFeedback) visualFeedback(message, 0);
     }
@@ -90,7 +90,7 @@ public class Logger {
     }
     // formatting debug message
     public void debug(String message) {
-        if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + LCCP.settings.getWindowTitle() + "] " + message);
+        if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + LCCP.ApplicationName + "] " + message);
     }
     // sending debug message to console and log file
     public void cDebug(String message) {
@@ -114,16 +114,16 @@ public class Logger {
 
     // writing console log to log file
     private void writeLog(String message) {
-        if (!new File(Paths.File_System.logFile).exists()) return;
+        if (!new File(Constants.File_System.logFile).exists()) return;
         // new buffered writer is used to write logging information from console to the log file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.File_System.logFile, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
             // attaching time stamp to message before writing it to the file
             writer.write(attachTime(message));
             writer.newLine();
         } catch (IOException e) {
             System.out.println("Error while trying to write log to log file!");
             System.out.println("If this message is displayed repeatedly:");
-            System.out.println(Messages.WARN.OPEN_GITHUB_ISSUE);
+            System.out.println(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
             throw new RuntimeException(e);
         }
     }

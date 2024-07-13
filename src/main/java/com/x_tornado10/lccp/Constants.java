@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp;
 
 // static utility class for storing paths
-public final class Paths {
+public final class Constants {
     // file paths
     public static final class File_System {
         private static String getAppDir() {
@@ -127,6 +127,11 @@ public final class Paths {
 
                 public static final String SPINNER_TIME = "time";
             }
+        }
+    }
+    public final class Messages {
+        public static final class WARN {
+            public static final String OPEN_GITHUB_ISSUE = "Please open an issue on the projects GitHub: " + Constants.Links.PROJECT_GITHUB;
         }
     }
 }

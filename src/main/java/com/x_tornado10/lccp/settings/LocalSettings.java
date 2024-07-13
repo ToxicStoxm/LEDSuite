@@ -1,8 +1,7 @@
 package com.x_tornado10.lccp.settings;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.Paths;
-import com.x_tornado10.lccp.logging.Messages;
+import com.x_tornado10.lccp.Constants;
 import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -20,15 +19,12 @@ public class LocalSettings extends Settings {
     // default settings
     private final Type type = Type.LOCAL;
     private final String name = "Main-Config";
-    private String WindowTitle = "LED-Cube-Control-Panel";
     private boolean WindowResizeable = true;
     private int WindowDefWidth = 1280;
     private int WindowDefHeight = 720;
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
-    //private boolean AutoUpdateRemote = false;
     private boolean DisplayStatusBar = false;
-    //private double AutoUpdateRemoteTick = 1.5;
     private boolean CheckIPv4 = true;
     private boolean AutoPlayAfterUpload = true;
     private int NetworkingCommunicationClockSpeed = 10;
@@ -41,7 +37,7 @@ public class LocalSettings extends Settings {
         LCCP.logger.debug("Loading default config values...");
         LCCP.logger.debug("Note: this only happens if config.yaml does not exist or couldn't be found!");
         LCCP.logger.debug("If your settings don't work and this message is shown");
-        LCCP.logger.debug(Messages.WARN.OPEN_GITHUB_ISSUE);
+        LCCP.logger.debug(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("config.yaml");
         // if the path is null or not found an exception is thrown
@@ -49,7 +45,7 @@ public class LocalSettings extends Settings {
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
             // defining config.yaml file to save the values to
-            File outputFile = new File(Paths.File_System.config);
+            File outputFile = new File(Constants.File_System.config);
             // try to open a new output stream to save the values to the new config file
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
 
@@ -68,47 +64,38 @@ public class LocalSettings extends Settings {
     public void load(YAMLConfiguration config) {
         LCCP.logger.debug("Loading config values to memory...");
         try {
-            this.WindowTitle = config.getString(Paths.Config.WINDOW_TITLE);
             // setting values to parsed config values
-            this.WindowResizeable = config.getBoolean(Paths.Config.WINDOW_RESIZABLE);
+            this.WindowResizeable = config.getBoolean(Constants.Config.WINDOW_RESIZABLE);
 
             // handle potential ConversionExceptions gracefully
             try {
-                this.WindowDefHeight = config.getInt(Paths.Config.WINDOW_DEFAULT_HEIGHT);
-                this.WindowDefWidth = config.getInt(Paths.Config.WINDOW_DEFAULT_WIDTH);
+                this.WindowDefHeight = config.getInt(Constants.Config.WINDOW_DEFAULT_HEIGHT);
+                this.WindowDefWidth = config.getInt(Constants.Config.WINDOW_DEFAULT_WIDTH);
             } catch (ConversionException e) {
                 LCCP.logger.error("Error while parsing Window-Default-Height and Window-Default-Width! Not a valid Number!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
             try {
-                this.LogLevel = config.getInt(Paths.Config.LOG_LEVEL);
+                this.LogLevel = config.getInt(Constants.Config.LOG_LEVEL);
             } catch (ConversionException e) {
                 LCCP.logger.error("Error while parsing Log-Level! Not a valid Number!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
-            /*try {
-                this.AutoUpdateRemoteTick = config.getDouble(Paths.Config.AUTO_UPDATE_REMOTE_TICK);
-            } catch (ConversionException e) {
-                LCCP.logger.error("Error while parsing Auto-Update-Remote-Tick! Not a valid Number!");
-                LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
-            }*/
-
             try {
-                double temp = config.getDouble(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED);
+                double temp = config.getDouble(Constants.Config.NETWORK_COMMUNICATION_CLOCK_SPEED);
                 this.NetworkingCommunicationClockSpeed = (int) Math.round(temp * 1000);
             } catch (ClassCastException | ConversionException e) {
                 LCCP.logger.error("Error while parsing NetworkingCommunicationClockSpeed! Not a valid time argument (seconds)!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
-            this.selectionDir = config.getString(Paths.Config.SELECTION_DIR);
+            this.selectionDir = config.getString(Constants.Config.SELECTION_DIR);
 
-            //AutoUpdateRemote = config.getBoolean(Paths.Config.AUTO_UPDATE_REMOTE);
-            DisplayStatusBar = config.getBoolean(Paths.Config.DISPLAY_STATUS_BAR);
-            CheckIPv4 = config.getBoolean(Paths.Config.CHECK_IPV4);
-            AutoPlayAfterUpload = config.getBoolean(Paths.Config.AUTO_PLAY_AFTER_UPLOAD);
+            DisplayStatusBar = config.getBoolean(Constants.Config.DISPLAY_STATUS_BAR);
+            CheckIPv4 = config.getBoolean(Constants.Config.CHECK_IPV4);
+            AutoPlayAfterUpload = config.getBoolean(Constants.Config.AUTO_PLAY_AFTER_UPLOAD);
 
             LCCP.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e){
@@ -117,12 +104,6 @@ public class LocalSettings extends Settings {
             LCCP.logger.warn("Please delete the old config file from your .config folder and restart the application!");
             LCCP.exit(1);
         }
-    }
-    public String getWindowTitle() {
-        return LCCP.version == null ? WindowTitle : WindowTitle.replace(Paths.Placeholders.VERSION, LCCP.version);
-    }
-    public String getWindowTitleRaw() {
-        return WindowTitle;
     }
 
     // copy the settings of another settings class
@@ -140,15 +121,12 @@ public class LocalSettings extends Settings {
         LocalSettings settings = (LocalSettings) settings1;
         LCCP.logger.debug("Loading settings from " + settings.getName() + "...");
         // copying settings
-        this.WindowTitle = settings.getWindowTitleRaw();
         this.WindowResizeable = settings.isWindowResizeable();
         this.WindowDefWidth = settings.getWindowDefWidth();
         this.WindowDefHeight = settings.getWindowDefHeight();
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
-        //this.AutoUpdateRemote = settings.AutoUpdateRemote;
         this.DisplayStatusBar = settings.DisplayStatusBar;
-        //this.AutoUpdateRemoteTick = settings.AutoUpdateRemoteTick;
         this.NetworkingCommunicationClockSpeed = settings.NetworkingCommunicationClockSpeed;
         this.CheckIPv4 = settings.CheckIPv4;
         this.AutoPlayAfterUpload = settings.AutoPlayAfterUpload;
@@ -173,8 +151,8 @@ public class LocalSettings extends Settings {
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
-            fH.load(Paths.File_System.config);
-            comments = new HashMap<>(CommentPreservation.extractComments(Paths.File_System.config));
+            fH.load(Constants.File_System.config);
+            comments = new HashMap<>(CommentPreservation.extractComments(Constants.File_System.config));
         } catch (ConfigurationException e) {
             LCCP.logger.error("Error occurred while writing config values to config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -183,21 +161,18 @@ public class LocalSettings extends Settings {
 
         // writing config settings to file
         try {
-            conf.setProperty(Paths.Config.WINDOW_TITLE, WindowTitle);
-            conf.setProperty(Paths.Config.WINDOW_RESIZABLE, WindowResizeable);
-            conf.setProperty(Paths.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
-            conf.setProperty(Paths.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
-            conf.setProperty(Paths.Config.LOG_LEVEL, LogLevel);
-            conf.setProperty(Paths.Config.SELECTION_DIR, selectionDir);
-            //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE, AutoUpdateRemote);
-            conf.setProperty(Paths.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
-            //conf.setProperty(Paths.Config.AUTO_UPDATE_REMOTE_TICK, AutoUpdateRemoteTick);
-            conf.setProperty(Paths.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed / 1000);
-            conf.setProperty(Paths.Config.CHECK_IPV4, CheckIPv4);
-            conf.setProperty(Paths.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
+            conf.setProperty(Constants.Config.WINDOW_RESIZABLE, WindowResizeable);
+            conf.setProperty(Constants.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
+            conf.setProperty(Constants.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
+            conf.setProperty(Constants.Config.LOG_LEVEL, LogLevel);
+            conf.setProperty(Constants.Config.SELECTION_DIR, selectionDir);
+            conf.setProperty(Constants.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
+            conf.setProperty(Constants.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed / 1000);
+            conf.setProperty(Constants.Config.CHECK_IPV4, CheckIPv4);
+            conf.setProperty(Constants.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
             // saving settings
-            fH.save(Paths.File_System.config);
-            CommentPreservation.insertComments(Paths.File_System.config, comments);
+            fH.save(Constants.File_System.config);
+            CommentPreservation.insertComments(Constants.File_System.config, comments);
         } catch (ConfigurationException e)  {
             LCCP.logger.error("Something went wrong while saving the config values for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
@@ -205,7 +180,7 @@ public class LocalSettings extends Settings {
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
             return;
         } catch (IOException e) {
-            LCCP.logger.error("Something went wrong while saving the ls llsconfig comments for config.yaml!");
+            LCCP.logger.error("Something went wrong while saving the config comments for config.yaml!");
             LCCP.logger.warn("Please restart the application to prevent further errors!");
             LCCP.logger.warn("Previously made changes to the config may be lost!");
             LCCP.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
@@ -229,44 +204,14 @@ public class LocalSettings extends Settings {
         return settings1;
     }
 
-    public void setWindowTitle(String windowTitle) {
-        WindowTitle = windowTitle;
-        reload("WindowTitle -> " + windowTitle);
-    }
-
-    public void setWindowResizeable(boolean windowResizeable) {
-        WindowResizeable = windowResizeable;
-        reload("WindowResizeable -> " + windowResizeable);
-    }
-
-    public void setLogLevel(int logLevel) {
-        LogLevel = logLevel;
-        reload("LogLevel -> " + logLevel);
-    }
-
     public void setSelectionDir(String selectionDir) {
         this.selectionDir = selectionDir;
         reload("selectionDir -> " + selectionDir);
     }
 
-    /*public void setAutoUpdateRemote(boolean autoUpdateRemote) {
-        AutoUpdateRemote = autoUpdateRemote;
-        reload("AutoUpdateRemote -> " + autoUpdateRemote);
-    }*/
-
     public void setDisplayStatusBar(boolean displayStatusBar) {
         DisplayStatusBar = displayStatusBar;
         reload("DisplayStatusBar -> " + displayStatusBar);
-    }
-
-    /*public void setAutoUpdateRemoteTick(double autoUpdateRemoteTick) {
-        AutoUpdateRemoteTick = autoUpdateRemoteTick;
-        reload("AutoUpdateRemoteTick -> " + autoUpdateRemoteTick);
-    }*/
-
-    public void setNetworkingCommunicationClockSpeed(int networkingCommunicationClockSpeed) {
-        NetworkingCommunicationClockSpeed = networkingCommunicationClockSpeed;
-        reload("NetworkingCommunicationClockSpeed -> " + networkingCommunicationClockSpeed);
     }
 
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
@@ -309,7 +254,6 @@ public class LocalSettings extends Settings {
                 CheckIPv4 == other.CheckIPv4 &&
                 AutoPlayAfterUpload == other.AutoPlayAfterUpload &&
                 Objects.equals(selectionDir, other.selectionDir) &&
-                Objects.equals(WindowTitle, other.WindowTitle) &&
                 Objects.equals(NetworkingCommunicationClockSpeed, other.NetworkingCommunicationClockSpeed);
                 //Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
     }
@@ -317,7 +261,7 @@ public class LocalSettings extends Settings {
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowTitle, WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, /*AutoUpdateRemote,*/ DisplayStatusBar, /*AutoUpdateRemoteTick,*/ CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
+        return Objects.hash(WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, /*AutoUpdateRemote,*/ DisplayStatusBar, /*AutoUpdateRemoteTick,*/ CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
     }
 
 }

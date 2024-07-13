@@ -1,7 +1,7 @@
 package com.x_tornado10.lccp.yaml_factory.wrappers.menu_wrappers;
 
 import com.x_tornado10.lccp.LCCP;
-import com.x_tornado10.lccp.Paths;
+import com.x_tornado10.lccp.Constants;
 import com.x_tornado10.lccp.yaml_factory.AnimationMenu;
 import org.apache.commons.configuration2.Configuration;
 
@@ -43,7 +43,7 @@ public interface Container {
 
                 // getting widget type from widget yaml
                 AnimationMenu.WidgetType type = AnimationMenu.WidgetType.enumOf(
-                        widgetSubset.getString(Paths.NETWORK.YAML.MENU.WIDGET_TYPE)
+                        widgetSubset.getString(Constants.NETWORK.YAML.MENU.WIDGET_TYPE)
                 );
 
                 // creating a new widget according to the specified type from above
@@ -61,7 +61,7 @@ public interface Container {
 
                 // adding the widget to the corresponding group at the specified position
                 this.putWidget(
-                        Integer.parseInt(s.replace(Paths.NETWORK.YAML.MENU.WIDGET_PREFIX, "").replace(Paths.NETWORK.YAML.MENU.GROUP_PREFIX, "")), // getting widget position from yaml
+                        Integer.parseInt(s.replace(Constants.NETWORK.YAML.MENU.WIDGET_PREFIX, "").replace(Constants.NETWORK.YAML.MENU.GROUP_PREFIX, "")), // getting widget position from yaml
                         LCCPWidget,
                         id
                 );

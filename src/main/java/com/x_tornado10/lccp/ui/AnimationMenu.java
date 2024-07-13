@@ -312,8 +312,8 @@ public class AnimationMenu extends PreferencesPage {
     private void attachHandle(SwitchRow _switch, com.x_tornado10.lccp.yaml_factory.AnimationMenu.Widgets.Switch __switch) {
         AtomicBoolean temp = new AtomicBoolean(_switch.getActive());
         _switch.getActivatableWidget().onStateFlagsChanged(_ -> {
-            boolean active = __switch.isValue();
-            if (!temp.get() == active) {
+            boolean active = _switch.getActive();
+            if (temp.get() != active) {
                 temp.set(active);
                 try {
                     Networking.Communication.sendYAMLDefaultHost(

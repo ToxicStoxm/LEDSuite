@@ -4,6 +4,7 @@ import com.x_tornado10.lccp.LCCP;
 import com.x_tornado10.lccp.task_scheduler.LCCPRunnable;
 import com.x_tornado10.lccp.communication.files.ALLOWED_FILE_TYPES;
 import com.x_tornado10.lccp.communication.network.Networking;
+import com.x_tornado10.lccp.time.TimeManager;
 import com.x_tornado10.lccp.yaml_factory.YAMLSerializer;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import io.github.jwharm.javagi.base.GErrorException;
@@ -44,9 +45,9 @@ public class AddFileDialog extends PreferencesPage {
                 .build();
 
         // Create an EntryRow for displaying the selected file path, initially empty
-        var pathRow = ActionRow.builder()
-                .setTitle("Path")
-                .setSubtitle(filePath == null ? "N/A" : filePath)
+        var filenameRow = ActionRow.builder()
+                .setTitle("Selected File")
+                .setSubtitle(filePath == null ? "N/A" : fileName)
                 .setUseMarkup(false)
                 .build();
 
@@ -88,7 +89,7 @@ public class AddFileDialog extends PreferencesPage {
                     if (selectedFile != null) {
                         String filePath = selectedFile.getPath();
                         // Update the pathRow text with the selected file path
-                        fileDialogProcessResult(selectedFile, pathRow);
+                        fileDialogProcessResult(selectedFile, filenameRow);
                         LCCP.logger.debug("Selected file: " + filePath);
                     }
                 } catch (GErrorException _) {
@@ -103,10 +104,10 @@ public class AddFileDialog extends PreferencesPage {
         clamp.setChild(fileSelButton);
 
         // Add the file selection button as a suffix to the pathRow
-        pathRow.addSuffix(clamp);
+        filenameRow.addSuffix(clamp);
 
         // Add the pathRow to the file preferences group
-        file.add(pathRow);
+        file.add(filenameRow);
 
         final boolean[] toggled = new boolean[]{LCCP.settings.isAutoPlayAfterUpload()};
 
@@ -231,7 +232,7 @@ public class AddFileDialog extends PreferencesPage {
         LCCP.logger.error(e);
     }
 
-    private void fileDialogProcessResult(File result, ActionRow pathRow) {
+    private void fileDialogProcessResult(File result, ActionRow filenameRow) {
         FileType fType = result.queryFileType(FileQueryInfoFlags.NONE, null);
         String path = result.getPath();
         if (fType == FileType.REGULAR && path != null) {
@@ -240,7 +241,7 @@ public class AddFileDialog extends PreferencesPage {
                 filePath = path;
                 this.fileName = fileName;
                 VarPool.fileName = fileName;
-                pathRow.setSubtitle(filePath);
+                filenameRow.setSubtitle(fileName);
                 VarPool.filePath = filePath;
                 VarPool.init = true;
                 File parent = result.getParent();
@@ -291,7 +292,7 @@ public class AddFileDialog extends PreferencesPage {
         }
         spinner.setVisible(true);
         uploadButton.setCssClasses(new String[]{"regular", "pill"});
-        uploadButton.emitRealize();
+        //uploadButton.emitRealize();
         uploading = true;
 
         LCCP.logger.debug("Requesting send with stats tracking!");
@@ -348,6 +349,7 @@ public class AddFileDialog extends PreferencesPage {
             @Override
             public void run() {
                 Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
+                TimeManager.setTimeTracker("animations", System.currentTimeMillis() - 10000);
             }
         }.runTaskAsynchronously();
     }
@@ -360,7 +362,7 @@ public class AddFileDialog extends PreferencesPage {
                 uploadButton.setCssClasses(new String[]{"suggested-action", "pill"});
                 uploading = false;
                 spinner.setVisible(false);
-                uploadButton.emitRealize();
+                //uploadButton.emitRealize();
                 statsRow.setExpanded(false);
                 speed.setSubtitle("N/A");
                 eta.setSubtitle("N/A");

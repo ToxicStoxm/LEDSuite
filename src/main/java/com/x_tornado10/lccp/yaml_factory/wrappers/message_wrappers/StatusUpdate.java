@@ -3,6 +3,7 @@ package com.x_tornado10.lccp.yaml_factory.wrappers.message_wrappers;
 import com.x_tornado10.lccp.yaml_factory.YAMLMessage;
 import lombok.Getter;
 
+import java.math.BigInteger;
 import java.util.*;
 
 
@@ -41,7 +42,7 @@ public class StatusUpdate {
     public static StatusUpdate fromYAMLMessage(YAMLMessage yamlMessage) {
         return new StatusUpdate(
                 yamlMessage.isFileLoaded(),
-                YAMLMessage.FILE_STATE.playing,
+                yamlMessage.getFileState(),
                 yamlMessage.getFileSelected(),
                 yamlMessage.getCurrentDraw(),
                 yamlMessage.getVoltage(),
@@ -84,7 +85,7 @@ public class StatusUpdate {
         sb.append("Current File: ");
         if (isFileLoaded) {
             sb.append("'").append(fileSelected).append("' ");
-            sb.append("Current State: '").append(fileState).append("' ");
+            sb.append("Current State: '").append(fileState.name()).append("' ");
         } else sb.append("no file selected ");
         sb.append("Current Draw: ").append(currentDraw).append(" ");
         sb.append("Voltage: ").append(voltage).append(" ");

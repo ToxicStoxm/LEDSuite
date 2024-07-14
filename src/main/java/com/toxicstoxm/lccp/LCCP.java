@@ -5,6 +5,7 @@ import com.toxicstoxm.lccp.event_handling.listener.EventListener;
 import com.toxicstoxm.lccp.logging.network.NetworkLogger;
 import com.toxicstoxm.lccp.settings.LocalSettings;
 import com.toxicstoxm.lccp.settings.ServerSettings;
+import com.toxicstoxm.lccp.task_scheduler.LCCPArgumentProcessor;
 import com.toxicstoxm.lccp.task_scheduler.LCCPRunnable;
 import com.toxicstoxm.lccp.yaml_factory.wrappers.message_wrappers.ServerError;
 import com.toxicstoxm.lccp.event_handling.EventManager;
@@ -41,6 +42,7 @@ public class LCCP implements EventListener {
     @Getter
     private static LCCP instance;
     public static LocalSettings settings;
+    public static LocalSettings argumentsSettings;
     public static ServerSettings server_settings;
     public static Logger logger;
     public static NetworkLogger networkLogger;
@@ -51,6 +53,7 @@ public class LCCP implements EventListener {
     public static Window mainWindow;
     public static LCCPScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
+    public static String[] args;
 
     // main method
     public static void main(String[] args) {
@@ -60,8 +63,10 @@ public class LCCP implements EventListener {
         // initialize config, logger, ...
         logicInit();
 
+        processArguments(args);
+
         // triggers LCCP(String[] args) constructor below
-        new LCCP(args);
+        new LCCP(new String[]{});
     }
 
     // constructor method
@@ -80,25 +85,28 @@ public class LCCP implements EventListener {
 
     // logic initialization function
     public static void logicInit() {
+
+        ResourceBundle bundle = ResourceBundle.getBundle("LCCP", Locale.getDefault());
+
         // program initialization
         // create new settings and server_settings classes to hold config settings
         settings = new LocalSettings();
+        argumentsSettings = new LocalSettings();
         server_settings = new ServerSettings();
         // create new logger instance
         logger = new Logger();
         // create new networkLogger instance
         networkLogger = new NetworkLogger();
+        LCCP.logger.debug(bundle.getString("test"));
         // general startup information displayed in the console upon starting the program
         logger.info("Welcome back!");
         logger.info("Starting Program...");
-        String os_name = System.getProperty("os.name");
-        String os_version = System.getProperty("os.version");
 
-        logger.info("System environment: " + os_name + " " + os_version);
+        logger.info("System environment: " + Constants.System.NAME + " " + Constants.System.VERSION);
 
         // check for window os
         // app does not normally work on windows, since windows doesn't natively support libadwaita
-        if (os_name.toLowerCase().contains("windows")) {
+        if (Constants.System.NAME.toLowerCase().contains("windows")) {
             logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
             logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
         }
@@ -130,7 +138,7 @@ public class LCCP implements EventListener {
             if (!config_file.exists()) {
                 // if the config file doesn't exist the program tries to create the parent directory first to prevent errors if it's the first startup
                 if (config_file.getParentFile().mkdirs())
-                    logger.debug("Successfully created parent directory for config file: " + config_file.getParentFile().getAbsolutePath());
+                    logger.verbose("Successfully created parent directory for config file: " + config_file.getParentFile().getAbsolutePath());
                 // then a new config file is loaded with the default values from internal resources folder using the configs saveDefaultConfig() function
                 if (config_file.createNewFile()) {
                     logger.debug("New config file was successfully created: " + config_file.getAbsolutePath());
@@ -202,7 +210,6 @@ public class LCCP implements EventListener {
         TimeManager.initTimeTracker("status", 5000, 10000);
         TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
 
-
         try {
             Networking.Communication.NetworkHandler.init(_ -> {
             });
@@ -220,23 +227,69 @@ public class LCCP implements EventListener {
                         );
                     } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                              YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
-                        LCCP.logger.debug("Auto status request attempt failed!");
+                        LCCP.logger.verbose("Auto status request attempt failed!");
                     }
                 }
             }
         }.runTaskTimerAsynchronously(10000, 5000);
+
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
+        argumentsSettings.copy(settings);
+    }
+
+    private static void processArguments(String[] args) {
+        HashMap<String, LCCPArgumentProcessor> knownArguments = Constants.Application.Arguments;
+
+        int argsLength = args.length;
+        if (argsLength > 0) {
+            if (argsLength % 2 == 0) {
+                logger.debug("[ARGUMENTS] " + ("Count: " + args.length / 2));
+                String temp = "";
+                for (int i = 0; i < argsLength; i++) {
+                    if (i > 0 && !temp.isEmpty()) {
+                        if (knownArguments.containsKey(temp)) {
+                            String argumentValue = args[i];
+                            String argumentKey = temp;
+                            knownArguments
+                                    .get(argumentKey)
+                                    .runTask(
+                                            argumentValue,
+                                            (valid, message) -> {
+                                                if (!valid) {
+                                                    logger.fatal("[ARGUMENTS] " + (message == null ? "[" + argumentKey + "] Unknown / Invalid argument: '" + argumentValue + "'!" : message));
+                                                    new LCCPRunnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            getInstance().app.emitShutdown();
+                                                        }
+                                                    }.runTaskLaterAsynchronously(500);
+                                                } else {
+                                                    logger.info("[ARGUMENTS] " + (message == null ? "Successfully recognized argument '" + argumentKey + " " + argumentValue + "'!" : message));
+                                                }
+                                            }
+                                    );
+                        } else {
+                            logger.fatal("[ARGUMENTS] " + ("Unknown / Invalid argument: '" + temp + " " + args[i]));
+                            exit(0);
+                        }
+                        temp = "";
+                    } else {
+                        temp = args[i];
+                    }
+                }
+            } else {
+                logger.fatal("[ARGUMENTS] " + ("Unknown or invalid arguments were found!"));
+                exit(0);
+            }
+        }
     }
 
     // activate function
     // this is triggered on libadwaita application activate
     public void activate() {
-        ResourceBundle bundle = ResourceBundle.getBundle("LCCP", Locale.getDefault(), this.getClass().getClassLoader());
-        System.out.println(bundle);
-
         // registering event listener for this class
         eventManager.registerEvents(this);
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
         // creating main window of the application
         mainWindow = new Window(app);
         // registering event listener for the main window
@@ -263,24 +316,24 @@ public class LCCP implements EventListener {
     // exiting program with specified status code
     public static void exit(int status) {
         // firing new shutdown event
-        eventManager.fireEvent(new Events.Shutdown("Shutdown"));
-        LCCP.logger.info("Saving...");
+        if (eventManager != null) eventManager.fireEvent(new Events.Shutdown("Shutdown"));
+        if (logger != null) LCCP.logger.info("Saving...");
         // firing new save event to save user settings
-        eventManager.fireEvent(new Events.Save("Shutdown - Save"));
-        LCCP.logger.debug("Stopping ticking system!");
-        tickingSystem.stop();
-        LCCP.logger.info("Successfully saved!");
-        LCCP.logger.info("Shutting down...");
-        LCCP.logger.info("Goodbye!");
+        if (eventManager != null) eventManager.fireEvent(new Events.Save("Shutdown - Save"));
+        if (logger != null) LCCP.logger.debug("Stopping ticking system!");
+        if (tickingSystem != null) tickingSystem.stop();
+        if (logger != null) LCCP.logger.info("Successfully saved!");
+        if (logger != null) LCCP.logger.info("Shutting down...");
+        if (logger != null) LCCP.logger.info("Goodbye!");
         // displaying status code in the console
-        LCCP.logger.info("Status code: " + status);
+        if (logger != null) LCCP.logger.info("Status code: " + status);
         // exiting program with the specified status code
         System.exit(status);
     }
     // triggering system specific beep using java.awt.toolkit
     // commonly used when something fails or an error happens
     public static void sysBeep() {
-        LCCP.logger.debug("Triggered system beep!");
+        LCCP.logger.verbose("Triggered system beep!");
         getDefaultToolkit().beep();
     }
 
@@ -338,7 +391,7 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onReload(Events.Reload e) {
         // default console message response to a reload event
-        logger.debug("Fulfilling reload request: " + e.message());
+        logger.verbose("Fulfilling reload request: " + e.message());
         // reloading values that may've changed
         mainWindow.setResizable(settings.isWindowResizeable());
     }
@@ -346,7 +399,7 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onStartup(Events.Startup e) {
         // default console message response to a startup event
-        logger.debug("Fulfilling startup request: " + e.message());
+        logger.verbose("Fulfilling startup request: " + e.message());
     }
     @EventHandler
     public void onStarted(Events.Started e) {
@@ -356,13 +409,13 @@ public class LCCP implements EventListener {
     @EventHandler
     public void onSave(Events.Save e) {
         // default console message response to a save event
-        logger.debug("Fulfilling save request: " + e.message());
+        logger.verbose("Fulfilling save request: " + e.message());
     }
     // listener function for shutdown event
     @EventHandler
     public void onShutdown(Events.Shutdown e) {
         // default console message response to a shutdown event
-        logger.debug("Fulfilling shutdown request: " + e.message());
+        logger.verbose("Fulfilling shutdown request: " + e.message());
         //server = false;
         networkLogger.printEvents();
         logger.info("New log file was saved to: '" + Constants.File_System.logFile + "'");
@@ -371,10 +424,10 @@ public class LCCP implements EventListener {
     public void onDataReceived(Events.DataIn e) {
         YAMLMessage yaml = e.yamlMessage();
         String id = "[" + yaml.getNetworkID() + "] ";
-        logger.debug(id + "-------------------- Internal Data Event ----------------------");
-        logger.debug(id + "Data stream direction: in");
-        logger.debug(id + "Network: Received data!");
-        logger.debug(id + "Data: " + yaml);
+        logger.verbose(id + "-------------------- Internal Data Event ----------------------");
+        logger.verbose(id + "Data stream direction: in");
+        logger.verbose(id + "Network: Received data!");
+        logger.verbose(id + "Data: " + yaml);
 
         switch (yaml.getPacketType()) {
             case reply -> {
@@ -401,21 +454,21 @@ public class LCCP implements EventListener {
         String id;
         try {
             id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
-            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+            logger.verbose(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";
-            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+            logger.verbose(id + "-------------------- Internal Data Event ----------------------");
             logger.error(id + "Failed to get internal network event id from YAML!");
             logger.error(id + "Error message: " + ex.getMessage());
         }
         logger.debug(id + "Data stream direction: out");
         try {
-            logger.debug(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
+            logger.verbose(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
         } catch (YAMLSerializer.YAMLException ex) {
             logger.warn(id + "Data: failed to deserialize yaml data");
             logger.warn(id + "Error message: " + ex.getMessage());
         }
-        logger.debug(id + "---------------------------------------------------------------");
+        logger.verbose(id + "---------------------------------------------------------------");
     }
     @EventHandler
     public void onStatus(Events.Status e) {
@@ -431,10 +484,10 @@ public class LCCP implements EventListener {
         String id;
         try {
             id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
-            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+            logger.verbose(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";
-            logger.debug(id + "-------------------- Internal Data Event ----------------------");
+            logger.verbose(id + "-------------------- Internal Data Event ----------------------");
             logger.error(id + "Failed to get internal network event id from YAML!");
             logger.error(id + "Error message: " + ex.getMessage());
         }
@@ -446,7 +499,7 @@ public class LCCP implements EventListener {
         String id = "[" + error.getNetworkEventID() + "] ";
         logger.debug(id + "Received error from server!");
         logger.debug("id" + "Error: " + error);
-        /*if (error.getErrorSeverity().getValue() >= 3)*/ sysBeep();
+        sysBeep();
         mainWindow.toastOverlay.addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())

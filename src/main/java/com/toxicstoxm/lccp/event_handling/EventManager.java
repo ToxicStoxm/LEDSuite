@@ -58,7 +58,6 @@ public class EventManager {
                             "." +
                             registeredListener.method.getName() +
                             "(" + eventType.getName().split("event_handling.")[1].replace("$", ".") +  ")");
-                    LCCP.logger.fatal(registeredListener.eventListener.getClass().getName() + "@" + registeredListener.method.getName());
                     registeredListener.method.invoke(registeredListener.eventListener, event);
                 } catch (Exception e) {
                     try {

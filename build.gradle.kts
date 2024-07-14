@@ -58,8 +58,6 @@ tasks.jar {
     }
 }
 
-
-
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
@@ -88,6 +86,7 @@ tasks.named("check") {
 
 // Shadow plugin configuration
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+
     archiveClassifier.set("")
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.lccp.LCCP"
@@ -98,6 +97,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
 }
 
 tasks.build {
+    dependsOn(tasks.processResources)
     dependsOn(tasks.shadowJar)
 }
 

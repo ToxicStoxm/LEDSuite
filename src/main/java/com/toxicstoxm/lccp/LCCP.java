@@ -80,7 +80,6 @@ public class LCCP implements EventListener {
 
     // logic initialization function
     public static void logicInit() {
-
         // program initialization
         // create new settings and server_settings classes to hold config settings
         settings = new LocalSettings();
@@ -231,6 +230,9 @@ public class LCCP implements EventListener {
     // activate function
     // this is triggered on libadwaita application activate
     public void activate() {
+        ResourceBundle bundle = ResourceBundle.getBundle("LCCP", Locale.getDefault(), this.getClass().getClassLoader());
+        System.out.println(bundle);
+
         // registering event listener for this class
         eventManager.registerEvents(this);
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");

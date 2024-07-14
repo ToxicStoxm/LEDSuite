@@ -80,6 +80,7 @@ public class LCCP implements EventListener {
 
     // logic initialization function
     public static void logicInit() {
+
         // program initialization
         // create new settings and server_settings classes to hold config settings
         settings = new LocalSettings();

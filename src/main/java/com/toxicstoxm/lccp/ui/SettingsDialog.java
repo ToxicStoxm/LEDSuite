@@ -18,8 +18,6 @@ public class SettingsDialog extends PreferencesDialog {
     private final Boolean[] temp;
     // value to keep track of current brightness level
     private double prev1 = 0.0;
-    // auto update remote task
-    private LCCPTask autoUpdateRemote = null;
     // preferences group server settings
     private PreferencesGroup serverSettings = null;
 

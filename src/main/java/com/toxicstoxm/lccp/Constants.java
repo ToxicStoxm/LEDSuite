@@ -1,27 +1,33 @@
 package com.toxicstoxm.lccp;
 
+import com.toxicstoxm.lccp.logging.Logger;
+import com.toxicstoxm.lccp.task_scheduler.LCCPArgumentProcessor;
+
+import java.util.HashMap;
+import java.util.Locale;
+
 // static utility class for storing paths
 public final class Constants {
     // file paths
     public static final class File_System {
         private static String getAppDir() {
-            String confHome = System.getenv("XDG_CONFIG_HOME");
+            String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything
-                    System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
+                    java.lang.System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
                     confHome + "/"; // else it gets the environment variable and appends / because if it's missing it will error but when there are two it will still work
         }
 
         private static String getTmpDir() {
-            String cacheHome = System.getenv("XDG_CACHE_HOME");
+            String cacheHome =  java.lang.System.getenv("XDG_CACHE_HOME");
             return cacheHome == null ? // Check if the cache home or just temp directory (mainly for flatpak) contains anything
-                    System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/" : // If not it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as path
+                    java.lang.System.getProperty("java.io.tmpdir") + "/LED-Cube-Control-Panel/" : // If not it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as path
                     cacheHome + "/"; // If yes it gets the environment variable and appends / because if it is missing it will error but when there are two it will still work
         }
 
         private static String getDataDir() {
-            String dataHome = System.getenv("XDG_DATA_HOME");
+            String dataHome =  java.lang.System.getenv("XDG_DATA_HOME");
             return dataHome == null ? // Check if the data home directory (mainly for flatpak) contains anything
-                    System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
+                    java.lang.System.getProperty("user.home") + "/.config/LED-Cube-Control-Panel/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
                     dataHome + "/"; // If yes it gets the environment variable and appends / because if it is missing it will error but when there are two it will still work
         }
 
@@ -125,10 +131,99 @@ public final class Constants {
             }
         }
     }
+    public static final class System {
+        public static final String NAME = java.lang.System.getProperty("os.name");
+        public static final String VERSION= java.lang.System.getProperty("os.version");
+    }
     public static final class Application {
         public static final String NAME = "LED-Cube Control Panel";
         public static final String DOMAIN = "com.toxicstoxm.lccp";
         public static final String ICON = DOMAIN;
+        public static final HashMap<String, LCCPArgumentProcessor> Arguments;
+        public static final class _Arguments {
+            public static final String LOG_LEVEL = "--log-level";
+            public static final String SET_LOG_LEVEL = "--set-log-level";
+        }
+
+
+        static {
+            Arguments = new HashMap<>();
+            Arguments.put(
+                    _Arguments.LOG_LEVEL, new LCCPArgumentProcessor() {
+                        @Override
+                        public void run(String argument, ArgumentValidationCallback callback) {
+                            boolean callb = callback != null;
+                            boolean result = false;
+                            boolean snap = false;
+                            int logLevel = 0;
+                            try {
+                                int temp = Integer.parseInt(argument);
+                                int max = Logger.log_level.values().length;
+                                int min = 0;
+                                if (temp < min || temp > max) snap = true;
+                                logLevel = Math.max(
+                                        Math.min(
+                                                temp,
+                                                max
+                                        ),
+                                        min
+                                );
+                                LCCP.argumentsSettings.setLogLevel(logLevel);
+                                result = true;
+                            } catch (NumberFormatException _) {
+                            } finally {
+                                if (callb) callback.onValidationComplete(result,
+                                        (
+                                                result ?
+                                                        "[" + _Arguments.LOG_LEVEL + " " + argument + "] Successfully set log level to '" + logLevel + "' for current session!" + (snap ? " (Value was automatically snapped to bounds, since '"+ argument +"' is out of bounds)" : "") :
+                                                        "[" + _Arguments.LOG_LEVEL + "] Invalid log level '" + argument + "'!"
+                                        )
+                                );
+                            }
+                        }
+                    }
+            );
+
+            Arguments.put(
+                    _Arguments.SET_LOG_LEVEL, new LCCPArgumentProcessor() {
+                        @Override
+                        public void run(String argument, ArgumentValidationCallback callback) {
+                            boolean callb = callback != null;
+                            boolean result = false;
+                            boolean snap = false;
+                            int logLevel = 0;
+                            try {
+                                int temp = Integer.parseInt(argument);
+                                int max = Logger.log_level.values().length;
+                                int min = 0;
+                                if (temp < min || temp > max) snap = true;
+                                logLevel = Math.max(
+                                        Math.min(
+                                                temp,
+                                                max
+                                        ),
+                                        min
+                                );
+                                LCCP.argumentsSettings.setLogLevel(logLevel);
+                                LCCP.settings.setLogLevel(logLevel);
+                                result = true;
+                            } catch (NumberFormatException _) {
+                            } finally {
+                                if (callb) {
+                                    callback.onValidationComplete(result,
+                                            (
+                                                    result ?
+                                                            "[" + _Arguments.SET_LOG_LEVEL + " " + argument + "] Successfully changed log level to '" + logLevel + "'!" + (snap ? " (Value was automatically snapped to bounds, since '"+ argument +"' is out of bounds)" : "") :
+                                                            "[" + _Arguments.SET_LOG_LEVEL + "] Invalid log level '" + argument + "'!"
+                                            )
+                                    );
+                                }
+                            }
+                        }
+                    }
+            );
+        }
+
     }
     public static final class GTK {
         public static final class Shortcuts {
@@ -186,7 +281,7 @@ public final class Constants {
 
     public static final class Messages {
         public static final class WARN {
-            public static final String OPEN_GITHUB_ISSUE = "Please open an issue on the projects GitHub: " + Constants.Links.PROJECT_GITHUB;
+            public static final String OPEN_GITHUB_ISSUE = "Please open an issue on the projects GitHub: " + Links.PROJECT_GITHUB;
         }
     }
 }

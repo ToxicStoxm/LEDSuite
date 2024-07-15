@@ -86,7 +86,7 @@ public class LCCP implements EventListener {
     // logic initialization function
     public static void logicInit() {
 
-        ResourceBundle bundle = ResourceBundle.getBundle("LCCP", Locale.getDefault());
+        //ResourceBundle bundle = ResourceBundle.getBundle("LCCP", Locale.getDefault());
 
         // program initialization
         // create new settings and server_settings classes to hold config settings
@@ -97,7 +97,7 @@ public class LCCP implements EventListener {
         logger = new Logger();
         // create new networkLogger instance
         networkLogger = new NetworkLogger();
-        LCCP.logger.debug(bundle.getString("test"));
+        //LCCP.logger.debug(bundle.getString("test"));
         // general startup information displayed in the console upon starting the program
         logger.info("Welcome back!");
         logger.info("Starting Program...");

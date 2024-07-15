@@ -51,7 +51,7 @@ public class StatusDialog extends Dialog implements EventListener {
                 .setCssClasses(new String[]{"property"})
                 .build();
         statusPage = StatusPage.builder()
-                .setIconName("com.x_tornado10.lccp")
+                .setIconName("com.toxicstoxm.lccp")
                 .setTitle("LED Cube Status")
                 .build();
 

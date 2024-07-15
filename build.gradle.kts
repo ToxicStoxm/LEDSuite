@@ -7,6 +7,9 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    flatDir {
+        dirs("dependencies")
+    }
 }
 
 dependencies {
@@ -25,7 +28,7 @@ dependencies {
 buildscript {
     repositories {
         flatDir {
-            dirs("lib")
+            dirs("dependencies")
         }
     }
     dependencies {

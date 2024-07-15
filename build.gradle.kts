@@ -24,8 +24,8 @@ dependencies {
 
 buildscript {
     repositories {
-        maven {
-            url = uri("https://plugins.gradle.org/m2/")
+        flatDir {
+            dirs("lib")
         }
     }
     dependencies {
@@ -48,7 +48,6 @@ tasks.withType<Javadoc> {
 }
 
 tasks.jar {
-
 
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.lccp.LCCP"

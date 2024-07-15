@@ -344,10 +344,10 @@ public class Networking {
                 long printDelay = 2000;
                 long lastPrint = System.currentTimeMillis() - printDelay;
 
-                LCCP.logger.verbose(id + "Sending main file contents...");
                 // reading / writing file contents using the buffer
                 // the app also calculates transfer speed in MB/S and ETA
                 // additionally the app keeps track on how much data was already transferred
+                LCCP.logger.verbose(id + "Sending main file contents...");
                 while ((count = bufferedInputStream.read(buffer)) > 0) {
                     if (System.currentTimeMillis() - lastDisplay >= delay) {
                         // calculating speed, eta and transferred data
@@ -367,14 +367,13 @@ public class Networking {
 
                         // Create a SimpleDateFormat object for formatting
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone to UTC to avoid offset
+                        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Set timezone to UTC to avoid wrong values
 
                         // Format the date
                         String formattedTime = sdf.format(date);
 
+                        // Check each part and remove if it's zero to make it look better
                         String[] parts = formattedTime.split(":");
-
-                        // Check each part and remove if it's zero
                         StringBuilder result = new StringBuilder();
                         if (!parts[0].equals("00")) {
                             result.append(parts[0]).append("h ");
@@ -390,6 +389,7 @@ public class Networking {
                             LCCP.logger.verbose(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
                             lastPrint = current;
                         }
+                        // if the progress tracker object is not null, update its monitoring values to the ones calculated above
                         if (track && transferredSize > 0) {
                             progressTracker.setUpdated(true);
                             progressTracker.setTotalSizeInBytes(fileSize);
@@ -413,6 +413,8 @@ public class Networking {
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
 
+                // if the progress tracker object is not null and the upload has finished
+                // update the progress percentage to 100% manually since the loop above will exit at 99%
                 if (track && transferredSize > 0) {
                     progressTracker.setTotalSizeInBytes(fileSize);
                     progressTracker.setTotalSizeInMegabytes(mbFileSize);
@@ -427,21 +429,14 @@ public class Networking {
                 // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
                 out.flush();
                 LCCP.logger.verbose(id + "Successfully send file contents!");
-
-                LCCP.logger.verbose(id + "Closing socket and streams...");
-                // closing socket and all streams to free up system resources
-                bufferedInputStream.close();
-                socket.close();
-                LCCP.logger.verbose(id + "Successfully closed socket and streams!");
                 LCCP.logger.verbose(id + "Sending complete!");
-
             } catch (IOException e) {
-                if (track) progressTracker.setError(true);
+                if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
                 LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                 LCCP.logger.error(e);
                 return false;
             } catch (NetworkException e) {
-                if (track) progressTracker.setError(true);
+                if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
                 LCCP.logger.fatal(id + "Network error: " + e.getMessage());
             } finally {
                 LCCP.logger.verbose(id + "---------------------------------------------------------------");
@@ -451,6 +446,10 @@ public class Networking {
             return true;
         }
 
+        /**
+         * Used to monitor upload statistics. Useful for displaying a progress bar.
+         * @since 1.0.0
+         */
         @Setter
         @Getter
         public static class ProgressTracker {
@@ -469,67 +468,131 @@ public class Networking {
 
         private static final long delay = 10; // delay in milliseconds between network packets
 
+        /**
+         * Manages the core networking logic, including the listener and sending queue with an appropriate send handler.
+         * This class maintains an open connection to the server using a keepalive mechanism.
+         * <p>
+         * Any client or server-side errors are handled appropriately.
+         * <p>
+         * If the server address changes or the connection is closed, this class attempts to automatically reestablish the connection,
+         * using the last known connection as a fallback if possible.
+         * If all attempts fail, this class will shut down to conserve system resources and will periodically wake up to attempt reconnection.
+         * @since 1.0.0
+         */
         public static class NetworkHandler {
 
+            // the main socket object, that is kept open if possible
             protected static Socket server = null;
 
-            private static boolean connected = false;
+            /**
+             * Checks if the server is open and connected.
+             * @return {@code true} If the socket is open and connected to a server
+             * @since 1.0.0
+             */
+            private static boolean isConnected() {
+                return server != null && !server.isClosed() && server.isConnected();
+            }
 
+            // network - manager and listener objects
             private static LCCPTask mgr = null;
             private static LCCPTask masterListener = null;
 
+            /**
+             * Used to monitor communication state between client and server.
+             * @see SuccessCallback#getResult(boolean)
+             * @since 1.0.0
+             */
             public interface SuccessCallback {
+                /**
+                 * Called when the communication between server and client finished (message was transferred to the server or an error occurred).
+                 * @param success {@code true} If the message was sent successfully, {@code false} if any errors occurred during transfer or no server is connected
+                 * @throws NetworkException if any errors occur, to allow for custom error handling
+                 * @since 1.0.0
+                 */
                 void getResult(boolean success) throws NetworkException;
             }
 
+            /**
+             * Used to get the current connected socket object. If the socket is not yet connected a new connection will be made.
+             * @return The current connected socket object.
+             * @throws NetworkException if the initialization of a new connection fails
+             * @since 1.0.0
+             */
             protected static Socket getServer() throws NetworkException {
-                if (!connected || server == null || server.isClosed()) {
+                // if the server is not connected, initialize a new connection
+                if (!isConnected()) {
                     init(success -> {
+                        // if initialization fails throw an exception
                         if (!success) throw new NetworkException("Failed to establish connection to the server!");
                     });
                 }
                 return server;
             }
 
+            /**
+             * Initializes a new connection to the server. <p>
+             * Main objectives:
+             * <l>
+             *     <li>Establish a new connection to the server</li>
+             *     <li>Cancel any running tasks from last connection</li>
+             *     <li>Create a new network manager, that is responsible for sending messages</li>
+             *     <li>Request the initialization of a new network listener using {@link NetworkHandler#initListener()}</li>
+             * </l>
+             * @param callback used to communicate result back to the caller method
+             * @throws NetworkException if the attempt fails
+             * @since 1.0.0
+             */
             public static void init(SuccessCallback callback) throws NetworkException {
                 try {
+                    // if socket is not initialized at all, create a new socket
+                    // connect it to the new server
                     if (server == null || server.isClosed()) {
                         server = new Socket(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort());
                     } else {
                         server.connect(new InetSocketAddress(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort()));
                     }
                     LCCP.logger.verbose("Successfully connected to server!");
-                    connected = true;
                 } catch (Exception e) {
+                    // if connection fails, inform the caller function using the callback
                     LCCP.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
                     LCCP.logger.error(e);
-                    callback.getResult(false);
+                    if (callback != null) callback.getResult(false);
                     return;
                 }
 
-                LCCP.logger.verbose("Fulfilling init request for Network Handler!");
+                LCCP.logger.verbose("Fulfilling initialization request for Network Handler!");
 
                 LCCP.logger.verbose("Network Handler: starting network handle...");
                 LCCP.eventManager.registerEvents(new NetworkHandle());
                 LCCP.logger.verbose("Network Handler: started network handle!");
 
-                LCCP.logger.verbose("Network Handler: starting manager...");
+
+                // if manager is already running cancel it
                 if (mgr != null) mgr.cancel();
                 long keepalive = 500;
+
+                // initializing new time tracker to keep track of keepalive timings
                 TimeManager.clearTimeTracker("keepalive");
                 TimeManager.initTimeTracker("keepalive", keepalive);
+
+                // starting a new network manager
+                LCCP.logger.verbose("Network Handler: starting manager...");
                 mgr = new LCCPRunnable() {
                     @Override
                     public void run() {
+                        // check if keepalive needs to be sent
                         if (TimeManager.call("keepalive")) {
                             try {
+                                // try sending keepalive message to server
                                if (!sendKeepalive(
+                                       // build new keepalive packet using YAMLSerializer
                                         YAMLMessage.builder()
                                                 .setPacketType(YAMLMessage.PACKET_TYPE.request)
                                                 .setRequestType(YAMLMessage.REQUEST_TYPE.keepalive)
                                                 .build(),
                                         false
-                                )) throw new NetworkException("Failed to send Keepalive!");
+                                )
+                               ) throw new NetworkException("Failed to send Keepalive!");
                             } catch (YAMLSerializer.TODOException | ConfigurationException |
                                      YAMLSerializer.InvalidReplyTypeException |
                                      YAMLSerializer.InvalidPacketTypeException |
@@ -538,10 +601,13 @@ public class Networking {
                                 LCCP.logger.error(e);
                             }
                         }
+                        // check if status needs to be sent / updated
                         if (TimeManager.call("status")) {
+                            // if main window is open request status from server
                             if (LCCP.mainWindow != null) LCCP.mainWindow.getStatus(null);
                         }
-                        if (!networkQueue.isEmpty() && server != null && !server.isClosed()) {
+                        // if the send-queue isn't empty and the server is connected
+                        if (!networkQueue.isEmpty() && isConnected()) {
                             Map.Entry<Long, LCCPRunnable> entry = networkQueue.firstEntry();
                             LCCP.logger.verbose("Handling request: " + entry.getKey());
                             entry.getValue().runTaskAsynchronously();
@@ -551,12 +617,18 @@ public class Networking {
                 }.runTaskTimerAsynchronously(LCCP.settings.getNetworkingCommunicationClockSpeed(), delay);
                 LCCP.logger.verbose("Network Handler: started manager!");
 
+                // initialize the listener
                 initListener();
 
                 LCCP.logger.verbose("Network Handler started!");
+                // informs the functions caller of the result
                 callback.getResult(true);
             }
 
+            /**
+             * Initializes
+             * @since 1.0.0
+             */
             private static void initListener() {
                 LCCP.logger.verbose("Network Handler: starting master listener...");
                 if (masterListener != null) masterListener.cancel();
@@ -566,39 +638,35 @@ public class Networking {
                         try {
                             if (server == null || server.isClosed()) return;
                             InputStream is = server.getInputStream();
-                            //while (server != null && !server.isClosed()) {
-                                if (is.available() > 0) {
-                                    YAMLConfiguration yamlCfg = defaultReceive(is);
-                                    if (yamlCfg != null) {
+                            if (is.available() > 0) {
+                                YAMLConfiguration yamlCfg = defaultReceive(is);
+                                if (yamlCfg != null) {
 
-                                        YAMLMessage yaml;
-                                        try {
-                                            UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID));
-                                            //LCCP.logger.fatal(String.valueOf(networkID0));
-                                            yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
-                                        } catch (IllegalArgumentException e) {
-                                            LCCP.logger.error(e);
-                                            LCCP.logger.warn(System.currentTimeMillis() + " Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
-                                            yaml = YAMLSerializer.deserializeYAML(yamlCfg);
-
-                                        }
-                                        UUID networkID = yaml.getNetworkID();
-
-                                        Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
-                                        if (replyListenerQueue.containsKey(networkID)) {
-                                            ReplyListener listener = replyListenerQueue.remove(networkID);
-                                            if (listener != null) {
-                                                listener.processFor(yaml);
-                                            }
-                                            replyListenerQueue.remove(networkID);
-                                        } else {
-                                            defaultHandle(yaml);
-                                        }
+                                    YAMLMessage yaml;
+                                    try {
+                                        UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID));
+                                        yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
+                                    } catch (IllegalArgumentException e) {
+                                        LCCP.logger.error(e);
+                                        LCCP.logger.warn(System.currentTimeMillis() + " Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
+                                        yaml = YAMLSerializer.deserializeYAML(yamlCfg);
 
                                     }
+                                    UUID networkID = yaml.getNetworkID();
+
+                                    Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
+                                    if (replyListenerQueue.containsKey(networkID)) {
+                                        ReplyListener listener = replyListenerQueue.remove(networkID);
+                                        if (listener != null) {
+                                            listener.processFor(yaml);
+                                        }
+                                        replyListenerQueue.remove(networkID);
+                                    } else {
+                                        defaultHandle(yaml);
+                                    }
+
                                 }
-                                //Thread.sleep(1);
-                           // }
+                            }
                         } catch (Exception e) {
                             LCCP.logger.fatal("Network Handler: master listener: Error: " + e.getMessage());
                             LCCP.logger.error(e);
@@ -827,7 +895,7 @@ public class Networking {
         }
 
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler, boolean priority) {
-            if (!NetworkHandler.connected || NetworkHandler.server == null || NetworkHandler.server.isClosed()) {
+            if (!NetworkHandler.isConnected()) {
                 try {
                     NetworkHandler.init(success -> {
                         if (!success) {

@@ -28,7 +28,7 @@ public class Logger {
         if (log_level.INFO.isEnabled()) cInfo("[INFO]:  [" + Constants.Application.NAME + "] " + message);
     }
     // sending and info message to console and log file
-    private void cInfo(String message) {
+    public void cInfo(String message) {
         writeLog(message);
         log(ansi().fg(DEFAULT).a(message).reset());
     }
@@ -37,7 +37,7 @@ public class Logger {
         if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + Constants.Application.NAME + "] " + message);
     }
     // sending a warning message to console and log file
-    private void cWarn(String message) {
+    public void cWarn(String message) {
         writeLog(message);
         log(ansi().fgRgb(227, 163, 0).a(message).reset());
     }
@@ -48,8 +48,9 @@ public class Logger {
     public void error(String message, boolean visualFeedback) {
         if (log_level.ERROR.isEnabled()) {
             cError( "[ERROR]: [" + Constants.Application.NAME + "] " + message);
+            // displaying toast in the user interface
+
         }
-        // displaying toast in the user interface
         if (visualFeedback) visualFeedback(message, 0);
     }
     public void error(Exception e) {
@@ -69,7 +70,7 @@ public class Logger {
         }
     }
     // sending an error message to console and log file
-    private void cError(String message) {
+    public void cError(String message) {
         writeLog(message);
         log(ansi().fgRgb(255, 0, 0).a(message).reset());
     }
@@ -83,7 +84,7 @@ public class Logger {
         if (visualFeedback) visualFeedback(message, 0);
     }
     // sending a fatal error message to console and log file
-    private void cFatal(String message) {
+    public void cFatal(String message) {
         writeLog(message);
         log(ansi().fgRgb(180, 0, 0).a(message).reset());
     }
@@ -92,18 +93,9 @@ public class Logger {
         if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + Constants.Application.NAME + "] " + message);
     }
     // sending debug message to console and log file
-    private void cDebug(String message) {
+    public void cDebug(String message) {
         writeLog(message);
         log(ansi().fgRgb(7, 94, 217).a(message).reset());
-    }
-
-    public void verbose(String message) {
-        if (log_level.VERBOSE.isEnabled()) cVerbose("[VERBOSE]: [" + Constants.Application.NAME + "] " + message);
-    }
-    // sending debug message to console and log file
-    private void cVerbose(String message) {
-        writeLog(message);
-        log(ansi().fgRgb(160, 22, 244).a(message).reset());
     }
 
     // attaching current time to the front of the message before sending it to the console
@@ -191,16 +183,10 @@ public class Logger {
             public boolean isEnabled() {
                 return currentLogLevel() >= 5;
             }
-        },
-        VERBOSE() {
-            @Override
-            public boolean isEnabled() {
-                return currentLogLevel() >= 6;
-            }
         };
         // function that retrieves current log level
         int currentLogLevel() {
-            return LCCP.argumentsSettings.getLogLevel();
+            return LCCP.settings.getLogLevel();
         }
     }
 }

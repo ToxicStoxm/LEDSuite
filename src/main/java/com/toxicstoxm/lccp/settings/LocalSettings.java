@@ -137,7 +137,6 @@ public class LocalSettings extends Settings {
     // saving current settings to disk
     @Override
     public void save() {
-        if (!this.equals(LCCP.settings)) return;
         // check for changes to avoid unnecessary save
         if (this.equals(backup)) {
             LCCP.logger.debug("Didn't save " + name + " because nothing changed!");
@@ -215,11 +214,6 @@ public class LocalSettings extends Settings {
         reload("DisplayStatusBar -> " + displayStatusBar);
     }
 
-    public void setLogLevel(int logLevel) {
-        this.LogLevel = logLevel;
-        reload("LogLevel -> " + logLevel);
-    }
-
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
         AutoPlayAfterUpload = autoPlayAfterUpload;
         reload("AutoPlayAfterUpload -> " + AutoPlayAfterUpload);
@@ -255,17 +249,19 @@ public class LocalSettings extends Settings {
                 WindowDefWidth == other.WindowDefWidth &&
                 WindowDefHeight == other.WindowDefHeight &&
                 LogLevel == other.LogLevel &&
+                //AutoUpdateRemote == other.AutoUpdateRemote &&
                 DisplayStatusBar == other.DisplayStatusBar &&
                 CheckIPv4 == other.CheckIPv4 &&
                 AutoPlayAfterUpload == other.AutoPlayAfterUpload &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(NetworkingCommunicationClockSpeed, other.NetworkingCommunicationClockSpeed);
+                //Objects.equals(AutoUpdateRemoteTick, other.AutoUpdateRemoteTick);
     }
 
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, DisplayStatusBar, CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
+        return Objects.hash(WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, /*AutoUpdateRemote,*/ DisplayStatusBar, /*AutoUpdateRemoteTick,*/ CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
     }
 
 }

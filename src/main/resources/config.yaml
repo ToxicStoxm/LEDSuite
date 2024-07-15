@@ -17,9 +17,8 @@ Local-Settings:
     # 2 --> logger displays normal errors
     # 3 --> logger displays warnings
     # 4 --> logger displays info (DEFAULT)
-    # 5 --> logger displays debug messages (may impact performance, don't use this except if you know what you are doing)
-    # 6 --> logger displays everything that happens internally (may impact performance, don't use this except if you know what you are doing)
-    Log-Level: 4
+    # 5 --> logger displays debug messages (turn on only if your told so by support)
+    Log-Level: 5
   Network:
     # Toggles automatic IPv4 check that is performed when changing the cube IPv4
     # If disabled, connection may fail on the next remote update attempt

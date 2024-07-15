@@ -6,4 +6,4 @@
 ## WARNING: prototype software does currently not work properly
  - When the application officialy releases, this README will be updated!
 ## Estimated time until official release:
- - About 6 Weeks *( 15.07.2024 )* **NOT FINAL**
+ - About 6 Weeks *( 1.08.2024 )* **NOT FINAL** Depending on https://github.com/flathub/org.freedesktop.Sdk.Extension.openjdk/pull/62

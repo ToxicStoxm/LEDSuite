@@ -2,14 +2,12 @@
 
 plugins {
     `java-library`
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    flatDir {
-        dirs("dependencies")
-    }
 }
 
 dependencies {
@@ -25,19 +23,6 @@ dependencies {
     annotationProcessor(libs.org.projectlombok.lombok)
 }
 
-buildscript {
-    repositories {
-        flatDir {
-            dirs("dependencies")
-        }
-    }
-    dependencies {
-        classpath("com.github.johnrengelman:shadow:8.1.1")
-    }
-}
-
-apply(plugin = "com.github.johnrengelman.shadow")
-
 group = "com.toxicstoxm.lccp"
 version = "0.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_22
@@ -51,7 +36,6 @@ tasks.withType<Javadoc> {
 }
 
 tasks.jar {
-
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.lccp.LCCP"
     }

@@ -22,7 +22,7 @@ dependencies {
     annotationProcessor(libs.org.projectlombok.lombok)
 }
 
-/*buildscript {
+buildscript {
     repositories {
         maven {
             url = uri("https://plugins.gradle.org/m2/")
@@ -31,7 +31,7 @@ dependencies {
     dependencies {
         classpath("com.github.johnrengelman:shadow:8.1.1")
     }
-}*/
+}
 
 //apply(plugin = "com.github.johnrengelman.shadow")
 
@@ -80,7 +80,7 @@ tasks.named("check") {
 }
 
 // Shadow plugin configuration
-/*tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
 
     archiveClassifier.set("")
     manifest {
@@ -89,7 +89,7 @@ tasks.named("check") {
     archiveFileName.set("LED-Cube-Control-Panel-$version.jar")
     mergeServiceFiles()
     configurations = listOf(project.configurations.runtimeClasspath.get())
-}*/
+}
 
 tasks.register<Copy>("processVersionProperties") {
     from("src/main/resources/version.properties")
@@ -108,6 +108,6 @@ tasks.named<ProcessResources>("processResources") {
 
 tasks.build {
     dependsOn(tasks.processResources)
-    //dependsOn(tasks.named("shadowJar"))
+    dependsOn(tasks.named("shadowJar"))
 }
 

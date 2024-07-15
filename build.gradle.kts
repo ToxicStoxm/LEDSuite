@@ -6,8 +6,6 @@
 
 plugins {
     `java-library`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.github.crimix.replace-placeholders") version "2.0"
 }
 
 repositories {
@@ -30,8 +28,20 @@ dependencies {
     compileOnly(libs.org.projectlombok.lombok)
     annotationProcessor(libs.org.projectlombok.lombok)
 }
+
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("com.github.johnrengelman:shadow:8.1.1")
+    }
+}
+
 apply(plugin = "com.github.johnrengelman.shadow")
-apply(plugin = "io.github.crimix.replace-placeholders")
+
 group = "com.toxicstoxm.lccp"
 version = "0.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_22
@@ -88,14 +98,8 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     configurations = listOf(project.configurations.runtimeClasspath.get())
 }
 
-replaceResourcePlaceholders {
-    enabled(true)
-    filesToExpand("version.properties")
-    extraProperties("version")
-}
-
 tasks.build {
     dependsOn(tasks.processResources)
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.named("shadowJar"))
 }
 

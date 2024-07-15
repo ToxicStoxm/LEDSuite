@@ -33,7 +33,7 @@ buildscript {
     }
 }
 
-//apply(plugin = "com.github.johnrengelman.shadow")
+apply(plugin = "com.github.johnrengelman.shadow")
 
 group = "com.toxicstoxm.lccp"
 version = "0.1.0"
@@ -48,6 +48,8 @@ tasks.withType<Javadoc> {
 }
 
 tasks.jar {
+
+
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.lccp.LCCP"
     }

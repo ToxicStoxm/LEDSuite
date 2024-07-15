@@ -83,7 +83,7 @@ public class EventManager {
             if (event instanceof Events.DataIn) {
                 id = String.valueOf(((Events.DataIn) event).yamlMessage().getNetworkID());
             } else if (event instanceof Events.DataOut) {
-                id = String.valueOf(((Events.DataOut) event).yaml().getProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID));
+                id = String.valueOf(((Events.DataOut) event).yaml().getProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID));
             } else if (event instanceof Events.Status) {
                 id = String.valueOf(((Events.Status) event).statusUpdate().getNetworkEventID());
             }

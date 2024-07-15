@@ -12,7 +12,7 @@ public class YAMLSerializer {
         YAMLMessage.PACKET_TYPE packetType = null;
         YAMLConfiguration result = new YAMLConfiguration();
         if (yamlMessage.getNetworkID() == null) yamlMessage.setUUID(UUID.randomUUID());
-        result.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(yamlMessage.getNetworkID()));
+        result.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, String.valueOf(yamlMessage.getNetworkID()));
         try {
             packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketTypeV());
         } catch (IllegalArgumentException e) {
@@ -253,12 +253,12 @@ public class YAMLSerializer {
             case settings_change -> {
                 yaml.clearProperty(Constants.Network.YAML.PACKET_TYPE);
                 yaml.clearProperty(Constants.Network.YAML.REQUEST_TYPE);
-                yaml.clearProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID);
+                yaml.clearProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID);
                 for (Iterator<String> it = yaml.getKeys(); it.hasNext(); ) {
                     String key = it.next();
                     yamlMessage.addAdditionalEntry(key, yaml.getProperty(key));
                 }
-                yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID, yamlMessage.getNetworkID().toString());
+                yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, yamlMessage.getNetworkID().toString());
                 yaml.setProperty(Constants.Network.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());
                 yaml.setProperty(Constants.Network.YAML.REQUEST_TYPE, yamlMessage.getRequestTypeV());
             }

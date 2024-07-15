@@ -453,7 +453,7 @@ public class LCCP implements EventListener {
         YAMLConfiguration yaml = e.yaml();
         String id;
         try {
-            id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
+            id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID) + "] ";
             logger.verbose(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";
@@ -483,7 +483,7 @@ public class LCCP implements EventListener {
         YAMLConfiguration yaml = e.yaml();
         String id;
         try {
-            id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID) + "] ";
+            id = "[" + yaml.getProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID) + "] ";
             logger.verbose(id + "-------------------- Internal Data Event ----------------------");
         } catch (NoSuchElementException ex) {
             id = "[failed to get id] ";

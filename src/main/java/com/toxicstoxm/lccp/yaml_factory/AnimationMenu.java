@@ -36,13 +36,13 @@ public class AnimationMenu implements Container {
     }
 
     public static AnimationMenu fromYAML(YAMLConfiguration yaml) {
-        UUID networkID = UUID.fromString(yaml.getString(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID));
+        UUID networkID = UUID.fromString(yaml.getString(Constants.Network.YAML.INTERNAL_NETWORK_ID));
         String id = "[" + networkID + "] ";
 
         LCCP.logger.debug(id + "Fulfilling deserialization request!");
 
         LCCP.logger.debug(id + "Removing network id!");
-        yaml.clearProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID);
+        yaml.clearProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID);
 
         AnimationMenu menu = new AnimationMenu(networkID);
 

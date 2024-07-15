@@ -41,7 +41,7 @@ import java.util.*;
 public class Networking {
 
     private static final TreeMap<Long, LCCPRunnable> networkQueue = new TreeMap<>();
-    private static final HashMap<UUID, Communication.NetworkHandler.ReplyListener> replyListenerQueue = new HashMap<>();
+    private static final HashMap<UUID, Communication.NetworkHandler.ReplyListener> replyListeners = new HashMap<>();
 
     /**
      * Includes functions used to validate {@code IPv4s} and {@code Ports} using format checks and pinging.
@@ -482,6 +482,10 @@ public class Networking {
         public static class NetworkHandler {
 
             // the main socket object, that is kept open if possible
+            /**
+             * Main socket object, that is kept open if possible to prevent unnecessary reconnections.
+             * @since 1.0.0
+             */
             protected static Socket server = null;
 
             /**
@@ -494,6 +498,15 @@ public class Networking {
             }
 
             // network - manager and listener objects
+            /**
+             * The network manager is responsible for sending packets.
+             * <p>Main objectives:</p>
+             * <l>
+             *     <li>Periodically sends keepalive packets to the server, to keep the connection alive</li>
+             *     <li>Periodically sends status requests to the server, to keep status information up to date</li>
+             *     <li>Periodically checks the network sending queue for entries, if any are found send them to the server</li>
+             * </l>
+             */
             private static LCCPTask mgr = null;
             private static LCCPTask masterListener = null;
 
@@ -626,25 +639,40 @@ public class Networking {
             }
 
             /**
-             * Initializes
+             * Tries to initialize a new network listener.
+             * <p>Main objectives:</p>
+             * <l>
+             *     <li>Cancel any running tasks from previous connection</li>
+             *     <li>Create and initialize a new network listener</li>
+             * </l>
              * @since 1.0.0
              */
             private static void initListener() {
                 LCCP.logger.verbose("Network Handler: starting master listener...");
+                // cancelling any active listeners from previous connection
                 if (masterListener != null) masterListener.cancel();
+                // creating and initializing new listener
                 masterListener = new LCCPRunnable() {
                     @Override
                     public void run() {
                         try {
-                            if (server == null || server.isClosed()) return;
+                            // if no server is connected do nothing
+                            if (!isConnected()) return;
+                            // get the current connected sockets input stream
                             InputStream is = server.getInputStream();
+                            // check if any data is available, this function blocks for large amounts of data
                             if (is.available() > 0) {
+                                // use the default receive function to receive the data sent by the server
                                 YAMLConfiguration yamlCfg = defaultReceive(is);
+
                                 if (yamlCfg != null) {
 
                                     YAMLMessage yaml;
+
+                                    // try to extract the network id from the received message
+                                    // this is used for logging and for assigning the message to the correct listener
                                     try {
-                                        UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID));
+                                        UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.Network.YAML.INTERNAL_NETWORK_ID));
                                         yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
                                     } catch (IllegalArgumentException e) {
                                         LCCP.logger.error(e);
@@ -654,13 +682,17 @@ public class Networking {
                                     }
                                     UUID networkID = yaml.getNetworkID();
 
-                                    Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
-                                    if (replyListenerQueue.containsKey(networkID)) {
-                                        ReplyListener listener = replyListenerQueue.remove(networkID);
+                                    // check if any custom listeners with the specific network id exist
+                                    // if a listener is found, it will be executed with the received message
+                                    // finally the listener is removed for the reply listeners collection
+                                    // if no listener is found for the specific network id, the message is processed using a default handler
+                                    Map<UUID, ReplyListener> replyListeners = Collections.synchronizedMap(Networking.replyListeners);
+                                    if (replyListeners.containsKey(networkID)) {
+                                        ReplyListener listener = replyListeners.remove(networkID);
                                         if (listener != null) {
                                             listener.processFor(yaml);
                                         }
-                                        replyListenerQueue.remove(networkID);
+                                        replyListeners.remove(networkID);
                                     } else {
                                         defaultHandle(yaml);
                                     }
@@ -688,7 +720,7 @@ public class Networking {
             private static void clearQueues() {
                 LCCP.logger.verbose("Network Handler: Fulfilling clear queues request!");
                 networkQueue.clear();
-                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
+                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.clear();
 
             }
@@ -803,14 +835,14 @@ public class Networking {
             }
 
             public static void listenForReply(LCCPProcessor processor, UUID networkID) {
-                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
+                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.put(networkID,
                         new ReplyListener(processor)
                 );
             }
 
             protected static void listenForReply(UUID networkID) {
-                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListenerQueue);
+                Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.put(networkID,
                         new ReplyListener(
                                 new LCCPProcessor() {
@@ -947,7 +979,7 @@ public class Networking {
                                 "[Port '" + serverPort + "']";
                 try {
                     // try to get network event id from the yaml file
-                    networkID = yaml.getString(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID);
+                    networkID = yaml.getString(Constants.Network.YAML.INTERNAL_NETWORK_ID);
                     // if no id is given trigger creation of a new one
                     if (networkID == null || networkID.isBlank()) noID = true;
                 } catch (NoSuchElementException e) {
@@ -961,7 +993,7 @@ public class Networking {
                     id = "[" +
                             uuid +
                             "] ";
-                    yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(uuid));
+                    yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, String.valueOf(uuid));
                     // if an id is give, pass it on to the network logger
                 } else {
                     id = "[" + networkID + "] ";
@@ -976,7 +1008,7 @@ public class Networking {
 
 
                 LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
-            } else yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_EVENT_ID, String.valueOf(UUID.randomUUID()));
+            } else yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, String.valueOf(UUID.randomUUID()));
 
             try {
                 Socket socket = NetworkHandler.getServer();

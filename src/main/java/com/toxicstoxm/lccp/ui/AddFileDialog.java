@@ -272,7 +272,7 @@ public class AddFileDialog extends PreferencesPage {
                 fileName.lastIndexOf(".") + 1
         );
         return  suffix.equalsIgnoreCase("SO") ||
-                mimeType == null ? ALLOWED_FILE_TYPES.isALLOWED(suffix) :
+                mimeType == null ? ALLOWED_FILE_TYPES.isAllowed(suffix) :
                 (
                 mimeType.contains("image/") ||
                 mimeType.contains("video/")

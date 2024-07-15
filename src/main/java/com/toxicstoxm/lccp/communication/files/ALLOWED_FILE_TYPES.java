@@ -2,7 +2,10 @@ package com.toxicstoxm.lccp.communication.files;
 
 import java.util.HashSet;
 import java.util.Set;
-
+/**
+ * Holds a list, containing all file type extensions allowed to upload to the server.
+ * @since 1.0.0
+ */
 public class ALLOWED_FILE_TYPES {
     private static final Set<String> allowedFileTypes = new HashSet<>();
 
@@ -135,7 +138,13 @@ public class ALLOWED_FILE_TYPES {
         allowedFileTypes.add("so");
     }
 
-    public static boolean isALLOWED(String extension) {
+    /**
+     * Checks if the provided file extension is allowed.
+     * @param extension the file extension to check for
+     * @return {@code True} if the provided file extension is allowed.
+     * @since 1.0.0
+     */
+    public static boolean isAllowed(String extension) {
         return allowedFileTypes.contains(extension.toLowerCase());
     }
 }

@@ -5,7 +5,6 @@ import com.toxicstoxm.lccp.LCCP;
 import com.toxicstoxm.lccp.communication.network.Networking;
 import com.toxicstoxm.lccp.event_handling.Events;
 import com.toxicstoxm.lccp.task_scheduler.LCCPRunnable;
-import com.toxicstoxm.lccp.task_scheduler.LCCPTask;
 import org.gnome.adw.*;
 import org.gnome.gtk.*;
 
@@ -117,7 +116,7 @@ public class SettingsDialog extends PreferencesDialog {
                             if (!LCCP.server_settings.getIPv4().equals(text)) {
 
                                 try {
-                                    ip = Networking.General.getValidIP(text, false);
+                                    ip = Networking.Validation.getValidIP(text, false);
                                 } catch (IOException e) {
                                     LCCP.sysBeep();
                                     addToast(
@@ -173,7 +172,7 @@ public class SettingsDialog extends PreferencesDialog {
                     try {
                         int port = Integer.parseInt(portVal);
                         if (LCCP.server_settings.getPort() != port) {
-                            if (Networking.General.isValidPORT(portVal)) {
+                            if (Networking.Validation.isValidPORT(portVal)) {
                                 LCCP.server_settings.setPort(port);
                                 Networking.Communication.NetworkHandler.hostChanged();
                                 prevPort.set(portVal);

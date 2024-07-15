@@ -21,7 +21,6 @@ repositories {
 dependencies {
     implementation(libs.org.fusesource.jansi.jansi)
     implementation(libs.io.github.jwharm.javagi.adw)
-    implementation(libs.io.github.jwharm.javagi.webkit)
     implementation(libs.org.apache.commons.commons.configuration2)
     implementation(libs.org.yaml.snakeyaml)
 

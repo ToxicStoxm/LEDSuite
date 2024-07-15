@@ -87,7 +87,7 @@ public class ServerSettings extends Settings{
             this.IPv4 = config.getString(Constants.Server_Config.IPV4);
             int tempPort = config.getInt(Constants.Server_Config.PORT);
             // checking if provided port is in the valid port range
-            if (!Networking.General.isValidPORT(String.valueOf(tempPort))) {
+            if (!Networking.Validation.isValidPORT(String.valueOf(tempPort))) {
                 LCCP.logger.error("Error while parsing Server-Port! Invalid Port!");
                 LCCP.logger.warn("Port is outside the valid range of 0-65535!");
                 LCCP.logger.warn("There was an error while reading the config file, some settings may be broken!");

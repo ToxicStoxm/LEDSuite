@@ -481,7 +481,6 @@ public class Networking {
          */
         public static class NetworkHandler {
 
-            // the main socket object, that is kept open if possible
             /**
              * Main socket object, that is kept open if possible to prevent unnecessary reconnections.
              * @since 1.0.0
@@ -497,15 +496,14 @@ public class Networking {
                 return server != null && !server.isClosed() && server.isConnected();
             }
 
-            // network - manager and listener objects
             /**
              * The network manager is responsible for sending packets.
              * <p>Main objectives:</p>
-             * <l>
+             * <ul>
              *     <li>Periodically sends keepalive packets to the server, to keep the connection alive</li>
              *     <li>Periodically sends status requests to the server, to keep status information up to date</li>
              *     <li>Periodically checks the network sending queue for entries, if any are found send them to the server</li>
-             * </l>
+             * </ul>
              */
             private static LCCPTask mgr = null;
             private static LCCPTask masterListener = null;

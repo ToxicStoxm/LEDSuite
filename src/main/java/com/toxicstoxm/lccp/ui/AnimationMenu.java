@@ -1,5 +1,6 @@
 package com.toxicstoxm.lccp.ui;
 
+import com.toxicstoxm.lccp.LCCP;
 import com.toxicstoxm.lccp.communication.network.Networking;
 import com.toxicstoxm.lccp.task_scheduler.LCCPRunnable;
 import com.toxicstoxm.lccp.yaml_factory.YAMLMessage;
@@ -257,16 +258,16 @@ public class AnimationMenu extends PreferencesPage {
     }
 
     public SpinRow getSlider(com.toxicstoxm.lccp.yaml_factory.AnimationMenu.Widgets.Slider slider) {
-        var _slider = SpinRow.builder()
-                .setTitle(slider.getLabel())
-                .setNumeric(slider.isNumeric())
-                .setSnapToTicks(slider.isSnap())
-                .setWrap(slider.isWraparound())
-                .setDigits(slider.getDigits())
-                .setClimbRate(slider.getClimb_rate())
-                .setValue(slider.getValue())
-                .build();
-        _slider.setRange(slider.getMin(), slider.getMax());
+        var _slider = SpinRow.withRange(slider.getMin(), slider.getMax(), slider.getStep());
+        _slider.setTitle(slider.getLabel());
+        _slider.setNumeric(slider.isNumeric());
+        _slider.setSnapToTicks(slider.isSnap());
+        _slider.setWrap(slider.isWraparound());
+        _slider.setDigits(slider.getDigits());
+        _slider.setClimbRate(slider.getClimb_rate());
+        _slider.setValue(slider.getValue());
+        _slider.setUpdatePolicy(SpinButtonUpdatePolicy.IF_VALID);
+
         insertSdtWithoutStyle(_slider, slider);
         attachHandle(_slider, slider);
         return _slider;

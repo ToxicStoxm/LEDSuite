@@ -206,19 +206,19 @@ public class Networking {
      * Includes communication logic used to communicate with a server.
      * <p>
      * Key features:
-     * <l>
+     * <ul>
      *    <li>Sending queue with simple priority system</l>
      *    <li>Flexible and dynamic listener management</li>
      *    <li>Server error handling</li>
      *    <li>Automatic reconnection handler</li>
      *    <li>Keepalive system</li>
-     * </l>
+     * </ul>
      * @implNote {@link java.net.Socket} is used to communicate with the server
      * @since 1.0.0
      */
     public static class Communication {
         /**
-         * This is a wrapper function for {@link Communication#sendFile(String, int, String, ProgressTracker)}
+         * This is a wrapper function for {@link #sendFile(String, int, String, ProgressTracker)}
          * @param fileToSendPath path to a file that should be sent to the server
          * @param progressTracker a progress tracker, used to monitor uploading progress, this could be useful if you want to display a loading bar
          * @since 1.0.0
@@ -229,7 +229,7 @@ public class Networking {
 
         /**
          * Sends a file upload request to the server, if successful the specified file loaded into memory and sent to the specified host (server:port) monitored by the specified progress tracker <p>
-         * This is a wrapper function for {@link Communication#sendFile(String, int, ProgressTracker, File)}
+         * This is a wrapper function for {@link #sendFile(String, int, ProgressTracker, File)}
          * @param serverIP4 the servers IPv4
          * @param serverPort the servers port
          * @param fileToSendPath path to a file that should be sent to the server
@@ -502,10 +502,20 @@ public class Networking {
              * <ul>
              *     <li>Periodically sends keepalive packets to the server, to keep the connection alive</li>
              *     <li>Periodically sends status requests to the server, to keep status information up to date</li>
-             *     <li>Periodically checks the network sending queue for entries, if any are found send them to the server</li>
+             *     <li>Periodically checks the network sending queue for entries, if any are found sends them to the server</li>
              * </ul>
+             * @since 1.0.0
              */
             private static LCCPTask mgr = null;
+            /**
+             * The network listener is responsible for receiving packets.
+             * <p>Main objectives:</p>
+             * <ul>
+             *     <li>Periodically checks for available data from the server. If any is found it tries to assign the received packet to a listener from the network listener collection according to a network id.</li>
+             *     <li>If no network listener from the collection match the specific network id. The received data is processed using a standard implementation.</li>
+             * </ul>
+             * @since 1.0.0
+             */
             private static LCCPTask masterListener = null;
 
             /**
@@ -543,12 +553,12 @@ public class Networking {
             /**
              * Initializes a new connection to the server. <p>
              * Main objectives:
-             * <l>
+             * <ul>
              *     <li>Establish a new connection to the server</li>
              *     <li>Cancel any running tasks from last connection</li>
              *     <li>Create a new network manager, that is responsible for sending messages</li>
-             *     <li>Request the initialization of a new network listener using {@link NetworkHandler#initListener()}</li>
-             * </l>
+             *     <li>Request the initialization of a new network listener using {@link #initListener()}</li>
+             * </ul>
              * @param callback used to communicate result back to the caller method
              * @throws NetworkException if the attempt fails
              * @since 1.0.0
@@ -639,10 +649,10 @@ public class Networking {
             /**
              * Tries to initialize a new network listener.
              * <p>Main objectives:</p>
-             * <l>
+             * <ul>
              *     <li>Cancel any running tasks from previous connection</li>
              *     <li>Create and initialize a new network listener</li>
-             * </l>
+             * </ul>
              * @since 1.0.0
              */
             private static void initListener() {
@@ -707,24 +717,44 @@ public class Networking {
                 LCCP.logger.verbose("Network Handler: started master listener!");
             }
 
+            /**
+             * Function that cancels the currently running network manager and listener. It also clears the network sending queue and the listener collection using {@link #clearQueues()}.
+             * @since 1.0.0
+             */
             public static void cancel() {
                 LCCP.logger.verbose("Network Handler: Fulfilling cancel request!");
+                // cancels the network manager if it is running
                 if (mgr != null) mgr.cancel();
+                // cancels the network listener if it is running
                 if (masterListener != null) masterListener.cancel();
+                // clearing network queue and listener collection
                 clearQueues();
+                // Informing the rest of the application that the current connection was closed
                 LCCP.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
             }
 
+            /**
+             * Clears the network sending queue and the listener collection.
+             * @since 1.0.0
+             */
             private static void clearQueues() {
                 LCCP.logger.verbose("Network Handler: Fulfilling clear queues request!");
+                // clears the network queue
                 networkQueue.clear();
                 Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.clear();
 
             }
 
+            /**
+             * Closes the current connection and all handlers. Then initializes a new connection and restarts all handlers.
+             * @implNote Uses {@link #cancel()}, {@link #clearQueues()} and {@link #init(SuccessCallback)}
+             * @throws NetworkException if {@link #init(SuccessCallback)} fails, to allow for custom error handling
+             * @since 1.0.0
+             */
             public static void reboot() throws NetworkException {
                 LCCP.logger.verbose("Network Handler: Fulfilling reboot request!");
+                // try to close current connection
                 try {
                     LCCP.logger.verbose("Network Handler: Closing socket");
                     server.close();
@@ -732,11 +762,16 @@ public class Networking {
                     LCCP.logger.verbose("Network Handler: Closing failed, overwriting connection");
                 }
 
+                // canceling handlers
                 LCCP.logger.verbose("Network Handler: Stopping mgr and listener tasks");
                 cancel();
+
+                // clearing network queue and listener collection
                 LCCP.logger.verbose("Network Handler: Clearing queues");
                 clearQueues();
 
+                // try to initialize a new connection and restart the handler with init(SuccessCallback)
+                // if it fails throw a new NetworkException to allow for custom error handling
                 try {
                     LCCP.logger.verbose("Network Handler: initializing...");
                     init(success -> {
@@ -750,18 +785,33 @@ public class Networking {
                 }
             }
 
+            /**
+             * Wrapper function for {@link #reboot()}. Used when the host address or port is changed by the user.
+             * @throws NetworkException if the reboot fails
+             * @since 1.0.0
+             */
             public static void hostChanged() throws NetworkException {
                 reboot();
             }
 
+            /**
+             * Checks if socket is currently open and connected.
+             * @return {@code true} If socket is open and connected.
+             * @since 1.0.0
+             */
             public static boolean connectedAndRunning() {
                 return server != null && server.isConnected() && !server.isClosed();
             }
 
+            /**
+             * Listener Class. Handles various events like {@link Events.Shutdown}, {@link Events.HostChanged} and {@link Events.SettingsChanged}.
+             * @since 1.0.0
+             */
             public static class NetworkHandle implements EventListener {
 
                 @EventHandler
                 public void onShutdown(Events.Shutdown e) {
+                    // close current connection and shutdown handlers
                     LCCP.logger.verbose("Network Handler: network handle detected shutdown");
                     LCCP.logger.verbose("Network Handler: clearing queues and cancelling main tasks");
                     cancel();
@@ -775,19 +825,26 @@ public class Networking {
 
                 @EventHandler
                 public void onHostChanged(Events.HostChanged e) {
+                    // call hostChanged and log potential errors
                     LCCP.logger.verbose("Network Handler: network handle detected host change");
                     try {
                         hostChanged();
                     } catch (NetworkException ex) {
-                        throw new RuntimeException(ex);
+                        LCCP.logger.error(ex);
                     }
                 }
+
                 @EventHandler
                 public void onSettingChanged(Events.SettingChanged e) {
+                    // name of the changed setting
                     String key = e.key();
+                    // new value for the setting
                     Object value = e.value();
+
+                    // some checks to prevent unnecessary network requests
                     if (value == null || key == null || key.isBlank() || key.isEmpty()) return;
                     LCCP.logger.verbose("Network Handler: network handle detected settings change (1)");
+                    // send a settings change request to the server and log potential errors
                     try {
                         sendYAMLDefaultHost(
                                YAMLMessage.builder()
@@ -804,9 +861,12 @@ public class Networking {
                 }
                 @EventHandler
                 public void onSettingsChanged(Events.SettingsChanged e) {
+                    // names and new values for changed settings
                     HashMap<String, Object> changedSettings = e.changedSettings();
+                    // check to prevent unnecessary network requests
                     if (changedSettings.isEmpty()) return;
                     LCCP.logger.verbose("Network Handler: network handle detected settings changes (" + changedSettings.size() +")");
+                    // send a settings change request to the server and log potential errors
                     try {
                         sendYAMLDefaultHost(
                                 YAMLMessage.builder()
@@ -823,8 +883,18 @@ public class Networking {
                 }
             }
 
+            /**
+             * Listener object used to implement custom listener behaviour. Wrapper for {@link LCCPProcessor}.
+             * @param processor custom listener implementation
+             * @since 1.0.0
+             */
             private record ReplyListener(LCCPProcessor processor) {
 
+                /**
+                 * Processes the specified YAML data with its LCCPProcessor object.
+                 * @param yaml input YAML message
+                 * @since 1.0.0
+                 */
                 private void processFor(YAMLMessage yaml) {
                     processor.runTask(yaml);
                     LCCP.logger.verbose("Successfully processed received Reply Message with ID[" + yaml.getNetworkID() + "] using predefined LCCPProcessor with ID[" + processor.getTaskId() + "]!");
@@ -832,6 +902,12 @@ public class Networking {
                 }
             }
 
+            /**
+             * Add a custom {@link ReplyListener} to the listener collection.
+             * @param processor the custom listener implementation, received data is processed with
+             * @param networkID id of the data to pass to this listener
+             * @since 1.0.0
+             */
             public static void listenForReply(LCCPProcessor processor, UUID networkID) {
                 Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.put(networkID,
@@ -839,15 +915,22 @@ public class Networking {
                 );
             }
 
+            /**
+             * Add a default listener to the listener collection.
+             * @implNote Simply fires a {@link Events.DataIn} if it receives any data, to offload the network listener.
+             * @param networkID id of the data to pass to this listener
+             * @since 1.0.0
+             */
             protected static void listenForReply(UUID networkID) {
                 Map<UUID, ReplyListener> replyListenerQueue = Collections.synchronizedMap(Networking.replyListeners);
                 replyListenerQueue.put(networkID,
                         new ReplyListener(
-                                new LCCPProcessor() {
+                                new LCCPProcessor() { // default listener processor
                                     @Override
                                     public void run(YAMLMessage yaml) {
                                         if (yaml != null) {
 
+                                            // fire a new DataIn event to process the data elsewhere to offload the network listener
                                             LCCP.eventManager.fireEvent(new Events.DataIn(yaml));
 
                                         }
@@ -858,6 +941,12 @@ public class Networking {
             }
         }
 
+        /**
+         * Receives data from an InputStream and wraps it in a {@link YAMLConfiguration}.
+         * @param is the InputStream to receive data from
+         * @return {@link YAMLConfiguration} if any data was received and processed without any errors, otherwise {@code null}
+         * @since 1.0.0
+         */
         public static YAMLConfiguration defaultReceive(InputStream is) {
             YAMLConfiguration yaml;
             try {
@@ -884,47 +973,136 @@ public class Networking {
             return yaml;
         }
 
+        /**
+         * Default handler for a received YAML message. This is used if no custom handler was specified.
+         * @param yaml the received YAML message
+         * @since 1.0.0
+         */
         public static void defaultHandle(YAMLMessage yaml) {
+            // YAML message type check
             if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.error)) {
+                // converts yaml message to wrapper class ServerError, fires a new error event
                 LCCP.eventManager.fireEvent(new Events.Error(ServerError.fromYAMLMessage(yaml)));
             } else {
+                // fires a general DataIn event to process data further elsewhere
                 LCCP.eventManager.fireEvent(new Events.DataIn(yaml));
             }
         }
 
+        /**
+         * Generally used to check if a requested action was completed successfully or not.
+         * @since 1.0.0
+         */
         public interface FinishCallback {
+            /**
+             * Executed when the requested action finishes.
+             * @param success if the requested action was successful
+             * @since 1.0.0
+             */
             void onFinish(boolean success);
         }
+
+        /**
+         * Sends a keepalive packet to the server.
+         * @param yaml keepalive packet to send
+         * @param displayLog if the sending process should be printed to console (disabled by default since it is quite verbose)
+         * @return {@code true} if the keepalive packet was successfully sent to the server, otherwise {@code false}
+         * @since 1.0.0
+         */
         public static boolean sendKeepalive(YAMLConfiguration yaml, boolean displayLog) {
             return sendYAMLMessage(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null, null, displayLog);
         }
 
+        /**
+         * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback)}.
+         * <p>Requests to send specified YAML message to default host.</p>
+         * @param yaml YAML message to send to the server
+         * @since 1.0.0
+         * @see #sendYAMLDefaultHost(YAMLConfiguration, FinishCallback)
+         * @see #sendYAMLDefaultHost(YAMLConfiguration, FinishCallback, LCCPProcessor)
+         * @since 1.0.0
+         */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml) {
             if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, null)) {
                 LCCP.logger.error("Failed to send YAML message to server! Callback = false | ReplyHandler = false");
             }
         }
+
+        /**
+         * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback)}.
+         * <p>Requests to send specified YAML message to default host, with specified successCallback.</p>
+         * @param yaml YAML message to send to the server
+         * @param callback completion monitor
+         * @since 1.0.0
+         * @see #sendYAMLDefaultHost(YAMLConfiguration)
+         * @see #sendYAMLDefaultHost(YAMLConfiguration, FinishCallback, LCCPProcessor)
+         * @since 1.0.0
+         */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback) {
             if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback)) {
                 LCCP.logger.error("Failed to send YAML message with callback to server! Callback = true | ReplyHandler = false");
             }
         }
 
+        /**
+         * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback, LCCPProcessor)}.
+         * <p>Requests to send specified YAML message to default host, with specified successCallback and reply handler.</p>
+         * @param yaml YAML message to send to the server
+         * @param callback completion monitor
+         * @param replyHandler custom listener processor to process the response data with
+         * @since 1.0.0
+         * @see #sendYAMLDefaultHost(YAMLConfiguration)
+         * @see #sendYAMLDefaultHost(YAMLConfiguration, FinishCallback)
+         * @since 1.0.0
+         */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
             if (!sendYAML(LCCP.server_settings.getIPv4(), LCCP.server_settings.getPort(), yaml, callback, replyHandler)) {
                 LCCP.logger.error("Failed to send YAML message with to server! Callback = true | ReplyHandler = true");
             }
         }
 
+        /**
+         * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback, LCCPProcessor)}.
+         * <p>Requests to send specified YAML message to specified host (address:port), with specified successCallback.</p>
+         * @param host the host address (just for logging)
+         * @param port the hosts port (just for logging)
+         * @param yaml the YAML message to send
+         * @param callback completion monitor to report completion state to
+         * @return {@code true} If send request was successful, otherwise {@code false}
+         * @since 1.0.0
+         */
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback) {
             return sendYAML(host, port, yaml, callback, null);
         }
 
+        /**
+         * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback, LCCPProcessor, boolean)}.
+         * <p>Requests to send specified YAML message to specified host (address:port), with specified successCallback and reply handler.</p>
+         * @param host the host address (just for logging)
+         * @param port the hosts port (just for logging)
+         * @param yaml the YAML message to send
+         * @param callback completion monitor to report completion state to
+         * @return {@code true} If send request was successful, otherwise {@code false}
+         * @since 1.0.0
+         */
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler) {
             return sendYAML(host, port, yaml, callback, replyHandler, false);
         }
 
+        /**
+         * Creates a network queue entry from specified host address, port, YAML message and replay handler and adds it to the network queue based on priority. It also informs the completion monitor object of any errors or successful completion.
+         * @param host the host address (just for logging)
+         * @param port the hosts port (just for logging)
+         * @param yaml the YAML message to send
+         * @param callback completion monitor to report completion state to
+         * @param replyHandler custom listener processor to process the response data with
+         * @param priority if this network request should be prioritized
+         * @return {@code true} If network queue entry was successfully added to the network queue, otherwise {@code false}
+         * @since 1.0.0
+         */
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandler, boolean priority) {
+            // if socket isn't open and connected, try to reopen / reconnect
+            // if that fails simply return false completion and cancel attempt
             if (!NetworkHandler.isConnected()) {
                 try {
                     NetworkHandler.init(success -> {
@@ -939,6 +1117,8 @@ public class Networking {
                     return false;
                 }
             }
+            // if socket is connected or was successfully reconnected
+            // construct a new network queue entry out of, host, port, yaml, callback and replyHandler objects
             LCCP.logger.verbose("Appending send request to the network queue!");
             LCCPRunnable sendRequest = new LCCPRunnable() {
                 @Override
@@ -947,18 +1127,47 @@ public class Networking {
                     sendYAMLMessage(host, port, yaml, callback, replyHandler);
                 }
             };
+            // put the network entry into the network queue based on priority
+            // if priority is true, simply subtract 1s from the current time before adding the entry to the queue to give it priority
             long current = System.currentTimeMillis();
             networkQueue.put(priority ? current - 1000 : current, sendRequest);
             return true;
         }
 
+        /**
+         * Wrapper for {@link #sendYAMLMessage(String, int, YAMLConfiguration, FinishCallback, LCCPProcessor, boolean)}.
+         * @param serverIP4 the host address (just for logging)
+         * @param serverPort the hosts port (just for logging)
+         * @param yaml the YAML message to send
+         * @param callback completion monitor to report completion state to
+         * @param replyHandle custom listener processor to process the response data with
+         * @since 1.0.0
+         */
         private static void sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandle) {
             if (!sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle, true)) {
                 LCCP.logger.error("Failed to send YAML message to server!");
             }
         }
 
-        // function to send YAML packets to the server
+        /**
+         * Sends YAML packets / messages to the current connected host / server.
+         * <p>Main objectives:</p>
+         * <ul>
+         *     <li>Tries to get network id from the YAMl message object or requests a new one from {@link com.toxicstoxm.lccp.logging.network.NetworkLogger}</li>
+         *     <li>Adds the specified custom listener (or the default listener) to the listener collection</li>
+         *     <li>Loads data and sends it via socket output stream to the server</li>
+         *     <li>If an error occurs, {@link NetworkHandler#reboot()} is executed and a new message request is made before giving up</li>
+         *     <li>Send monitor object {@link NetworkHandler.SuccessCallback} is notified of the result</li>
+         * </ul>
+         * @param serverIP4 the host address (just for logging)
+         * @param serverPort the hosts port (just for logging)
+         * @param yaml the YAML message to send
+         * @param callback completion monitor to report completion state to
+         * @param replyHandle custom listener processor to process the response data with
+         * @param displayLog if the sending process should be printed to console
+         * @return {@code true} if the YAML message was sent successfully, otherwise {@code false}
+         * @since 1.0.0
+         */
         private static boolean sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LCCPProcessor replyHandle, boolean displayLog) {
             boolean callb = callback != null;
             boolean err = false;
@@ -1004,11 +1213,12 @@ public class Networking {
                 LCCP.logger.verbose(id + "Server: " + serverIP4);
                 LCCP.logger.verbose(id + "Port: " + serverPort);
 
-
+                // notify the rest of the application about the send process
                 LCCP.eventManager.fireEvent(new Events.DataOut(yaml));
             } else yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, String.valueOf(UUID.randomUUID()));
 
             try {
+                // get current connection and fetch network id from yaml message or request a new one from network logger
                 Socket socket = NetworkHandler.getServer();
                 UUID networkID0 = null;
                 if (displayLog) {
@@ -1021,6 +1231,8 @@ public class Networking {
                     );
                 }
 
+                // add custom listener to listener collection
+                // if no custom listener is given add the default listener to the listener collection
                 if (replyHandle != null) {
                     NetworkHandler.listenForReply(
                             replyHandle,
@@ -1037,8 +1249,9 @@ public class Networking {
 
                     LCCP.logger.verbose(id + "Creating data streams...");
                 }
-                // opening data streams
+                // get socket output stream
                 OutputStream out = socket.getOutputStream();
+                // create new YAML message output stream
                 ByteArrayOutputStream outputS = new ByteArrayOutputStream();
 
                 // loading the yaml message into a byteArrayOutputStream using fileHandler built-in function
@@ -1052,19 +1265,12 @@ public class Networking {
                 boolean kb = byteCount > 8192;
                 if (displayLog) LCCP.logger.verbose(id + "Size: " + (kb ? (byteCount / 1024) + "KB" : byteCount + " Bytes"));
 
-                // sending data size to server
-                //LCCP.logger.debug(id + "Transmitting size...");
-                //out.write((byteCount + "\n").getBytes());
-                //out.flush();
-                //LCCP.logger.debug(id + "Successfully transmitted size to server!");
-
                 // sending yaml data to server
                 if (displayLog) LCCP.logger.verbose(id + "Transmitting data...");
                 out.write(bytes);
                 if (displayLog) LCCP.logger.verbose(id + "Successfully transmitted data to server!");
 
                 if (displayLog) {
-                    //LCCP.logger.debug(id + "Closing socket and data streams...");
                     LCCP.logger.verbose(id + "---------------------------------------------------------------");
                 }
 
@@ -1075,7 +1281,7 @@ public class Networking {
                     sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle);
                     LCCP.logger.error(e);
                 } catch (NetworkException ex) {
-                    // if an error occurs print an error message
+                    // if an error occurs print an error message and give up
                     if (displayLog) {
                         LCCP.logger.error(id + "Error occurred! Transmission terminated!");
                         LCCP.logger.error(e);
@@ -1089,6 +1295,7 @@ public class Networking {
                 if (displayLog) LCCP.logger.verbose(id + "---------------------------------------------------------------");
             }
 
+            // if a completion monitor object is given, inform it about the sending outcome
             err = !err;
             if (callb) callback.onFinish(err);
             return err;
@@ -1096,11 +1303,21 @@ public class Networking {
         }
     }
 
+    /**
+     * Generally used to indicate that something network related has gone wrong.
+     * @since 1.0.0
+     */
     public static class NetworkException extends Exception {
         private NetworkException(String message) {
             super(message);
         }
     }
+
+    /**
+     * Generally used to indicate that something related with server communication has gone wrong.
+     * <p>Specialization of {@link NetworkException}</p>
+     * @since 1.0.0
+     */
     public static class ServerCommunicationException extends NetworkException {
         public ServerCommunicationException(String message) {
             super(message);

@@ -383,7 +383,7 @@ public class AnimationMenu implements Container {
             private int digits = 0;
             private boolean numeric = true;
             private boolean snap = true;
-            private boolean wraparound = true;
+            private boolean wraparound = false;
 
             public Slider() {
                 super(WidgetType.slider);

@@ -1,4 +1,4 @@
-# LED-Cube-Control-Panel
+# LED-Suite
 <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
 
  - Front-End for any LED Cube with the matching backend

@@ -1,0 +1,96 @@
+package_type: reply
+reply_type: menu
+label: ""
+icon: ""
+group0:
+  suffix:
+    widget0:
+      widget: button
+      label: "groupSuffixButton"
+
+  content: # group content
+
+    widget0:
+      widget: button
+      label: "ButtonLabel" # text inside the button
+      icon: "" # gnome icon name (replaces label)
+      style: "style1,style2,style3" # libadwaita style String (see adwaita-1-demo/Style Classes for reference)
+      tooltip: "some text" # text that is displayed when hovering over the object
+      row: true / false # if button should be inside a row (if true, style arguments are handled internally and the style entry will be ignored)
+
+    widget1:
+      widget: property
+      label: "EntryTitle" # text above
+      content: "EntryContent" # text below (main text)
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+    widget2:
+      widget: switch
+      label: "SwitchLabel"
+      value: true / false # switch position on / off
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+    widget3:
+      widget: slider
+      label: "SliderLabel"
+      min: 0 # min value
+      max: 100 # max value
+      step: 1 # units + per click
+      value: 55 # current value
+      climb_rate: 2 # acceleration rate when buttons are held down
+      digits: 2 # number of decimal places to display
+      numeric: true / false # if the values are numeric (ignores non-numerical input)
+      snap: true / false # if invalid input value should snap to nearest valid value
+      wraparound: true / false # wraparound to min when max is reached and vice versa
+
+    widget4: # text box
+      widget: entry
+      label: "Entry Label"
+      content: "Content text"
+      editable: true / false
+      apply_button: true / false
+      style: "style1,style2,style3"
+      tooltip: "some text"
+
+    widget5: # dropdown but with rows (nested shit)
+      widget: expander
+      toggleable: true / false # displays toggle for the expander row
+      label: "Entry Label"
+
+      content: # rows in expander
+        switch:
+          pos: 0
+        slider:
+          pos: 1
+
+    widget6:
+      widget: dropdown
+      label: "dropdown label"
+      content: "some text"
+      searchable: true / false # toggle search function
+      selected: -1 # index of selected entry. -1 = nothing selected
+      dropdown:
+        - "entry1"
+        - "entry2"
+        - "entry3"
+    spinner:
+      pos: 8
+      time: -1 # how long the spinner is displayed and spinning, -1 = infinite
+
+group1:
+  content:
+    ...
+
+group2:
+  content:
+    ...
+
+group3:
+  content:
+    ...
+
+group4:
+  content:
+    ...

@@ -1,0 +1,10 @@
+package_type: reply
+reply_type: status
+file_is_loaded: # boolean
+file_state: # playing / paused
+file_selected: # file name
+current_draw: # amps (current draw by the cube) float value
+voltage: # volts (current output voltage of the cube) float value
+lid_state: # boolean (true = closed)
+available_animations:
+  animation_name: animation_gnome_icon_name #gnome icon

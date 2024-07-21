@@ -1,5 +1,3 @@
 # LEDSuite
-### Front-End for 10x10x10 LED Cube / Matrix Project  
-### Back-End: https://github.com/hannescam/NeoSPI  
-## WARNING: prototype software does not work currently
-## This branch is the first version that doesn't use java-gi (libadwaita) instead it uses java swing
+### DON'T USE THIS VERSION UNDER ANY CIRCUMSTANCES!  
+*This version of the app is only here as a joke, since it's the first version that still uses java swing instead of java-gi (libadwaita).*

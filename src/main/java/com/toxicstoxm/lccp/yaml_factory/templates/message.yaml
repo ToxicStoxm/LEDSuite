@@ -1,3 +1,0 @@
-package_type: [error, request, reply] # only 'request' awaits reply
-
-

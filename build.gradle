@@ -1,0 +1,57 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.toxicstoxm'
+version = '0.1.2'
+var mainClass = group + "." + name + ".LEDSuite"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.fusesource.jansi:jansi:2.4.1'
+    implementation 'io.github.jwharm.javagi:adw:0.10.2'
+    implementation 'org.apache.commons:commons-configuration2:2.10.1'
+    implementation 'org.yaml:snakeyaml:2.2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    compileOnly 'info.picocli:picocli:4.7.6'
+    annotationProcessor 'info.picocli:picocli:4.7.6'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+tasks.register("processVersionProperties", Copy) {
+    from "src/main/resources/version.properties"
+    into layout.buildDirectory.dir("/generated/resources")
+    filter(ReplaceTokens, 'tokens': ['version': version])
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.named("processResources", ProcessResources) {
+    dependsOn("processVersionProperties")
+    from(layout.buildDirectory.dir("/generated/resources")) {
+        include("version.properties")
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+shadowJar {
+    archiveClassifier.set('final')
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = mainClass;
+    }
+    dependsOn("shadowJar")
+}

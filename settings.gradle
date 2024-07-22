@@ -5,4 +5,12 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        maven { url './offline-repository/' }
+        mavenCentral()
+
+    }
+}
+
 rootProject.name = 'LEDSuite'

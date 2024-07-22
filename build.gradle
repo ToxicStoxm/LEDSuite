@@ -11,8 +11,8 @@ version = '0.1.2'
 var mainClass = group + "." + name + ".LEDSuite"
 
 repositories {
-    mavenCentral()
     maven { url './offline-repository/' }
+    mavenCentral()
 }
 
 dependencies {

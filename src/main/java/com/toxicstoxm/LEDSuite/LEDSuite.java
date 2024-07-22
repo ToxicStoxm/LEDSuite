@@ -9,7 +9,7 @@ import com.toxicstoxm.LEDSuite.logging.Logger;
 import com.toxicstoxm.LEDSuite.logging.network.NetworkLogger;
 import com.toxicstoxm.LEDSuite.settings.LocalSettings;
 import com.toxicstoxm.LEDSuite.settings.ServerSettings;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
@@ -26,22 +26,23 @@ import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
+import picocli.CommandLine;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
-import java.util.Properties;
+import java.util.Scanner;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
-
-public class LEDSuite implements EventListener {
+@CommandLine.Command(name = "LEDSuite", mixinStandardHelpOptions = true,
+        description = "Simple front end application that lets you control decorative matrix's.")
+public class LEDSuite implements EventListener, Runnable {
 
     @Getter
     private static LEDSuite instance;
@@ -54,37 +55,73 @@ public class LEDSuite implements EventListener {
     public static NetworkLogger networkLogger;
     private static long start;
     public static EventManager eventManager;
-    public static String version;
     public static Window mainWindow;
     public static LEDSuiteScheduler lccpScheduler;
     public static TickingSystem tickingSystem;
-    public Logger.log_level logLevel;
+
+    @CommandLine.Option(names = {"-l", "--log-level"}, description = "Change the log level for the current session.")
+    private static Logger.log_level logLevel = null;
+    @CommandLine.Option(names = {"-L", "--set-log-level"}, description = "Permanently change the log level.")
+    private static Logger.log_level LogLevel = null;
+
+    @CommandLine.Option(names = {"-ww", "--window-width"}, description = "Change the initial window width for the current session.")
+    private static int windowDefWidth = -1;
+    @CommandLine.Option(names = {"-Ww", "--set-window-width"}, description = "Permanently change the initial window width.")
+    private static int WindowDefWidth = -1;
+
+    @CommandLine.Option(names = {"-wh", "--window-height"}, description = "Change the initial window height for the current session.")
+    private static int windowDefHeight = -1;
+    @CommandLine.Option(names = {"-Wh", "--set-window-height"}, description = "Permanently change the initial window height.")
+    private static int WindowDefHeight = -1;
+
+    @CommandLine.Option(names = {"-n", "--networking-clock"}, description = "Change the networking clock for the current session.")
+    private static int networkingCommunicationClockSpeed = -1;
+    @CommandLine.Option(names = {"-N", "--set-networking-clock"}, description = "Permanently change the networking clock.")
+    private static int NetworkingCommunicationClockSpeed = -1;
+
+    @CommandLine.Option(names = {"-R", "--reset-config"}, description = "Reset configuration values to default! Type true to confirm!")
+    private static boolean resetConfig;
+
+    @CommandLine.Option(names = {"-p", "--get-paths"}, description = "Displays all important paths.")
+    private static boolean paths;
 
     // main method
     public static void main(String[] args) {
+
         // create timestamp that is used to calculate starting time
         start = System.currentTimeMillis();
 
-        // initialize config, logger, ...
-        logicInit();
+        // initialize picocli and parse the arguments
+        CommandLine cmd = new CommandLine(new LEDSuite());
+        cmd.getCommandSpec().version(Constants.Application.VERSION_DESC);
+        try {
+            cmd.parseArgs(args);
+        } catch (CommandLine.ParameterException _) {
+        }
 
-        // processes commandline arguments
-        // triggers LEDSuite(String[] args) constructor below
-        new LEDSuite(new String[]{});
+        // processes commandline arguments and run application
+        int statusCode = cmd.execute(args);
+        System.exit(statusCode);
     }
 
     // constructor method
-    public LEDSuite(String[] args) {
+    public LEDSuite() {
         instance = this;
         // create new libadwaita application object
         app = new Application(Constants.Application.DOMAIN, ApplicationFlags.DEFAULT_FLAGS);
-        app.setVersion(version);
         // define function to be executed on application start
         app.onActivate(this::activate);
         // trigger exit() function
         app.onShutdown(() -> exit(0));
+    }
+
+    @Override
+    public void run() {
+        // initialize config, logger, ...
+        logicInit();
+        app.setVersion(Constants.Application.VERSION);
         // starts application
-        app.run(args);
+        app.run(new String[]{});
     }
 
     // logic initialization function
@@ -101,43 +138,30 @@ public class LEDSuite implements EventListener {
         logger = new Logger();
         // create new networkLogger instance
         networkLogger = new NetworkLogger();
-        //LEDSuite.logger.debug(bundle.getString("test"));
-        // general startup information displayed in the console upon starting the program
-        logger.info("Welcome back!");
-        logger.info("Starting Program...");
-
-        logger.info("System environment: " + Constants.System.NAME + " " + Constants.System.VERSION);
-
-        // check for window os
-        // app does not normally work on windows, since windows doesn't natively support libadwaita
-        if (Constants.System.NAME.toLowerCase().contains("windows")) {
-            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
-            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
-        }
-
-        // getting the current application version using a version.properties file
-        // the .properties file contains a maven variable that gets replaced once the application is compiled
-        try (InputStream inputStream = LEDSuite.class.getResourceAsStream("/version.properties")) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            version = properties.getProperty("app.version");
-        } catch (IOException e) {
-            // if the version can't be loaded an error is displayed in the console
-            // the program is also halted to prevent any further issues
-            // if this exception is thrown the current build is likely faulty
-            LEDSuite.logger.fatal("Wasn't able to get app version!");
-            LEDSuite.logger.warn("Application was halted!");
-            LEDSuite.logger.warn("If this message is displayed repeatedly this version of the program is likely faulty!");
-            LEDSuite.logger.warn(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
-            LEDSuite.logger.warn("Please restart the application!");
-            LEDSuite.exit(1);
-        }
 
         // defining config files and log file
         File config_file = new File(Constants.File_System.config);
         File server_config_file = new File(Constants.File_System.server_config);
         File log_file = new File(Constants.File_System.logFile);
         try {
+            if (resetConfig) {
+                Scanner scanner = new Scanner(System.in);
+                String confirmString = "confirm reset";
+                String input;
+
+                logger.log("Type '" + confirmString + "' to reset configuration: ", false);
+                input = scanner.nextLine();
+
+                if (input.equals(confirmString)) {
+                    if (config_file.delete() || server_config_file.delete() || log_file.delete()) {
+                        logger.log("Config has been reset successfully! Starting application...");
+                    }
+                } else {
+                    logger.log("Received wrong confirmation string '" + input + "'. Cancelled config reset!");
+                    System.exit(0);
+                }
+            }
+
             // checking if the config file already exists
             if (!config_file.exists()) {
                 // if the config file doesn't exist the program tries to create the parent directory first to prevent errors if it's the first startup
@@ -221,9 +245,9 @@ public class LEDSuite implements EventListener {
             throw new RuntimeException(e);
         }
 
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
                     try {
                         Networking.Communication.sendYAMLDefaultHost(
@@ -239,72 +263,54 @@ public class LEDSuite implements EventListener {
 
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
-        argumentsSettings.copy(settings);
-    }
 
-    /*private static String[] processArguments(String[] args) {
-        HashMap<String, LEDSuiteArgumentProcessor> knownArguments = Constants.Application.Arguments;
+        argumentsSettings.copyImpl(settings, false);
+        if (LogLevel != null) {
+            argumentsSettings.setLogLevel(LogLevel.getValue());
+            settings.setLogLevel(argumentsSettings.getLogLevel());
+        } else if (logLevel != null) argumentsSettings.setLogLevel(logLevel.getValue());
 
-        int argsLength = args.length;
-        if (argsLength > 0) {
+        if (WindowDefWidth > 0) {
+            argumentsSettings.setWindowDefWidth(WindowDefWidth);
+            settings.setWindowDefWidth(argumentsSettings.getWindowDefWidth());
+        } else if (windowDefWidth > 0) argumentsSettings.setWindowDefWidth(windowDefWidth);
 
+        if (WindowDefHeight > 0) {
+            argumentsSettings.setWindowDefHeight(WindowDefHeight);
+            settings.setWindowDefHeight(argumentsSettings.getWindowDefHeight());
+        } else if (windowDefHeight > 0) argumentsSettings.setWindowDefHeight(windowDefHeight);
 
+        if (NetworkingCommunicationClockSpeed > -1) {
+            argumentsSettings.setNetworkingCommunicationClockSpeed(NetworkingCommunicationClockSpeed);
+            settings.setNetworkingCommunicationClockSpeed(argumentsSettings.getNetworkingCommunicationClockSpeed());
+        } else if (networkingCommunicationClockSpeed > -1) argumentsSettings.setNetworkingCommunicationClockSpeed(networkingCommunicationClockSpeed);
 
-            if (argsLength % 2 == 0) {
-                logger.debug("[ARGUMENTS] " + ("Count: " + args.length / 2));
-                String temp = "";
-                for (int i = 0; i < argsLength; i++) {
-                    if (i > 0 && !temp.isEmpty()) {
-                        if (knownArguments.containsKey(temp)) {
-                            String argumentValue = args[i];
-                            String argumentKey = temp;
-                            knownArguments
-                                    .get(argumentKey)
-                                    .runTask(
-                                            argumentValue,
-                                            (valid, message, extraCommand) -> {
-                                                if (!valid) {
-                                                    logger.fatal("[ARGUMENTS] " + (message == null ? "[" + argumentKey + "] Unknown / Invalid argument: '" + argumentValue + "'!" : message));
-                                                    delayedShutdown();
-                                                } else {
-                                                    logger.info("[ARGUMENTS] " + (message == null ? "Successfully recognized argument '" + argumentKey + " " + argumentValue + "'!" : message));
-                                                    if (!extraCommand.equals(LEDSuiteArgumentProcessor.ArgumentExtraCommand.none)) {
-                                                        switch (extraCommand) {
-                                                            case help -> {
-                                                                delayedShutdown();
-                                                            }
-                                                            case adwaita -> {
+        if (paths) {
+            logger.log("Paths:");
+            logger.log(" -> Directories");
+            logger.log("    App directory: '" + Constants.File_System.getAppDir() + "'");
+            logger.log("    Temp directory: '" + Constants.File_System.getTmpDir() + "'");
+            logger.log("    Data directory: '" + Constants.File_System.getDataDir() + "'");
+            logger.log(" -> Files");
+            logger.log("    Configuration file: '" + Constants.File_System.config + "'");
+            logger.log("    Server configuration file: '" + Constants.File_System.server_config + "'");
+            logger.log("    Log file: '" + Constants.File_System.logFile + "'");
 
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                    );
-                        } else {
-                            logger.fatal("[ARGUMENTS] " + ("Unknown / Invalid argument: '" + temp + " " + args[i]));
-                            exit(0);
-                        }
-                        temp = "";
-                    } else {
-                        temp = args[i];
-                    }
-                }
-            } else {
-                logger.fatal("[ARGUMENTS] " + ("Unknown or invalid arguments were found!"));
-                exit(0);
-            }
+            System.exit(0);
         }
-        return new String[]{};
-    }*/
 
-    public static void delayedShutdown() {
-        new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                getInstance().app.emitShutdown();
-            }
-        }.runTaskLaterAsynchronously(500);
+        // general startup information displayed in the console upon starting the program
+        logger.info("Welcome back!");
+        logger.info("Starting Program...");
+
+        logger.info("System environment: " + Constants.System.NAME + " " + Constants.System.VERSION);
+
+        // check for window os
+        // app does not normally work on windows, since windows doesn't natively support libadwaita
+        if (Constants.System.NAME.toLowerCase().contains("windows")) {
+            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
+            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
+        }
     }
 
     // activate function
@@ -350,7 +356,7 @@ public class LEDSuite implements EventListener {
         // displaying status code in the console
         if (logger != null) LEDSuite.logger.info("Status code: " + status);
         // exiting program with the specified status code
-        System.exit(status);
+        //System.exit(status);
     }
     // triggering system specific beep using java.awt.toolkit
     // commonly used when something fails or an error happens

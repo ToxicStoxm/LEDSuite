@@ -14,14 +14,15 @@ import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLSerializer;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.HeaderBar;
+import org.gnome.adw.*;
 import org.gnome.gio.Menu;
 import org.gnome.gio.MenuItem;
 import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
+import org.gnome.glib.GLib;
 import org.gnome.gtk.*;
 import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
@@ -58,8 +59,8 @@ public class Window extends ApplicationWindow implements EventListener {
         super(app);
         // setting title and default size
         this.setTitle(Constants.Application.NAME);
-        this.setDefaultSize(LEDSuite.settings.getWindowDefWidth(), LEDSuite.settings.getWindowDefHeight());
-        this.setSizeRequest(300, 500);
+        this.setDefaultSize(LEDSuite.argumentsSettings.getWindowDefWidth(), LEDSuite.argumentsSettings.getWindowDefHeight());
+        this.setSizeRequest(360, 500);
         this.setIconName(Constants.Application.ICON);
 
         // toast overlay used to display toasts (notification) to the user
@@ -432,12 +433,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 @Override
                 public void run() {
                     if (spinner.get()) {
-                        //GLib.idleAdd(GLib.PRIORITY_DEFAULT, () -> {
-                        //  CenterBox.append(Spinner.builder().setSpinning(true).build());
-                        CenterRevealer.setRevealChild(true);
-                        //return true;
-                        //});
-
+                        GLib.idleAddOnce(() -> CenterRevealer.setRevealChild(true));
                     }
                 }
             }.runTaskLaterAsynchronously(500);
@@ -667,11 +663,10 @@ public class Window extends ApplicationWindow implements EventListener {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                //GLib.idleAdd(GLib.PRIORITY_DEFAULT, () -> {
-                button.setCssClasses(new String[]{"circular", "osd"});
-                bool.set(true);
-                //return true;
-                //});
+                GLib.idleAddOnce(() -> {
+                    button.setCssClasses(new String[]{"circular", "osd"});
+                    bool.set(true);
+                });
             }
         }.runTaskLaterAsynchronously(750);
     }
@@ -750,8 +745,6 @@ public class Window extends ApplicationWindow implements EventListener {
                 getStatus(success -> {
                     if (!success) LEDSuite.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                 });
-                // updating status bar to show current status
-                //status.setTitle("LED-Cube-Status: " + getStatus());
             }
         }.runTaskTimerAsynchronously(0, 1000);
     }
@@ -809,56 +802,58 @@ public class Window extends ApplicationWindow implements EventListener {
 
     @EventHandler
     public void onStatus(Events.Status e) {
-        try {
-            StatusUpdate statusUpdate = e.statusUpdate();
-            updateStatus(statusUpdate);
+        GLib.idleAddOnce(() -> {
+            try {
+                StatusUpdate statusUpdate = e.statusUpdate();
+                updateStatus(statusUpdate);
 
-            ListBoxRow selectedRow = animationsList.getSelectedRow();
-            String name = "";
-            if (selectedRow != null) name = selectedRow.getName();
-            if (!name.isBlank()) setControlButtons(statusUpdate, currentAnimation);
-            if (name.isBlank() || TimeManager.call("animations")) {
-                animationsList.unselectAll();
-                animationsList.setSelectionMode(SelectionMode.NONE);
-                animationsList.removeAll();
+                ListBoxRow selectedRow = animationsList.getSelectedRow();
+                String name = "";
+                if (selectedRow != null) name = selectedRow.getName();
+                if (!name.isBlank()) setControlButtons(statusUpdate, currentAnimation);
+                if (name.isBlank() || TimeManager.call("animations")) {
+                    animationsList.unselectAll();
+                    animationsList.setSelectionMode(SelectionMode.NONE);
+                    animationsList.removeAll();
 
-                SidebarSpinner.setRevealChild(true);
+                    SidebarSpinner.setRevealChild(true);
 
-                List<ListBoxRow> anims = new ArrayList<>();
+                    List<ListBoxRow> anims = new ArrayList<>();
 
-                availableAnimations = statusUpdate.getAvailableAnimations();
-                if (availableAnimations != null) {
-                    for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
-                        var availableAnimation = Box.builder()
-                                .setOrientation(Orientation.HORIZONTAL)
-                                .setTooltipText("Open " + entry.getKey() + " settings menu")
-                                .setName(entry.getKey())
-                                .setSpacing(10)
-                                .build();
-                        availableAnimation.append(Image.fromIconName(entry.getValue()));
-                        availableAnimation.append(
-                                Label.builder()
-                                        .setLabel(entry.getKey())
-                                        .setEllipsize(EllipsizeMode.END)
-                                        .setXalign(0)
-                                        .build()
-                        );
-                        ListBoxRow row = listBoxWrap(availableAnimation);
-                        if (entry.getKey().equals(name)) selectedRow = row;
-                        anims.add(row);
+                    availableAnimations = statusUpdate.getAvailableAnimations();
+                    if (availableAnimations != null) {
+                        for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
+                            var availableAnimation = Box.builder()
+                                    .setOrientation(Orientation.HORIZONTAL)
+                                    .setTooltipText("Open " + entry.getKey() + " settings menu")
+                                    .setName(entry.getKey())
+                                    .setSpacing(10)
+                                    .build();
+                            availableAnimation.append(Image.fromIconName(entry.getValue()));
+                            availableAnimation.append(
+                                    Label.builder()
+                                            .setLabel(entry.getKey())
+                                            .setEllipsize(EllipsizeMode.END)
+                                            .setXalign(0)
+                                            .build()
+                            );
+                            ListBoxRow row = listBoxWrap(availableAnimation);
+                            if (entry.getKey().equals(name)) selectedRow = row;
+                            anims.add(row);
+                        }
+                        SidebarSpinner.setRevealChild(false);
+                        for (ListBoxRow lbr : anims) {
+                            animationsList.append(lbr);
+                        }
                     }
-                    SidebarSpinner.setRevealChild(false);
-                    for (ListBoxRow lbr : anims) {
-                        animationsList.append(lbr);
-                    }
+                    animationsList.setSelectionMode(SelectionMode.BROWSE);
+                    animationsList.selectRow(selectedRow);
                 }
-                animationsList.setSelectionMode(SelectionMode.BROWSE);
-                animationsList.selectRow(selectedRow);
+            } catch (NumberFormatException ex) {
+                LEDSuite.logger.warn("Status update failed!");
+                LEDSuite.logger.error(ex);
             }
-        } catch (NumberFormatException ex) {
-            LEDSuite.logger.warn("Status update failed!");
-            LEDSuite.logger.error(ex);
-        }
+        });
     }
 
     @EventHandler

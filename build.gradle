@@ -2,7 +2,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -23,26 +22,34 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
-    compileOnly 'info.picocli:picocli:4.7.6'
+    implementation 'info.picocli:picocli:4.7.6'
     annotationProcessor 'info.picocli:picocli:4.7.6'
-
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-tasks.register("processVersionProperties", Copy) {
-    from "src/main/resources/version.properties"
-    into layout.buildDirectory.dir("/generated/resources")
-    filter(ReplaceTokens, 'tokens': ['version': version])
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-tasks.named("processResources", ProcessResources) {
-    dependsOn("processVersionProperties")
-    from(layout.buildDirectory.dir("/generated/resources")) {
-        include("version.properties")
+// copy the Constants class and replace the version placeholder with the application version
+tasks.register("processVersion", Copy) {
+    from("src/main/java/com/toxicstoxm/LEDSuite/") {
+        include("Constants.java")
+        filter(ReplaceTokens, tokens: ['version': version])
     }
+    into layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/")
+
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+// exclude the original Constants class from the source set so gradle doesn't compile it in
+sourceSets {
+    main {
+        java {
+            exclude ("com/toxicstoxm/LEDSuite/Constants.java")
+        }
+    }
+}
+
+// include the new Constants class that was previously generated
+tasks.named("compileJava", JavaCompile) {
+    dependsOn("processVersion")
+    source(layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
 }
 
 shadowJar {

@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.event_handling.EventHandler;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
 import com.toxicstoxm.LEDSuite.event_handling.listener.EventListener;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.message_wrappers.StatusUpdate;
 import org.gnome.adw.*;
@@ -204,17 +204,17 @@ public class StatusDialog extends Dialog implements EventListener {
     private LEDSuiteTask updateLoop() {
         LEDSuite.eventManager.registerEvents(this);
         if (!LEDSuite.mainWindow.isBannerVisible()) {
-            return new LEDSuiteRunnable() {
+            return new LEDSuiteGuiRunnable() {
                 @Override
-                public void run() {
+                public void processGui() {
                     LEDSuite.mainWindow.getStatus(_ -> {});
                     if (System.currentTimeMillis() - lastUpdate >= maxDelay) configure(StatusUpdate.notConnected());
                 }
             }.runTaskTimerAsynchronously(0, 1000);
         }
-        return new LEDSuiteRunnable() {
+        return new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 LEDSuite.mainWindow.getStatus(_ -> {});
                 LEDSuite.logger.debug("Status updater already active. Terminating new instance");
             }

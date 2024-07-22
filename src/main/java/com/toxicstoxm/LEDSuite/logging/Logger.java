@@ -2,6 +2,8 @@ package com.toxicstoxm.LEDSuite.logging;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import lombok.Getter;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.gnome.adw.Toast;
@@ -115,6 +117,17 @@ public class Logger {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         return "[" + df.format(new Date()) + "] " + message;
     }
+
+    public void log(String message) {
+        log(message, true);
+    }
+
+    public void log(String message, boolean newLine) {
+        String finalMessage = attachTime(message);
+        if (newLine) System.out.println(finalMessage);
+        else System.out.print(finalMessage);
+    }
+
     // final log function used to send the message to the console
     private void log(Ansi message) {
         System.out.println(attachTime(message));
@@ -122,18 +135,23 @@ public class Logger {
 
     // writing console log to log file
     private void writeLog(String message) {
-        if (!new File(Constants.File_System.logFile).exists()) return;
-        // new buffered writer is used to write logging information from console to the log file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
-            // attaching time stamp to message before writing it to the file
-            writer.write(attachTime(message));
-            writer.newLine();
-        } catch (IOException e) {
-            System.out.println("Error while trying to write log to log file!");
-            System.out.println("If this message is displayed repeatedly:");
-            System.out.println(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
-            throw new RuntimeException(e);
-        }
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                if (!new File(Constants.File_System.logFile).exists()) return;
+                // new buffered writer is used to write logging information from console to the log file
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
+                    // attaching time stamp to message before writing it to the file
+                    writer.write(attachTime(message));
+                    writer.newLine();
+                } catch (IOException e) {
+                    System.out.println("Error while trying to write log to log file!");
+                    System.out.println("If this message is displayed repeatedly:");
+                    System.out.println(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
+                    throw new RuntimeException(e);
+                }
+            }
+        }.runTaskAsynchronously();
     }
 
     // display a toast containing a message, with standard 5s timeout
@@ -159,48 +177,95 @@ public class Logger {
 
     // log level checker
     // used to determine what messages should be logged / send to console and vice versa
+    @Getter
     public enum log_level implements LogLevel {
-        INFO() {
+        OFF(0) {
             @Override
             public boolean isEnabled() {
-                return currentLogLevel() >= 4;
+                return currentLogLevel() == 0;
             }
         },
-        WARN() {
-            @Override
-            public boolean isEnabled() {
-                return currentLogLevel() >= 3;
-            }
-        },
-        ERROR() {
-            @Override
-            public boolean isEnabled() {
-                //LCCP.sysBeep();
-                return currentLogLevel() >= 2;
-            }
-        },
-        FATAL() {
+
+        FATAL(1) {
             @Override
             public boolean isEnabled() {
                 //LCCP.sysBeep();
                 return currentLogLevel() >= 1;
             }
         },
-        DEBUG() {
+
+        ERROR(2) {
+            @Override
+            public boolean isEnabled() {
+                //LCCP.sysBeep();
+                return currentLogLevel() >= 2;
+            }
+        },
+
+        WARN(3) {
+            @Override
+            public boolean isEnabled() {
+                return currentLogLevel() >= 3;
+            }
+        },
+
+        INFO(4) {
+            @Override
+            public boolean isEnabled() {
+                return currentLogLevel() >= 4;
+            }
+        },
+
+        DEBUG(5) {
             @Override
             public boolean isEnabled() {
                 return currentLogLevel() >= 5;
             }
         },
-        VERBOSE() {
+
+        VERBOSE(6) {
             @Override
             public boolean isEnabled() {
                 return currentLogLevel() >= 6;
             }
         };
+
+        final int value;
+
+        log_level(int value) {
+            this.value = value;
+        }
         // function that retrieves current log level
         int currentLogLevel() {
             return LEDSuite.argumentsSettings.getLogLevel();
+        }
+
+        public static log_level valueOf(int logLevel) {
+            for (log_level l : log_level.values()) {
+                if (l.value == logLevel) return l;
+            }
+            throw new IllegalArgumentException("No enum value for '" + logLevel + "' found!");
+        }
+
+        public static log_level interpret(int logLevel) {
+            try {
+                return valueOf(logLevel);
+            } catch (IllegalArgumentException e) {
+                int max = Logger.log_level.values().length;
+                int min = 0;
+                try {
+                    return valueOf(Math.max(
+                                    Math.min(
+                                            logLevel,
+                                            max
+                                    ),
+                                    min
+                            )
+                    );
+                } catch (IllegalArgumentException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
     }
 }

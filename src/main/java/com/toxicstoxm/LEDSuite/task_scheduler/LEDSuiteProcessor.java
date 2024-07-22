@@ -44,8 +44,7 @@ public abstract class LEDSuiteProcessor extends LEDSuiteRunnable {
         }
     }
 
-    public void run(YAMLMessage yaml) throws DefaultHandleException {
-    }
+    public abstract void run(YAMLMessage yaml) throws DefaultHandleException;
 
     public static class DefaultHandleException extends Exception {
         public DefaultHandleException(String message) {

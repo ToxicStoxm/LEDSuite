@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.event_handling.EventHandler;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
@@ -52,8 +53,8 @@ public class StatusDialog extends Dialog implements EventListener {
                 .setCssClasses(new String[]{"property"})
                 .build();
         statusPage = StatusPage.builder()
-                .setIconName("com.toxicstoxm.lccp")
-                .setTitle("LED Cube Status")
+                .setIconName(Constants.Application.ICON)
+                .setTitle("Server Status")
                 .build();
 
     }
@@ -74,17 +75,13 @@ public class StatusDialog extends Dialog implements EventListener {
 
         var headerBar1 = HeaderBar.builder()
                 .setShowTitle(false)
-                .setTitleWidget(Label.builder().setLabel("LED Cube Status").build())
+                .setTitleWidget(Label.builder().setLabel("Server Status").build())
                 .build();
-
-
 
 
         toolbarView.addTopBar(headerBar1);
 
         this.setChild(toolbarView);
-        //this.setSearchEnabled(true);
-
         configure(StatusUpdate.notConnected());
         this.onClosed(() -> {
             if (updateTask != null) {

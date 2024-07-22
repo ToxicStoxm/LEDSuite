@@ -30,7 +30,6 @@ public class SettingsDialog extends PreferencesDialog {
         temp = new Boolean[3];
         temp[0] = true;
         temp[1] = LEDSuite.settings.isDisplayStatusBar();
-        //temp[2] = LEDSuite.settings.isAutoUpdateRemote();
 
         this.onClosed(() -> LEDSuite.mainWindow.resetSettingsDialog());
     }

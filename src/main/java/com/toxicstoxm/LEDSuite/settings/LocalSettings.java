@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.settings;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
@@ -21,13 +22,16 @@ public class LocalSettings extends Settings {
     private final Type type = Type.LOCAL;
     private final String name = "Main-Config";
     private boolean WindowResizeable = true;
+    @Setter
     private int WindowDefWidth = 1280;
+    @Setter
     private int WindowDefHeight = 720;
+    @Setter
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
     private boolean DisplayStatusBar = false;
     private boolean CheckIPv4 = true;
-    private boolean AutoPlayAfterUpload = true;
+    private boolean AutoPlayAfterUpload = true;@Setter
     private int NetworkingCommunicationClockSpeed = 10;
 
     private LocalSettings backup;
@@ -220,29 +224,9 @@ public class LocalSettings extends Settings {
         reload("DisplayStatusBar -> " + displayStatusBar);
     }
 
-    public void setLogLevel(int logLevel) {
-        this.LogLevel = logLevel;
-        reload("LogLevel -> " + logLevel);
-    }
-
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
         AutoPlayAfterUpload = autoPlayAfterUpload;
         reload("AutoPlayAfterUpload -> " + AutoPlayAfterUpload);
-    }
-
-    public void setNetworkingCommunicationClockSpeed(int networkingCommunicationClockSpeed) {
-        NetworkingCommunicationClockSpeed = networkingCommunicationClockSpeed;
-        reload("NetworkClockSpeed -> " + NetworkingCommunicationClockSpeed);
-    }
-
-    public void setWindowDefHeight(int windowDefHeight) {
-        WindowDefHeight = windowDefHeight;
-        reload("WindowDefHeight -> " + WindowDefHeight);
-    }
-
-    public void setWindowDefWidth(int windowDefWidth) {
-        WindowDefWidth = windowDefWidth;
-        reload("WindowDefWidth -> " + WindowDefWidth);
     }
 
     public String getSelectionDir() {

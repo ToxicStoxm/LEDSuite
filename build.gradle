@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    //id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     //id 'io.github.jwharm.flatpak-gradle-generator' version '1.1.0'
 }
 
@@ -59,13 +59,13 @@ tasks.named("compileJava", JavaCompile) {
     source(layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
 }
 
-/*shadowJar {
+shadowJar {
     archiveClassifier.set('final')
-}*/
+}
 
 tasks.jar {
     manifest {
         attributes["Main-Class"] = mainClass;
     }
-    //dependsOn("shadowJar")
+    dependsOn("shadowJar")
 }

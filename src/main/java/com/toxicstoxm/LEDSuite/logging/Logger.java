@@ -109,13 +109,17 @@ public class Logger {
     }
 
     // attaching current time to the front of the message before sending it to the console
-    private String attachTime(String message) {
+    private String attachMetadata(String message) {
+        String s = Thread.currentThread().getStackTrace()[5].toString();
+        String trace = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-        return "[" + df.format(new Date()) + "] " + message;
+        return "[" + df.format(new Date()) + "] " +  "[" + trace + "] " + message;
     }
-    private String attachTime(Ansi message) {
+    private String attachMetadata(Ansi message) {
+        String s = Thread.currentThread().getStackTrace()[5].toString();
+        String trace = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-        return "[" + df.format(new Date()) + "] " + message;
+        return "[" + df.format(new Date()) + "] " + ansi().fgRgb(0, 148, 50).a( "[" + trace + "] ").reset() + message;
     }
 
     public void log(String message) {
@@ -123,18 +127,19 @@ public class Logger {
     }
 
     public void log(String message, boolean newLine) {
-        String finalMessage = attachTime(message);
+        String finalMessage = attachMetadata(message);
         if (newLine) System.out.println(finalMessage);
         else System.out.print(finalMessage);
     }
 
     // final log function used to send the message to the console
     private void log(Ansi message) {
-        System.out.println(attachTime(message));
+        System.out.println(attachMetadata(message));
     }
 
     // writing console log to log file
     private void writeLog(String message) {
+        String temp = attachMetadata(message);
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -142,7 +147,7 @@ public class Logger {
                 // new buffered writer is used to write logging information from console to the log file
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
                     // attaching time stamp to message before writing it to the file
-                    writer.write(attachTime(message));
+                    writer.write(temp);
                     writer.newLine();
                 } catch (IOException e) {
                     System.out.println("Error while trying to write log to log file!");

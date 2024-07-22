@@ -34,7 +34,7 @@ tasks.register("processVersion", Copy) {
         include("Constants.java")
         filter(ReplaceTokens, tokens: ['version': version])
     }
-    into layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/")
+    into layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/")
 
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
@@ -56,7 +56,7 @@ sourceSets {
 // include the new Constants class that was previously generated
 tasks.named("compileJava", JavaCompile) {
     dependsOn("processVersion")
-    source(layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
+    source(layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
 }
 
 shadowJar {

@@ -12,7 +12,7 @@ var mainClass = group + "." + name + ".LEDSuite"
 
 repositories {
     mavenCentral()
-    maven { url './offline-repository' }
+    maven { url './offline-repository/' }
 }
 
 dependencies {

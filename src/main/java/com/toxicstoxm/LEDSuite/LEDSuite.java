@@ -56,7 +56,7 @@ public class LEDSuite implements EventListener, Runnable {
     private static long start;
     public static EventManager eventManager;
     public static Window mainWindow;
-    public static LEDSuiteScheduler lccpScheduler;
+    public static LEDSuiteScheduler ledSuiteScheduler;
     public static TickingSystem tickingSystem;
 
     @CommandLine.Option(names = {"-l", "--log-level"}, description = "Change the log level for the current session.")
@@ -109,6 +109,8 @@ public class LEDSuite implements EventListener, Runnable {
         instance = this;
         // create new libadwaita application object
         app = new Application(Constants.Application.DOMAIN, ApplicationFlags.DEFAULT_FLAGS);
+        app.setVersion(Constants.Application.VERSION);
+        app.setApplicationId(Constants.Application.DOMAIN);
         // define function to be executed on application start
         app.onActivate(this::activate);
         // trigger exit() function
@@ -119,7 +121,6 @@ public class LEDSuite implements EventListener, Runnable {
     public void run() {
         // initialize config, logger, ...
         logicInit();
-        app.setVersion(Constants.Application.VERSION);
         // starts application
         app.run(new String[]{});
     }
@@ -232,37 +233,11 @@ public class LEDSuite implements EventListener, Runnable {
 
         // initializing task scheduler with a max core pool size of 5
         // this means it can at most run 5 different tasks at the same time
-        lccpScheduler = new LEDSuiteScheduler();
+        ledSuiteScheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
         TimeManager.initTimeTracker("status", 5000, 10000);
         TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
-
-        try {
-            Networking.Communication.NetworkHandler.init(_ -> {
-            });
-        } catch (Networking.NetworkException e) {
-            throw new RuntimeException(e);
-        }
-
-        new LEDSuiteGuiRunnable() {
-            @Override
-            public void processGui() {
-                if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
-                    try {
-                        Networking.Communication.sendYAMLDefaultHost(
-                                YAMLMessage.defaultStatusRequest().build()
-                        );
-                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
-                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
-                        LEDSuite.logger.verbose("Auto status request attempt failed!");
-                    }
-                }
-            }
-        }.runTaskTimerAsynchronously(10000, 5000);
-
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
 
         argumentsSettings.copyImpl(settings, false);
         if (LogLevel != null) {
@@ -311,6 +286,32 @@ public class LEDSuite implements EventListener, Runnable {
             logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
             logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
         }
+
+        try {
+            Networking.Communication.NetworkHandler.init(_ -> {
+            });
+        } catch (Networking.NetworkException e) {
+            throw new RuntimeException(e);
+        }
+
+        new LEDSuiteGuiRunnable() {
+            @Override
+            public void processGui() {
+                if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
+                    try {
+                        Networking.Communication.sendYAMLDefaultHost(
+                                YAMLMessage.defaultStatusRequest().build()
+                        );
+                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                        LEDSuite.logger.verbose("Auto status request attempt failed!");
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(10000, 5000);
+
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
     }
 
     // activate function
@@ -412,7 +413,7 @@ public class LEDSuite implements EventListener, Runnable {
     }
 
     public static LEDSuiteScheduler getScheduler() {
-        return lccpScheduler;
+        return ledSuiteScheduler;
     }
 
     // listener function for reload event

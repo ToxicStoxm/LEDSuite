@@ -4,7 +4,6 @@ import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.communication.files.AllowedFileTypes;
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLSerializer;
@@ -294,7 +293,6 @@ public class AddFileDialog extends PreferencesPage {
         }
         spinner.setVisible(true);
         uploadButton.setCssClasses(new String[]{"regular", "pill"});
-        //uploadButton.emitRealize();
         uploading = true;
 
         LEDSuite.logger.debug("Requesting send with stats tracking!");
@@ -363,7 +361,6 @@ public class AddFileDialog extends PreferencesPage {
                 uploadButton.setCssClasses(new String[]{"suggested-action", "pill"});
                 uploading = false;
                 spinner.setVisible(false);
-                //uploadButton.emitRealize();
                 statsRow.setExpanded(false);
                 speed.setSubtitle("N/A");
                 eta.setSubtitle("N/A");

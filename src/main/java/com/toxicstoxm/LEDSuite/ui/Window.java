@@ -694,7 +694,7 @@ public class Window extends ApplicationWindow implements EventListener {
             aDialog = AboutDialog.builder()
                     .setDevelopers(new String[]{"ToxicStoxm", "CraftBukkit GitHub Repo"})
                     .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
-                    .setVersion(LEDSuite.getInstance().getApp().getVersion())
+                    .setVersion(Constants.Application.VERSION)
                     .setLicenseType(License.GPL_3_0)
                     .setApplicationIcon(Constants.Application.ICON)
                     .setIssueUrl(Constants.Links.PROJECT_GITHUB + "issues")

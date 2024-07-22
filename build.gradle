@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'java'
     //id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'io.github.jwharm.flatpak-gradle-generator' version '1.1.0'
+    //id 'io.github.jwharm.flatpak-gradle-generator' version '1.1.0'
 }
 
 group = 'com.toxicstoxm'
@@ -39,10 +39,10 @@ tasks.register("processVersion", Copy) {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-tasks.flatpakGradleGenerator {
+/*tasks.flatpakGradleGenerator {
     outputFile = file('flatpak-sources.json')
     downloadDirectory = './offline-repository'
-}
+}*/
 
 // exclude the original Constants class from the source set so gradle doesn't compile it in
 sourceSets {

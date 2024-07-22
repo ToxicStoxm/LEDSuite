@@ -34,9 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -129,6 +127,7 @@ public class LEDSuite implements EventListener, Runnable {
     public static void logicInit() {
 
         //ResourceBundle bundle = ResourceBundle.getBundle("LEDSuite", Locale.getDefault());
+        //System.out.println(bundle.getString("test"));
 
         // program initialization
         // create new settings and server_settings classes to hold config settings

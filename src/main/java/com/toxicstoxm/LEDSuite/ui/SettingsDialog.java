@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import org.gnome.adw.*;
 import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
@@ -39,7 +39,7 @@ public class SettingsDialog extends PreferencesDialog {
     private PreferencesPage get_user_pref_page() {
         // defining new preference page
         var user_pref_page = new PreferencesPage();
-        user_pref_page.setTitle(LEDSuite.version);
+        //user_pref_page.setTitle(Constants.Application.VERSION);
 
         // defining new preferences group for general settings
         var generalSettings = new PreferencesGroup();
@@ -106,9 +106,9 @@ public class SettingsDialog extends PreferencesDialog {
                 ipv4Row.setEditable(false);
                 ipv4Row.addSuffix(spinner);
                 spinner.setSpinning(true);
-                new LEDSuiteRunnable() {
+                new LEDSuiteGuiRunnable() {
                     @Override
-                    public void run() {
+                    public void processGui() {
                         try {
                             String ip;
                             String text = ipv4Row.getText();
@@ -165,9 +165,9 @@ public class SettingsDialog extends PreferencesDialog {
             spinner1.setSpinning(true);
             port.addSuffix(spinner1);
             port.setEditable(false);
-            new LEDSuiteRunnable() {
+            new LEDSuiteGuiRunnable() {
                 @Override
-                public void run() {
+                public void processGui() {
                     String portVal = port.getText();
                     try {
                         int port = Integer.parseInt(portVal);

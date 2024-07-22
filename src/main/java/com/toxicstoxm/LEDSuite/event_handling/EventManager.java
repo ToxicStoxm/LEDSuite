@@ -53,7 +53,7 @@ public class EventManager {
                 try {
                     // calls all methods from the current listener that listen for this specific event
                     Class<?> eventType = registeredListener.method.getParameterTypes()[0];
-                    LEDSuite.logger.debug("Registering listener method: " +
+                    LEDSuite.logger.debug("Calling listener method: " +
                             registeredListener.eventListener.toString().split("@")[0] +
                             "." +
                             registeredListener.method.getName() +

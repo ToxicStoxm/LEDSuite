@@ -646,7 +646,7 @@ public class Networking {
                             networkQueue.remove(entry.getKey());
                         }
                     }
-                }.runTaskTimerAsynchronously(LEDSuite.settings.getNetworkingCommunicationClockSpeed(), delay);
+                }.runTaskTimerAsynchronously(LEDSuite.argumentsSettings.getNetworkingCommunicationClockSpeed(), delay);
                 LEDSuite.logger.verbose("Network Handler: started manager!");
 
                 // initialize the listener

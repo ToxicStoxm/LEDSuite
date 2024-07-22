@@ -110,6 +110,10 @@ public class LocalSettings extends Settings {
     // copy the settings of another settings class
     @Override
     public void copy(Settings settings1) {
+        copyImpl(settings1, true);
+    }
+
+    public void copyImpl(Settings settings1, boolean log) {
         // check if other settings class type is compatible
         if (settings1.getType() != type) {
             if (settings1.getType() != Type.UNDEFINED) {
@@ -120,7 +124,7 @@ public class LocalSettings extends Settings {
         }
         // casting to compatible settings type after check
         LocalSettings settings = (LocalSettings) settings1;
-        LEDSuite.logger.debug("Loading settings from " + settings.getName() + "...");
+        if (log) LEDSuite.logger.debug("Loading settings from " + settings.getName() + "...");
         // copying settings
         this.WindowResizeable = settings.isWindowResizeable();
         this.WindowDefWidth = settings.getWindowDefWidth();
@@ -131,8 +135,8 @@ public class LocalSettings extends Settings {
         this.NetworkingCommunicationClockSpeed = settings.NetworkingCommunicationClockSpeed;
         this.CheckIPv4 = settings.CheckIPv4;
         this.AutoPlayAfterUpload = settings.AutoPlayAfterUpload;
-        LEDSuite.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
-        LEDSuite.logger.debug(getName() + " now inherits all values from " + settings.getName());
+        if (log) LEDSuite.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
+        if (log) LEDSuite.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
 
     // saving current settings to disk
@@ -224,6 +228,21 @@ public class LocalSettings extends Settings {
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
         AutoPlayAfterUpload = autoPlayAfterUpload;
         reload("AutoPlayAfterUpload -> " + AutoPlayAfterUpload);
+    }
+
+    public void setNetworkingCommunicationClockSpeed(int networkingCommunicationClockSpeed) {
+        NetworkingCommunicationClockSpeed = networkingCommunicationClockSpeed;
+        reload("NetworkClockSpeed -> " + NetworkingCommunicationClockSpeed);
+    }
+
+    public void setWindowDefHeight(int windowDefHeight) {
+        WindowDefHeight = windowDefHeight;
+        reload("WindowDefHeight -> " + WindowDefHeight);
+    }
+
+    public void setWindowDefWidth(int windowDefWidth) {
+        WindowDefWidth = windowDefWidth;
+        reload("WindowDefWidth -> " + WindowDefWidth);
     }
 
     public String getSelectionDir() {

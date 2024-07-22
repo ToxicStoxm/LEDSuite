@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.communication.files.AllowedFileTypes;
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
@@ -304,18 +305,17 @@ public class AddFileDialog extends PreferencesPage {
         int resetDelay = 500; // time in ms until reset is triggered
         final boolean[] cancelled = {false};
 
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 if (!cancelled[0] && progressTracker.isUpdated()) {
                     cancelled[0] = true;
                     LEDSuite.mainWindow.progressBar.setFraction(0.0);
-                    //LEDSuite.logger.debug("Changing button style!");
                     LEDSuite.mainWindow.rootView.setRevealBottomBars(true);
                     statsRow.setExpanded(true);
-                    new LEDSuiteRunnable() {
+                    new LEDSuiteGuiRunnable() {
                         @Override
-                        public void run() {
+                        public void processGui() {
                             boolean error = progressTracker.isError();
                             String speedNew = calculateNewSpeed(progressTracker.getSpeedInBytes());
                             String etaNew = progressTracker.getEta();
@@ -346,9 +346,9 @@ public class AddFileDialog extends PreferencesPage {
             }
         }.runTaskTimerAsynchronously(10, 10);
 
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 Networking.Communication.sendFileDefaultHost(filePath, progressTracker);
                 TimeManager.setTimeTracker("animations", System.currentTimeMillis() - 10000);
             }
@@ -356,9 +356,9 @@ public class AddFileDialog extends PreferencesPage {
     }
 
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 LEDSuite.mainWindow.rootView.setRevealBottomBars(false);
                 uploadButton.setCssClasses(new String[]{"suggested-action", "pill"});
                 uploading = false;
@@ -382,9 +382,9 @@ public class AddFileDialog extends PreferencesPage {
                     );
 
                     uploadButton.setCssClasses(new String[]{"destructive-action", "pill"});
-                    new LEDSuiteRunnable() {
+                    new LEDSuiteGuiRunnable() {
                         @Override
-                        public void run() {
+                        public void processGui() {
                             uploadButton.setCssClasses(new String[]{"suggested-action", "pill"});
                         }
                     }.runTaskLaterAsynchronously(1000);

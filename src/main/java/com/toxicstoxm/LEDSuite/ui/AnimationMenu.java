@@ -1,7 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLSerializer;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.menu_wrappers.Container;
@@ -356,9 +356,9 @@ public class AnimationMenu extends PreferencesPage {
     public void insertSpinner(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.Widgets.Spinner spinner, ExpanderRow expander) {
         Widget _spinner = getSpinner(spinner);
         expander.addRow(_spinner);
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 expander.remove(_spinner);
             }
         }.runTaskLaterAsynchronously((long) (spinner.getTime() * 1000));
@@ -367,9 +367,9 @@ public class AnimationMenu extends PreferencesPage {
     public void insertSpinner(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.Widgets.Spinner spinner, PreferencesGroup prefGroup) {
         Widget _spinner = getSpinner(spinner);
         prefGroup.add(_spinner);
-        new LEDSuiteRunnable() {
+        new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 prefGroup.remove(_spinner);
             }
         }.runTaskLaterAsynchronously((long) (spinner.getTime() * 1000));

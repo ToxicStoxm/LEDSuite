@@ -76,7 +76,7 @@ public class EventManager {
         }
     }
 
-    // trying to brute force event type and get id if specific event has one, else return empty string
+    // trying to a brute force event type and get id if a specific event has one, else return empty string
     private String tryToGetNetworkID(Object event) {
         String id = "";
         try {

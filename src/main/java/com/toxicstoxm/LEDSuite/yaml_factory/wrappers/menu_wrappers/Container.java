@@ -33,15 +33,15 @@ public interface Container {
 
         // iterating through all widgets in the content section using an iterator since the string array returned by yaml.getKeys() does not support looping natively
         for (Iterator<String> it = contentSubset.getKeys(); it.hasNext(); /* check if iterator reached the end of the array*/ ) {
-            // getting next String from iterator
+            // getting the next String from iterator
             String s = it.next().split("\\.")[0].strip();
             if (!s.matches(last)) {
                 last = s;
 
-                // getting the widgets section from the content yaml section
+                // getting the widgets section from the content YAML section
                 Configuration widgetSubset = contentSubset.subset(s);
 
-                // getting widget type from widget yaml
+                // getting a widget type from widget YAML
                 AnimationMenu.WidgetType type = AnimationMenu.WidgetType.enumOf(
                         widgetSubset.getString(Constants.Network.YAML.MENU.WIDGET_TYPE)
                 );
@@ -61,7 +61,7 @@ public interface Container {
 
                 // adding the widget to the corresponding group at the specified position
                 this.putWidget(
-                        Integer.parseInt(s.replace(Constants.Network.YAML.MENU.WIDGET_PREFIX, "").replace(Constants.Network.YAML.MENU.GROUP_PREFIX, "")), // getting widget position from yaml
+                        Integer.parseInt(s.replace(Constants.Network.YAML.MENU.WIDGET_PREFIX, "").replace(Constants.Network.YAML.MENU.GROUP_PREFIX, "")), // getting widget position from YAML
                         LEDSuiteWidget,
                         id
                 );

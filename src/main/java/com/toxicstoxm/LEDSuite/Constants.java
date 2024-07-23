@@ -7,29 +7,29 @@ public final class Constants {
         public static String getAppDir() {
             String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything
-                    java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
-                    confHome + "/"; // else it gets the environment variable and appends / because if it's missing it will error but when there are two it will still work
+                    java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
+                    confHome + "/"; // else it gets the environment variable and appends / because, if it's missing, it will error, but when there are two it will still work
         }
 
         public static String getTmpDir() {
             String cacheHome =  java.lang.System.getenv("XDG_CACHE_HOME");
             return cacheHome == null ? // Check if the cache home or just temp directory (mainly for flatpak) contains anything
-                    java.lang.System.getProperty("java.io.tmpdir") + "/" + Application.NAME + "/" : // If not it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as path
-                    cacheHome + "/"; // If yes it gets the environment variable and appends / because if it is missing it will error but when there are two it will still work
+                    java.lang.System.getProperty("java.io.tmpdir") + "/" + Application.NAME + "/" : // If not, it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as a path
+                    cacheHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
         public static String getDataDir() {
             String dataHome =  java.lang.System.getenv("XDG_DATA_HOME");
             return dataHome == null ? // Check if the data home directory (mainly for flatpak) contains anything
-                    java.lang.System.getProperty("user.home") + "/" + Application.NAME + "/" : // If not it uses the java home with '.config/LED-Cube-Control-Panel/' appended as path
-                    dataHome + "/"; // If yes it gets the environment variable and appends / because if it is missing it will error but when there are two it will still work
+                    java.lang.System.getProperty("user.home") + "/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
+                    dataHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
         public static final String logFile = getTmpDir() + "latest.log";
         public static final String server_config = getAppDir() + "server_config.yaml";
         public static final String config = getAppDir() + "config.yaml";
     }
-    // yaml paths for config
+    // YAML paths for config
     public static final class Config {
         // standard separator used by the config
         public static final String SEPARATOR = ".";
@@ -37,21 +37,34 @@ public final class Constants {
         public static final String LOCAL_SETTINGS_SECTION = "Local-Settings";
         public static final String WINDOW_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Window";
         public static final String LOGGING_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Logging";
+        public static final String LOGGING_FILE_SECTION = LOGGING_SECTION + SEPARATOR + "Log-File";
         public static final String NETWORK_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Network";
+        public static final String TASKS_SECTION = NETWORK_SECTION + SEPARATOR + "Tasks";
+        public static final String PERIODIC_SECTION = TASKS_SECTION + SEPARATOR + "Periodic";
+        public static final String STATUS_REQUEST_CLOCK = PERIODIC_SECTION + SEPARATOR + "Status-Request-Clock";
         public static final String USER_PREFERENCES_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "User-Preferences";
+
         // settings
-        public static final String WINDOW_TITLE = WINDOW_SECTION + SEPARATOR + "Window-Title";
         public static final String WINDOW_RESIZABLE = WINDOW_SECTION + SEPARATOR + "Window-Resizable";
         public static final String WINDOW_DEFAULT_WIDTH = WINDOW_SECTION + SEPARATOR + "Window-Default-Width";
         public static final String WINDOW_DEFAULT_HEIGHT = WINDOW_SECTION + SEPARATOR + "Window-Default-Height";
+
         public static final String LOG_LEVEL = LOGGING_SECTION + SEPARATOR + "Log-Level";
+        public static final String LOG_FILE_ENABLED = LOGGING_FILE_SECTION + SEPARATOR + "Enabled";
+        public static final String LOG_FILE_LOG_LEVEL_ALL = LOGGING_FILE_SECTION + SEPARATOR + "Log-Level-All";
+        public static final String LOG_FILE_MAX_FILES = LOGGING_FILE_SECTION + SEPARATOR + "Max-Files";
+
+        public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
+        public static final String NETWORK_COMMUNICATION_CLOCK = PERIODIC_SECTION + SEPARATOR + "Network-Communication-Clock";
+        public static final String STATUS_REQUEST_CLOCK_PASSIVE = STATUS_REQUEST_CLOCK + SEPARATOR + "Passive";
+        public static final String STATUS_REQUEST_CLOCK_ACTIVE = STATUS_REQUEST_CLOCK + SEPARATOR + "Active";
+
         public static final String SELECTION_DIR = USER_PREFERENCES_SECTION + SEPARATOR + "Default-Selection-Dir";
         public static final String DISPLAY_STATUS_BAR = USER_PREFERENCES_SECTION + SEPARATOR + "Display-Status-Bar";
-        public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
-        public static final String NETWORK_COMMUNICATION_CLOCK_SPEED = NETWORK_SECTION + SEPARATOR + "Network-Communication-Clock-Speed";
         public static final String AUTO_PLAY_AFTER_UPLOAD = USER_PREFERENCES_SECTION + SEPARATOR + "Auto-Play-After-Upload";
+
     }
-    // yaml paths for server_config
+    // YAML paths for server_config
     public static final class Server_Config {
         public static final String BRIGHTNESS = "LED-Brightness";
         public static final String IPV4 = "Server-IP";

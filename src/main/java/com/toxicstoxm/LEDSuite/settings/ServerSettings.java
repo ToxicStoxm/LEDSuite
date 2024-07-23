@@ -12,8 +12,8 @@ import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Objects;
+import java.util.TreeMap;
 
 @Setter
 @Getter
@@ -27,7 +27,7 @@ public class ServerSettings extends Settings{
 
     private ServerSettings backup;
 
-    // get the default configuration values from internal resource folder and save them to config.yaml
+    // get the default configuration values from the internal resource folder and save them to config.yaml
     @Override
     public void saveDefaultConfig() throws IOException, NullPointerException {
         LEDSuite.logger.debug("Loading default server config values...");
@@ -36,7 +36,7 @@ public class ServerSettings extends Settings{
         LEDSuite.logger.debug(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("server_config.yaml");
-        // if the path is null or not found an exception is thrown
+        // if the path is null or not found, an exception is thrown
         if (url == null) throw new NullPointerException();
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
@@ -45,7 +45,7 @@ public class ServerSettings extends Settings{
             // try to open a new output stream to save the values to the new config file
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
                 byte[] buffer = new byte[1024];
-                // if the buffer isn't empty the write function writes the read bytes using the stored length in bytesRead var below
+                // if the buffer isn't empty, the write function writes the read bytes using the stored length in bytesRead var below
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytesRead);
@@ -58,17 +58,17 @@ public class ServerSettings extends Settings{
     // copy settings from another settings class
     @Override
     public void copy(Settings settings1) {
-        // check if other settings class type is compatible
+        // check if another settings class type is compatible
         if (settings1.getType() != type) {
-            // send error message if config type is not compatible
+            // send an error message if a config type is not compatible
             if (settings1.getType() != Type.UNDEFINED) {
                 LEDSuite.logger.error("Can't copy settings from " + settings1.getName() + " Type: " + settings1.getType() + " to " + getName() + " Type: " + type);
                 return;
             }
-            // send info message if other config class type is undefined
+            // send an info message if another config class type is undefined
             LEDSuite.logger.debug("Can't confirm settings type! Type = UNDEFINED");
         }
-        // casting other settings class to compatible type
+        // casting other settings class to a compatible type
         ServerSettings settings = (ServerSettings) settings1;
         // copy settings
         LEDSuite.logger.debug("Loading settings from " + settings.getName() + "...");
@@ -86,7 +86,7 @@ public class ServerSettings extends Settings{
         try {
             this.IPv4 = config.getString(Constants.Server_Config.IPV4);
             int tempPort = config.getInt(Constants.Server_Config.PORT);
-            // checking if provided port is in the valid port range
+            // checking if the provided port is in the valid port range
             if (!Networking.Validation.isValidPORT(String.valueOf(tempPort))) {
                 LEDSuite.logger.error("Error while parsing Server-Port! Invalid Port!");
                 LEDSuite.logger.warn("Port is outside the valid range of 0-65535!");
@@ -114,12 +114,12 @@ public class ServerSettings extends Settings{
         // loading config file
         YAMLConfiguration conf;
         FileHandler fH;
-        HashMap<Integer, String> comments;
+        TreeMap<Integer, String> comments;
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
             fH.load(Constants.File_System.server_config);
-            comments = new HashMap<>(CommentPreservation.extractComments(Constants.File_System.server_config));
+            comments = new TreeMap<>(CommentPreservation.extractComments(Constants.File_System.server_config));
         } catch (ConfigurationException e) {
             LEDSuite.logger.error("Error occurred while writing server-config values to server-config.yaml!");
             LEDSuite.logger.warn("Please restart the application to prevent further errors!");

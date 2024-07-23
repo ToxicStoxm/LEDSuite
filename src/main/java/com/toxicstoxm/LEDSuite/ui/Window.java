@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.communication.network.Networking;
 import com.toxicstoxm.LEDSuite.event_handling.EventHandler;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
 import com.toxicstoxm.LEDSuite.event_handling.listener.EventListener;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteProcessor;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
@@ -24,9 +25,7 @@ import org.gnome.gio.SimpleAction;
 import org.gnome.gio.SimpleActionGroup;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.*;
-import org.gnome.pango.AttrList;
 import org.gnome.pango.EllipsizeMode;
-import org.gnome.pango.Pango;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,10 +36,9 @@ public class Window extends ApplicationWindow implements EventListener {
     // status banner and toast overlay used in the main window
     // made public to enable global toggling
     public Banner status = new Banner("");
-    public ToastOverlay toastOverlay = null;
+    public ToastOverlay toastOverlay;
     private ListBox animationsList = null;
     private ListBox addFileList = null;
-    private Box addFile = null;
     public ToolbarView rootView = null;
     public ProgressBar progressBar = null;
     public Button playPauseButton = null;
@@ -66,14 +64,14 @@ public class Window extends ApplicationWindow implements EventListener {
         // toast overlay used to display toasts (notification) to the user
         toastOverlay = ToastOverlay.builder().build();
 
-        // the applications header bar
+        // the application header bar
         var headerBar = new org.gnome.adw.HeaderBar();
 
         // create search button and configure it
         var sbutton = new ToggleButton();
         // setting the icon name to gnome icon name
         sbutton.setIconName(Constants.GTK.Icons.Symbolic.SEARCH);
-        // executed when th button is toggled
+        // executed when the button is toggled
         sbutton.onToggled(() -> {
             // display work in progress toast as the search function is not yet implemented
             var wipToast = new Toast("Work in progress!");
@@ -166,7 +164,7 @@ public class Window extends ApplicationWindow implements EventListener {
         //headerBar.packStart(sbutton);
         headerBar.packEnd(mbutton);
 
-        // creating main container witch will hold the main window content
+        // creating the main container witch will hold the main window content
         var mainContent = new Box(Orientation.VERTICAL, 0);
         mainContent.setHomogeneous(false);
         // creating north / center / south containers to correctly align window content
@@ -178,7 +176,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .build();
         // set vertical expanding to true for the center box, so it pushed the north box to the top of the window and the south box to the bottom
         CenterBox.setVexpand(true);
-        // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing window
+        // aligning the south box to the end (bottom) of the window to ensure it never aligns wrongly when resizing a window
 
         // toggling status bar visibility depending on user preferences
         setBannerVisible(LEDSuite.settings.isDisplayStatusBar());
@@ -355,7 +353,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         new String[]{"navigation-sidebar"}
                 )
                 .build();
-        addFile = Box.builder()
+        Box addFile = Box.builder()
                 .setOrientation(Orientation.HORIZONTAL)
                 .setTooltipText("Add file to LED-Cube (Upload)")
                 .setSpacing(10)
@@ -453,22 +451,9 @@ public class Window extends ApplicationWindow implements EventListener {
                         result -> {
                             if (result) {
                                 LEDSuite.logger.debug("Requesting animation menu for '" + rowName + "' from server.");
-                                /*toastOverlay.addToast(
-                                        Toast.builder()
-                                                .setTimeout(3)
-                                                .setTitle("Loading menu for '" + rowName + "'...")
-                                                .build()
-                                );*/
                                 getStatus(null);
                             } else {
                                 LEDSuite.logger.error("Failed to load menu for '" + rowName + "'!");
-                                /*toastOverlay.addToast(
-                                        Toast.builder()
-                                                .setTimeout(0)
-                                                .setTitle("Failed to load menu for '" + rowName + "'!")
-                                                .build()
-                                );*/
-                                //LEDSuite.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                             }
                         },
                         new LEDSuiteProcessor() {
@@ -524,7 +509,7 @@ public class Window extends ApplicationWindow implements EventListener {
             if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
                 LEDSuite.logger.debug("Sidebar show button pressed (toggle:true)");
                 overlaySplitView.setShowSidebar(true);
-                // resetting button to avoid checking continuously for sidebar hide signal
+                // resetting the button to avoid checking continuously for sidebar hide signal
                 sideBarToggleButton.setActive(false);
             }
         });
@@ -671,18 +656,6 @@ public class Window extends ApplicationWindow implements EventListener {
         }.runTaskLaterAsynchronously(750);
     }
 
-    public HashMap<String, String> constructMap(String regex, String... entries) {
-        HashMap<String, String> result = new HashMap<>();
-        for (String s : entries) {
-            LEDSuite.logger.debug(s);
-            String[] parts = s.split(regex);
-            LEDSuite.logger.debug(Arrays.toString(parts));
-            result.put(parts[0], parts[1]);
-        }
-        return result;
-    }
-
-
     // about dialog
     private org.gnome.adw.AboutDialog aDialog = null;
     // method to either create a new about dialog or get an already existing one
@@ -690,7 +663,7 @@ public class Window extends ApplicationWindow implements EventListener {
     private org.gnome.adw.AboutDialog getAboutDialog() {
         // checking if an existing about dialog can be reused
         if (aDialog == null) {
-            // if not a new one is created
+            // if not, a new one is created
             aDialog = AboutDialog.builder()
                     .setDevelopers(new String[]{"ToxicStoxm", "CraftBukkit GitHub Repo"})
                     .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
@@ -703,15 +676,6 @@ public class Window extends ApplicationWindow implements EventListener {
                     .build();
         }
         return aDialog;
-    }
-    // generates default font arguments
-    public static AttrList getAttrDef() {
-        var attr = new AttrList();
-        // sets the font to 'Bahnschrift' (does not work :c)
-        attr.change(Pango.attrFamilyNew("Bahnschrift"));
-        // sets the scale to be 1 (100%)
-        attr.change(Pango.attrScaleNew(1));
-        return attr;
     }
     public void getStatus(Networking.Communication.FinishCallback callback) {
         try {
@@ -738,15 +702,15 @@ public class Window extends ApplicationWindow implements EventListener {
     // creates a new status bar updater
     private void updateStatus() {
         LEDSuite.logger.debug("Running new StatusBar update Task!");
-        statusBarUpdater = new LEDSuiteRunnable() {
+        statusBarUpdater = new LEDSuiteGuiRunnable() {
             @Override
-            public void run() {
+            public void processGui() {
                 if (!status.getRevealed()) return;
                 getStatus(success -> {
                     if (!success) LEDSuite.eventManager.fireEvent(new Events.Status(StatusUpdate.notConnected()));
                 });
             }
-        }.runTaskTimerAsynchronously(0, 1000);
+        }.runTaskTimerAsynchronously(0, LEDSuite.argumentsSettings.getStatusRequestClockActive());
     }
 
     // toggle status bar
@@ -754,14 +718,14 @@ public class Window extends ApplicationWindow implements EventListener {
         LEDSuite.logger.debug("---------------------------------------------------------------");
         LEDSuite.logger.debug("Fulfilling StatusBarToggle: " + statusBarCurrentState + " >> " + visible);
         status.setVisible(true);
-        // if status bar is currently turned off and should be activated
+        // if the status bar is currently turned off and should be activated
         if (!statusBarCurrentState && visible) {
             // the current status is set to true
             statusBarCurrentState = true;
             // and a new update status task is created and started
             updateStatus();
         } else {
-            // if status bar is currently turned on and should be deactivated
+            // if the status bar is currently turned on and should be deactivated
             // if there is an updater task running
             if (statusBarUpdater != null) statusBarUpdater.cancel(); // trigger the tasks kill switch
             // set the current status to false
@@ -773,7 +737,7 @@ public class Window extends ApplicationWindow implements EventListener {
         if (LEDSuite.mainWindow != null) LEDSuite.settings.setDisplayStatusBar(visible);
         LEDSuite.logger.debug("---------------------------------------------------------------");
     }
-    // check if status bar is currently visible
+    // check if the status bar is currently visible
     public boolean isBannerVisible() {
         return statusBarCurrentState;
 
@@ -785,7 +749,7 @@ public class Window extends ApplicationWindow implements EventListener {
     private com.toxicstoxm.LEDSuite.ui.SettingsDialog getSettingsDialog() {
         // checking if an existing about dialog can be reused
         if (sD == null) {
-            // if not a new one is created
+            // if not, a new one is created
             sD = new com.toxicstoxm.LEDSuite.ui.SettingsDialog();
         }
         return sD;

@@ -14,16 +14,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Logger {
 
+    private final TreeMap<Long, String> cache;
+    private int maxLength;
+
     // activating ansi library to translate and display color codes in the console
     public Logger() {
         AnsiConsole.systemInstall();
+        cache = new TreeMap<>();
+        maxLength = 0;
     }
     // formatting info message
     public void info(String message) {
@@ -34,7 +39,7 @@ public class Logger {
         writeLog(message);
         log(ansi().fg(DEFAULT).a(message).reset());
     }
-    // formatting warn message
+    // formatting warn a message
     public void warn(String message) {
         if (log_level.WARN.isEnabled()) cWarn("[WARN]:  [" + Constants.Application.NAME + "] " + message);
     }
@@ -93,7 +98,7 @@ public class Logger {
     public void debug(String message) {
         if (log_level.DEBUG.isEnabled()) cDebug("[DEBUG]: [" + Constants.Application.NAME + "] " + message);
     }
-    // sending debug message to console and log file
+    // sending a debug message to console and log file
     private void cDebug(String message) {
         writeLog(message);
         log(ansi().fgRgb(7, 94, 217).a(message).reset());
@@ -102,7 +107,7 @@ public class Logger {
     public void verbose(String message) {
         if (log_level.VERBOSE.isEnabled()) cVerbose("[VERBOSE]: [" + Constants.Application.NAME + "] " + message);
     }
-    // sending debug message to console and log file
+    // sending a debug message to console and log file
     private void cVerbose(String message) {
         writeLog(message);
         log(ansi().fgRgb(160, 22, 244).a(message).reset());
@@ -110,16 +115,22 @@ public class Logger {
 
     // attaching current time to the front of the message before sending it to the console
     private String attachMetadata(String message) {
-        String s = Thread.currentThread().getStackTrace()[5].toString();
-        String trace = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-        return "[" + df.format(new Date()) + "] " +  "[" + trace + "] " + message;
+        return "[" + df.format(new Date()) + "] " + getTrace() + message;
     }
     private String attachMetadata(Ansi message) {
-        String s = Thread.currentThread().getStackTrace()[5].toString();
-        String trace = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-        return "[" + df.format(new Date()) + "] " + ansi().fgRgb(0, 148, 50).a( "[" + trace + "] ").reset() + message;
+        return "[" + df.format(new Date()) + "] " + ansi().fgRgb(0, 148, 50).a(getTrace()).reset() + message;
+    }
+
+    private String getTrace() {
+        String s = Thread.currentThread().getStackTrace()[6].toString();
+        StringBuilder trace = new StringBuilder("[" + s.substring(s.indexOf("(") + 1, s.lastIndexOf(")")) + "] ");
+        int length = trace.length();
+        int difference = maxLength - trace.length();
+        if (difference < 0) maxLength = length;
+        trace.append(" ".repeat(Math.max(0, difference)));
+        return trace.toString();
     }
 
     public void log(String message) {
@@ -143,17 +154,31 @@ public class Logger {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                if (!new File(Constants.File_System.logFile).exists()) return;
-                // new buffered writer is used to write logging information from console to the log file
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
-                    // attaching time stamp to message before writing it to the file
-                    writer.write(temp);
-                    writer.newLine();
-                } catch (IOException e) {
-                    System.out.println("Error while trying to write log to log file!");
-                    System.out.println("If this message is displayed repeatedly:");
-                    System.out.println(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
-                    throw new RuntimeException(e);
+                if (!new File(Constants.File_System.logFile).exists()) {
+                    if (cache.size() >= 200) cache.pollLastEntry();
+                    cache.put(System.currentTimeMillis(), message);
+                } else {
+                    if (LEDSuite.settings.isLogFileEnabled()) {
+                        if (!cache.isEmpty()) {
+                            TreeMap<Long, String> temp = new TreeMap<>(cache);
+                            for (SortedMap.Entry<Long, String> entry : temp.entrySet()) {
+                                writeLog(entry.getValue());
+                            }
+                        }
+                    }
+                }
+                if (LEDSuite.settings.isLogFileEnabled()) {
+                    // new buffered writer is used to write logging information from console to the log file
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.File_System.logFile, true))) {
+                        // attaching time stamp to message before writing it to the file
+                        writer.write(temp);
+                        writer.newLine();
+                    } catch (IOException e) {
+                        System.out.println("Error while trying to write log to log file!");
+                        System.out.println("If this message is displayed repeatedly:");
+                        System.out.println(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }.runTaskAsynchronously();
@@ -169,7 +194,7 @@ public class Logger {
         if (LEDSuite.mainWindow == null) return;
         ToastOverlay toastOverlay = LEDSuite.mainWindow.toastOverlay;
         if (toastOverlay != null) {
-            // create new toast containing the message and specific timeout
+            // create a new toast containing the message and specific timeout
             toastOverlay
                     .addToast(
                             Toast.builder()
@@ -240,7 +265,7 @@ public class Logger {
         log_level(int value) {
             this.value = value;
         }
-        // function that retrieves current log level
+        // function that retrieves the current log level
         int currentLogLevel() {
             return LEDSuite.argumentsSettings.getLogLevel();
         }

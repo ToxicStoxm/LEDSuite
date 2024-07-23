@@ -28,9 +28,7 @@ import org.gnome.adw.Toast;
 import org.gnome.gio.ApplicationFlags;
 import picocli.CommandLine;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -38,7 +36,7 @@ import java.util.*;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
-@CommandLine.Command(name = "LEDSuite", mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "LEDSuite",
         description = "Simple front end application that lets you control decorative matrix's.")
 public class LEDSuite implements EventListener, Runnable {
 
@@ -56,20 +54,27 @@ public class LEDSuite implements EventListener, Runnable {
     public static Window mainWindow;
     public static LEDSuiteScheduler ledSuiteScheduler;
     public static TickingSystem tickingSystem;
+    public static boolean isShutdown = false;
+
+    @CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message and exit.", usageHelp = true)
+    private static boolean help;
+
+    @CommandLine.Option(names = {"-v", "--version"}, description = "Print version information and exit.", versionHelp = true)
+    private static boolean version;
 
     @CommandLine.Option(names = {"-l", "--log-level"}, description = "Change the log level for the current session.")
     private static Logger.log_level logLevel = null;
     @CommandLine.Option(names = {"-L", "--set-log-level"}, description = "Permanently change the log level.")
     private static Logger.log_level LogLevel = null;
 
-    @CommandLine.Option(names = {"-ww", "--window-width"}, description = "Change the initial window width for the current session.")
+    @CommandLine.Option(names = {"--initial-window-width"}, description = "Change the initial window width for the current session.")
     private static int windowDefWidth = -1;
-    @CommandLine.Option(names = {"-Ww", "--set-window-width"}, description = "Permanently change the initial window width.")
+    @CommandLine.Option(names = {"--set-initial-window-width"}, description = "Permanently change the initial window width.")
     private static int WindowDefWidth = -1;
 
-    @CommandLine.Option(names = {"-wh", "--window-height"}, description = "Change the initial window height for the current session.")
+    @CommandLine.Option(names = {"--initial-window-height"}, description = "Change the initial window height for the current session.")
     private static int windowDefHeight = -1;
-    @CommandLine.Option(names = {"-Wh", "--set-window-height"}, description = "Permanently change the initial window height.")
+    @CommandLine.Option(names = {"--set-initial-window-height"}, description = "Permanently change the initial window height.")
     private static int WindowDefHeight = -1;
 
     @CommandLine.Option(names = {"-n", "--networking-clock"}, description = "Change the networking clock for the current session.")
@@ -86,7 +91,7 @@ public class LEDSuite implements EventListener, Runnable {
     // main method
     public static void main(String[] args) {
 
-        // create timestamp that is used to calculate starting time
+        // create timestamp used to calculate starting time
         start = System.currentTimeMillis();
 
         // initialize picocli and parse the arguments
@@ -99,7 +104,7 @@ public class LEDSuite implements EventListener, Runnable {
 
         // processes commandline arguments and run application
         int statusCode = cmd.execute(args);
-        System.exit(statusCode);
+        logger.debug("Picocli exit code = " + statusCode);
     }
 
     // constructor method
@@ -119,18 +124,15 @@ public class LEDSuite implements EventListener, Runnable {
     public void run() {
         // initialize config, logger, ...
         logicInit();
-        // starts application
+        // start application
         app.run(new String[]{});
     }
 
     // logic initialization function
     public static void logicInit() {
 
-        //ResourceBundle bundle = ResourceBundle.getBundle("LEDSuite", Locale.getDefault());
-        //System.out.println(bundle.getString("test"));
-
         // program initialization
-        // create new settings and server_settings classes to hold config settings
+        // creates new settings and server_settings classes to hold config settings
         settings = new LocalSettings();
         argumentsSettings = new LocalSettings();
         server_settings = new ServerSettings();
@@ -138,11 +140,16 @@ public class LEDSuite implements EventListener, Runnable {
         logger = new Logger();
         // create new networkLogger instance
         networkLogger = new NetworkLogger();
+        // initializing task scheduler with an initial max pool size of 5
+        // that means only 5 tasks can be run at once,
+        // this is adjusted dynamically to ensure efficient resource usage
+        ledSuiteScheduler = new LEDSuiteScheduler();
 
         // defining config files and log file
         File config_file = new File(Constants.File_System.config);
         File server_config_file = new File(Constants.File_System.server_config);
         File log_file = new File(Constants.File_System.logFile);
+        File temp = null;
         try {
             if (resetConfig) {
                 Scanner scanner = new Scanner(System.in);
@@ -158,13 +165,13 @@ public class LEDSuite implements EventListener, Runnable {
                     }
                 } else {
                     logger.log("Received wrong confirmation string '" + input + "'. Cancelled config reset!");
-                    System.exit(0);
+                    getInstance().app.emitShutdown();
                 }
             }
 
             // checking if the config file already exists
             if (!config_file.exists()) {
-                // if the config file doesn't exist the program tries to create the parent directory first to prevent errors if it's the first startup
+                // if the config file doesn't exist, the program tries to create the parent directory first to prevent errors if it's the first startup
                 if (config_file.getParentFile().mkdirs())
                     logger.verbose("Successfully created parent directory for config file: " + config_file.getParentFile().getAbsolutePath());
                 // then a new config file is loaded with the default values from internal resources folder using the configs saveDefaultConfig() function
@@ -179,7 +186,7 @@ public class LEDSuite implements EventListener, Runnable {
             }
             // checking if the server side config file already exists
             if (!server_config_file.exists()) {
-                // if the config file doesn't exist, a new one gets loaded from internal resources folder with its default values using the configs saveDefaultConfig() function
+                // if the config file doesn't exist, a new one gets loaded from the internal resources folder with its default values using the configs saveDefaultConfig() function
                 if (server_config_file.createNewFile()) {
                     logger.debug("New server config file was successfully created: " + server_config_file.getAbsolutePath());
                     server_settings.saveDefaultConfig();
@@ -201,6 +208,10 @@ public class LEDSuite implements EventListener, Runnable {
                     logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
             } else {
+                temp = getFile(log_file);
+                logger.debug("Moving existing 'latest.log' to '" + temp.getName() + "'...");
+                logger.debug(log_file.renameTo(new File(temp.getAbsolutePath())) ? "Moving success!" : "Moving failed!");
+                logger.debug("Erasing old log file contents...");
                 // if the log file already exists, its contents are erased using a file writer
                 // the file writer is configured to start writing at the beginning of the file
                 try (FileWriter writer = new FileWriter(log_file, false)) {
@@ -211,32 +222,18 @@ public class LEDSuite implements EventListener, Runnable {
                 }
             }
         } catch (IOException | NullPointerException e) {
-            // if any exceptions occur during file creation / modification an error is displayed in the console
+            // if any exceptions occur during file creation / modification, an error is displayed in the console
             // additionally the program is halted to prevent any further issues or unexpected behavior
             logger.error("Settings failed to load!");
             logger.warn("Application was halted!");
             logger.warn("If this keeps happening please open an issue on GitHub!");
             logger.warn("Please restart the application!");
-            exit(1);
+            getInstance().app.emitShutdown();
             return;
         }
 
         // user settings are loaded from config files
         loadConfigsFromFile();
-
-        // creating new event manager
-        eventManager = new EventManager();
-        // registering event listeners for settings classes
-        eventManager.registerEvents(settings);
-        eventManager.registerEvents(server_settings);
-
-        // initializing task scheduler with a max core pool size of 5
-        // this means it can at most run 5 different tasks at the same time
-        ledSuiteScheduler = new LEDSuiteScheduler();
-        tickingSystem = new TickingSystem();
-
-        TimeManager.initTimeTracker("status", 5000, 10000);
-        TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
 
         argumentsSettings.copyImpl(settings, false);
         if (LogLevel != null) {
@@ -255,9 +252,81 @@ public class LEDSuite implements EventListener, Runnable {
         } else if (windowDefHeight > 0) argumentsSettings.setWindowDefHeight(windowDefHeight);
 
         if (NetworkingCommunicationClockSpeed > -1) {
-            argumentsSettings.setNetworkingCommunicationClockSpeed(NetworkingCommunicationClockSpeed);
-            settings.setNetworkingCommunicationClockSpeed(argumentsSettings.getNetworkingCommunicationClockSpeed());
-        } else if (networkingCommunicationClockSpeed > -1) argumentsSettings.setNetworkingCommunicationClockSpeed(networkingCommunicationClockSpeed);
+            argumentsSettings.setNetworkingCommunicationClock(NetworkingCommunicationClockSpeed);
+            settings.setNetworkingCommunicationClock(argumentsSettings.getNetworkingCommunicationClock());
+        } else if (networkingCommunicationClockSpeed > -1) argumentsSettings.setNetworkingCommunicationClock(networkingCommunicationClockSpeed);
+
+        logger.debug("Processing log files...");
+        if (!settings.isLogFileEnabled()) {
+            if (temp != null) {
+                logger.debug("Moving '" + temp.getName() + "' back to latest.log, since log file is disabled...");
+                logger.debug(temp.renameTo(log_file) ? "Moving success!" : "Moving failed!");
+            }
+        } else {
+            try {
+                logger.debug("Constructing sorted file structure according to file names!");
+                File[] fileList = getFiles(log_file);
+                int fileCount = fileList.length;
+                int difference = fileCount - settings.getLogFileMaxFiles();
+                if (difference <= 0) throw new InterruptedException("Log file count [" + fileCount + "] is withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+                logger.debug("Log file count [" + fileCount + "] is NOT withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+                logger.debug("Removing " + difference + " old log files...");
+                TreeMap<Integer, TreeMap<Integer, File>> files = new TreeMap<>();
+                for (File f : fileList) {
+                    String fileName = f.getName();
+                    String name = fileName.split("\\.")[0];
+                    if (!name.equals("latest")) {
+                        if (name.length() > 10) {
+                            String index = name.substring(0, 11).replace("-", "").strip();
+                            int parentIndex = Integer.parseInt(index);
+                            String nestedIndex = name.substring(11);
+                            int childIndex = Integer.parseInt(nestedIndex);
+                            files.putIfAbsent(parentIndex, new TreeMap<>());
+                            files.get(parentIndex).put(childIndex, f);
+                        } else {
+                            String index = name.replace("-", "").strip();
+                            files.putIfAbsent(Integer.parseInt(index), new TreeMap<>());
+                            files.get(Integer.parseInt(index)).put(0, f);
+                        }
+                    } else {
+                        files.putIfAbsent(-1, new TreeMap<>());
+                        files.get(-1).put(-1, f);
+                    }
+                }
+                for (int i = difference; i > 0; i--) {
+                    logger.debug("Remaining log file groups: " + files.size());
+                    SortedMap.Entry<Integer, TreeMap<Integer, File>> logFileGroup = files.pollLastEntry();
+                    TreeMap<Integer, File> logFileGroupValue = logFileGroup.getValue();
+                    String logFileGroupName = logFileGroupValue.get(0).getName();
+                    logger.debug("Remaining log files in group '" + logFileGroupName + "': " + logFileGroupValue.size());
+                    File f = new File(logFileGroupValue.pollLastEntry().getValue().getAbsolutePath());
+                    logger.debug("Deleting log file '" + f.getName() + "'...");
+                    logger.debug(f.delete() ? "Successfully deleted log file!" : "Failed to delete log file!");
+                    if (!logFileGroupValue.isEmpty())
+                        files.put(logFileGroup.getKey(), logFileGroup.getValue());
+                    else logger.debug("Deleting log file group '" + logFileGroupName + "' since it's empty.");
+                }
+
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Error while handling log files! Error message: " + e.getMessage());
+                getInstance().app.emitShutdown();
+            } catch (NullPointerException | IllegalArgumentException e) {
+                logger.error("Error while handling log files! Error message: " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug(e.getMessage());
+            }
+        }
+
+        // creating a new event manager
+        eventManager = new EventManager();
+        // registering event listeners for settings classes
+        eventManager.registerEvents(settings);
+        eventManager.registerEvents(server_settings);
+
+        tickingSystem = new TickingSystem();
+
+        TimeManager.initTimeTracker("status", argumentsSettings.getStatusRequestClockPassive(), argumentsSettings.getStatusRequestClockPassive() * 2L);
+        TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
 
         if (paths) {
             logger.log("Paths:");
@@ -270,7 +339,7 @@ public class LEDSuite implements EventListener, Runnable {
             logger.log("    Server configuration file: '" + Constants.File_System.server_config + "'");
             logger.log("    Log file: '" + Constants.File_System.logFile + "'");
 
-            System.exit(0);
+            getInstance().app.emitShutdown();
         }
 
         // general startup information displayed in the console upon starting the program
@@ -313,24 +382,53 @@ public class LEDSuite implements EventListener, Runnable {
         eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
     }
 
+    private static File[] getFiles(File log_file) {
+        String parent = log_file.getParent();
+        if (parent == null || parent.isBlank())
+            throw new NullPointerException("Couldn't get parent directory of '" + log_file.getName() + "'!");
+        File parentFile = new File(parent);
+        if (!parentFile.exists() || !parentFile.isDirectory())
+            throw new IllegalArgumentException("Parent '" + parentFile.getName() + "' does not exist or is not a directory!");
+        File[] fileList = parentFile.listFiles();
+        if (fileList == null)
+            throw new NullPointerException("Parent directory '" + parentFile.getName() + "' does not contain any files!");
+        return fileList;
+    }
+
+    private static File getFile(File log_file) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        StringBuilder filePath = new StringBuilder(df.format(log_file.lastModified()));
+        File temp = new File(Constants.File_System.getTmpDir() + filePath + ".log");
+        while (temp.exists()) {
+            if (filePath.length() > 10) {
+                int in = Integer.parseInt(filePath.substring(11)) + 1;
+                filePath.replace(11, filePath.length(), String.valueOf(in));
+            } else {
+                filePath.append("-1");
+            }
+            temp = new File(Constants.File_System.getTmpDir() + filePath + ".log");
+        }
+        return temp;
+    }
+
     // activate function
-    // this is triggered on libadwaita application activate
+    // this is triggered on libadwaita application activated
     public void activate() {
         // registering event listener for this class
         eventManager.registerEvents(this);
-        // creating main window of the application
+        // creating the main window of the application
         mainWindow = new Window(app);
         // registering event listener for the main window
         eventManager.registerEvents(mainWindow);
         // showing the main window on screen
         mainWindow.present();
-        // trigger started to send started message to console
+        // trigger started to send a started message to console
         // calculating time elapsed during startup and displaying it in the console
         long timeElapsed = System.currentTimeMillis() - start;
         eventManager.fireEvent(new Events.Started("Successfully started program! (took " + timeElapsed / 1000 + "." + timeElapsed % 1000 + "s)"));
     }
 
-    // display start message with starting duration
+    // display a start message with starting duration
     public static void started(String message) {
         logger.info(message);
         try {
@@ -356,9 +454,9 @@ public class LEDSuite implements EventListener, Runnable {
         // displaying status code in the console
         if (logger != null) LEDSuite.logger.info("Status code: " + status);
         // exiting program with the specified status code
-        //System.exit(status);
+        System.exit(status);
     }
-    // triggering system specific beep using java.awt.toolkit
+    // triggering system-specific beep using java.awt.toolkit
     // commonly used when something fails or an error happens
     public static void sysBeep() {
         LEDSuite.logger.verbose("Triggered system beep!");
@@ -380,7 +478,7 @@ public class LEDSuite implements EventListener, Runnable {
             // settings are loaded into the current instance of the settings class, so they can be used during runtime without any IO-Calls
             settings.load(yamlConfig);
         } catch (ConfigurationException e) {
-            // if any errors occur during config parsing an error is displayed in the console
+            // if any errors occur during config parsing, an error is displayed in the console;
             // the program is halted to prevent any further unwanted behavior
             LEDSuite.logger.error("Failed to parse config.yaml!");
             LEDSuite.logger.warn("Application was halted!");
@@ -401,7 +499,7 @@ public class LEDSuite implements EventListener, Runnable {
             // settings are loaded into the current instance of the settings class, so they can be used during runtime without any IO-Calls
             server_settings.load(yamlConfig);
         } catch (ConfigurationException e) {
-            // if any errors occur during config parsing an error is displayed in the console
+            // if any errors occur during config parsing, an error is displayed in the console
             // the program is halted to prevent any further unwanted behavior
             LEDSuite.logger.error("Failed to parse server_config.yaml!");
             LEDSuite.logger.warn("Application was halted!");

@@ -196,7 +196,7 @@ public class StatusDialog extends Dialog implements EventListener {
         configure(statusUpdate);
     }
 
-    private long maxDelay = 10000;
+    private final long maxDelay = 10000;
 
     private LEDSuiteTask updateLoop() {
         LEDSuite.eventManager.registerEvents(this);
@@ -207,7 +207,7 @@ public class StatusDialog extends Dialog implements EventListener {
                     LEDSuite.mainWindow.getStatus(_ -> {});
                     if (System.currentTimeMillis() - lastUpdate >= maxDelay) configure(StatusUpdate.notConnected());
                 }
-            }.runTaskTimerAsynchronously(0, 1000);
+            }.runTaskTimerAsynchronously(0, LEDSuite.argumentsSettings.getStatusRequestClockActive());
         }
         return new LEDSuiteGuiRunnable() {
             @Override
@@ -220,7 +220,6 @@ public class StatusDialog extends Dialog implements EventListener {
 
     @EventHandler
     public void onStatus(Events.Status e) {
-        //LEDSuite.logger.fatal(String.valueOf(e.statusUpdate().isBlank()));
         if (this.getVisible()) updateStatus(e.statusUpdate());
     }
 }

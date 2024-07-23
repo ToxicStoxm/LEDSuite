@@ -9,7 +9,6 @@ dependencyResolutionManagement {
     repositories {
         maven { url './offline-repository/' }
         mavenCentral()
-
     }
 }
 

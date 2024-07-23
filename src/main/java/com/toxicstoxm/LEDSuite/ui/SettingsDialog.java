@@ -40,7 +40,7 @@ public class SettingsDialog extends PreferencesDialog {
         var user_pref_page = new PreferencesPage();
         //user_pref_page.setTitle(Constants.Application.VERSION);
 
-        // defining new preferences group for general settings
+        // defining a new preferences group for general settings
         var generalSettings = new PreferencesGroup();
         generalSettings.setTitle("General Settings");
 

@@ -74,7 +74,7 @@ public class AnimationMenu implements Container {
             // deserialization function for groups
             // parameters:
             //  - base widget (label, tooltip, style, type)
-            //  - group Yaml (the corresponding section form the menu yaml for this group)
+            //  - group YAML (the corresponding section form the menu yaml for this group)
             // returns the deserialized group
             @Override
             public LEDSuiteWidget deserialize(LEDSuiteWidget initialWidget, Configuration groupYaml, String id) {
@@ -88,22 +88,22 @@ public class AnimationMenu implements Container {
                 group.setStyle(initialWidget.style);
                 group.setPath(initialWidget.path);
 
-                // getting yaml section for group suffix from the group yaml
+                // getting YAML section for group suffix from the group YAML
                 Configuration suffixSubset = groupYaml.subset(Constants.Network.YAML.MENU.GROUP_SUFFIX_WIDGET);
                 if (suffixSubset.getKeys().hasNext()) {
-                    // setting the groups suffix to the one specified in the suffix yaml section
+                    // setting the group suffix to the one specified in the suffix YAML section
                     group.suffix = new Widget(
-                            WidgetType.enumOf(suffixSubset.getString(Constants.Network.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from yaml
+                            WidgetType.enumOf(suffixSubset.getString(Constants.Network.YAML.MENU.WIDGET_TYPE)) // getting suffix widget type from YAML
                     ).deserialize(suffixSubset, id,  initialWidget.path + ".suffix"); // deserializing the suffix widget using the corresponding deserialization function for the specific widget type
                 }
 
-                // getting yaml section for the groups content
+                // getting YAML section for the group content
                 Configuration contentSubset = groupYaml.subset(Constants.Network.YAML.MENU.WIDGET_CONTENT);
 
                 // deserialize all child widgets contained in this group
                 group.deserialize_children(contentSubset, id,  initialWidget.type.name(), initialWidget.path);
 
-                // returning group
+                // returning a group
                 return group;
             }
         },

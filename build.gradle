@@ -16,7 +16,7 @@ repositories {
 dependencies {
     implementation 'org.fusesource.jansi:jansi:2.4.1'
     implementation 'io.github.jwharm.javagi:adw:0.10.2'
-    implementation 'org.apache.commons:commons-configuration2:2.10.1'
+    implementation 'org.apache.commons:commons-configuration2:2.11.0'
     implementation 'org.yaml:snakeyaml:2.2'
 
     compileOnly 'org.projectlombok:lombok:1.18.32'

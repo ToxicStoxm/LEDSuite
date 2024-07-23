@@ -21,8 +21,8 @@ dependencies {
     implementation 'org.apache.commons:commons-configuration2:2.10.1'
     implementation 'org.yaml:snakeyaml:2.2'
 
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
     implementation 'info.picocli:picocli:4.7.6'
     annotationProcessor 'info.picocli:picocli:4.7.6'

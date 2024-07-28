@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.toxicstoxm'
-version = '0.1.2'
+version = '0.1.3'
 var mainClass = group + "." + name + ".LEDSuite"
 
 repositories {

@@ -1,2 +1,15 @@
-rootProject.name = 'LEDSuite'
+pluginManagement {
+    repositories {
+        maven { url './offline-repository/' }
+        gradlePluginPortal()
+    }
+}
 
+dependencyResolutionManagement {
+    repositories {
+        maven { url './offline-repository/' }
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'LEDSuite'

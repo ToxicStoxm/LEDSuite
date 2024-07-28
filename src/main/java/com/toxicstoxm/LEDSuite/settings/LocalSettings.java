@@ -11,32 +11,33 @@ import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 // settings class to store config settings on runtime
 @Getter
+@Setter
 public class LocalSettings extends Settings {
     // default settings
     private final Type type = Type.LOCAL;
     private final String name = "Main-Config";
     private boolean WindowResizeable = true;
-    @Setter
     private int WindowDefWidth = 1280;
-    @Setter
     private int WindowDefHeight = 720;
-    @Setter
     private int LogLevel = 4;
     private String selectionDir = System.getProperty("user.home");
     private boolean DisplayStatusBar = false;
     private boolean CheckIPv4 = true;
-    private boolean AutoPlayAfterUpload = true;@Setter
-    private int NetworkingCommunicationClockSpeed = 10;
+    private boolean AutoPlayAfterUpload = true;
+    private int NetworkingCommunicationClock = 10;
+    private int StatusRequestClockPassive = 5000;
+    private int StatusRequestClockActive = 1000;
+    private boolean LogFileEnabled = false;
+    private boolean LogFileLogLevelAll = true;
+    private int LogFileMaxFiles = 1;
 
     private LocalSettings backup;
 
-    // get the default configuration values from internal resource folder and save them to config.yaml
+    // get the default configuration values from the internal resource folder and save them to config.yaml
     @Override
     public void saveDefaultConfig() throws IOException, NullPointerException {
         LEDSuite.logger.debug("Loading default config values...");
@@ -45,7 +46,7 @@ public class LocalSettings extends Settings {
         LEDSuite.logger.debug(Constants.Messages.WARN.OPEN_GITHUB_ISSUE);
         // get the internal resource folder and default config values
         URL url = getClass().getClassLoader().getResource("config.yaml");
-        // if the path is null or not found an exception is thrown
+        // if the path is null or not found, an exception is thrown
         if (url == null) throw new NullPointerException();
         // try to open a new input stream to read the default values
         try(InputStream inputStream = url.openStream()) {
@@ -55,7 +56,7 @@ public class LocalSettings extends Settings {
             try (OutputStream outputStream = new FileOutputStream(outputFile)) {
 
                 byte[] buffer = new byte[1024];
-                // if the buffer isn't empty the write function writes the read bytes using the stored length in bytesRead var below
+                // if the buffer isn't empty, the write function writes the read bytes using the stored length in bytesRead var below
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytesRead);
@@ -74,8 +75,8 @@ public class LocalSettings extends Settings {
 
             // handle potential ConversionExceptions gracefully
             try {
-                this.WindowDefHeight = config.getInt(Constants.Config.WINDOW_DEFAULT_HEIGHT);
                 this.WindowDefWidth = config.getInt(Constants.Config.WINDOW_DEFAULT_WIDTH);
+                this.WindowDefHeight = config.getInt(Constants.Config.WINDOW_DEFAULT_HEIGHT);
             } catch (ConversionException e) {
                 LEDSuite.logger.error("Error while parsing Window-Default-Height and Window-Default-Width! Not a valid Number!");
                 LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
@@ -89,25 +90,50 @@ public class LocalSettings extends Settings {
             }
 
             try {
-                double temp = config.getDouble(Constants.Config.NETWORK_COMMUNICATION_CLOCK_SPEED);
-                this.NetworkingCommunicationClockSpeed = (int) Math.round(temp * 1000);
+                double temp = config.getDouble(Constants.Config.NETWORK_COMMUNICATION_CLOCK);
+                this.NetworkingCommunicationClock = (int) (Math.round((temp * 1000)));
             } catch (ClassCastException | ConversionException e) {
-                LEDSuite.logger.error("Error while parsing NetworkingCommunicationClockSpeed! Not a valid time argument (seconds)!");
+                LEDSuite.logger.error("Error while parsing NetworkingCommunicationClock! Not a valid time argument (seconds)!");
                 LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
+            try {
+                LogFileMaxFiles = config.getInt(Constants.Config.LOG_FILE_MAX_FILES);
+            } catch (ConversionException e) {
+                LEDSuite.logger.error("Error while parsing LogFileMaxFiles! Not a valid time argument (seconds)!");
+                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+
+            try {
+                double temp = config.getDouble(Constants.Config.STATUS_REQUEST_CLOCK_ACTIVE);
+                this.StatusRequestClockActive = (int) (Math.round((temp * 1000)));
+            } catch (ClassCastException | ConversionException e) {
+                LEDSuite.logger.error("Error while parsing StatusRequestClockActive! Not a valid time argument (seconds)!");
+                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+
+            try {
+                double temp = config.getDouble(Constants.Config.STATUS_REQUEST_CLOCK_PASSIVE);
+                this.StatusRequestClockPassive = (int) (Math.round((temp * 1000)));
+            } catch (ClassCastException | ConversionException e) {
+                LEDSuite.logger.error("Error while parsing StatusRequestClockPassive! Not a valid time argument (seconds)!");
+                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
             this.selectionDir = config.getString(Constants.Config.SELECTION_DIR);
 
             DisplayStatusBar = config.getBoolean(Constants.Config.DISPLAY_STATUS_BAR);
             CheckIPv4 = config.getBoolean(Constants.Config.CHECK_IPV4);
             AutoPlayAfterUpload = config.getBoolean(Constants.Config.AUTO_PLAY_AFTER_UPLOAD);
+            LogFileEnabled = config.getBoolean(Constants.Config.LOG_FILE_ENABLED);
+            LogFileLogLevelAll = config.getBoolean(Constants.Config.LOG_FILE_LOG_LEVEL_ALL);
+            if (LogFileMaxFiles < 1) LogFileMaxFiles = LogFileEnabled ? 1 : 0;
 
             LEDSuite.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e){
             LEDSuite.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
             LEDSuite.logger.warn("Program halted to prevent any further errors!");
             LEDSuite.logger.warn("Please delete the old config file from your .config folder and restart the application!");
-            LEDSuite.exit(1);
+            LEDSuite.getInstance().exit(1);
         }
     }
 
@@ -118,7 +144,7 @@ public class LocalSettings extends Settings {
     }
 
     public void copyImpl(Settings settings1, boolean log) {
-        // check if other settings class type is compatible
+        // check if another settings class type is compatible
         if (settings1.getType() != type) {
             if (settings1.getType() != Type.UNDEFINED) {
                 LEDSuite.logger.error("Can't copy settings from " + settings1.getName() + " Type: " + settings1.getType() + " to " + getName() + " Type: " + type);
@@ -126,7 +152,7 @@ public class LocalSettings extends Settings {
             }
             LEDSuite.logger.info("Can't confirm settings type! Type = UNDEFINED");
         }
-        // casting to compatible settings type after check
+        // casting to a compatible settings type after check
         LocalSettings settings = (LocalSettings) settings1;
         if (log) LEDSuite.logger.debug("Loading settings from " + settings.getName() + "...");
         // copying settings
@@ -136,9 +162,15 @@ public class LocalSettings extends Settings {
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
         this.DisplayStatusBar = settings.DisplayStatusBar;
-        this.NetworkingCommunicationClockSpeed = settings.NetworkingCommunicationClockSpeed;
+        this.NetworkingCommunicationClock = settings.NetworkingCommunicationClock;
         this.CheckIPv4 = settings.CheckIPv4;
         this.AutoPlayAfterUpload = settings.AutoPlayAfterUpload;
+        this.StatusRequestClockPassive = settings.StatusRequestClockPassive;
+        this.StatusRequestClockActive = settings.StatusRequestClockActive;
+        this.LogFileMaxFiles = settings.LogFileMaxFiles;
+        this.LogFileEnabled = settings.LogFileEnabled;
+        this.LogFileLogLevelAll = settings.LogFileLogLevelAll;
+
         if (log) LEDSuite.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         if (log) LEDSuite.logger.debug(getName() + " now inherits all values from " + settings.getName());
     }
@@ -157,12 +189,12 @@ public class LocalSettings extends Settings {
         // loading config file
         YAMLConfiguration conf;
         FileHandler fH;
-        HashMap<Integer, String> comments;
+        TreeMap<Integer, String> comments;
         try {
             conf = new YAMLConfiguration();
             fH = new FileHandler(conf);
             fH.load(Constants.File_System.config);
-            comments = new HashMap<>(CommentPreservation.extractComments(Constants.File_System.config));
+            comments = new TreeMap<>(CommentPreservation.extractComments(Constants.File_System.config));
         } catch (ConfigurationException e) {
             LEDSuite.logger.error("Error occurred while writing config values to config.yaml!");
             LEDSuite.logger.warn("Please restart the application to prevent further errors!");
@@ -174,11 +206,19 @@ public class LocalSettings extends Settings {
             conf.setProperty(Constants.Config.WINDOW_RESIZABLE, WindowResizeable);
             conf.setProperty(Constants.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
             conf.setProperty(Constants.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
+
             conf.setProperty(Constants.Config.LOG_LEVEL, LogLevel);
+            conf.setProperty(Constants.Config.LOG_FILE_ENABLED, LogFileEnabled);
+            conf.setProperty(Constants.Config.LOG_FILE_LOG_LEVEL_ALL, LogFileLogLevelAll);
+            conf.setProperty(Constants.Config.LOG_FILE_MAX_FILES, LogFileMaxFiles);
+
+            conf.setProperty(Constants.Config.CHECK_IPV4, CheckIPv4);
+            conf.setProperty(Constants.Config.NETWORK_COMMUNICATION_CLOCK, ((double) NetworkingCommunicationClock / 1000));
+            conf.setProperty(Constants.Config.STATUS_REQUEST_CLOCK_PASSIVE, ((double) StatusRequestClockPassive / 1000));
+            conf.setProperty(Constants.Config.STATUS_REQUEST_CLOCK_ACTIVE, ((double) StatusRequestClockActive / 1000));
+
             conf.setProperty(Constants.Config.SELECTION_DIR, selectionDir);
             conf.setProperty(Constants.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
-            conf.setProperty(Constants.Config.NETWORK_COMMUNICATION_CLOCK_SPEED, NetworkingCommunicationClockSpeed / 1000);
-            conf.setProperty(Constants.Config.CHECK_IPV4, CheckIPv4);
             conf.setProperty(Constants.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
             // saving settings
             fH.save(Constants.File_System.config);
@@ -262,14 +302,25 @@ public class LocalSettings extends Settings {
                 DisplayStatusBar == other.DisplayStatusBar &&
                 CheckIPv4 == other.CheckIPv4 &&
                 AutoPlayAfterUpload == other.AutoPlayAfterUpload &&
+                LogFileEnabled == other.LogFileEnabled &&
+                LogFileLogLevelAll == other.LogFileLogLevelAll &&
+                LogFileMaxFiles == other.LogFileMaxFiles &&
+                StatusRequestClockPassive == other.StatusRequestClockPassive &&
+                StatusRequestClockActive == ((LocalSettings) obj).StatusRequestClockActive &&
                 Objects.equals(selectionDir, other.selectionDir) &&
-                Objects.equals(NetworkingCommunicationClockSpeed, other.NetworkingCommunicationClockSpeed);
+                Objects.equals(NetworkingCommunicationClock, other.NetworkingCommunicationClock);
     }
 
     // generate hash code for current settings
     @Override
     public int hashCode() {
-        return Objects.hash(WindowResizeable, WindowDefHeight, WindowDefWidth, LogLevel, selectionDir, DisplayStatusBar, CheckIPv4, AutoPlayAfterUpload, NetworkingCommunicationClockSpeed);
+        return Objects.hash(WindowResizeable, WindowDefHeight,
+                WindowDefWidth, LogLevel, selectionDir,
+                DisplayStatusBar, CheckIPv4, AutoPlayAfterUpload,
+                NetworkingCommunicationClock, StatusRequestClockPassive,
+                StatusRequestClockActive, LogFileEnabled,
+                LogFileLogLevelAll, LogFileMaxFiles
+        );
     }
 
 }

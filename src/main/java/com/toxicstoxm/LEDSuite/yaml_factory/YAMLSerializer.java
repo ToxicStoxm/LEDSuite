@@ -16,7 +16,7 @@ public class YAMLSerializer {
         try {
             packetType = YAMLMessage.PACKET_TYPE.valueOf(yamlMessage.getPacketTypeV());
         } catch (IllegalArgumentException e) {
-            throw new InvalidPacketTypeException("Invalid packet type: " + packetType);
+            throw new InvalidPacketTypeException("Invalid packet type: " + null);
         }
         switch (packetType) {
             case reply -> result = serializeReplyYAML(yamlMessage);
@@ -32,7 +32,7 @@ public class YAMLSerializer {
         try {
             replyType = YAMLMessage.REPLY_TYPE.valueOf(yamlMessage.getReplyTypeV());
         } catch (IllegalArgumentException e) {
-            throw new InvalidReplyTypeException("Invalid reply type: " + replyType);
+            throw new InvalidReplyTypeException("Invalid reply type: " + null);
         }
         switch (replyType) {
             case menu -> {

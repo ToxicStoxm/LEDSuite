@@ -51,7 +51,7 @@ public class TickingSystem {
                 } catch (InterruptedException e) {
                     LEDSuite.logger.error("Ticking System was interrupted!");
                     LEDSuite.logger.warn("Stopping program to prevent further errors!");
-                    LEDSuite.exit(1);
+                    LEDSuite.getInstance().exit(1);
                 }
             }
         }

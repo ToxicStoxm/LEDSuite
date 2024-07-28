@@ -70,6 +70,10 @@ public class NetworkLogger {
         }
 
         // Construct the aligned strings
+        return getStrings(splitStrings, maxLengths);
+    }
+
+    private List<String> getStrings(List<String[]> splitStrings, int[] maxLengths) {
         List<String> alignedStrings = new ArrayList<>();
         for (String[] parts : splitStrings) {
             StringBuilder alignedString = new StringBuilder();
@@ -81,7 +85,6 @@ public class NetworkLogger {
             }
             alignedStrings.add(alignedString.toString());
         }
-
         return alignedStrings;
     }
 

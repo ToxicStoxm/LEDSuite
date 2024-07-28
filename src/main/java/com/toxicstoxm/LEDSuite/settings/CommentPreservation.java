@@ -3,16 +3,13 @@ package com.toxicstoxm.LEDSuite.settings;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class CommentPreservation {
-    public static HashMap<Integer, String> extractComments(String filePath) {
+    public static TreeMap<Integer, String> extractComments(String filePath) {
         File f = new File(filePath);
         if (!f.exists()) throw new NullPointerException("File location not defined!");
-        HashMap<Integer, String> result = new HashMap<>();
+        TreeMap<Integer, String> result = new TreeMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)))) {
             String line;
@@ -33,7 +30,7 @@ public final class CommentPreservation {
         return result;
     }
 
-    public static void insertComments(String filePath, HashMap<Integer, String> comments) throws IOException {
+    public static void insertComments(String filePath, TreeMap<Integer, String> comments) throws IOException {
         File f = new File(filePath);
         if (!f.exists()) throw new NullPointerException("File location not defined!");
 
@@ -47,7 +44,7 @@ public final class CommentPreservation {
         }
 
         // Insert comments
-        for (Map.Entry<Integer, String> entry : comments.entrySet()) {
+        for (SortedMap.Entry<Integer, String> entry : comments.entrySet()) {
             int lineNumber = entry.getKey() - 1; // convert to 0-based index
             String comment = entry.getValue();
 

@@ -3,6 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'io.github.jwharm.flatpak-gradle-generator' version '1.2.0'
 }
 
 group = 'com.toxicstoxm'
@@ -10,6 +11,7 @@ version = '0.1.2'
 var mainClass = group + "." + name + ".LEDSuite"
 
 repositories {
+    maven { url './offline-repository/' }
     mavenCentral()
 }
 
@@ -32,9 +34,14 @@ tasks.register("processVersion", Copy) {
         include("Constants.java")
         filter(ReplaceTokens, tokens: ['version': version])
     }
-    into layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/")
+    into layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/")
 
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.flatpakGradleGenerator {
+    outputFile = file('flatpak-sources.json')
+    downloadDirectory = './offline-repository'
 }
 
 // exclude the original Constants class from the source set so gradle doesn't compile it in
@@ -49,7 +56,7 @@ sourceSets {
 // include the new Constants class that was previously generated
 tasks.named("compileJava", JavaCompile) {
     dependsOn("processVersion")
-    source(layout.buildDirectory.dir("generated/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
+    source(layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
 }
 
 shadowJar {

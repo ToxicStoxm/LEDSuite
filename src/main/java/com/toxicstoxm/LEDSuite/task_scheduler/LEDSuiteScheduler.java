@@ -329,7 +329,7 @@ public class LEDSuiteScheduler implements TaskScheduler {
                 runners.put(task.getTaskId(), task);
             }
         }
-        // We split this because of the way things are ordered for all of the async calls in LEDSuiteScheduler
+        // We split this because of the way things are ordered for all the async calls in LEDSuiteScheduler
         // (it prevents race-conditions)
         for (task = head; task != lastTask; task = head) {
             head = task.getNext();

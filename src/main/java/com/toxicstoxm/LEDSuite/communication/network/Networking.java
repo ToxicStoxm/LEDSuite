@@ -33,7 +33,7 @@ import java.util.*;
  * Utility class for server communication.
  * <p>
  * This class provides methods for interacting with a server, including sending and receiving messages and handling potential errors.
- * @implNote {@code YAML} is used as the primary message format since it is easy to parse and scale.
+ * @implNote {@code YAML} is used as the primary message format since it is straightforward to parse and scale.
  * @since 1.0.0
  */
 public class Networking {
@@ -96,7 +96,7 @@ public class Networking {
                 process.waitFor();
 
                 // iterating through the command output and checking if it contains a specific String that indicates that the ping was successful
-                // if the specific string ('64 bytes' in this case) is found the function returns true
+                // if the specific string ('64 bytes' in this case) is found, the function returns true
                 for (String s : output) {
                     if (s.toLowerCase().contains("64 bytes")) {
                         LEDSuite.logger.verbose("Ping was successful!");
@@ -140,7 +140,7 @@ public class Networking {
                     // this is done so the error can be handled differently for different use cases
                     if (!ping(ip)) throw new UnknownHostException("Connection timed out!");
 
-                    // if the ping is successful the IPv4 is pares by InetAddress
+                    // if the ping is successful, the IPv4 is pares by InetAddress
                     host = InetAddress.ofLiteral(ip);
                 } else {
                     // tries to get IPv4 from a host name using InetAddress integrated getByName() function
@@ -150,7 +150,7 @@ public class Networking {
                 // gets the IPv4 address from the InetAddress object
                 ipv4 = host.getHostAddress();
             } catch (UnknownHostException e) {
-                // if any exception occur the program will display some standard messages in the console
+                // if any exception occurs, the program will display some standard messages in the console
                 LEDSuite.logger.verbose("Ping failed!");
                 LEDSuite.logger.verbose(e.getMessage());
                 LEDSuite.logger.warn("Invalid host name or IPv4: '" + ip + "'");
@@ -229,7 +229,7 @@ public class Networking {
          * Sends a file upload request to the server, if successful the specified file loaded into memory and sent to the specified host (server:port) monitored by the specified progress tracker <p>
          * This is a wrapper function for {@link #sendFile(String, int, ProgressTracker, File)}
          * @param serverIP4 the servers IPv4
-         * @param serverPort the servers port
+         * @param serverPort the server port
          * @param fileToSendPath path to a file that should be sent to the server
          * @param progressTracker a progress tracker, used to monitor uploading progress, this could be useful if you want to display a loading bar
          * @since 1.0.0
@@ -247,7 +247,7 @@ public class Networking {
                                 .setObjectNewValue(String.valueOf(fileToSend.length()))
                                 .build(),
                         success -> {
-                            // if the request was successful send the file to the server using the sendFile() method
+                            // if the request was successful, send the file to the server using the sendFile() method
                             if (success) {
                                 if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
                                     LEDSuite.logger.error("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
@@ -266,11 +266,11 @@ public class Networking {
         /**
          *
          * @param serverIPv4 the servers IPv4
-         * @param serverPort the servers port
+         * @param serverPort the server port
          * @param progressTracker a progress tracker, used to monitor uploading progress, this could be useful if you want to display a loading bar
          * @param fileToSend the file to send to the server
          * @return {@code true} if the upload was successful, otherwise {@code false}
-         * @implNote the serverIPv4 and port params are only used for logging and aren't actually used as address, since that is handled by the {@link NetworkHandler}
+         * @implNote the serverIPv4 and port params are only used for logging and aren't used as address, since that is handled by the {@link NetworkHandler}
          * @since 1.0.0
          */
         public static boolean sendFile(String serverIPv4, int serverPort, ProgressTracker progressTracker, File fileToSend) {
@@ -348,7 +348,7 @@ public class Networking {
                 long printDelay = 2000;
                 long lastPrint = System.currentTimeMillis() - printDelay;
 
-                // reading / writing file contents using the buffer
+                // reading / writing file contents using the buffer,
                 // the app also calculates transfer speed in MB/S and ETA
                 // additionally the app keeps track on how much data was already transferred
                 LEDSuite.logger.verbose(id + "Sending main file contents...");
@@ -389,7 +389,7 @@ public class Networking {
 
                         long current = System.currentTimeMillis();
                         if (current - lastPrint > printDelay) {
-                            // displaying transfer information message in the console containing speed, eta, file size and transferred data
+                            // displaying a transfer information message in the console containing speed, eta, file size and transferred data
                             LEDSuite.logger.verbose(id + "Transferring File: " + mbTransferredSize + "MB / " + mbFileSize + "MB -- " + (double) Math.round(percent * 1000) / 1000 + "% -- Speed: " + mbPerSecond + "MB/S -- ETA: " + result.toString().trim());
                             lastPrint = current;
                         }
@@ -417,7 +417,7 @@ public class Networking {
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
                 }
 
-                // if the progress tracker object is not null and the upload has finished
+                // if the progress tracker object is not null and the upload has finished,
                 // update the progress percentage to 100% manually since the loop above will exit at 99%
                 if (track && transferredSize > 0) {
                     progressTracker.setTotalSizeInBytes(fileSize);
@@ -430,7 +430,7 @@ public class Networking {
                     progressTracker.setEta("N/A");
                 }
 
-                // flushing output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
+                // flushing the output stream to make sure all remaining data is sent to the server to prevent data getting stuck in buffers
                 out.flush();
                 LEDSuite.logger.verbose(id + "Successfully send file contents!");
                 LEDSuite.logger.verbose(id + "Sending complete!");
@@ -477,7 +477,7 @@ public class Networking {
         private static final long delay = 10; // delay in milliseconds between network packets
 
         /**
-         * Manages the core networking logic, including the listener and sending queue with an appropriate send handler.
+         * Manages the core networking logic, including the listener and sending queue with an appropriate send-handler.
          * This class maintains an open connection to the server using a keepalive mechanism.
          * <p>
          * Any client or server-side errors are handled appropriately.
@@ -533,7 +533,7 @@ public class Networking {
              */
             public interface SuccessCallback {
                 /**
-                 * Called when the communication between server and client finished (message was transferred to the server or an error occurred).
+                 * Called when the communication between server and client finished (a message was transferred to the server or an error occurred).
                  * @param success {@code true} If the message was sent successfully, {@code false} if any errors occurred during transfer or no server is connected
                  * @throws NetworkException if any errors occur, to allow for custom error handling
                  * @since 1.0.0
@@ -542,7 +542,7 @@ public class Networking {
             }
 
             /**
-             * Used to get the current connected socket object. If the socket is not yet connected a new connection will be made.
+             * Used to get the current connected socket object. If the socket is not yet connected, a new connection will be made.
              * @return The current connected socket object.
              * @throws NetworkException if the initialization of a new connection fails
              * @since 1.0.0
@@ -551,7 +551,7 @@ public class Networking {
                 // if the server is not connected, initialize a new connection
                 if (!isConnected()) {
                     init(success -> {
-                        // if initialization fails throw an exception
+                        // if initialization fails, throw an exception
                         if (!success) throw new NetworkException("Failed to establish connection to the server!");
                     });
                 }
@@ -567,14 +567,14 @@ public class Networking {
              *     <li>Create a new network manager, that is responsible for sending messages</li>
              *     <li>Request the initialization of a new network listener using {@link #initListener()}</li>
              * </ul>
-             * @param callback used to communicate result back to the caller method
+             * @param callback used to communicate a result back to the caller method
              * @throws NetworkException if the attempt fails
              * @since 1.0.0
              */
             public static void init(SuccessCallback callback) throws NetworkException {
                 try {
-                    // if socket is not initialized at all, create a new socket
-                    // connect it to the new server
+                    // if a socket is not initialized at all, create a new socket
+                    // connects it to the new server
                     if (server == null || server.isClosed()) {
                         server = new Socket(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort());
                     } else {
@@ -596,7 +596,7 @@ public class Networking {
                 LEDSuite.logger.verbose("Network Handler: started network handle!");
 
 
-                // if manager is already running cancel it
+                // if manager is already running, cancel it
                 if (mgr != null) mgr.cancel();
                 long keepalive = 500;
 
@@ -615,7 +615,7 @@ public class Networking {
                         // check if keepalive needs to be sent
                         if (TimeManager.call("keepalive")) {
                             try {
-                                // try sending keepalive message to server
+                                // try sending a keepalive message to server
                                 if (!sendKeepalive(
                                         // build new keepalive packet using YAMLSerializer
                                         YAMLMessage.builder()
@@ -633,9 +633,9 @@ public class Networking {
                                 LEDSuite.logger.error(e);
                             }
                         }
-                        // check if status needs to be sent / updated
+                        // check if the status needs to be sent / updated
                         if (TimeManager.call("status")) {
-                            // if main window is open request status from server
+                            // if the main window is open request status from server
                             if (LEDSuite.mainWindow != null) LEDSuite.mainWindow.getStatus(null);
                         }
                         // if the send-queue isn't empty and the server is connected
@@ -646,14 +646,14 @@ public class Networking {
                             networkQueue.remove(entry.getKey());
                         }
                     }
-                }.runTaskTimerAsynchronously(LEDSuite.argumentsSettings.getNetworkingCommunicationClockSpeed(), delay);
+                }.runTaskTimerAsynchronously(LEDSuite.argumentsSettings.getNetworkingCommunicationClock(), delay);
                 LEDSuite.logger.verbose("Network Handler: started manager!");
 
                 // initialize the listener
                 initListener();
 
                 LEDSuite.logger.verbose("Network Handler started!");
-                // informs the functions caller of the result
+                // informs the function caller of the result
                 callback.getResult(true);
             }
 
@@ -675,7 +675,7 @@ public class Networking {
                     @Override
                     public void run() {
                         try {
-                            // if no server is connected do nothing
+                            // if no server is connected, do nothing
                             if (!isConnected()) return;
                             // get the current connected sockets input stream
                             InputStream is = server.getInputStream();
@@ -765,7 +765,7 @@ public class Networking {
              */
             public static void reboot() throws NetworkException {
                 LEDSuite.logger.verbose("Network Handler: Fulfilling reboot request!");
-                // try to close current connection
+                // try to close the current connection
                 try {
                     LEDSuite.logger.verbose("Network Handler: Closing socket");
                     server.close();
@@ -782,7 +782,7 @@ public class Networking {
                 clearQueues();
 
                 // try to initialize a new connection and restart the handler with init(SuccessCallback)
-                // if it fails throw a new NetworkException to allow for custom error handling
+                // if it fails to throw a new NetworkException to allow for custom error handling
                 try {
                     LEDSuite.logger.verbose("Network Handler: initializing...");
                     init(success -> {
@@ -797,7 +797,7 @@ public class Networking {
             }
 
             /**
-             * Wrapper function for {@link #reboot()}. Used when the host address or port is changed by the user.
+             * Wrapper function for {@link #reboot()}. Used when the user changes the host address or port.
              * @throws NetworkException if the reboot fails
              * @since 1.0.0
              */
@@ -962,17 +962,7 @@ public class Networking {
             YAMLConfiguration yaml;
             try {
                 // Wrap the InputStream with a BufferedReader for efficient reading
-                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-                // Read the first line to get the total number of bytes expected
-                int totalBytes = Integer.parseInt(br.readLine());
-                //LEDSuite.logger.debug("Total bytes: " + totalBytes);
-
-                // Prepare a buffer to read the expected number of bytes
-                char[] buffer = new char[totalBytes];
-
-                // Read the actual data into the buffer if not cancelled
-                if (br.read(buffer) < 1) throw new NullPointerException();
+                char[] buffer = defaultRead(is);
 
                 // Convert the buffer into a ByteArrayInputStream and load it into the YAMLConfiguration
                 yaml = new YAMLConfiguration();
@@ -984,6 +974,21 @@ public class Networking {
             return yaml;
         }
 
+        private static char[] defaultRead(InputStream is) throws IOException {
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+            // Read the first line to get the total number of bytes expected
+            int totalBytes = Integer.parseInt(br.readLine());
+            //LEDSuite.logger.debug("Total bytes: " + totalBytes);
+
+            // Prepare a buffer to read the expected number of bytes
+            char[] buffer = new char[totalBytes];
+
+            // Read the actual data into the buffer if not canceled
+            if (br.read(buffer) < 1) throw new NullPointerException();
+            return buffer;
+        }
+
         /**
          * Default handler for a received YAML message. This is used if no custom handler was specified.
          * @param yaml the received YAML message
@@ -992,7 +997,7 @@ public class Networking {
         public static void defaultHandle(YAMLMessage yaml) {
             // YAML message type check
             if (yaml.getPacketType().equals(YAMLMessage.PACKET_TYPE.error)) {
-                // converts yaml message to wrapper class ServerError, fires a new error event
+                // converts YAML message to wrapper class ServerError, fires a new error event
                 LEDSuite.eventManager.fireEvent(new Events.Error(ServerError.fromYAMLMessage(yaml)));
             } else {
                 // fires a general DataIn event to process data further elsewhere
@@ -1076,7 +1081,7 @@ public class Networking {
          * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback, LEDSuiteProcessor)}.
          * <p>Requests to send specified YAML message to specified host (address:port), with specified successCallback.</p>
          * @param host the host address (just for logging)
-         * @param port the hosts port (just for logging)
+         * @param port the host port (just for logging)
          * @param yaml the YAML message to send
          * @param callback completion monitor to report completion state to
          * @return {@code true} If send request was successful, otherwise {@code false}
@@ -1090,7 +1095,7 @@ public class Networking {
          * Wrapper for {@link #sendYAML(String, int, YAMLConfiguration, FinishCallback, LEDSuiteProcessor, boolean)}.
          * <p>Requests to send specified YAML message to specified host (address:port), with specified successCallback and reply handler.</p>
          * @param host the host address (just for logging)
-         * @param port the hosts port (just for logging)
+         * @param port the host port (just for logging)
          * @param yaml the YAML message to send
          * @param callback completion monitor to report completion state to
          * @return {@code true} If send request was successful, otherwise {@code false}
@@ -1103,7 +1108,7 @@ public class Networking {
         /**
          * Creates a network queue entry from specified host address, port, YAML message and replay handler and adds it to the network queue based on priority. It also informs the completion monitor object of any errors or successful completion.
          * @param host the host address (just for logging)
-         * @param port the hosts port (just for logging)
+         * @param port the host port (just for logging)
          * @param yaml the YAML message to send
          * @param callback completion monitor to report completion state to
          * @param replyHandler custom listener processor to process the response data with
@@ -1112,8 +1117,8 @@ public class Networking {
          * @since 1.0.0
          */
         public static boolean sendYAML(String host, int port, YAMLConfiguration yaml, FinishCallback callback, LEDSuiteProcessor replyHandler, boolean priority) {
-            // if socket isn't open and connected, try to reopen / reconnect
-            // if that fails simply return false completion and cancel attempt
+            // if the socket isn't open and connected, try to reopen / reconnect
+            // if that fails, to simply return false completion and cancel an attempt
             if (!NetworkHandler.isConnected()) {
                 try {
                     NetworkHandler.init(success -> {
@@ -1128,8 +1133,8 @@ public class Networking {
                     return false;
                 }
             }
-            // if socket is connected or was successfully reconnected
-            // construct a new network queue entry out of, host, port, yaml, callback and replyHandler objects
+            // if the socket is connected or was successfully reconnected,
+            // construct a new network queue entry out of, host, port, YAML, callback and replyHandler objects
             LEDSuite.logger.verbose("Appending send request to the network queue!");
             LEDSuiteRunnable sendRequest = new LEDSuiteRunnable() {
                 @Override
@@ -1139,7 +1144,7 @@ public class Networking {
                 }
             };
             // put the network entry into the network queue based on priority
-            // if priority is true, simply subtract 1s from the current time before adding the entry to the queue to give it priority
+            // if priority is true, subtract 1s from the current time before adding the entry to the queue to give it priority
             long current = System.currentTimeMillis();
             networkQueue.put(priority ? current - 1000 : current, sendRequest);
             return true;
@@ -1148,7 +1153,7 @@ public class Networking {
         /**
          * Wrapper for {@link #sendYAMLMessage(String, int, YAMLConfiguration, FinishCallback, LEDSuiteProcessor, boolean)}.
          * @param serverIP4 the host address (just for logging)
-         * @param serverPort the hosts port (just for logging)
+         * @param serverPort the host port (just for logging)
          * @param yaml the YAML message to send
          * @param callback completion monitor to report completion state to
          * @param replyHandle custom listener processor to process the response data with
@@ -1171,7 +1176,7 @@ public class Networking {
          *     <li>Send monitor object {@link NetworkHandler.SuccessCallback} is notified of the result</li>
          * </ul>
          * @param serverIP4 the host address (just for logging)
-         * @param serverPort the hosts port (just for logging)
+         * @param serverPort the host port (just for logging)
          * @param yaml the YAML message to send
          * @param callback completion monitor to report completion state to
          * @param replyHandle custom listener processor to process the response data with
@@ -1185,7 +1190,7 @@ public class Networking {
 
             // checking if network event id is given
             boolean noID = false;
-            // figuring out network event id, if none is given create a new one
+            // figuring out network event id, if none is given, create a new one
             String networkID = "";
             String id = "";
             if (displayLog) {
@@ -1196,7 +1201,7 @@ public class Networking {
                                 "[Destination '" + serverIP4 + "']" +
                                 "[Port '" + serverPort + "']";
                 try {
-                    // try to get network event id from the yaml file
+                    // try to get network event id from the YAML file
                     networkID = yaml.getString(Constants.Network.YAML.INTERNAL_NETWORK_ID);
                     // if no id is given trigger creation of a new one
                     if (networkID == null || networkID.isBlank()) noID = true;
@@ -1205,7 +1210,7 @@ public class Networking {
                     noID = true;
                 }
 
-                // if no id is given get a new one from networkLogger
+                // if no id is given, get a new one from networkLogger
                 if (noID) {
                     UUID uuid = LEDSuite.networkLogger.getRandomUUID(description);
                     id = "[" +
@@ -1224,12 +1229,12 @@ public class Networking {
                 LEDSuite.logger.verbose(id + "Server: " + serverIP4);
                 LEDSuite.logger.verbose(id + "Port: " + serverPort);
 
-                // notify the rest of the application about the send process
+                // notify the rest of the application about the sending process
                 LEDSuite.eventManager.fireEvent(new Events.DataOut(yaml));
             } else yaml.setProperty(Constants.Network.YAML.INTERNAL_NETWORK_ID, String.valueOf(UUID.randomUUID()));
 
             try {
-                // get current connection and fetch network id from yaml message or request a new one from network logger
+                // get current connection and fetch network id from YAML message or request a new one from network logger
                 Socket socket = NetworkHandler.getServer();
                 UUID networkID0 = null;
                 if (displayLog) {
@@ -1242,7 +1247,7 @@ public class Networking {
                     );
                 }
 
-                // add custom listener to listener collection
+                // add custom listener to a listener collection
                 // if no custom listener is given add the default listener to the listener collection
                 if (replyHandle != null) {
                     NetworkHandler.listenForReply(
@@ -1265,7 +1270,7 @@ public class Networking {
                 // create new YAML message output stream
                 ByteArrayOutputStream outputS = new ByteArrayOutputStream();
 
-                // loading the yaml message into a byteArrayOutputStream using fileHandler built-in function
+                // loading the YAML message into a byteArrayOutputStream using fileHandler built-in function
                 if (displayLog) LEDSuite.logger.verbose(id + "Loading data to transmit...");
                 new FileHandler(yaml).save(outputS);
 
@@ -1292,7 +1297,7 @@ public class Networking {
                     sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle);
                     LEDSuite.logger.error(e);
                 } catch (NetworkException ex) {
-                    // if an error occurs print an error message and give up
+                    // if an error occurs, print an error message and give up
                     if (displayLog) {
                         LEDSuite.logger.error(id + "Error occurred! Transmission terminated!");
                         LEDSuite.logger.error(e);

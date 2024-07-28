@@ -30,7 +30,7 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
         final Thread thread = Thread.currentThread();
         synchronized(workers) {
             if (getPeriod() == -2) {
-                // Never continue running after cancelled.
+                // Never continue running after canceled.
                 // Checking this with the lock is important!
                 return;
             }
@@ -81,7 +81,7 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
                 } finally {
                     if (getPeriod() < 0 && workers.isEmpty()) {
                         // At this spot, we know we are the final async task being executed!
-                        // Because we have the lock, nothing else is running or will run because delay < 0
+                        // Because we have the lock, nothing else is running or will run because of delay < 0
                         runners.remove(getTaskId());
                     }
                 }

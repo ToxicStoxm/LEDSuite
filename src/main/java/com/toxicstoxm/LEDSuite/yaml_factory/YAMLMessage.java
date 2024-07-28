@@ -283,7 +283,7 @@ public class YAMLMessage implements YAMLSerializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("YAMLMessage {");
 
-        // Include fields based on packet type
+        // Include fields based on a packet type
         switch (packetType) {
             case error -> {
                 sb.append("packetType=").append(packetType.name()).append(", ");

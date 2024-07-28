@@ -56,37 +56,140 @@ public class LEDSuite implements EventListener, Runnable {
     public static TickingSystem tickingSystem;
     public static boolean isShutdown = false;
 
-    @CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message and exit.", usageHelp = true)
-    private static boolean help;
 
-    @CommandLine.Option(names = {"-v", "--version"}, description = "Print version information and exit.", versionHelp = true)
-    private static boolean version;
+    @CommandLine.Option(
+            names = {"-h", "--help"},
+            description = "Show this help message and exit.",
+            usageHelp = true
+    )
+    private boolean help;
 
-    @CommandLine.Option(names = {"-l", "--log-level"}, description = "Change the log level for the current session.")
-    private static Logger.log_level logLevel = null;
-    @CommandLine.Option(names = {"-L", "--set-log-level"}, description = "Permanently change the log level.")
-    private static Logger.log_level LogLevel = null;
+    @CommandLine.Option(
+            names = {"-v", "--version"},
+            description = "Print version information and exit.",
+            versionHelp = true
+    )
+    private boolean version;
 
-    @CommandLine.Option(names = {"--initial-window-width"}, description = "Change the initial window width for the current session.")
-    private static int windowDefWidth = -1;
-    @CommandLine.Option(names = {"--set-initial-window-width"}, description = "Permanently change the initial window width.")
-    private static int WindowDefWidth = -1;
+    @CommandLine.Option(
+            names = {"-l", "--log-level"},
+            description = "Change the log level for the current session."
+    )
+    private Logger.log_level logLevel;
 
-    @CommandLine.Option(names = {"--initial-window-height"}, description = "Change the initial window height for the current session.")
-    private static int windowDefHeight = -1;
-    @CommandLine.Option(names = {"--set-initial-window-height"}, description = "Permanently change the initial window height.")
-    private static int WindowDefHeight = -1;
+    @CommandLine.Option(
+            names = {"-L", "--set-log-level"},
+            description = "Permanently change the log level."
+    )
+    private Logger.log_level setLogLevel;
 
-    @CommandLine.Option(names = {"-n", "--networking-clock"}, description = "Change the networking clock for the current session.")
-    private static int networkingCommunicationClockSpeed = -1;
-    @CommandLine.Option(names = {"-N", "--set-networking-clock"}, description = "Permanently change the networking clock.")
-    private static int NetworkingCommunicationClockSpeed = -1;
+    @CommandLine.Option(
+            names = {"--initial-window-width"},
+            description = "Change the initial window width for the current session."
+    )
+    private int initialWindowWidth = -1;
 
-    @CommandLine.Option(names = {"-R", "--reset-config"}, description = "Reset configuration values to default! Type true to confirm!")
-    private static boolean resetConfig;
+    @CommandLine.Option(
+            names = {"--set-initial-window-width"},
+            description = "Permanently change the initial window width."
+    )
+    private int setInitialWindowWidth = -1;
 
-    @CommandLine.Option(names = {"-p", "--get-paths"}, description = "Displays all important paths.")
-    private static boolean paths;
+    @CommandLine.Option(
+            names = {"--initial-window-height"},
+            description = "Change the initial window height for the current session."
+    )
+    private int initialWindowHeight = -1;
+
+    @CommandLine.Option(
+            names = {"--set-initial-window-height"},
+            description = "Permanently change the initial window height."
+    )
+    private int setInitialWindowHeight = -1;
+
+    @CommandLine.Option(
+            names = {"--networking-clock"},
+            description = "Change the networking clock for the current session."
+    )
+    private int networkingClock = -1;
+
+    @CommandLine.Option(
+            names = {"--set-networking-clock"},
+            description = "Permanently change the networking clock."
+    )
+    private int setNetworkingClock = -1;
+
+    @CommandLine.Option(
+            names = {"--status-clock-passive"},
+            description = "Change the status request passive clock for the current session."
+    )
+    private int statusClockPassive = -1;
+
+    @CommandLine.Option(
+            names = {"--set-status-clock-passive"},
+            description = "Permanently change the status request passive clock."
+    )
+    private int setStatusClockPassive = -1;
+
+    @CommandLine.Option(
+            names = {"--status-clock-active"},
+            description = "Change the status request active clock for the current session."
+    )
+    private int statusClockActive = -1;
+
+    @CommandLine.Option(
+            names = {"--set-status-clock-active"},
+            description = "Permanently change the status request active clock."
+    )
+    private int setStatusClockActive = -1;
+
+    @CommandLine.Option(
+            names = {"-w", "--write-log-to-file"},
+            description = "Change if the log should be written to a log file for the current session."
+    )
+    private boolean writeLogToFile;
+
+    @CommandLine.Option(
+            names = {"-W", "--set-write-log-to-file"},
+            description = "Permanently change if the log should be written to a log file."
+    )
+    private boolean setWriteLogToFile;
+
+    @CommandLine.Option(
+            names = {"--write-log-level-all"},
+            description = "Change if all log levels should be written to the log file for the current session."
+    )
+    private boolean writeLogLevelAll;
+
+    @CommandLine.Option(
+            names = {"--set-write-log-level-all"},
+            description = "Permanently change if all log levels should be written to the log file."
+    )
+    private boolean setWriteLogLevelAll;
+
+    @CommandLine.Option(
+            names = {"--max-log-files"},
+            description = "Change the maximum number of log files allowed for the current session."
+    )
+    private int maxLogFiles = -1;
+
+    @CommandLine.Option(
+            names = {"--set-max-log-files"},
+            description = "Permanently change the maximum number of log files allowed."
+    )
+    private int setMaxLogFiles = -1;
+
+    @CommandLine.Option(
+            names = {"-R", "--reset-config"},
+            description = "Reset configuration values to default. Type 'true' to confirm!"
+    )
+    private boolean resetConfig;
+
+    @CommandLine.Option(
+            names = {"-p", "--get-paths"},
+            description = "Display all important paths."
+    )
+    private boolean getPaths;
 
     // main method
     public static void main(String[] args) {
@@ -104,7 +207,7 @@ public class LEDSuite implements EventListener, Runnable {
 
         // processes commandline arguments and run application
         int statusCode = cmd.execute(args);
-        logger.debug("Picocli exit code = " + statusCode);
+        if (logger != null) logger.debug("Picocli exit code = " + statusCode);
     }
 
     // constructor method
@@ -129,7 +232,7 @@ public class LEDSuite implements EventListener, Runnable {
     }
 
     // logic initialization function
-    public static void logicInit() {
+    public void logicInit() {
 
         // program initialization
         // creates new settings and server_settings classes to hold config settings
@@ -236,28 +339,94 @@ public class LEDSuite implements EventListener, Runnable {
         loadConfigsFromFile();
 
         argumentsSettings.copyImpl(settings, false);
-        if (LogLevel != null) {
-            argumentsSettings.setLogLevel(LogLevel.getValue());
+        if (setLogLevel != null) {
+            argumentsSettings.setLogLevel(setLogLevel.getValue());
             settings.setLogLevel(argumentsSettings.getLogLevel());
-        } else if (logLevel != null) argumentsSettings.setLogLevel(logLevel.getValue());
+        } else if (logLevel != null) {
+            argumentsSettings.setLogLevel(logLevel.getValue());
+        }
 
-        if (WindowDefWidth > 0) {
-            argumentsSettings.setWindowDefWidth(WindowDefWidth);
+        if (setInitialWindowWidth > 0) {
+            argumentsSettings.setWindowDefWidth(setInitialWindowWidth);
             settings.setWindowDefWidth(argumentsSettings.getWindowDefWidth());
-        } else if (windowDefWidth > 0) argumentsSettings.setWindowDefWidth(windowDefWidth);
+        } else if (initialWindowWidth > 0) {
+            argumentsSettings.setWindowDefWidth(initialWindowWidth);
+        }
 
-        if (WindowDefHeight > 0) {
-            argumentsSettings.setWindowDefHeight(WindowDefHeight);
+        if (setInitialWindowHeight > 0) {
+            argumentsSettings.setWindowDefHeight(setInitialWindowHeight);
             settings.setWindowDefHeight(argumentsSettings.getWindowDefHeight());
-        } else if (windowDefHeight > 0) argumentsSettings.setWindowDefHeight(windowDefHeight);
+        } else if (initialWindowHeight > 0) {
+            argumentsSettings.setWindowDefHeight(initialWindowHeight);
+        }
 
-        if (NetworkingCommunicationClockSpeed > -1) {
-            argumentsSettings.setNetworkingCommunicationClock(NetworkingCommunicationClockSpeed);
+        if (setNetworkingClock > -1) {
+            argumentsSettings.setNetworkingCommunicationClock(setNetworkingClock);
             settings.setNetworkingCommunicationClock(argumentsSettings.getNetworkingCommunicationClock());
-        } else if (networkingCommunicationClockSpeed > -1) argumentsSettings.setNetworkingCommunicationClock(networkingCommunicationClockSpeed);
+        } else if (networkingClock > -1) {
+            argumentsSettings.setNetworkingCommunicationClock(networkingClock);
+        }
+
+        if (setStatusClockPassive > -1) {
+            argumentsSettings.setStatusRequestClockPassive(setStatusClockPassive);
+            settings.setStatusRequestClockPassive(argumentsSettings.getStatusRequestClockPassive());
+        } else if (statusClockPassive > -1) {
+            argumentsSettings.setStatusRequestClockPassive(statusClockPassive);
+        }
+
+        if (setStatusClockActive > -1) {
+            argumentsSettings.setStatusRequestClockActive(setStatusClockActive);
+            settings.setStatusRequestClockActive(argumentsSettings.getStatusRequestClockActive());
+        } else if (statusClockActive > -1) {
+            argumentsSettings.setStatusRequestClockActive(statusClockActive);
+        }
+
+        if (setWriteLogToFile != argumentsSettings.isLogFileEnabled()) {
+            argumentsSettings.setLogFileEnabled(setWriteLogToFile);
+            settings.setLogFileEnabled(argumentsSettings.isLogFileEnabled());
+        } else if (writeLogToFile != argumentsSettings.isLogFileEnabled()) {
+            argumentsSettings.setLogFileEnabled(writeLogToFile);
+        }
+
+        if (setWriteLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
+            argumentsSettings.setLogFileLogLevelAll(setWriteLogLevelAll);
+            settings.setLogFileLogLevelAll(argumentsSettings.isLogFileLogLevelAll());
+        } else if (writeLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
+            argumentsSettings.setLogFileLogLevelAll(writeLogLevelAll);
+        }
+
+        if (setMaxLogFiles > -1 && setMaxLogFiles != argumentsSettings.getLogFileMaxFiles()) {
+            if (setMaxLogFiles < 1) {
+                logger.warn("Invalid value '" + setMaxLogFiles + "' for '--set-max-log-files', value must be a valid integer greater than 1!");
+            } else {
+                argumentsSettings.setLogFileMaxFiles(setMaxLogFiles);
+                settings.setLogFileMaxFiles(argumentsSettings.getLogFileMaxFiles());
+            }
+        } else if (maxLogFiles > -1 && maxLogFiles != argumentsSettings.getLogFileMaxFiles()) {
+            if (maxLogFiles < 1) {
+                logger.warn("Invalid value '" + maxLogFiles + "' for '--max-log-files', value must be a valid integer greater than 1!");
+            } else {
+                argumentsSettings.setLogFileMaxFiles(maxLogFiles);
+            }
+        }
+
+        if (getPaths) {
+            logger.log("Paths:");
+            logger.log(" -> Directories");
+            logger.log("    App directory: '" + Constants.File_System.getAppDir() + "'");
+            logger.log("    Temp directory: '" + Constants.File_System.getTmpDir() + "'");
+            logger.log("    Data directory: '" + Constants.File_System.getDataDir() + "'");
+            logger.log(" -> Files");
+            logger.log("    Configuration file: '" + Constants.File_System.config + "'");
+            logger.log("    Server configuration file: '" + Constants.File_System.server_config + "'");
+            logger.log("    Log file: '" + Constants.File_System.logFile + "'");
+            logger = null;
+            getInstance().app.emitShutdown();
+        }
+
 
         logger.debug("Processing log files...");
-        if (!settings.isLogFileEnabled()) {
+        if (!argumentsSettings.isLogFileEnabled()) {
             if (temp != null) {
                 logger.debug("Moving '" + temp.getName() + "' back to latest.log, since log file is disabled...");
                 logger.debug(temp.renameTo(log_file) ? "Moving success!" : "Moving failed!");
@@ -327,20 +496,6 @@ public class LEDSuite implements EventListener, Runnable {
 
         TimeManager.initTimeTracker("status", argumentsSettings.getStatusRequestClockPassive(), argumentsSettings.getStatusRequestClockPassive() * 2L);
         TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
-
-        if (paths) {
-            logger.log("Paths:");
-            logger.log(" -> Directories");
-            logger.log("    App directory: '" + Constants.File_System.getAppDir() + "'");
-            logger.log("    Temp directory: '" + Constants.File_System.getTmpDir() + "'");
-            logger.log("    Data directory: '" + Constants.File_System.getDataDir() + "'");
-            logger.log(" -> Files");
-            logger.log("    Configuration file: '" + Constants.File_System.config + "'");
-            logger.log("    Server configuration file: '" + Constants.File_System.server_config + "'");
-            logger.log("    Log file: '" + Constants.File_System.logFile + "'");
-
-            getInstance().app.emitShutdown();
-        }
 
         // general startup information displayed in the console upon starting the program
         logger.info("Welcome back!");
@@ -440,7 +595,7 @@ public class LEDSuite implements EventListener, Runnable {
     }
 
     // exiting program with specified status code
-    public static void exit(int status) {
+    public void exit(int status) {
         // firing new shutdown event
         if (eventManager != null) eventManager.fireEvent(new Events.Shutdown("Shutdown"));
         if (logger != null) LEDSuite.logger.info("Saving...");
@@ -456,6 +611,7 @@ public class LEDSuite implements EventListener, Runnable {
         // exiting program with the specified status code
         System.exit(status);
     }
+
     // triggering system-specific beep using java.awt.toolkit
     // commonly used when something fails or an error happens
     public static void sysBeep() {
@@ -464,7 +620,7 @@ public class LEDSuite implements EventListener, Runnable {
     }
 
     // function used to load user settings from config files
-    public static void loadConfigsFromFile() {
+    public void loadConfigsFromFile() {
         // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/config.yaml)
         // using Apache-Commons-Configuration2 and SnakeYaml
         try {
@@ -484,7 +640,7 @@ public class LEDSuite implements EventListener, Runnable {
             LEDSuite.logger.warn("Application was halted!");
             LEDSuite.logger.warn("If this keeps happening please open an issue on GitHub!");
             LEDSuite.logger.warn("Please restart the application!");
-            LEDSuite.exit(1);
+            getInstance().exit(1);
             return;
         }
 
@@ -505,7 +661,7 @@ public class LEDSuite implements EventListener, Runnable {
             LEDSuite.logger.warn("Application was halted!");
             LEDSuite.logger.warn("If this keeps happening please open an issue on GitHub!");
             LEDSuite.logger.warn("Please restart the application!");
-            LEDSuite.exit(1);
+            getInstance().exit(1);
         }
     }
 

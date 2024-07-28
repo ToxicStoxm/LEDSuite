@@ -306,7 +306,7 @@ public class AnimationMenu implements Container {
                 } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException ex) {
                     LEDSuite.logger.error(e);
                     LEDSuite.logger.fatal("FAILED TO DISPLAY MISSING VALUE PLACEHOLDER!");
-                    LEDSuite.exit(1);
+                    LEDSuite.getInstance().exit(1);
                 }
             }
             return result;

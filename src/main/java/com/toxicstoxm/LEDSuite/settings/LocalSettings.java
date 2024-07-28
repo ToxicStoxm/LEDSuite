@@ -133,7 +133,7 @@ public class LocalSettings extends Settings {
             LEDSuite.logger.error("Error while parsing config! Settings / values missing! Your probably using an old config file!");
             LEDSuite.logger.warn("Program halted to prevent any further errors!");
             LEDSuite.logger.warn("Please delete the old config file from your .config folder and restart the application!");
-            LEDSuite.exit(1);
+            LEDSuite.getInstance().exit(1);
         }
     }
 

@@ -424,7 +424,6 @@ public class LEDSuite implements EventListener, Runnable {
             getInstance().app.emitShutdown();
         }
 
-
         logger.debug("Processing log files...");
         if (!argumentsSettings.isLogFileEnabled()) {
             if (temp != null) {

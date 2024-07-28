@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>com.toxicstoxm.ledsuite</id>
-  
+
   <name>LED Suite</name>
 
-  <summary>Control a decorative matrix with style</summary>
-  <summary xml:lang="de">Steuere eine dekorative Matrix mit style</summary>
-  <summary xml:lang="it">Controlare una matrix decorativa con style</summary>
-  <developer_name>ToxicStoxm</developer_name>  
+  <summary>Control an LED-Matrix with style</summary>
+  <summary xml:lang="de">Steuere eine LED-Matrix mit style</summary>
+  <summary xml:lang="it">Controlare una LED-Matrix con style</summary>
+  <developer_name>ToxicStoxm</developer_name>
 
   <metadata_license>CC-BY-SA-4.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
 
-<releases>
-    <release version="0.1.3" date="2024-07-28" type="release">
+  <releases>
+    <release version="0.1.3" date="2024-07-28" type="stable">
       <description>
         <p>This is our first stable release. Please report any bugs on the projects GitHub</p>
         <ul>
@@ -23,7 +23,7 @@
           <li>Fixed a few bugs</li>
           <li>Documentation (7%)</li>
           <li>Code cleanup (12%)</li>
-      </ul>
+        </ul>
       </description>
     </release>
 
@@ -39,7 +39,7 @@
           <li>Code cleanup (8%)</li>
         </ul>
       </description>
-    </release>    
+    </release>
 
     <release version="0.1.1" date="2024-07-16" type="development">
       <description>
@@ -52,7 +52,7 @@
           <li>File cleanup</li>
         </ul>
       </description>
-    </release>    
+    </release>
 
     <release version="0.1.0" date="2024-07-11" type="development">
       <description>
@@ -107,7 +107,7 @@
   <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
   <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
   <url type="contribute">https://github.com/ToxicStoxm/LEDSuite/tree/dev</url>
-  
+
 
   <recommends>
     <display_length compare="ge">300</display_length>
@@ -117,23 +117,34 @@
     <control>keyboard</control>
     <control>touch</control>
   </supports>
-  
+
   <description>
-    <p>
-      DO NOT USE THIS APP IT IS NOT READY YET DO NOT BUILD A LED CUBE FOR THIS PROJECT YET BECAUSE WE COULD LOOSE INTEREST! NOTE: Description could change in the future!
-    </p>
+    <p>Control a decorative matrix with style</p>
+    <p xml:lang="de">Steuere eine dekorative Matrix mit style</p>
+    <p xml:lang="it">Controlare una matrix decorativa con style</p>
   </description>
-  
+
+  <keywords>
+    <keyword>LED</keyword>
+    <keyword>matrix</keyword>
+    <keyword>LCCP</keyword>
+    <keyword>Cube</keyword>
+    <keyword>LEDSuite</keyword>
+  </keywords>
+
   <launchable type="desktop-id">com.toxicstoxm.ledsuite.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://www.crafti-servi.com/website-resources/Backgorunds/LCCP-Screenshot-1.png</image>
+      <caption>LEDSuite add file dialog, used to upload files to the backend.</caption>
+      <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-AddFileDialog.png</image>
     </screenshot>
     <screenshot>
-      <image>https://www.crafti-servi.com/website-resources/Backgorunds/LCCP-Screenshot-2.png</image>
+      <caption>Example of what the settings menu of an animation can look like.</caption>
+      <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-AnimationSettingsDialog.png</image>
     </screenshot>
     <screenshot>
-      <image>https://www.crafti-servi.com/website-resources/Backgorunds/LCCP-Screenshot-3.png</image>
+      <caption>LEDSuite settings menu.</caption>
+      <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-SettingsDialog.png</image>
     </screenshot>
   </screenshots>
 </component>

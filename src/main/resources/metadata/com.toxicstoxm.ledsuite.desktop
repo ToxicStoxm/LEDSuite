@@ -4,9 +4,9 @@ Type=Application
 
 Name=LED Suite
 
-Comment=Control a decorative matrix with style
-Comment[de]=Steuere eine dekorative Matrix mit style
-Comment[it]=Controlare una matrix decorativa con style
+Comment=Control an LED-Matrix with style
+Comment[de]=Steuere eine LED-Matrix mit style
+Comment[it]=Controlare una LED-Matrix con style
 
 Categories=Utility;
 Keywords=LED;matrix;LCCP;Cube;LEDSuite;

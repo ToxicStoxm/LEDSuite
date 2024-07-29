@@ -125,17 +125,17 @@
     <p xml:lang="de">Program for controlling a LED-Matrix or an LED-Cube with the proper backend.</p>
     <p xml:lang="de">With the following features:</p>
     <ul>
-      <il>Uploading files to the server</il>
-      <il>Receiving status and errors from the server</il>
-      <il>Changing and adjusting server-side settings</il>
-      <il>Setting up and controlling interactive animations that are on the server</il>
-      <il>Playing back MP4, JPEG and many other files on the server's LED-Matrix</il>
+      <li>Uploading files to the server</li>
+      <li>Receiving status and errors from the server</li>
+      <li>Changing and adjusting server-side settings</li>
+      <li>Setting up and controlling interactive animations that are on the server</li>
+      <li>Playing back MP4, JPEG and many other files on the server's LED-Matrix</li>
 
-      <il xml:lang="de">Dateien auf dem Server hochladen</il>
-      <il xml:lang="de">Status und Fehler vom Server empfangen</il>
-      <il xml:lang="de">Server-side Einstellungen ändern und anpassen</il>
-      <il xml:lang="de">Interaktive Animationen auf dem Server einrichten und steuern</il>
-      <il xml:lang="de">MP4, JPEG und viele andere Dateitypen auf der LED-Matrix beim Server abspielen </il>
+      <li xml:lang="de">Dateien auf dem Server hochladen</li>
+      <li xml:lang="de">Status und Fehler vom Server empfangen</li>
+      <li xml:lang="de">Server-side Einstellungen ändern und anpassen</li>
+      <li xml:lang="de">Interaktive Animationen auf dem Server einrichten und steuern</li>
+      <li xml:lang="de">MP4, JPEG und viele andere Dateitypen auf der LED-Matrix beim Server abspielen </li>
     </ul>
   </description>
 

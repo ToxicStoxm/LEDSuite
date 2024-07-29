@@ -4,4 +4,4 @@
  - Front-End for any LED-Matrix with the matching backend
  - Back-End: https://github.com/hannescam/LEDCubeBackend
 ## Estimated time until official release:
- - Soon on FlatHub
+ - Soon on FlatHub (waiting for <a href="https://github.com/hannescam/LEDCubeBackend">backend<a>)

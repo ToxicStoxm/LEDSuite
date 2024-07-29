@@ -161,17 +161,17 @@ public class Logger {
     /**
      * Logs the stack trace of an exception to the console and log file.
      *
-     * @param e The exception to log.
+     * @param exception The exception to log.
      * @since 1.0.0
      */
-    public void error(Exception e) {
-        StackTraceElement[] stackTrace = e.getStackTrace();
-        Throwable t = e.getCause();
+    public void error(Exception exception) {
+        StackTraceElement[] stackTrace = exception.getStackTrace();
+        Throwable t = exception.getCause();
 
         // Check if ERROR level logging is enabled and stack trace is not null
         if (log_level.ERROR.isEnabled() && stackTrace != null) {
             // Log the error message and stack trace
-            debug("Error message: " + e);
+            debug("Error message: " + exception);
             debug("Stack trace:");
             for (StackTraceElement s : stackTrace) {
                 debug(s.toString());
@@ -322,7 +322,7 @@ public class Logger {
     }
 
     /**
-     * Retrieves the current stack trace information for logging.
+     * Retrieves the current stack trace information (filename and row-number) for logging.
      *
      * @return The formatted stack trace information.
      * @since 1.0.0

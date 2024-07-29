@@ -122,8 +122,8 @@
     <p>Program for controlling a LED-Matrix or an LED-Cube with the proper backend.</p>
     <p>With the following features:</p>
 
-    <p xml:lang="de">Program for controlling a LED-Matrix or an LED-Cube with the proper backend.</p>
-    <p xml:lang="de">With the following features:</p>
+    <p xml:lang="de">Ein Programm um eine LED-Matrix oder einen LED-Cube zu steuern mit den richtigen Backend.</p>
+    <p xml:lang="de">Mit den folgenden Funktionen:</p>
     <ul>
       <li>Uploading files to the server</li>
       <li>Receiving status and errors from the server</li>

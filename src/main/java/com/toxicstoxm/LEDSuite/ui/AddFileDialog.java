@@ -17,8 +17,27 @@ import org.gnome.gtk.*;
 
 import java.net.URLConnection;
 
+/**
+ * The {@code AddFileDialog} class represents a dialog for uploading files, allowing users to select
+ * and upload files to a server. It provides options to view upload statistics, set preferences for
+ * automatic playback after upload, and handles file validation and uploading operations.
+ * <p>
+ * This class is a part of the user interface for the LEDSuite application and extends
+ * {@link PreferencesPage} to integrate with the application's settings and preferences system.
+ * </p>
+ *
+ * @since 1.0.0
+ */
 public class AddFileDialog extends PreferencesPage {
-    // global storage for file metadata
+
+    /**
+     * The {@code VarPool} class serves as a global storage for file metadata.
+     * <p>
+     * It holds static fields for file path and file name, and an initialization flag.
+     * </p>
+     *
+     * @since 1.0.0
+     */
     public static class VarPool {
         public static boolean init = false;
         public static String filePath = null;
@@ -33,6 +52,14 @@ public class AddFileDialog extends PreferencesPage {
     private final ExpanderRow statsRow;
     private final ActionRow speed;
     private final ActionRow eta;
+
+    /**
+     * Constructs a new {@code AddFileDialog} and initializes its components.
+     * <p>
+     * This constructor sets up the user interface elements, including file selection, upload button,
+     * upload statistics, and integrates with the LEDSuite settings for file handling preferences.
+     * </p>
+     */
     public AddFileDialog() {
 
         if (VarPool.init) {
@@ -89,11 +116,11 @@ public class AddFileDialog extends PreferencesPage {
                     var selectedFile = fileSel.openFinish(result);
                     if (selectedFile != null) {
                         String filePath = selectedFile.getPath();
-                        // Update the pathRow text with the selected file path
+                        // Update the filenameRow text with the selected file path
                         fileDialogProcessResult(selectedFile, filenameRow);
                         LEDSuite.logger.debug("Selected file: " + filePath);
                     }
-                } catch (GErrorException _) {
+                } catch (GErrorException e) {
                     LEDSuite.logger.debug("User canceled open file dialog!");
                 }
             });
@@ -104,10 +131,10 @@ public class AddFileDialog extends PreferencesPage {
         var clamp = Clamp.builder().setMaximumSize(40).setOrientation(Orientation.VERTICAL).setTighteningThreshold(40).build();
         clamp.setChild(fileSelButton);
 
-        // Add the file selection button as a suffix to the pathRow
+        // Add the file selection button as a suffix to the filenameRow
         filenameRow.addSuffix(clamp);
 
-        // Add the pathRow to the file preferences group
+        // Add the filenameRow to the file preferences group
         file.add(filenameRow);
 
         final boolean[] toggled = new boolean[]{LEDSuite.settings.isAutoPlayAfterUpload()};
@@ -218,11 +245,20 @@ public class AddFileDialog extends PreferencesPage {
 
         file.add(clamp1);
 
-
         // Add the file preferences group to the dialog
         add(file);
     }
 
+    /**
+     * Displays an error message when the play request for an uploaded file fails.
+     * <p>
+     * This method logs the error and shows a toast notification to inform the user about the failure.
+     * </p>
+     *
+     * @param e       The exception that occurred.
+     * @param fileName The name of the file for which the play request failed.
+     * @since 1.0.0
+     */
     private void displayPlayRequestError(Exception e, String fileName) {
         LEDSuite.logger.error("Failed to send play request for uploaded file! File name : '" + fileName + "' File path: '" + filePath + "'");
         LEDSuite.mainWindow.toastOverlay.addToast(
@@ -233,6 +269,16 @@ public class AddFileDialog extends PreferencesPage {
         LEDSuite.logger.error(e);
     }
 
+    /**
+     * Processes the result of the file dialog selection.
+     * <p>
+     * Validates the file type and updates the relevant fields and UI components with the selected file's information.
+     * </p>
+     *
+     * @param result       The selected file.
+     * @param filenameRow  The {@link ActionRow} to update with the selected file's name.
+     * @since 1.0.0
+     */
     private void fileDialogProcessResult(File result, ActionRow filenameRow) {
         FileType fType = result.queryFileType(FileQueryInfoFlags.NONE, null);
         String path = result.getPath();
@@ -267,6 +313,16 @@ public class AddFileDialog extends PreferencesPage {
         );
     }
 
+    /**
+     * Checks if the given file name has a valid file type based on its suffix or MIME type.
+     * <p>
+     * Valid types are restricted to certain suffixes or MIME types related to images, videos, and shared libraries.
+     * </p>
+     *
+     * @param fileName The name of the file to check.
+     * @return {@code true} if the file type is allowed; {@code false} otherwise.
+     * @since 1.0.0
+     */
     private boolean checkFileType(String fileName) {
         String mimeType = URLConnection.guessContentTypeFromName(fileName);
         String suffix = fileName.substring(
@@ -280,10 +336,28 @@ public class AddFileDialog extends PreferencesPage {
                 );
     }
 
+    /**
+     * Callback interface for handling the result of the upload operation.
+     * <p>
+     * This interface is used to notify when the upload process has completed, either with or without errors.
+     * </p>
+     *
+     * @since 1.0.0
+     */
     private interface FinishCallback {
         void onFinish(boolean error, String fileName);
     }
 
+    /**
+     * Initiates the file upload process.
+     * <p>
+     * This method manages the upload process, including updating the UI with progress information and handling
+     * errors or completion events. It uses a progress tracker to update the UI with upload statistics.
+     * </p>
+     *
+     * @param callback The callback to invoke once the upload process is finished.
+     * @since 1.0.0
+     */
     private void upload(FinishCallback callback) {
         LEDSuite.logger.debug("Triggered animation upload!");
         if (filePath == null || filePath.isEmpty() || !new java.io.File(filePath).exists()) {
@@ -353,6 +427,19 @@ public class AddFileDialog extends PreferencesPage {
         }.runTaskAsynchronously();
     }
 
+    /**
+     * Resets the user interface after the upload operation completes or fails.
+     * <p>
+     * This method hides the spinner, resets UI elements, and displays error messages if necessary.
+     * It also invokes the provided callback to indicate the completion of the upload process.
+     * </p>
+     *
+     * @param delayInMillis The delay before resetting the UI.
+     * @param error          {@code true} if an error occurred during the upload; {@code false} otherwise.
+     * @param invalidPath    {@code true} if the file path was invalid; {@code false} otherwise.
+     * @param callback       The callback to invoke once the UI has been reset.
+     * @since 1.0.0
+     */
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
         new LEDSuiteGuiRunnable() {
             @Override
@@ -393,9 +480,17 @@ public class AddFileDialog extends PreferencesPage {
         }.runTaskLaterAsynchronously(delayInMillis);
     }
 
+    /**
+     * Calculates the speed of the upload operation in a human-readable format.
+     * <p>
+     * The speed is converted from bytes per second to a more readable format such as KB/S, MB/S, or GB/S.
+     * </p>
+     *
+     * @param bytesPerSec The speed of the upload in bytes per second.
+     * @return A string representing the speed in a human-readable format.
+     * @since 1.0.0
+     */
     private String calculateNewSpeed(double bytesPerSec) {
-
-        //double bytesPerSec = mbBytesPerSec * (2^20);
 
         StringBuilder sb = new StringBuilder();
 
@@ -421,7 +516,6 @@ public class AddFileDialog extends PreferencesPage {
         else if (bytesPerSec >= 1) sb.append(bytesPerSec).append( " B/S");
         else if (bitsPerSecond >= 1) sb.append(bitsPerSecond).append(" b/S");
         else sb.append("N/A");
-
 
         return sb.toString();
     }

@@ -14,19 +14,32 @@ import org.gnome.gtk.Label;
 import org.gnome.gtk.Orientation;
 import org.gnome.gtk.Widget;
 
+/**
+ * Represents a status dialog for displaying server status and related information.
+ * This dialog is updated with server status information and provides an interface
+ * to show the current state of the server.
+ *
+ * @since 1.0.0
+ */
 public class StatusDialog extends Dialog implements EventListener {
-    private int checksum = 0;
-    private ActionRow currentDraw;
-    private ActionRow voltage;
-    private ActionRow currentFile;
-    private ActionRow fileState;
-    private ActionRow lidState;
-    private StatusPage statusPage;
-    private boolean statusInit = false;
-    private boolean reboot = false;
-    private long lastUpdate;
+    private int checksum = 0; // Checksum to track changes in status updates
+    private ActionRow currentDraw; // Displays current draw information
+    private ActionRow voltage; // Displays voltage information
+    private ActionRow currentFile; // Displays current file information
+    private ActionRow fileState; // Displays file state information
+    private ActionRow lidState; // Displays lid state information
+    private StatusPage statusPage; // Page to hold status-related UI elements
+    private boolean statusInit = false; // Flag to track if status has been initialized
+    private boolean reboot = false; // Flag to indicate if a reboot is needed
+    private long lastUpdate; // Timestamp of the last update
 
+    /**
+     * Initializes the status dialog with default UI elements and settings.
+     *
+     * @since 1.0.0
+     */
     private void initialize() {
+        // Initialize action rows for different status elements
         currentDraw = ActionRow.builder()
                 .setTitle("Current Draw")
                 .setSubtitleSelectable(true)
@@ -52,37 +65,52 @@ public class StatusDialog extends Dialog implements EventListener {
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
+
+        // Initialize the status page
         statusPage = StatusPage.builder()
                 .setIconName(Constants.Application.ICON)
                 .setTitle("Server Status")
                 .build();
-
     }
 
+    /**
+     * Constructs a new StatusDialog.
+     * Sets up the dialog with its UI elements and initial configuration.
+     *
+     * @since 1.0.0
+     */
     public StatusDialog() {
-
+        // Initialize the dialog
         initialize();
 
+        // Create a clamp to contain the status page
         var clamp = Clamp.builder()
                 .setMaximumSize(700)
                 .setTighteningThreshold(600)
                 .setChild(statusPage)
                 .build();
 
+        // Create a toolbar view containing the clamp
         var toolbarView = ToolbarView.builder()
                 .setContent(clamp)
                 .build();
 
+        // Create a header bar with a title widget
         var headerBar1 = HeaderBar.builder()
                 .setShowTitle(false)
                 .setTitleWidget(Label.builder().setLabel("Server Status").build())
                 .build();
 
-
+        // Add the header bar to the toolbar view
         toolbarView.addTopBar(headerBar1);
 
+        // Set the child of this dialog to the toolbar view
         this.setChild(toolbarView);
+
+        // Configure the dialog with initial status
         configure(StatusUpdate.notConnected());
+
+        // Handle dialog closure
         this.onClosed(() -> {
             if (updateTask != null) {
                 LEDSuite.eventManager.unregisterEvents(this);
@@ -91,24 +119,40 @@ public class StatusDialog extends Dialog implements EventListener {
             }
         });
 
+        // Allow the dialog to follow content size changes
         this.setFollowsContentSize(true);
     }
+
     private LEDSuiteTask updateTask = null;
+
+    /**
+     * Presents the status dialog to the user and starts the status update loop.
+     *
+     * @param parent The parent widget to which the dialog is attached.
+     * @since 1.0.0
+     */
     @Override
     public void present(Widget parent) {
         LEDSuite.logger.debug("Fulfilling StatusDialog present request!");
-        //checksum = 0;
+        // Start the update loop
         updateTask = updateLoop();
         super.present(parent);
     }
 
+    /**
+     * Initializes the status page with groups and action rows for displaying status information.
+     *
+     * @since 1.0.0
+     */
     private void initStatus() {
+        // Create a vertical box to contain status elements
         var statusList = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
                 .setSpacing(12)
                 .setHexpand(true)
                 .build();
 
+        // Create and configure groups for power usage and file stats
         var powerUsage = PreferencesGroup.builder()
                 .setCssClasses(new String[]{"background"})
                 .setTitle("Power")
@@ -119,6 +163,7 @@ public class StatusDialog extends Dialog implements EventListener {
                 .setTitle("Animation")
                 .build();
 
+        // Add action rows to the groups
         fileStats.add(currentFile);
         fileStats.add(fileState);
 
@@ -127,18 +172,25 @@ public class StatusDialog extends Dialog implements EventListener {
                 .build();
 
         general.add(lidState);
-
         powerUsage.add(voltage);
         powerUsage.add(currentDraw);
 
+        // Append the groups to the status list
         statusList.append(general);
         statusList.append(fileStats);
         statusList.append(powerUsage);
 
+        // Set the child of the status page to the status list
         statusPage.setChild(statusList);
         statusInit = true;
     }
 
+    /**
+     * Configures the dialog based on the provided status update.
+     *
+     * @param statusUpdate The status update to configure the dialog with.
+     * @since 1.0.0
+     */
     private void configure(StatusUpdate statusUpdate) {
         if (!statusUpdate.isNotConnected()) lastUpdate = System.currentTimeMillis();
         int checksum = statusUpdate.hashCode();
@@ -155,11 +207,14 @@ public class StatusDialog extends Dialog implements EventListener {
                     .setHexpand(true)
                     .build();
 
+            // Add not connected status information
             statusList.append(
-                    ActionRow.builder().setTitle("Not connected to Cube!").setSubtitle(LEDSuite.server_settings.getIPv4() + ":" + LEDSuite.server_settings.getPort() + " is currently not responding!").build()
+                    ActionRow.builder().setTitle("Not connected to Cube!")
+                            .setSubtitle(LEDSuite.server_settings.getIPv4() + ":" + LEDSuite.server_settings.getPort() + " is currently not responding!").build()
             );
             statusList.append(
-                    ActionRow.builder().setTitle("Possible causes").setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
+                    ActionRow.builder().setTitle("Possible causes")
+                            .setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
             );
 
             statusPage.setChild(statusList);
@@ -178,6 +233,7 @@ public class StatusDialog extends Dialog implements EventListener {
             initStatus();
         }
 
+        // Update action rows with new status information
         currentDraw.setSubtitle(statusUpdate.getCurrentDraw() + "A");
         voltage.setSubtitle(statusUpdate.getVoltage() + "V");
         if (statusUpdate.isFileLoaded()) {
@@ -192,12 +248,24 @@ public class StatusDialog extends Dialog implements EventListener {
         lidState.setSubtitle(statusUpdate.humanReadableLidState(statusUpdate.isLidState()));
     }
 
+    /**
+     * Updates the dialog status based on the provided status update.
+     *
+     * @param statusUpdate The status update to use for configuring the dialog.
+     * @since 1.0.0
+     */
     private void updateStatus(StatusUpdate statusUpdate) {
         configure(statusUpdate);
     }
 
-    private final long maxDelay = 10000;
+    private final long maxDelay = 10000; // Maximum delay between status updates
 
+    /**
+     * Creates and starts a task to periodically update the status of the dialog.
+     *
+     * @return The LEDSuiteTask responsible for updating the status.
+     * @since 1.0.0
+     */
     private LEDSuiteTask updateLoop() {
         LEDSuite.eventManager.registerEvents(this);
         if (!LEDSuite.mainWindow.isBannerVisible()) {
@@ -218,6 +286,12 @@ public class StatusDialog extends Dialog implements EventListener {
         }.runTask();
     }
 
+    /**
+     * Handles status events and updates the dialog accordingly.
+     *
+     * @param e The status event containing the status update.
+     * @since 1.0.0
+     */
     @EventHandler
     public void onStatus(Events.Status e) {
         if (this.getVisible()) updateStatus(e.statusUpdate());

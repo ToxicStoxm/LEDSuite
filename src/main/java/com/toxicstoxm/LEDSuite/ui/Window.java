@@ -679,7 +679,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
     public void getStatus(Networking.Communication.FinishCallback callback) {
         try {
-            Networking.Communication.sendYAML(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort(), new YAMLMessage()
+            Networking.Communication.sendYAMLDefaultHost(new YAMLMessage()
                             .setPacketType(YAMLMessage.PACKET_TYPE.request)
                             .setReplyType(YAMLMessage.REPLY_TYPE.status)
                             .build(),

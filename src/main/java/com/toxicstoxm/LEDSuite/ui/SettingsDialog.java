@@ -9,7 +9,6 @@ import org.gnome.adw.*;
 import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -135,14 +134,13 @@ public class SettingsDialog extends PreferencesDialog {
                 new LEDSuiteGuiRunnable() {
                     @Override
                     public void processGui() {
-                        try {
-                            String ip;
-                            String text = ipv4Row.getText();
 
-                            if (!LEDSuite.server_settings.getIPv4().equals(text)) {
-                                try {
-                                    ip = Networking.Validation.getValidIP(text, false);
-                                } catch (IOException e) {
+                        String text = ipv4Row.getText();
+
+                        if (!LEDSuite.server_settings.getIPv4().equals(text)) {
+
+                            Networking.Validation.getValidIP(text, false, result -> {
+                                if (result == null) {
                                     LEDSuite.sysBeep();
                                     addToast(
                                             Toast.builder()
@@ -150,28 +148,31 @@ public class SettingsDialog extends PreferencesDialog {
                                                     .setTimeout(10)
                                                     .build()
                                     );
-                                    ip = null;
-                                }
-                                if (ip != null) {
+                                } else {
                                     try {
-                                        LEDSuite.server_settings.setIPv4(ip);
+                                        LEDSuite.server_settings.setIPv4(result);
                                         Networking.Communication.NetworkHandler.hostChanged();
-                                        prevIPv4.set(ip);
+                                        prevIPv4.set(result);
                                     } catch (Networking.NetworkException e) {
                                         LEDSuite.server_settings.setIPv4(prevIPv4.get());
                                         try {
                                             Networking.Communication.NetworkHandler.hostChanged();
+                                            addToast(
+                                                    Toast.builder()
+                                                            .setTitle("Connection failed! Reconnected to previous host: '" + prevIPv4.get() + "'")
+                                                            .setTimeout(10)
+                                                            .build()
+                                            );
                                         } catch (Networking.NetworkException ex) {
                                             LEDSuite.logger.error("Fallback connection failed! Stopping network communication!");
                                             Networking.Communication.NetworkHandler.cancel();
                                         }
                                     }
                                 }
-                            }
-                        } finally {
-                            spinner.setSpinning(false);
-                            ipv4Row.remove(spinner);
-                            ipv4Row.setEditable(true);
+                                spinner.setSpinning(false);
+                                ipv4Row.remove(spinner);
+                                ipv4Row.setEditable(true);
+                            });
                         }
                     }
                 }.runTask();

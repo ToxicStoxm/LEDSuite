@@ -118,6 +118,24 @@ public class Networking {
             return false;
         }
 
+        public interface ValidIPCallback {
+            void onResult(String result);
+        }
+
+        public static void getValidIP(String ip, boolean ipify, ValidIPCallback callback) {
+            if (callback == null) return;
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        callback.onResult(getValidIP(ip, ipify));
+                    } catch (UnknownHostException e) {
+                        callback.onResult(null);
+                    }
+                }
+            }.runTaskAsynchronously();
+        }
+
         /**
          * Validates the provided host address using {@link Validation#isValidIP(String)} and {@link Validation#ping(String)}, and tries to get a
          * corresponding hostname to it.
@@ -494,6 +512,7 @@ public class Networking {
              * @since 1.0.0
              */
             protected static Socket server = null;
+            protected static boolean serverIsRebooting = false;
 
             /**
              * Checks if the server is open and connected.
@@ -572,19 +591,21 @@ public class Networking {
              * @since 1.0.0
              */
             public static void init(SuccessCallback callback) throws NetworkException {
+                if (serverIsRebooting) return;
+                serverIsRebooting = true;
                 try {
                     // if a socket is not initialized at all, create a new socket
                     // connects it to the new server
                     if (server == null || server.isClosed()) {
-                        server = new Socket(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort());
-                    } else {
-                        server.connect(new InetSocketAddress(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort()));
+                        server = new Socket();
                     }
+                    server.connect(new InetSocketAddress(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort()), 3000);
                     LEDSuite.logger.verbose("Successfully connected to server!");
                 } catch (Exception e) {
                     // if connection fails, inform the caller function using the callback
                     LEDSuite.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
                     LEDSuite.logger.error(e);
+                    serverIsRebooting = false;
                     if (callback != null) callback.getResult(false);
                     return;
                 }
@@ -633,11 +654,13 @@ public class Networking {
                                 LEDSuite.logger.error(e);
                             }
                         }
+
                         // check if the status needs to be sent / updated
                         if (TimeManager.call("status")) {
                             // if the main window is open request status from server
                             if (LEDSuite.mainWindow != null) LEDSuite.mainWindow.getStatus(null);
                         }
+
                         // if the send-queue isn't empty and the server is connected
                         if (!networkQueue.isEmpty() && isConnected()) {
                             Map.Entry<Long, LEDSuiteRunnable> entry = networkQueue.firstEntry();
@@ -653,6 +676,9 @@ public class Networking {
                 initListener();
 
                 LEDSuite.logger.verbose("Network Handler started!");
+
+                serverIsRebooting = false;
+
                 // informs the function caller of the result
                 callback.getResult(true);
             }
@@ -764,6 +790,7 @@ public class Networking {
              * @since 1.0.0
              */
             public static void reboot() throws NetworkException {
+                if (serverIsRebooting) return;
                 LEDSuite.logger.verbose("Network Handler: Fulfilling reboot request!");
                 // try to close the current connection
                 try {
@@ -776,10 +803,6 @@ public class Networking {
                 // canceling handlers
                 LEDSuite.logger.verbose("Network Handler: Stopping mgr and listener tasks");
                 cancel();
-
-                // clearing network queue and listener collection
-                LEDSuite.logger.verbose("Network Handler: Clearing queues");
-                clearQueues();
 
                 // try to initialize a new connection and restart the handler with init(SuccessCallback)
                 // if it fails to throw a new NetworkException to allow for custom error handling

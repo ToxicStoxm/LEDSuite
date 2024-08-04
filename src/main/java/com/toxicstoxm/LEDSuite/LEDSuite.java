@@ -55,7 +55,6 @@ public class LEDSuite implements EventListener, Runnable {
     public static Window mainWindow;
     public static LEDSuiteScheduler ledSuiteScheduler;
     public static TickingSystem tickingSystem;
-    public static boolean isShutdown = false;
 
 
     @CommandLine.Option(
@@ -722,15 +721,13 @@ public class LEDSuite implements EventListener, Runnable {
                 }
 
             }
-            case error -> {
-                eventManager.fireEvent(
-                        new Events.Error(
-                                ServerError.fromYAMLMessage(yaml)
-                        )
-                );
-            }
+            case error ->
+                    eventManager.fireEvent(
+                            new Events.Error(
+                                    ServerError.fromYAMLMessage(yaml)
+                            )
+            );
         }
-
         logger.debug(id + "---------------------------------------------------------------");
     }
     @EventHandler

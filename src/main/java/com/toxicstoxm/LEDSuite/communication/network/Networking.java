@@ -22,7 +22,6 @@ import org.apache.commons.configuration2.io.FileHandler;
 import java.io.*;
 import java.net.*;
 import java.nio.CharBuffer;
-import java.nio.channels.ClosedByInterruptException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;

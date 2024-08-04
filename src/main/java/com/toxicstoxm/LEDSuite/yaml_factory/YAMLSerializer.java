@@ -219,7 +219,7 @@ public class YAMLSerializer {
                 case error -> deserializeErrorYAML(yaml, yamlMessage);
             }
         } catch (NoSuchElementException e) {
-            LEDSuite.logger.error(e);
+            LEDSuite.logger.displayError(e);
             throw new YAMLException("Couldn't disassemble YAML! Invalid or missing values / keys!");
         }
 

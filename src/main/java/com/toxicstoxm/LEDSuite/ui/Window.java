@@ -480,7 +480,7 @@ public class Window extends ApplicationWindow implements EventListener {
             } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
                 LEDSuite.logger.error("Failed to send / get menu request for: " + rowName);
                 animationsList.remove(row);
-                LEDSuite.logger.error(e);
+                LEDSuite.logger.displayError(e);
             }
             LEDSuite.logger.debug("AnimationSelected: " + rowName);
             addFileList.setSelectionMode(SelectionMode.NONE);
@@ -679,7 +679,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
     public void getStatus(Networking.Communication.FinishCallback callback) {
         try {
-            Networking.Communication.sendYAML(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort(), new YAMLMessage()
+            Networking.Communication.sendYAMLDefaultHost(new YAMLMessage()
                             .setPacketType(YAMLMessage.PACKET_TYPE.request)
                             .setReplyType(YAMLMessage.REPLY_TYPE.status)
                             .build(),
@@ -694,7 +694,7 @@ public class Window extends ApplicationWindow implements EventListener {
         } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                  YAMLSerializer.InvalidPacketTypeException e) {
             LEDSuite.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
-            LEDSuite.logger.error(e);
+            LEDSuite.logger.displayError(e);
         }
     }
     // status bar updater
@@ -815,7 +815,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 }
             } catch (NumberFormatException ex) {
                 LEDSuite.logger.warn("Status update failed!");
-                LEDSuite.logger.error(ex);
+                LEDSuite.logger.displayError(ex);
             }
         });
     }

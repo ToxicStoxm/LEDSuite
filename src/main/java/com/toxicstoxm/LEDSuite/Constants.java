@@ -43,6 +43,8 @@ public final class Constants {
         public static final String PERIODIC_SECTION = TASKS_SECTION + SEPARATOR + "Periodic";
         public static final String STATUS_REQUEST_CLOCK = PERIODIC_SECTION + SEPARATOR + "Status-Request-Clock";
         public static final String USER_PREFERENCES_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "User-Preferences";
+        public static final String COLOR_CODING_SECTION = LOGGING_SECTION + SEPARATOR + "Color-Coding";
+        public static final String COLORS_SECTION = COLOR_CODING_SECTION + SEPARATOR + "Colors";
 
         // settings
         public static final String WINDOW_RESIZABLE = WINDOW_SECTION + SEPARATOR + "Window-Resizable";
@@ -50,6 +52,8 @@ public final class Constants {
         public static final String WINDOW_DEFAULT_HEIGHT = WINDOW_SECTION + SEPARATOR + "Window-Default-Height";
 
         public static final String LOG_LEVEL = LOGGING_SECTION + SEPARATOR + "Log-Level";
+        public static final String STACK_TRACE_DEPTH = LOGGING_SECTION + SEPARATOR + "Stack-Trace-Depth";
+        public static final String COLOR_CODING_ENABLED = COLOR_CODING_SECTION + SEPARATOR + "Enabled";
         public static final String LOG_FILE_ENABLED = LOGGING_FILE_SECTION + SEPARATOR + "Enabled";
         public static final String LOG_FILE_LOG_LEVEL_ALL = LOGGING_FILE_SECTION + SEPARATOR + "Log-Level-All";
         public static final String LOG_FILE_MAX_FILES = LOGGING_FILE_SECTION + SEPARATOR + "Max-Files";

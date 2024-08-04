@@ -13,28 +13,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The `LEDSuiteScheduler` class implements the `TaskScheduler` interface and manages the scheduling and execution
+ * of tasks within the LEDSuite application.
+ *
+ * <p>This class handles both synchronous and asynchronous tasks, supporting various scheduling options including
+ * immediate, delayed, and periodic execution.
+ *
+ * @since 1.0.0
+ */
 public class LEDSuiteScheduler implements TaskScheduler {
 
     /**
      * Counter for IDs. Order doesn't matter, only uniqueness.
+     * @since 1.0.0
      */
     private final AtomicInteger ids = new AtomicInteger(1);
     private volatile LEDSuiteTask head = new LEDSuiteTask();
     /**
-     * Tail of a linked-list. AtomicReference only matters when adding to queue
+     * Tail of a linked-list. AtomicReference only matters when adding to queue.
+     * @since 1.0.0
      */
     private final AtomicReference<LEDSuiteTask> tail = new AtomicReference<>(head);
     /**
-     * Main thread logic only
+     * Main thread logic only.
+     * @since 1.0.0
      */
     private final PriorityQueue<LEDSuiteTask> pending = new PriorityQueue<>(10,
             (o1, o2) -> (int) (o1.getNextRun() - o2.getNextRun()));
     /**
-     * Main thread logic only
+     * Main thread logic only.
+     * @since 1.0.0
      */
     private final List<LEDSuiteTask> temp = new ArrayList<>();
     /**
      * These are tasks that are currently active. It's provided for 'viewing' the current state.
+     * @since 1.0.0
      */
     private final ConcurrentHashMap<Integer, LEDSuiteTask> runners = new ConcurrentHashMap<>();
     private volatile int currentTick = -1;
@@ -45,37 +59,92 @@ public class LEDSuiteScheduler implements TaskScheduler {
         RECENT_TICKS = 30;
     }
 
+    /**
+     * Schedules a task to run synchronously.
+     *
+     * @param runnable The task to be run.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTask(Runnable runnable) {
         return runTaskLater(runnable, 0);
     }
 
+    /**
+     * Schedules a task to run asynchronously.
+     *
+     * @param runnable The task to be run.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskAsynchronously(Runnable runnable) {
         return runTaskLaterAsynchronously(runnable, 0);
     }
 
+    /**
+     * Schedules a task to run asynchronously with a YAMLMessage.
+     *
+     * @param runnable The task to be run.
+     * @param yaml The YAML message associated with the task.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskAsynchronously(Runnable runnable, YAMLMessage yaml) {
-        return runTaskLaterAsynchronously(runnable, 0,  yaml);
+        return runTaskLaterAsynchronously(runnable, 0, yaml);
     }
 
-
+    /**
+     * Schedules a task to run after a specified delay.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the task is run.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskLater(Runnable runnable, long delay) {
         return runTaskTimer(runnable, delay, -1);
     }
 
+    /**
+     * Schedules a task to run asynchronously after a specified delay.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the task is run.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskLaterAsynchronously(Runnable runnable, long delay) {
         return runTaskTimerAsynchronously(runnable, delay, -1);
     }
 
+    /**
+     * Schedules a task to run asynchronously after a specified delay with a YAMLMessage.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the task is run.
+     * @param yaml The YAML message associated with the task.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskLaterAsynchronously(Runnable runnable, long delay, YAMLMessage yaml) {
         return runTaskTimerAsynchronously(runnable, delay, -1, yaml);
     }
 
+    /**
+     * Schedules a task to run periodically after an initial delay.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the first execution.
+     * @param period The period in ticks between subsequent executions.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskTimer(Runnable runnable, long delay, long period) {
         if (delay < 0) {
@@ -89,6 +158,15 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return handle(new LEDSuiteTask(runnable, nextId(), period), delay);
     }
 
+    /**
+     * Schedules a task to run asynchronously and periodically after an initial delay.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the first execution.
+     * @param period The period in ticks between subsequent executions.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period) {
         if (delay < 0) {
@@ -102,6 +180,16 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return handle(new LEDSuiteAsyncTask(runners, runnable, nextId(), period), delay);
     }
 
+    /**
+     * Schedules a task to run asynchronously and periodically after an initial delay with a YAMLMessage.
+     *
+     * @param runnable The task to be run.
+     * @param delay The delay in ticks before the first execution.
+     * @param period The period in ticks between subsequent executions.
+     * @param yaml The YAML message associated with the task.
+     * @return A reference to the scheduled task.
+     * @since 1.0.0
+     */
     @Override
     public LEDSuiteTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period, YAMLMessage yaml) {
         if (delay < 0) {
@@ -115,7 +203,12 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return handle(new LEDSuiteAsyncTask(runners, runnable, nextId(), period, yaml), delay);
     }
 
-
+    /**
+     * Cancels a task with the specified task ID.
+     *
+     * @param taskId The ID of the task to be cancelled.
+     * @since 1.0.0
+     */
     @Override
     public void cancelTask(final int taskId) {
         if (taskId <= 0) {
@@ -132,6 +225,7 @@ public class LEDSuiteScheduler implements TaskScheduler {
                             check(LEDSuiteScheduler.this.pending);
                         }
                     }
+
                     private boolean check(final Iterable<LEDSuiteTask> collection) {
                         final Iterator<LEDSuiteTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
@@ -146,7 +240,8 @@ public class LEDSuiteScheduler implements TaskScheduler {
                             }
                         }
                         return false;
-                    }});
+                    }
+                });
         handle(task, 0);
         for (LEDSuiteTask taskPending = head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
             if (taskPending == task) {
@@ -158,6 +253,11 @@ public class LEDSuiteScheduler implements TaskScheduler {
         }
     }
 
+    /**
+     * Cancels all currently scheduled tasks.
+     *
+     * @since 1.0.0
+     */
     @Override
     public void cancelAllTasks() {
         final LEDSuiteTask task = new LEDSuiteTask(
@@ -187,6 +287,13 @@ public class LEDSuiteScheduler implements TaskScheduler {
         }
     }
 
+    /**
+     * Checks if a task with the specified task ID is currently running.
+     *
+     * @param taskId The ID of the task.
+     * @return True if the task is currently running, false otherwise.
+     * @since 1.0.0
+     */
     @Override
     public boolean isCurrentlyRunning(final int taskId) {
         final LEDSuiteTask task = runners.get(taskId);
@@ -199,6 +306,13 @@ public class LEDSuiteScheduler implements TaskScheduler {
         }
     }
 
+    /**
+     * Checks if a task with the specified task ID is currently queued.
+     *
+     * @param taskId The ID of the task.
+     * @return True if the task is queued, false otherwise.
+     * @since 1.0.0
+     */
     @Override
     public boolean isQueued(final int taskId) {
         if (taskId <= 0) {
@@ -213,9 +327,15 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return task != null && task.getPeriod() >= -1;
     }
 
+    /**
+     * Returns a list of currently active workers.
+     *
+     * @return A list of active workers.
+     * @since 1.0.0
+     */
     @Override
     public List<LEDSuiteWorker> getActiveWorkers() {
-        final ArrayList<LEDSuiteWorker> workers = new ArrayList<LEDSuiteWorker>();
+        final ArrayList<LEDSuiteWorker> workers = new ArrayList<>();
         for (final LEDSuiteTask taskObj : runners.values()) {
             // Iterator will be a best-effort (may fail to grab very new values) if called from an async thread
             if (taskObj.isSync()) {
@@ -230,6 +350,12 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return workers;
     }
 
+    /**
+     * Returns a list of currently pending tasks.
+     *
+     * @return A list of pending tasks.
+     * @since 1.0.0
+     */
     @Override
     public List<LEDSuiteTask> getPendingTasks() {
         final ArrayList<LEDSuiteTask> truePending = new ArrayList<>();
@@ -257,6 +383,9 @@ public class LEDSuiteScheduler implements TaskScheduler {
 
     /**
      * This method is designed to never block or wait for locks; an immediate execution of all current tasks.
+     *
+     * @param currentTick The current tick count.
+     * @since 1.0.0
      */
     public void mainThreadHeartbeat(final int currentTick) {
         this.currentTick = currentTick;
@@ -342,6 +471,12 @@ public class LEDSuiteScheduler implements TaskScheduler {
         return !pending.isEmpty() && pending.peek().getNextRun() <= currentTick;
     }
 
+    /**
+     * Returns a string representation of recent tasks.
+     *
+     * @return A string representation of recent tasks.
+     * @since 1.0.0
+     */
     @Override
     public String toString() {
         int debugTick = currentTick;

@@ -10,6 +10,7 @@ import com.toxicstoxm.LEDSuite.logging.network.NetworkLogger;
 import com.toxicstoxm.LEDSuite.settings.LocalSettings;
 import com.toxicstoxm.LEDSuite.settings.ServerSettings;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
@@ -54,8 +55,7 @@ public class LEDSuite implements EventListener, Runnable {
     public static Window mainWindow;
     public static LEDSuiteScheduler ledSuiteScheduler;
     public static TickingSystem tickingSystem;
-    public static boolean isShutdown = false;
-
+    public static ResourceBundle messages;
 
     @CommandLine.Option(
             names = {"-h", "--help"},
@@ -143,7 +143,7 @@ public class LEDSuite implements EventListener, Runnable {
     )
     private int setStatusClockActive = -1;
 
-    @CommandLine.Option(
+    /*@CommandLine.Option(
             names = {"-w", "--write-log-to-file"},
             description = "Change if the log should be written to a log file for the current session."
     )
@@ -159,13 +159,13 @@ public class LEDSuite implements EventListener, Runnable {
             names = {"--write-log-level-all"},
             description = "Change if all log levels should be written to the log file for the current session."
     )
-    private boolean writeLogLevelAll;
+    private boolean writeLogLevelAll = true;
 
     @CommandLine.Option(
             names = {"--set-write-log-level-all"},
             description = "Permanently change if all log levels should be written to the log file."
     )
-    private boolean setWriteLogLevelAll;
+    private boolean setWriteLogLevelAll = false;*/
 
     @CommandLine.Option(
             names = {"--max-log-files"},
@@ -190,6 +190,35 @@ public class LEDSuite implements EventListener, Runnable {
             description = "Display all important paths."
     )
     private boolean getPaths;
+
+    /*@CommandLine.Option(
+            names = {"--libadwaita-args"},
+            description = "Pass through arguments to libadwaita."
+    )
+    private String[] libadwaitaArguments;*/
+
+    @CommandLine.Option(
+            names = {"--stack-trace-depth"},
+            description = "Change the maximum stack trace depth for the current session."
+    )
+    private int stackTraceDepth = -2;
+    @CommandLine.Option(
+            names = {"--set-stack-trace-depth"},
+            description = "Permanently change the maximum stack trace depth."
+    )
+    private int setStackTraceDepth = -2;
+
+    /*@CommandLine.Option(
+            names = {"--color-code-log"},
+            description = "Change if the log should be color coded for the current session."
+    )
+    private boolean colorCodeLog;
+    @CommandLine.Option(
+            names = {"--set-color-code-log"},
+            description = "Permanently change if the log should be color coded."
+    )
+    private boolean setColorCodeLog;*/
+
 
     // main method
     public static void main(String[] args) {
@@ -228,12 +257,11 @@ public class LEDSuite implements EventListener, Runnable {
         // initialize config, logger, ...
         logicInit();
         // start application
-        app.run(new String[]{});
+        app.run(null);
     }
 
     // logic initialization function
     public void logicInit() {
-
         // program initialization
         // creates new settings and server_settings classes to hold config settings
         settings = new LocalSettings();
@@ -335,65 +363,74 @@ public class LEDSuite implements EventListener, Runnable {
             return;
         }
 
+        // creating a new event manager
+        eventManager = new EventManager();
+        // registering event listeners for settings classes
+        eventManager.registerEvents(settings);
+        eventManager.registerEvents(server_settings);
+
         // user settings are loaded from config files
         loadConfigsFromFile();
+
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
 
         argumentsSettings.copyImpl(settings, false);
         if (setLogLevel != null) {
             argumentsSettings.setLogLevel(setLogLevel.getValue());
-            settings.setLogLevel(argumentsSettings.getLogLevel());
+            settings.setLogLevel(setLogLevel.getValue());
         } else if (logLevel != null) {
             argumentsSettings.setLogLevel(logLevel.getValue());
         }
 
         if (setInitialWindowWidth > 0) {
             argumentsSettings.setWindowDefWidth(setInitialWindowWidth);
-            settings.setWindowDefWidth(argumentsSettings.getWindowDefWidth());
+            settings.setWindowDefWidth(setInitialWindowWidth);
         } else if (initialWindowWidth > 0) {
             argumentsSettings.setWindowDefWidth(initialWindowWidth);
         }
 
         if (setInitialWindowHeight > 0) {
             argumentsSettings.setWindowDefHeight(setInitialWindowHeight);
-            settings.setWindowDefHeight(argumentsSettings.getWindowDefHeight());
+            settings.setWindowDefHeight(setInitialWindowHeight);
         } else if (initialWindowHeight > 0) {
             argumentsSettings.setWindowDefHeight(initialWindowHeight);
         }
 
         if (setNetworkingClock > -1) {
             argumentsSettings.setNetworkingCommunicationClock(setNetworkingClock);
-            settings.setNetworkingCommunicationClock(argumentsSettings.getNetworkingCommunicationClock());
+            settings.setNetworkingCommunicationClock(setNetworkingClock);
         } else if (networkingClock > -1) {
             argumentsSettings.setNetworkingCommunicationClock(networkingClock);
         }
 
         if (setStatusClockPassive > -1) {
             argumentsSettings.setStatusRequestClockPassive(setStatusClockPassive);
-            settings.setStatusRequestClockPassive(argumentsSettings.getStatusRequestClockPassive());
+            settings.setStatusRequestClockPassive(setStatusClockPassive);
         } else if (statusClockPassive > -1) {
             argumentsSettings.setStatusRequestClockPassive(statusClockPassive);
         }
 
         if (setStatusClockActive > -1) {
             argumentsSettings.setStatusRequestClockActive(setStatusClockActive);
-            settings.setStatusRequestClockActive(argumentsSettings.getStatusRequestClockActive());
+            settings.setStatusRequestClockActive(setStatusClockActive);
         } else if (statusClockActive > -1) {
             argumentsSettings.setStatusRequestClockActive(statusClockActive);
         }
 
-        if (setWriteLogToFile != argumentsSettings.isLogFileEnabled()) {
+        /*if (setWriteLogToFile != argumentsSettings.isLogFileEnabled()) {
             argumentsSettings.setLogFileEnabled(setWriteLogToFile);
-            settings.setLogFileEnabled(argumentsSettings.isLogFileEnabled());
+            settings.setLogFileEnabled(setWriteLogToFile);
         } else if (writeLogToFile != argumentsSettings.isLogFileEnabled()) {
             argumentsSettings.setLogFileEnabled(writeLogToFile);
         }
 
         if (setWriteLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
             argumentsSettings.setLogFileLogLevelAll(setWriteLogLevelAll);
-            settings.setLogFileLogLevelAll(argumentsSettings.isLogFileLogLevelAll());
+            settings.setLogFileLogLevelAll(setWriteLogLevelAll);
         } else if (writeLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
             argumentsSettings.setLogFileLogLevelAll(writeLogLevelAll);
-        }
+        }*/
 
         if (setMaxLogFiles > -1 && setMaxLogFiles != argumentsSettings.getLogFileMaxFiles()) {
             if (setMaxLogFiles < 1) {
@@ -410,6 +447,18 @@ public class LEDSuite implements EventListener, Runnable {
             }
         }
 
+        if (setStackTraceDepth > -2 ) {
+            argumentsSettings.setStackTraceDepth(setStackTraceDepth);
+            settings.setStackTraceDepth(setStackTraceDepth);
+        } else if (stackTraceDepth > -2) argumentsSettings.setStackTraceDepth(stackTraceDepth);
+
+        /*if (setColorCodeLog != argumentsSettings.isLogColorCodingEnabled()) {
+            argumentsSettings.setLogColorCodingEnabled(setColorCodeLog);
+            settings.setLogColorCodingEnabled(setColorCodeLog);
+        } else if (colorCodeLog != argumentsSettings.isLogColorCodingEnabled()) {
+            argumentsSettings.setLogColorCodingEnabled(colorCodeLog);
+        }*/
+
         if (getPaths) {
             logger.log("Paths:");
             logger.log(" -> Directories");
@@ -420,12 +469,76 @@ public class LEDSuite implements EventListener, Runnable {
             logger.log("    Configuration file: '" + Constants.File_System.config + "'");
             logger.log("    Server configuration file: '" + Constants.File_System.server_config + "'");
             logger.log("    Log file: '" + Constants.File_System.logFile + "'");
-            logger = null;
+            TimeManager.lock("logger");
             getInstance().app.emitShutdown();
         }
 
         logger.debug("Processing log files...");
+        // process log files
+        // checks if log files need to be moved or deleted
+        processLogFiles(log_file, temp);
+
+        tickingSystem = new TickingSystem();
+
+        TimeManager.initTimeTracker("status", argumentsSettings.getStatusRequestClockPassive(), argumentsSettings.getStatusRequestClockPassive() * 2L);
+        TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
+
+        // general startup information displayed in the console upon starting the program
+        logger.info("Welcome back!");
+        logger.info("Starting Program...");
+
+        logger.info("System environment: " + Constants.System.NAME + " " + Constants.System.VERSION);
+
+        // loads language bundle based on the specified locale
+        // displays specified language and country in the console
+        logger.info("Loading messages...");
+        messages = ResourceBundle.getBundle("LEDSuite");
+        logger.info("Language: " + messages.getLocale().getDisplayLanguage());
+        logger.info("Country: " + messages.getLocale().getDisplayCountry());
+        logger.info("Successfully loaded messages!");
+
+        //System.out.println(messages.getString("greeting"));
+
+        // check for window os
+        // app does not normally work on windows, since windows doesn't natively support libadwaita
+        if (Constants.System.NAME.toLowerCase().contains("windows")) {
+            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
+            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
+        }
+
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Networking.Communication.NetworkHandler.init(_ -> {
+                    });
+                } catch (Networking.NetworkException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.runTaskAsynchronously();
+
+        new LEDSuiteGuiRunnable() {
+            @Override
+            public void processGui() {
+                if (!Networking.Communication.NetworkHandler.isConnected() && !TimeManager.alternativeCall("status")) {
+                    try {
+                        Networking.Communication.sendYAMLDefaultHost(
+                                YAMLMessage.defaultStatusRequest().build()
+                        );
+                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
+                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
+                        LEDSuite.logger.verbose("Auto status request attempt failed!");
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(10000, 5000);
+    }
+
+    private void processLogFiles(File log_file, File temp) {
+        // checks if log files are enabled
         if (!argumentsSettings.isLogFileEnabled()) {
+            // reverting standard behaviour if log files are disabled
             if (temp != null) {
                 logger.debug("Moving '" + temp.getName() + "' back to latest.log, since log file is disabled...");
                 logger.debug(temp.renameTo(log_file) ? "Moving success!" : "Moving failed!");
@@ -433,13 +546,19 @@ public class LEDSuite implements EventListener, Runnable {
         } else {
             try {
                 logger.debug("Constructing sorted file structure according to file names!");
+                // loads all log files into memory
                 File[] fileList = getFiles(log_file);
+                // counts how many log files currently exist
                 int fileCount = fileList.length;
-                int difference = fileCount - settings.getLogFileMaxFiles();
-                if (difference <= 0) throw new InterruptedException("Log file count [" + fileCount + "] is withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+                // calculates how many files need to be removed to bring the log file count withing the allowed threshold
+                int difference = getDifference(fileCount);
+                // if the previous function call completes without throwing an exception,
+                // we know that log files need to be removed
                 logger.debug("Log file count [" + fileCount + "] is NOT withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
                 logger.debug("Removing " + difference + " old log files...");
+                // load the log files into a sorted map to sort them by name (creation date)
                 TreeMap<Integer, TreeMap<Integer, File>> files = new TreeMap<>();
+                // sort files based on their names
                 for (File f : fileList) {
                     String fileName = f.getName();
                     String name = fileName.split("\\.")[0];
@@ -461,6 +580,7 @@ public class LEDSuite implements EventListener, Runnable {
                         files.get(-1).put(-1, f);
                     }
                 }
+                // removing as many files as needed to comply with the specified threshold
                 for (int i = difference; i > 0; i--) {
                     logger.debug("Remaining log file groups: " + files.size());
                     SortedMap.Entry<Integer, TreeMap<Integer, File>> logFileGroup = files.pollLastEntry();
@@ -474,7 +594,7 @@ public class LEDSuite implements EventListener, Runnable {
                         files.put(logFileGroup.getKey(), logFileGroup.getValue());
                     else logger.debug("Deleting log file group '" + logFileGroupName + "' since it's empty.");
                 }
-
+            // Handle errors and early returns
             } catch (IndexOutOfBoundsException e) {
                 logger.error("Error while handling log files! Error message: " + e.getMessage());
                 getInstance().app.emitShutdown();
@@ -484,56 +604,13 @@ public class LEDSuite implements EventListener, Runnable {
                 logger.debug(e.getMessage());
             }
         }
+    }
 
-        // creating a new event manager
-        eventManager = new EventManager();
-        // registering event listeners for settings classes
-        eventManager.registerEvents(settings);
-        eventManager.registerEvents(server_settings);
-
-        tickingSystem = new TickingSystem();
-
-        TimeManager.initTimeTracker("status", argumentsSettings.getStatusRequestClockPassive(), argumentsSettings.getStatusRequestClockPassive() * 2L);
-        TimeManager.initTimeTracker("animations", 1000, System.currentTimeMillis() - 10000);
-
-        // general startup information displayed in the console upon starting the program
-        logger.info("Welcome back!");
-        logger.info("Starting Program...");
-
-        logger.info("System environment: " + Constants.System.NAME + " " + Constants.System.VERSION);
-
-        // check for window os
-        // app does not normally work on windows, since windows doesn't natively support libadwaita
-        if (Constants.System.NAME.toLowerCase().contains("windows")) {
-            logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
-            logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
-        }
-
-        try {
-            Networking.Communication.NetworkHandler.init(_ -> {
-            });
-        } catch (Networking.NetworkException e) {
-            throw new RuntimeException(e);
-        }
-
-        new LEDSuiteGuiRunnable() {
-            @Override
-            public void processGui() {
-                if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
-                    try {
-                        Networking.Communication.sendYAMLDefaultHost(
-                                YAMLMessage.defaultStatusRequest().build()
-                        );
-                    } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
-                             YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException e) {
-                        LEDSuite.logger.verbose("Auto status request attempt failed!");
-                    }
-                }
-            }
-        }.runTaskTimerAsynchronously(10000, 5000);
-
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
+    private int getDifference(int fileCount) throws InterruptedException {
+        int difference = fileCount - settings.getLogFileMaxFiles();
+        // if the log file count is already within the allowed threshold, throw exception with a message to allow for fewer exit points
+        if (difference <= 0) throw new InterruptedException("Log file count [" + fileCount + "] is withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+        return difference;
     }
 
     private static File[] getFiles(File log_file) {
@@ -549,6 +626,9 @@ public class LEDSuite implements EventListener, Runnable {
         return fileList;
     }
 
+    // formatting log file name
+    // format yyyy-MM-dd-i (i = index, if more then one log file are created within one day)
+    // this iterates through indexes in ascending order until it reaches one that is unused
     private static File getFile(File log_file) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         StringBuilder filePath = new StringBuilder(df.format(log_file.lastModified()));
@@ -589,7 +669,7 @@ public class LEDSuite implements EventListener, Runnable {
             Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
         } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
             LEDSuite.logger.error("Failed to send / get available animations list from the server!");
-            LEDSuite.logger.error(e);
+            LEDSuite.logger.displayError(e);
         }
     }
 
@@ -718,15 +798,13 @@ public class LEDSuite implements EventListener, Runnable {
                 }
 
             }
-            case error -> {
-                eventManager.fireEvent(
-                        new Events.Error(
-                                ServerError.fromYAMLMessage(yaml)
-                        )
-                );
-            }
+            case error ->
+                    eventManager.fireEvent(
+                            new Events.Error(
+                                    ServerError.fromYAMLMessage(yaml)
+                            )
+            );
         }
-
         logger.debug(id + "---------------------------------------------------------------");
     }
     @EventHandler

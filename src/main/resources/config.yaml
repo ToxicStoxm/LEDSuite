@@ -10,17 +10,44 @@ Local-Settings:
     Window-Default-Width: 1280
     Window-Default-Height: 720
   Logging:
+    # Setting related to the log messages colors
+    Color-Coding:
+      # Set if log messages should be color coded
+      Enabled: true
+      # Log-Level colors
+      Colors:
+        # DEFAULT: '0xB40000' = Dark Red
+        FATAL: '0xB40000'
+        # DEFAULT: '0xFF0000' = Light Red
+        ERROR: '0xFF0000'
+        # DEFAULT: '0xE3A300' = Dark Yellow
+        WARN: '0xE3A300'
+        # DEFAULT: '0xFFFFFF' = White (Default font color for most terminals)
+        INFO: '0xFFFFFF'
+        # DEFAULT: '0x075ED9' = Light Blue
+        DEBUG: '0x075ED9'
+        # DEFAULT: '0xA016F4' = Violet
+        VERBOSE: '0xA016F4'
+        # DEFAULT: '0x404040' = Dark Gray
+        STACKTRACE: '0x404040'
+        # Trace color is used for color coding metadata (file name and line number)
+        # DEFAULT: '0x009432' = Dark Green
+        TRACE: '0x009432'
     # Logger Settings
     # higher log levels include everything from lower log levels
     # Log - Levels:
-    # 0 --> logger turned off
-    # 1 --> logger displays only fatal errors
-    # 2 --> logger displays normal errors
-    # 3 --> logger displays warnings
-    # 4 --> logger displays info (DEFAULT)
-    # 5 --> logger displays debug messages (may impact performance, don't use this except if you know what you are doing)
-    # 6 --> logger displays everything that happens internally (may impact performance, don't use this except if you know what you are doing)
+    # 0 --> OFF:        logger turned off
+    # 1 --> FATAL:      logger displays only fatal errors
+    # 2 --> ERROR:      logger displays normal errors
+    # 3 --> WARN:       logger displays warnings
+    # 4 --> INFO:       logger displays info (DEFAULT)
+    # 5 --> DEBUG:      logger displays debug messages (may impact performance, don't use this except if you know what you are doing)
+    # 6 --> VERBOSE:    logger displays verbose messages (may impact performance, don't use this except if you know what you are doing)
+    # 7 --> STACKTRACE: logger displays everything that happens internally (may impact performance, don't use this except if you know what you are doing)
     Log-Level: 4
+    # Set the maximum depth of stack traces (line count)
+    # Setting this to -1 will print all available lines (maximum depth)
+    Stack-Trace-Depth: 11
     Log-File:
       # If the application log should be written to a log file
       # Enabling, this can impact performance
@@ -37,7 +64,7 @@ Local-Settings:
     # You can change this as you like, but it will also be updated automatically based on the last pick:
     # Example: last picked animation -> /example/directory/example-animation.mp4 will open /example/directory/ the next time you select an animation
     # %user.home% refers to the users home directory
-    Default-Selection-Dir: "%user.home%"
+    Default-Selection-Dir: '%user.home%'
     # If the app should display a short form status bar on the main app window
     Display-Status-Bar: false
     # If the animation should automatically start playing after uploading finished

@@ -297,14 +297,14 @@ public class AnimationMenu implements Container {
                 LEDSuite.logger.error(id + "Failed to deserialize " + type + " from yaml! Error message: " + e.getMessage());
                 LEDSuite.logger.warn("Replacing entry with default missing value placeholder!");
                 LEDSuite.logger.debug("Possible causes: missing or malformed values");
-                LEDSuite.logger.error(e);
+                LEDSuite.logger.displayError(e);
                 Configuration config = new YAMLConfiguration();
                 config.setProperty(Constants.Network.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + e.getMessage());
                 try {
                     result = result.deserialize(config, id, "missing-value-" + System.currentTimeMillis());
 
                 } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException ex) {
-                    LEDSuite.logger.error(e);
+                    LEDSuite.logger.displayError(e);
                     LEDSuite.logger.fatal("FAILED TO DISPLAY MISSING VALUE PLACEHOLDER!");
                     LEDSuite.getInstance().exit(1);
                 }

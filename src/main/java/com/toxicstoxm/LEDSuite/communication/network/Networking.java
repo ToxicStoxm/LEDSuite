@@ -250,7 +250,7 @@ public class Networking {
          * @since 1.0.0
          */
         public static void sendFile(String serverIP4, int serverPort, String fileToSendPath, ProgressTracker progressTracker) {
-            // loading file to memory
+            // loading the specified file to memory
             File fileToSend = new File(fileToSendPath);
             try {
                 // send a file upload request to the server
@@ -272,7 +272,7 @@ public class Networking {
                 );
             } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                      YAMLSerializer.InvalidPacketTypeException e) {
-                LEDSuite.logger.error(e);
+                LEDSuite.logger.displayError(e);
             }
         }
 
@@ -452,7 +452,7 @@ public class Networking {
             } catch (IOException e) {
                 if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
                 LEDSuite.logger.error(id + "Error occurred! Transmission terminated!");
-                LEDSuite.logger.error(e);
+                LEDSuite.logger.displayError(e);
                 return false;
             } catch (NetworkException e) {
                 if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
@@ -542,6 +542,8 @@ public class Networking {
              */
             private static LEDSuiteTask masterListener = null;
 
+            private static NetworkHandle handle = null;
+
             /**
              * Used to monitor communication state between client and server.
              * @see SuccessCallback#getResult(boolean)
@@ -605,7 +607,7 @@ public class Networking {
                 } catch (IOException e) {
                     // if connection fails, inform the caller function using the callback
                     LEDSuite.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
-                    LEDSuite.logger.error(e);
+                    LEDSuite.logger.displayError(e);
                     serverIsRebooting = false;
                     if (callback != null) callback.getResult(false);
                     return;
@@ -613,9 +615,11 @@ public class Networking {
 
                 LEDSuite.logger.verbose("Fulfilling initialization request for Network Handler!");
 
-                LEDSuite.logger.verbose("Network Handler: starting network handle...");
-                LEDSuite.eventManager.registerEvents(new NetworkHandle());
-                LEDSuite.logger.verbose("Network Handler: started network handle!");
+                if (handle == null) {
+                    LEDSuite.logger.verbose("Network Handler: starting network handle...");
+                    LEDSuite.eventManager.registerEvents(handle = new NetworkHandle());
+                    LEDSuite.logger.verbose("Network Handler: started network handle!");
+                }
 
 
                 // if manager is already running, cancel it
@@ -634,8 +638,9 @@ public class Networking {
                     @Override
                     public void run() {
                         if (!TimeManager.call("mgr")) return;
-                        // check if keepalive needs to be sent
+                            // check if keepalive needs to be sent
                         if (TimeManager.call("keepalive")) {
+                            LEDSuite.logger.verbose("Sending keepalive");
                             try {
                                 // try sending a keepalive message to server
                                 if (!sendKeepalive(
@@ -646,13 +651,12 @@ public class Networking {
                                                 .build(),
                                         false
                                 )
-                                ) throw new NetworkException("Failed to send Keepalive!");
+                                ) throw new NetworkException("Sending keepalive failed!");
                             } catch (YAMLSerializer.TODOException | ConfigurationException |
                                      YAMLSerializer.InvalidReplyTypeException |
                                      YAMLSerializer.InvalidPacketTypeException |
                                      NetworkException e) {
-                                LEDSuite.logger.fatal("Failed to send keepalive!");
-                                LEDSuite.logger.error(e);
+                                LEDSuite.logger.verbose(e instanceof NetworkException ? e.getMessage() : "Sending keepalive failed! (Not network related)");
                             }
                         }
 
@@ -721,7 +725,7 @@ public class Networking {
                                         UUID networkID0 = UUID.fromString(yamlCfg.getString(Constants.Network.YAML.INTERNAL_NETWORK_ID));
                                         yaml = YAMLSerializer.deserializeYAML(yamlCfg, networkID0);
                                     } catch (IllegalArgumentException e) {
-                                        LEDSuite.logger.error(e);
+                                        LEDSuite.logger.displayError(e);
                                         LEDSuite.logger.warn(System.currentTimeMillis() + " Received reply with missing or invalid network id! Can't associate it with corresponding listener!");
                                         yaml = YAMLSerializer.deserializeYAML(yamlCfg);
 
@@ -747,7 +751,7 @@ public class Networking {
                             }
                         } catch (Exception e) {
                             LEDSuite.logger.fatal("Network Handler: master listener: Error: " + e.getMessage());
-                            LEDSuite.logger.error(e);
+                            LEDSuite.logger.displayError(e);
                         }
 
                     }
@@ -815,7 +819,7 @@ public class Networking {
                     });
                 } catch (NetworkException e) {
                     LEDSuite.logger.fatal("Network Handler: reboot failed!");
-                    LEDSuite.logger.error(e);
+                    LEDSuite.logger.displayError(e);
                     throw new NetworkException("connection failed!");
                 }
             }
@@ -856,7 +860,7 @@ public class Networking {
                     try {
                         hostChanged();
                     } catch (NetworkException ex) {
-                        LEDSuite.logger.error(ex);
+                        LEDSuite.logger.displayError(ex);
                     }
                 }
 
@@ -983,7 +987,7 @@ public class Networking {
                 yaml = new YAMLConfiguration();
                 new FileHandler(yaml).load(new ByteArrayInputStream(CharBuffer.wrap(buffer).toString().getBytes()));
             } catch (Exception e) {
-                LEDSuite.logger.error(e);
+                LEDSuite.logger.displayError(e);
                 return null;
             }
             return yaml;
@@ -1136,14 +1140,12 @@ public class Networking {
             // if that fails, to simply return false completion and cancel an attempt
             if (!NetworkHandler.isConnected()) {
                 try {
-                    NetworkHandler.init(success -> {
-                        if (!success) {
-                            if (callback != null) callback.onFinish(false);
-                            throw new NetworkException("Reconnection attempt to previous server failed!");
-                        } else LEDSuite.logger.verbose("Successfully reconnected to previous server!");
-                    });
+                    NetworkHandler.reboot();
+                    if (callback != null) callback.onFinish(true);
+                    LEDSuite.logger.verbose("Successfully reconnected to previous server!");
                 } catch (NetworkException e) {
                     LEDSuite.logger.fatal(e.getMessage());
+                    LEDSuite.logger.error("Reconnection attempt to previous server failed!");
                     if (callback != null) callback.onFinish(false);
                     return false;
                 }
@@ -1310,12 +1312,12 @@ public class Networking {
                 try {
                     NetworkHandler.reboot();
                     sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle);
-                    LEDSuite.logger.error(e);
+                    LEDSuite.logger.displayError(e);
                 } catch (NetworkException ex) {
                     // if an error occurs, print an error message and give up
                     if (displayLog) {
                         LEDSuite.logger.error(id + "Error occurred! Transmission terminated!");
-                        LEDSuite.logger.error(e);
+                        LEDSuite.logger.displayError(e);
                     }
                     err = true;
                 }

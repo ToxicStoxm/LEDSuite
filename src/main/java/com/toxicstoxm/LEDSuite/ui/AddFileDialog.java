@@ -266,7 +266,7 @@ public class AddFileDialog extends PreferencesPage {
                         .setTitle("Error: Failed to autostart animation!")
                         .build()
         );
-        LEDSuite.logger.error(e);
+        LEDSuite.logger.displayError(e);
     }
 
     /**

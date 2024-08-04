@@ -40,6 +40,20 @@ public class LocalSettings extends Settings {
     private boolean LogFileEnabled = false;
     private boolean LogFileLogLevelAll = true;
     private int LogFileMaxFiles = 1;
+    private HashMap<String, Integer> LogColors = new HashMap<>(
+            Map.of(
+                    "FATAL", 0xB40000,
+                    "ERROR", 0xFF0000,
+                    "WARN", 0xE3A300,
+                    "INFO", 0xFFFFFF,
+                    "DEBUG", 0x075ED9,
+                    "VERBOSE", 0xA016F4,
+                    "STACKTRACE", 0x40404,
+                    "TRACE", 0x009432
+            )
+    );
+    private boolean LogColorCodingEnabled = true;
+    private int StackTraceDepth = 11;
 
     private LocalSettings backup;
 
@@ -142,6 +156,13 @@ public class LocalSettings extends Settings {
                 LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
             }
 
+            try {
+                this.StackTraceDepth = config.getInt(Constants.Config.STACK_TRACE_DEPTH);
+            } catch (ClassCastException | ConversionException e) {
+                LEDSuite.logger.error("Error while parsing StackTraceDepth! This needs to be a numeric value!");
+                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+            }
+
             // Setting the remaining values
             this.selectionDir = config.getString(Constants.Config.SELECTION_DIR);
             this.DisplayStatusBar = config.getBoolean(Constants.Config.DISPLAY_STATUS_BAR);
@@ -149,9 +170,22 @@ public class LocalSettings extends Settings {
             this.AutoPlayAfterUpload = config.getBoolean(Constants.Config.AUTO_PLAY_AFTER_UPLOAD);
             this.LogFileEnabled = config.getBoolean(Constants.Config.LOG_FILE_ENABLED);
             this.LogFileLogLevelAll = config.getBoolean(Constants.Config.LOG_FILE_LOG_LEVEL_ALL);
+            this.LogColorCodingEnabled = config.getBoolean(Constants.Config.COLOR_CODING_ENABLED);
 
             // Ensure the LogFileMaxFiles value is at least 1 if LogFileEnabled is true
             if (LogFileMaxFiles < 1) LogFileMaxFiles = LogFileEnabled ? 1 : 0;
+
+            HashMap<String, Integer> tmp = new HashMap<>(LogColors);
+
+            for (Map.Entry<String, Integer> entry : LogColors.entrySet()) {
+                String key = entry.getKey();
+                Integer hex = config.getInteger(Constants.Config.COLORS_SECTION + Constants.Config.SEPARATOR + key, -1);
+                if (hex != null) {
+                    if (hex != -1) tmp.put(key, hex);
+                    else  LEDSuite.logger.warn("Invalid color for log level '" + key + "': '" + hex + "'!");
+                } else LEDSuite.logger.warn("Color for log level '" + key + "' mustn't be empty!");
+            }
+            this.LogColors.putAll(tmp);
 
             LEDSuite.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e) {
@@ -209,6 +243,9 @@ public class LocalSettings extends Settings {
         this.LogFileMaxFiles = settings.LogFileMaxFiles;
         this.LogFileEnabled = settings.LogFileEnabled;
         this.LogFileLogLevelAll = settings.LogFileLogLevelAll;
+        this.LogColors = settings.LogColors;
+        this.LogColorCodingEnabled = settings.LogColorCodingEnabled;
+        this.StackTraceDepth = settings.getStackTraceDepth();
 
         if (log) LEDSuite.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         if (log) LEDSuite.logger.debug(getName() + " now inherits all values from " + settings.getName());
@@ -253,6 +290,13 @@ public class LocalSettings extends Settings {
             conf.setProperty(Constants.Config.WINDOW_DEFAULT_WIDTH, WindowDefWidth);
             conf.setProperty(Constants.Config.WINDOW_DEFAULT_HEIGHT, WindowDefHeight);
             conf.setProperty(Constants.Config.LOG_LEVEL, LogLevel);
+            conf.setProperty(Constants.Config.STACK_TRACE_DEPTH, StackTraceDepth);
+            for (Map.Entry<String, Integer> entry : LogColors.entrySet()) {
+                conf.setProperty(
+                        Constants.Config.COLORS_SECTION + Constants.Config.SEPARATOR + entry.getKey(),
+                        "0x" + Integer.toHexString(entry.getValue()).toUpperCase()
+                );
+            }
             conf.setProperty(Constants.Config.LOG_FILE_ENABLED, LogFileEnabled);
             conf.setProperty(Constants.Config.LOG_FILE_LOG_LEVEL_ALL, LogFileLogLevelAll);
             conf.setProperty(Constants.Config.LOG_FILE_MAX_FILES, LogFileMaxFiles);
@@ -263,6 +307,10 @@ public class LocalSettings extends Settings {
             conf.setProperty(Constants.Config.SELECTION_DIR, selectionDir);
             conf.setProperty(Constants.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             conf.setProperty(Constants.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
+            conf.setProperty(Constants.Config.COLOR_CODING_ENABLED, LogColorCodingEnabled);
+
+
+
 
             // Saving settings to disk
             fH.save(Constants.File_System.config);
@@ -334,13 +382,13 @@ public class LocalSettings extends Settings {
     }
 
     /**
-     * Sets the auto play after upload flag and reloads the configuration.
+     * Sets the autoplay after upload flag and reloads the configuration.
      *
-     * @param autoPlayAfterUpload The new auto play after upload flag.
+     * @param autoPlayAfterUpload The new autoplay after uploads flag.
      * @since 1.0.0
      */
     public void setAutoPlayAfterUpload(boolean autoPlayAfterUpload) {
-        // Updating the auto play after upload flag and reloading configuration
+        // Updating the autoplay after upload flag and reloading configuration
         AutoPlayAfterUpload = autoPlayAfterUpload;
         reload("AutoPlayAfterUpload -> " + autoPlayAfterUpload);
     }
@@ -399,8 +447,11 @@ public class LocalSettings extends Settings {
                 LogFileMaxFiles == other.LogFileMaxFiles &&
                 StatusRequestClockPassive == other.StatusRequestClockPassive &&
                 StatusRequestClockActive == other.StatusRequestClockActive &&
+                LogColorCodingEnabled == other.LogColorCodingEnabled &&
+                StackTraceDepth == other.StackTraceDepth &&
                 Objects.equals(selectionDir, other.selectionDir) &&
-                Objects.equals(NetworkingCommunicationClock, other.NetworkingCommunicationClock);
+                Objects.equals(NetworkingCommunicationClock, other.NetworkingCommunicationClock) &&
+                Objects.equals(LogColors, other.LogColors);
     }
 
     /**
@@ -417,7 +468,8 @@ public class LocalSettings extends Settings {
                 DisplayStatusBar, CheckIPv4, AutoPlayAfterUpload,
                 NetworkingCommunicationClock, StatusRequestClockPassive,
                 StatusRequestClockActive, LogFileEnabled,
-                LogFileLogLevelAll, LogFileMaxFiles
+                LogFileLogLevelAll, LogFileMaxFiles, LogColors,
+                LogColorCodingEnabled, StackTraceDepth
         );
     }
 }

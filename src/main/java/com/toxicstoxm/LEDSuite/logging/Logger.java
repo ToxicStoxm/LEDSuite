@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.logging;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.time.TimeManager;
 import lombok.Getter;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
@@ -59,6 +59,7 @@ public class Logger {
         cache = new TreeMap<>();
         // Sets initial maximum length for log message trace
         maxLength = 0;
+        TimeManager.initTimeTracker("logger", 0);
     }
 
     /**
@@ -85,7 +86,7 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with default color
-        log(ansi().fg(DEFAULT).a(message).reset());
+        log(log_level.INFO.convert(message));
     }
 
     /**
@@ -112,7 +113,7 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with warning color
-        log(ansi().fgRgb(227, 163, 0).a(message).reset());
+        log(log_level.WARN.convert(message));
     }
 
     /**
@@ -145,41 +146,30 @@ public class Logger {
     }
 
     /**
-     * Logs an error message and its associated exception to the console and log file.
-     *
-     * @param message The error message to log.
-     * @param e The exception to log.
-     * @since 1.0.0
-     */
-    public void error(String message, Exception e) {
-        // Log the error message
-        error(message);
-        // Log the stack trace of the exception
-        error(e);
-    }
-
-    /**
      * Logs the stack trace of an exception to the console and log file.
      *
      * @param exception The exception to log.
      * @since 1.0.0
      */
-    public void error(Exception exception) {
+    public void displayError(Exception exception) {
         StackTraceElement[] stackTrace = exception.getStackTrace();
         Throwable t = exception.getCause();
 
         // Check if ERROR level logging is enabled and stack trace is not null
         if (log_level.ERROR.isEnabled() && stackTrace != null) {
+            int stackTraceDepth = LEDSuite.argumentsSettings.getStackTraceDepth();
+            int stackTraceLength = stackTrace.length;
+            int finalDepth = (stackTraceDepth == -1 ? stackTraceLength : Math.min(stackTraceDepth, stackTraceLength));
             // Log the error message and stack trace
-            debug("Error message: " + exception);
-            debug("Stack trace:");
-            for (StackTraceElement s : stackTrace) {
-                debug(s.toString());
+            verbose("Error message: " + exception);
+            stackTrace("Stack trace:");
+            for (int i = 0; i < finalDepth; i++) {
+                stackTrace(stackTrace[i].toString());
             }
             // Log the cause of the exception if present
             if (t != null) {
-                debug("Cause:");
-                debug(t.toString());
+                stackTrace("Cause:");
+                stackTrace(t.toString());
             }
         }
     }
@@ -194,7 +184,7 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with error color
-        log(ansi().fgRgb(255, 0, 0).a(message).reset());
+        log(log_level.ERROR.convert(message));
     }
 
     /**
@@ -236,7 +226,7 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with fatal color
-        log(ansi().fgRgb(180, 0, 0).a(message).reset());
+        log(log_level.FATAL.convert(message));
     }
 
     /**
@@ -263,7 +253,7 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with debug color
-        log(ansi().fgRgb(7, 94, 217).a(message).reset());
+        log(log_level.DEBUG.convert(message));
     }
 
     /**
@@ -290,7 +280,34 @@ public class Logger {
         // Write the message to the log file
         writeLog(message);
         // Log to console with verbose color
-        log(ansi().fgRgb(160, 22, 244).a(message).reset());
+        log(log_level.VERBOSE.convert(message));
+    }
+
+    /**
+     * Logs a verbose message to the console and log file.
+     *
+     * @param message The message to log.
+     * @since 1.0.0
+     */
+    public void stackTrace(String message) {
+        // Check if VERBOSE level logging is enabled
+        if (log_level.STACKTRACE.isEnabled()) {
+            // Format and log the message with VERBOSE level
+            cStackTrace("[STACKTRACE]: [" + Constants.Application.NAME + "] " + message);
+        }
+    }
+
+    /**
+     * Internal method for logging a verbose message with ANSI color formatting.
+     *
+     * @param message The formatted message to log.
+     * @since 1.0.0
+     */
+    private void cStackTrace(String message) {
+        // Write the message to the log file
+        writeLog(message);
+        // Log to console with verbose color
+        log(log_level.STACKTRACE.convert(message));
     }
 
     /**
@@ -318,7 +335,11 @@ public class Logger {
         // Create a date formatter for the timestamp
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         // Attach the current timestamp and stack trace to the ANSI message
-        return "[" + df.format(new Date()) + "] " + ansi().fgRgb(0, 148, 50).a(getTrace()).reset() + message;
+        return "[" + df.format(new Date()) + "] " + (
+                LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
+                        ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get("TRACE")).a(getTrace()).reset() :
+                        ansi().a(getTrace()).reset()
+                )  + message;
     }
 
     /**
@@ -376,7 +397,7 @@ public class Logger {
      */
     private void log(Ansi message) {
         // Output the ANSI message to the console with metadata
-        System.out.println(attachMetadata(message));
+        if (TimeManager.call("logger")) System.out.println(attachMetadata(message));
     }
 
     /**
@@ -512,6 +533,12 @@ public class Logger {
             public boolean isEnabled() {
                 return currentLogLevel() >= 6;
             }
+        },
+        STACKTRACE(7) {
+            @Override
+            public boolean isEnabled() {
+                return currentLogLevel() >= 7;
+            }
         };
 
         /**
@@ -533,6 +560,13 @@ public class Logger {
          */
         int currentLogLevel() {
             return LEDSuite.argumentsSettings.getLogLevel();
+        }
+
+        @Override
+        public Ansi convert(String message) {
+            return LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
+                    ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get(this.name())).a(message).reset() :
+                    ansi().a(message).reset();
         }
 
         /**

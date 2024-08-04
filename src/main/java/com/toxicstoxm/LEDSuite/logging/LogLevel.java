@@ -1,5 +1,9 @@
 package com.toxicstoxm.LEDSuite.logging;
 
+import org.fusesource.jansi.Ansi;
+
+import java.awt.*;
+
 /**
  * Interface representing a logging level.
  *
@@ -20,4 +24,5 @@ public interface LogLevel {
      * @since 1.0.0
      */
     boolean isEnabled();
+    Ansi convert(String message);
 }

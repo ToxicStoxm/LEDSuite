@@ -107,7 +107,7 @@ public class EventManager {
                     LEDSuite.logger.warn(id + "Error while trying to fire event: " + event);
                     LEDSuite.logger.warn(id + "This warning can be ignored!");
                     LEDSuite.logger.debug(id + "Stack trace: ");
-                    LEDSuite.logger.error(e);
+                    LEDSuite.logger.displayError(e);
                     // Add the listener to the removal list
                     toRemove.add(registeredListener);
                 }
@@ -137,7 +137,8 @@ public class EventManager {
             }
         } catch (Exception e) {
             // Log any exception that occurs during network ID extraction
-            LEDSuite.logger.error("Error extracting network ID: ", e);
+            LEDSuite.logger.error("Error extracting network ID: ");
+            LEDSuite.logger.displayError(e);
         }
         // Return the network ID if found, else return an empty string
         return id.isBlank() ? "" : "[" + id + "] ";

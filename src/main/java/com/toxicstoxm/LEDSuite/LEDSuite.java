@@ -474,65 +474,9 @@ public class LEDSuite implements EventListener, Runnable {
         }
 
         logger.debug("Processing log files...");
-        if (!argumentsSettings.isLogFileEnabled()) {
-            if (temp != null) {
-                logger.debug("Moving '" + temp.getName() + "' back to latest.log, since log file is disabled...");
-                logger.debug(temp.renameTo(log_file) ? "Moving success!" : "Moving failed!");
-            }
-        } else {
-            try {
-                logger.debug("Constructing sorted file structure according to file names!");
-                File[] fileList = getFiles(log_file);
-                int fileCount = fileList.length;
-                int difference = fileCount - settings.getLogFileMaxFiles();
-                if (difference <= 0) throw new InterruptedException("Log file count [" + fileCount + "] is withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
-                logger.debug("Log file count [" + fileCount + "] is NOT withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
-                logger.debug("Removing " + difference + " old log files...");
-                TreeMap<Integer, TreeMap<Integer, File>> files = new TreeMap<>();
-                for (File f : fileList) {
-                    String fileName = f.getName();
-                    String name = fileName.split("\\.")[0];
-                    if (!name.equals("latest")) {
-                        if (name.length() > 10) {
-                            String index = name.substring(0, 11).replace("-", "").strip();
-                            int parentIndex = Integer.parseInt(index);
-                            String nestedIndex = name.substring(11);
-                            int childIndex = Integer.parseInt(nestedIndex);
-                            files.putIfAbsent(parentIndex, new TreeMap<>());
-                            files.get(parentIndex).put(childIndex, f);
-                        } else {
-                            String index = name.replace("-", "").strip();
-                            files.putIfAbsent(Integer.parseInt(index), new TreeMap<>());
-                            files.get(Integer.parseInt(index)).put(0, f);
-                        }
-                    } else {
-                        files.putIfAbsent(-1, new TreeMap<>());
-                        files.get(-1).put(-1, f);
-                    }
-                }
-                for (int i = difference; i > 0; i--) {
-                    logger.debug("Remaining log file groups: " + files.size());
-                    SortedMap.Entry<Integer, TreeMap<Integer, File>> logFileGroup = files.pollLastEntry();
-                    TreeMap<Integer, File> logFileGroupValue = logFileGroup.getValue();
-                    String logFileGroupName = logFileGroupValue.get(0).getName();
-                    logger.debug("Remaining log files in group '" + logFileGroupName + "': " + logFileGroupValue.size());
-                    File f = new File(logFileGroupValue.pollLastEntry().getValue().getAbsolutePath());
-                    logger.debug("Deleting log file '" + f.getName() + "'...");
-                    logger.debug(f.delete() ? "Successfully deleted log file!" : "Failed to delete log file!");
-                    if (!logFileGroupValue.isEmpty())
-                        files.put(logFileGroup.getKey(), logFileGroup.getValue());
-                    else logger.debug("Deleting log file group '" + logFileGroupName + "' since it's empty.");
-                }
-
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("Error while handling log files! Error message: " + e.getMessage());
-                getInstance().app.emitShutdown();
-            } catch (NullPointerException | IllegalArgumentException e) {
-                logger.error("Error while handling log files! Error message: " + e.getMessage());
-            } catch (InterruptedException e) {
-                logger.debug(e.getMessage());
-            }
-        }
+        // process log files
+        // checks if log files need to be moved or deleted
+        processLogFiles(log_file, temp);
 
         tickingSystem = new TickingSystem();
 
@@ -591,6 +535,84 @@ public class LEDSuite implements EventListener, Runnable {
         }.runTaskTimerAsynchronously(10000, 5000);
     }
 
+    private void processLogFiles(File log_file, File temp) {
+        // checks if log files are enabled
+        if (!argumentsSettings.isLogFileEnabled()) {
+            // reverting standard behaviour if log files are disabled
+            if (temp != null) {
+                logger.debug("Moving '" + temp.getName() + "' back to latest.log, since log file is disabled...");
+                logger.debug(temp.renameTo(log_file) ? "Moving success!" : "Moving failed!");
+            }
+        } else {
+            try {
+                logger.debug("Constructing sorted file structure according to file names!");
+                // loads all log files into memory
+                File[] fileList = getFiles(log_file);
+                // counts how many log files currently exist
+                int fileCount = fileList.length;
+                // calculates how many files need to be removed to bring the log file count withing the allowed threshold
+                int difference = getDifference(fileCount);
+                // if the previous function call completes without throwing an exception,
+                // we know that log files need to be removed
+                logger.debug("Log file count [" + fileCount + "] is NOT withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+                logger.debug("Removing " + difference + " old log files...");
+                // load the log files into a sorted map to sort them by name (creation date)
+                TreeMap<Integer, TreeMap<Integer, File>> files = new TreeMap<>();
+                // sort files based on their names
+                for (File f : fileList) {
+                    String fileName = f.getName();
+                    String name = fileName.split("\\.")[0];
+                    if (!name.equals("latest")) {
+                        if (name.length() > 10) {
+                            String index = name.substring(0, 11).replace("-", "").strip();
+                            int parentIndex = Integer.parseInt(index);
+                            String nestedIndex = name.substring(11);
+                            int childIndex = Integer.parseInt(nestedIndex);
+                            files.putIfAbsent(parentIndex, new TreeMap<>());
+                            files.get(parentIndex).put(childIndex, f);
+                        } else {
+                            String index = name.replace("-", "").strip();
+                            files.putIfAbsent(Integer.parseInt(index), new TreeMap<>());
+                            files.get(Integer.parseInt(index)).put(0, f);
+                        }
+                    } else {
+                        files.putIfAbsent(-1, new TreeMap<>());
+                        files.get(-1).put(-1, f);
+                    }
+                }
+                // removing as many files as needed to comply with the specified threshold
+                for (int i = difference; i > 0; i--) {
+                    logger.debug("Remaining log file groups: " + files.size());
+                    SortedMap.Entry<Integer, TreeMap<Integer, File>> logFileGroup = files.pollLastEntry();
+                    TreeMap<Integer, File> logFileGroupValue = logFileGroup.getValue();
+                    String logFileGroupName = logFileGroupValue.get(0).getName();
+                    logger.debug("Remaining log files in group '" + logFileGroupName + "': " + logFileGroupValue.size());
+                    File f = new File(logFileGroupValue.pollLastEntry().getValue().getAbsolutePath());
+                    logger.debug("Deleting log file '" + f.getName() + "'...");
+                    logger.debug(f.delete() ? "Successfully deleted log file!" : "Failed to delete log file!");
+                    if (!logFileGroupValue.isEmpty())
+                        files.put(logFileGroup.getKey(), logFileGroup.getValue());
+                    else logger.debug("Deleting log file group '" + logFileGroupName + "' since it's empty.");
+                }
+            // Handle errors and early returns
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Error while handling log files! Error message: " + e.getMessage());
+                getInstance().app.emitShutdown();
+            } catch (NullPointerException | IllegalArgumentException e) {
+                logger.error("Error while handling log files! Error message: " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug(e.getMessage());
+            }
+        }
+    }
+
+    private int getDifference(int fileCount) throws InterruptedException {
+        int difference = fileCount - settings.getLogFileMaxFiles();
+        // if the log file count is already within the allowed threshold, throw exception with a message to allow for fewer exit points
+        if (difference <= 0) throw new InterruptedException("Log file count [" + fileCount + "] is withing allowed threshold [" + settings.getLogFileMaxFiles() + "]!");
+        return difference;
+    }
+
     private static File[] getFiles(File log_file) {
         String parent = log_file.getParent();
         if (parent == null || parent.isBlank())
@@ -604,6 +626,9 @@ public class LEDSuite implements EventListener, Runnable {
         return fileList;
     }
 
+    // formatting log file name
+    // format yyyy-MM-dd-i (i = index, if more then one log file are created within one day)
+    // this iterates through indexes in ascending order until it reaches one that is unused
     private static File getFile(File log_file) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         StringBuilder filePath = new StringBuilder(df.format(log_file.lastModified()));

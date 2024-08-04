@@ -10,6 +10,7 @@ import com.toxicstoxm.LEDSuite.logging.network.NetworkLogger;
 import com.toxicstoxm.LEDSuite.settings.LocalSettings;
 import com.toxicstoxm.LEDSuite.settings.ServerSettings;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
@@ -233,7 +234,6 @@ public class LEDSuite implements EventListener, Runnable {
 
     // logic initialization function
     public void logicInit() {
-
         // program initialization
         // creates new settings and server_settings classes to hold config settings
         settings = new LocalSettings();
@@ -508,18 +508,22 @@ public class LEDSuite implements EventListener, Runnable {
             logger.warn("Our application does not have official Windows support. We do not fix any windows only bugs!");
             logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
         }
-
-        try {
-            Networking.Communication.NetworkHandler.init(_ -> {
-            });
-        } catch (Networking.NetworkException e) {
-            throw new RuntimeException(e);
-        }
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Networking.Communication.NetworkHandler.init(_ -> {
+                    });
+                } catch (Networking.NetworkException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }.runTaskAsynchronously();
 
         new LEDSuiteGuiRunnable() {
             @Override
             public void processGui() {
-                if (!Networking.Communication.NetworkHandler.connectedAndRunning() && !TimeManager.alternativeCall("status")) {
+                if (!Networking.Communication.NetworkHandler.isConnected() && !TimeManager.alternativeCall("status")) {
                     try {
                         Networking.Communication.sendYAMLDefaultHost(
                                 YAMLMessage.defaultStatusRequest().build()

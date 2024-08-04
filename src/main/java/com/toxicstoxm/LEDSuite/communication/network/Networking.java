@@ -20,11 +20,9 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.CharBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -519,7 +517,7 @@ public class Networking {
              * @return {@code true} If the socket is open and connected to a server
              * @since 1.0.0
              */
-            private static boolean isConnected() {
+            public static boolean isConnected() {
                 return server != null && !server.isClosed() && server.isConnected();
             }
 
@@ -591,17 +589,21 @@ public class Networking {
              * @since 1.0.0
              */
             public static void init(SuccessCallback callback) throws NetworkException {
-                if (serverIsRebooting) return;
+                if (serverIsRebooting) {
+                    if (callback != null) callback.getResult(false);
+                    return;
+                }
                 serverIsRebooting = true;
                 try {
                     // if a socket is not initialized at all, create a new socket
                     // connects it to the new server
                     if (server == null || server.isClosed()) {
                         server = new Socket();
+                        server.setReuseAddress(true);
+                        server.connect(new InetSocketAddress(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort()), 3000);
                     }
-                    server.connect(new InetSocketAddress(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort()), 3000);
                     LEDSuite.logger.verbose("Successfully connected to server!");
-                } catch (Exception e) {
+                } catch (IOException e) {
                     // if connection fails, inform the caller function using the callback
                     LEDSuite.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
                     LEDSuite.logger.error(e);
@@ -826,15 +828,6 @@ public class Networking {
              */
             public static void hostChanged() throws NetworkException {
                 reboot();
-            }
-
-            /**
-             * Checks if socket is currently open and connected.
-             * @return {@code true} If socket is open and connected.
-             * @since 1.0.0
-             */
-            public static boolean connectedAndRunning() {
-                return server != null && server.isConnected() && !server.isClosed();
             }
 
             /**

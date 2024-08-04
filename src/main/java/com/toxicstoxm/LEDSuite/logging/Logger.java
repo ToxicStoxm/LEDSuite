@@ -328,8 +328,11 @@ public class Logger {
      * @since 1.0.0
      */
     private String getTrace() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int depth = 6;
         // Retrieve the stack trace of the current thread
-        String s = Thread.currentThread().getStackTrace()[6].toString();
+        String s = stackTrace[depth].toString();
+        while (s.toLowerCase().contains("logger")) s = stackTrace[depth++].toString();
         // Extract the relevant portion of the stack trace
         StringBuilder trace = new StringBuilder("[" + s.substring(s.indexOf("(") + 1, s.lastIndexOf(")")) + "] ");
         // Adjust the trace length to align with other log messages

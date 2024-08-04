@@ -7,7 +7,10 @@
   <summary>Control an LED-Matrix with style</summary>
   <summary xml:lang="de">Steuere eine LED-Matrix mit style</summary>
   <summary xml:lang="it">Controlare una LED-Matrix con style</summary>
-  <developer_name>ToxicStoxm</developer_name>
+  
+  <developer id="com.toxicstoxm">
+    <name>ToxicStoxm</name>
+  </developer>
 
   <metadata_license>CC-BY-SA-4.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
@@ -119,10 +122,10 @@
   </supports>
 
   <description>
-    <p>Program for controlling a LED-Matrix or an LED-Cube with the proper backend.</p>
+    <p>Program for controlling any HDMI LCD/OLED/Plasma/CRT, LED-Matrix or an LED-Cube with the proper backend.</p>
     <p>With the following features:</p>
 
-    <p xml:lang="de">Ein Programm um eine LED-Matrix oder einen LED-Cube zu steuern mit den richtigen Backend.</p>
+    <p xml:lang="de">Ein Programm um einen HDMI LCD/OLED/Plasma/CRT, LED-Matrix oder einen LED-Cube zu steuern mit den richtigen Backend.</p>
     <p xml:lang="de">Mit den folgenden Funktionen:</p>
     <ul>
       <li>Uploading files to the server</li>

@@ -67,18 +67,6 @@ public class Window extends ApplicationWindow implements EventListener {
         // the application header bar
         var headerBar = new org.gnome.adw.HeaderBar();
 
-        // create search button and configure it
-        var sbutton = new ToggleButton();
-        // setting the icon name to gnome icon name
-        sbutton.setIconName(Constants.GTK.Icons.Symbolic.SEARCH);
-        // executed when the button is toggled
-        sbutton.onToggled(() -> {
-            // display work in progress toast as the search function is not yet implemented
-            var wipToast = new Toast("Work in progress!");
-            wipToast.setTimeout(1);
-            toastOverlay.addToast(wipToast);
-        });
-
         availableAnimations = new HashMap<>();
 
         // creating and configuring menu button
@@ -89,20 +77,20 @@ public class Window extends ApplicationWindow implements EventListener {
 
         var mainMenu = Menu.builder().build();
         var _status = MenuItem.builder().build();
-        _status.setLabel("Status");
+        _status.setLabel(LEDSuite.i18n("status_row"));
         _status.setDetailedAction(Constants.GTK.Actions._Actions._STATUS);
         mainMenu.appendItem(_status);
         var settings = MenuItem.builder().build();
-        settings.setLabel("Settings");
+        settings.setLabel(LEDSuite.i18n("settings_row"));
         settings.setDetailedAction(Constants.GTK.Actions._Actions._SETTINGS);
         mainMenu.appendItem(settings);
         var generalMenu = Menu.builder().build();
         var shortcuts = MenuItem.builder().build();
-        shortcuts.setLabel("Shortcuts");
+        shortcuts.setLabel(LEDSuite.i18n("shortcuts_row"));
         shortcuts.setDetailedAction(Constants.GTK.Actions._Actions._SHORTCUTS);
         generalMenu.appendItem(shortcuts);
         var about = MenuItem.builder().build();
-        about.setLabel("About");
+        about.setLabel(LEDSuite.i18n("about_row"));
         about.setDetailedAction(Constants.GTK.Actions._Actions._ABOUT);
         generalMenu.appendItem(about);
         mainMenu.appendSection(null, generalMenu);
@@ -335,7 +323,11 @@ public class Window extends ApplicationWindow implements EventListener {
         overlaySplitView.setShowSidebar(true);
 
         var smallHeaderBar = HeaderBar.builder().build();
-        smallHeaderBar.setTitleWidget(Label.builder().setLabel("File Management").build());
+        smallHeaderBar.setTitleWidget(
+                Label.builder()
+                        .setLabel(LEDSuite.i18n("file_management_header"))
+                        .build()
+        );
         smallHeaderBar.setHexpand(true);
 
         smallHeaderBar.setCssClasses(new String[]{"flat"});
@@ -355,13 +347,13 @@ public class Window extends ApplicationWindow implements EventListener {
                 .build();
         Box addFile = Box.builder()
                 .setOrientation(Orientation.HORIZONTAL)
-                .setTooltipText("Add file to LED-Cube (Upload)")
+                .setTooltipText(LEDSuite.i18n("add_file_row_tooltip"))
                 .setSpacing(10)
                 .build();
         addFile.append(Image.fromIconName(Constants.GTK.Icons.Symbolic.DOCUMENT_SEND));
         addFile.append(
                 Label.builder()
-                        .setLabel("Add File")
+                        .setLabel(LEDSuite.i18n("add_file_row"))
                         .setEllipsize(EllipsizeMode.END)
                         .setXalign(0)
                         .build()
@@ -374,7 +366,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         ).build()
         );
 
-        var Animations = Label.builder().setLabel("Animations").build();
+        var Animations = Label.builder().setLabel(LEDSuite.i18n("animations_header")).build();
 
         animationsList = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
@@ -561,7 +553,7 @@ public class Window extends ApplicationWindow implements EventListener {
         });
 
         status.onButtonClicked(this::triggerStatusRow);
-        status.setButtonLabel("LED Cube Status");
+        status.setButtonLabel(LEDSuite.i18n("status_button"));
 
         progressBar = ProgressBar.builder().setFraction(0.0).build();
 
@@ -593,7 +585,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 ShortcutsShortcut.builder()
                         .setShortcutType(ShortcutType.ACCELERATOR)
                         .setAccelerator(Constants.GTK.Shortcuts.SIDEBAR)
-                        .setTitle("Toggle sidebar")
+                        .setTitle(LEDSuite.i18n("sidebar_toggle_shortcut"))
                         .build()
         );
 
@@ -602,28 +594,28 @@ public class Window extends ApplicationWindow implements EventListener {
                 ShortcutsShortcut.builder()
                         .setShortcutType(ShortcutType.ACCELERATOR)
                         .setAccelerator(Constants.GTK.Shortcuts.STATUS)
-                        .setTitle("Open status dialog")
+                        .setTitle(LEDSuite.i18n("status_dialog_shortcut"))
                         .build()
         );
         menuGroup.addShortcut(
                 ShortcutsShortcut.builder()
                         .setShortcutType(ShortcutType.ACCELERATOR)
                         .setAccelerator(Constants.GTK.Shortcuts.SETTINGS)
-                        .setTitle("Open settings dialog")
+                        .setTitle(LEDSuite.i18n("settings_dialog_shortcut"))
                         .build()
         );
         menuGroup.addShortcut(
                 ShortcutsShortcut.builder()
                         .setShortcutType(ShortcutType.ACCELERATOR)
                         .setAccelerator(Constants.GTK.Shortcuts.SHORTCUTS)
-                        .setTitle("Open this dialog")
+                        .setTitle(LEDSuite.i18n("shortcut_dialog_shortcut"))
                         .build()
         );
         menuGroup.addShortcut(
                 ShortcutsShortcut.builder()
                         .setShortcutType(ShortcutType.ACCELERATOR)
                         .setAccelerator(Constants.GTK.Shortcuts.ABOUT)
-                        .setTitle("Open about dialog")
+                        .setTitle(LEDSuite.i18n("about_dialog_shortcut"))
                         .build()
         );
 
@@ -665,15 +657,19 @@ public class Window extends ApplicationWindow implements EventListener {
         if (aDialog == null) {
             // if not, a new one is created
             aDialog = AboutDialog.builder()
-                    .setDevelopers(new String[]{"ToxicStoxm", "CraftBukkit GitHub Repo"})
-                    .setArtists(new String[]{"Hannes Campidell", "GNOME Foundation"})
+                    .setDevelopers(LEDSuite.i18n("developers", true))
+                    .setDesigners(LEDSuite.i18n("artists", true))
+                    .setTranslatorCredits(LEDSuite.i18n("translators"))
                     .setVersion(Constants.Application.VERSION)
                     .setLicenseType(License.GPL_3_0)
+                    .setReleaseNotes(LEDSuite.i18n("release_notes"))
+                    .setReleaseNotesVersion(Constants.Application.VERSION)
                     .setApplicationIcon(Constants.Application.ICON)
                     .setIssueUrl(Constants.Links.PROJECT_GITHUB + "issues")
                     .setWebsite(Constants.Links.PROJECT_GITHUB)
                     .setApplicationName(Constants.Application.NAME)
                     .build();
+            aDialog.addAcknowledgementSection(LEDSuite.i18n("special_thanks_title"), LEDSuite.i18n("special_thanks", true));
         }
         return aDialog;
     }
@@ -789,7 +785,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
                             var availableAnimation = Box.builder()
                                     .setOrientation(Orientation.HORIZONTAL)
-                                    .setTooltipText("Open " + entry.getKey() + " settings menu")
+                                    .setTooltipText(LEDSuite.i18n("animations_tooltip", "%ANIMATION_NAME%", entry.getKey()))
                                     .setName(entry.getKey())
                                     .setSpacing(10)
                                     .build();

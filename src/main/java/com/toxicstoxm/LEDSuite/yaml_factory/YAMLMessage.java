@@ -158,9 +158,17 @@ public class YAMLMessage implements YAMLSerializable {
         menu
     }
 
+    @Getter
     public enum FILE_STATE {
-        playing,
-        paused
+        playing("file_state_playing"),
+        paused("file_state_paused");
+
+        final String i18nKey;
+
+        FILE_STATE(String i18nKey) {
+            this.i18nKey = i18nKey;
+        }
+
     }
 
     public String getPacketTypeV() {

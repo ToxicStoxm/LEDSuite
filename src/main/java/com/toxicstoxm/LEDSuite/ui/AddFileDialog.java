@@ -69,12 +69,12 @@ public class AddFileDialog extends PreferencesPage {
 
         // Create a preferences group for file selection
         var file = PreferencesGroup.builder()
-                .setTitle("File")
+                .setTitle(LEDSuite.i18n("add_file_dialog_title"))
                 .build();
 
         // Create an EntryRow for displaying the selected file path, initially empty
         var filenameRow = ActionRow.builder()
-                .setTitle("Selected File")
+                .setTitle(LEDSuite.i18n("filename_row_title"))
                 .setSubtitle(filePath == null ? "N/A" : fileName)
                 .setUseMarkup(false)
                 .build();
@@ -92,7 +92,7 @@ public class AddFileDialog extends PreferencesPage {
 
         // Create the file dialog for selecting files
         var fileSel = FileDialog.builder()
-                .setTitle("Pick file to upload")
+                .setTitle(LEDSuite.i18n("file_dialog_title"))
                 .setModal(true)
                 .setInitialFolder(
                         File.newForPath(LEDSuite.settings.getSelectionDir())
@@ -141,8 +141,8 @@ public class AddFileDialog extends PreferencesPage {
 
         var autoPlay = SwitchRow.builder()
                 .setActive(toggled[0])
-                .setTitle("Start animation after upload")
-                .setTooltipText("If true, the animation is automatically started after the upload finishes")
+                .setTitle(LEDSuite.i18n("add_file_dialog_auto_play_button_title"))
+                .setTooltipText(LEDSuite.i18n("add_file_dialog_auto_play_button_tooltip"))
                 .build();
 
         autoPlay.getActivatableWidget().onStateFlagsChanged(_ -> {
@@ -157,17 +157,17 @@ public class AddFileDialog extends PreferencesPage {
         file.add(autoPlay);
 
         statsRow = ExpanderRow.builder()
-                .setTitle("Upload Statistics")
+                .setTitle(LEDSuite.i18n("add_file_dialog_stats_row_title"))
                 .setExpanded(false)
                 .setActivatable(false)
                 .build();
 
         speed = ActionRow.builder()
-                .setTitle("Speed")
+                .setTitle(LEDSuite.i18n("add_file_dialog_speed_row_title"))
                 .setSubtitle("N/A")
                 .build();
         eta = ActionRow.builder()
-                .setTitle("ETA")
+                .setTitle(LEDSuite.i18n("add_file_dialog_eta_row_title"))
                 .setSubtitle("N/A")
                 .build();
 
@@ -223,7 +223,7 @@ public class AddFileDialog extends PreferencesPage {
         spinner = Spinner.builder().setSpinning(true).build();
 
         var buttonBox = Box.builder().setOrientation(Orientation.HORIZONTAL).setSpacing(5).build();
-        buttonBox.append(Label.builder().setLabel("Upload").build());
+        buttonBox.append(Label.builder().setLabel(LEDSuite.i18n("add_file_dialog_upload_button_label")).build());
         buttonBox.append(spinner);
         var clamp0 = Clamp.builder()
                 .setMaximumSize(70)
@@ -263,7 +263,7 @@ public class AddFileDialog extends PreferencesPage {
         LEDSuite.logger.error("Failed to send play request for uploaded file! File name : '" + fileName + "' File path: '" + filePath + "'");
         LEDSuite.mainWindow.toastOverlay.addToast(
                 Toast.builder()
-                        .setTitle("Error: Failed to autostart animation!")
+                        .setTitle(LEDSuite.i18n("add_file_dialog_autostart_request_error"))
                         .build()
         );
         LEDSuite.logger.displayError(e);
@@ -309,7 +309,7 @@ public class AddFileDialog extends PreferencesPage {
         LEDSuite.logger.error("Invalid file type selected! " + path);
         LEDSuite.logger.warn("Only Image, Video and Shared Library files are allowed!");
         LEDSuite.mainWindow.toastOverlay.addToast(
-                Toast.builder().setTitle("Error: Invalid file type selected!").build()
+                Toast.builder().setTitle(LEDSuite.i18n("add_file_dialog_invalid_file_type_error")).build()
         );
     }
 
@@ -455,12 +455,12 @@ public class AddFileDialog extends PreferencesPage {
                 if (error) {
                     LEDSuite.mainWindow.toastOverlay.addToast(
                             Toast.builder()
-                                    .setTitle("Error:" +
-                                            (invalidPath ?
-                                                    " Invalid File for path: " +
-                                                            (filePath == null || filePath.isEmpty() ?
-                                                                    "N/A" : filePath) :
-                                                    " Failed to send file!")
+                                    .setTitle(LEDSuite.i18n("error") + ":" + (
+                                            invalidPath ?
+                                                    LEDSuite.i18n("add_file_dialog_invalid_file_error", "%PATH%", (filePath == null || filePath.isEmpty() ? "N/A" : filePath)) :
+                                                    LEDSuite.i18n("add_file_dialog_failed_to_send_error")
+                                            )
+
                                     )
                                     .build()
                     );

@@ -23,6 +23,8 @@ import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
@@ -41,6 +43,7 @@ import static java.awt.Toolkit.getDefaultToolkit;
         description = "Simple front end application that lets you control decorative matrix's.")
 public class LEDSuite implements EventListener, Runnable {
 
+    private static final Log log = LogFactory.getLog(LEDSuite.class);
     @Getter
     private static LEDSuite instance;
     @Getter
@@ -55,7 +58,7 @@ public class LEDSuite implements EventListener, Runnable {
     public static Window mainWindow;
     public static LEDSuiteScheduler ledSuiteScheduler;
     public static TickingSystem tickingSystem;
-    public static ResourceBundle messages;
+    private static ResourceBundle messages;
 
     @CommandLine.Option(
             names = {"-h", "--help"},
@@ -242,7 +245,7 @@ public class LEDSuite implements EventListener, Runnable {
     // constructor method
     public LEDSuite() {
         instance = this;
-        // create new libadwaita application object
+        // create a new libadwaita application object
         app = new Application(Constants.Application.DOMAIN, ApplicationFlags.DEFAULT_FLAGS);
         app.setVersion(Constants.Application.VERSION);
         app.setApplicationId(Constants.Application.DOMAIN);
@@ -327,7 +330,7 @@ public class LEDSuite implements EventListener, Runnable {
                     logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
             }
-            // check if log file already exists
+            // check if a log file already exists
             if (!log_file.exists()) {
                 Files.createDirectories(Path.of(log_file.getParent()));
                 // if it does not exist, a new one will be created
@@ -865,5 +868,36 @@ public class LEDSuite implements EventListener, Runnable {
                         .setTimeout(Adw.DURATION_INFINITE)
                         .build()
         );
+    }
+
+    public static String i18n(String key) {
+        if (!messages.containsKey(key)) {
+            logger.warn("Internationalized string for key '" + key + "' wasn't found!");
+            return key;
+        }
+        return messages.getString(key);
+    }
+
+    public static String i18n(String key, HashMap<String, String> placeholders) {
+        String i18n = i18n(key);
+        if (i18n.contains("%")) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                i18n = i18n.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return i18n;
+    }
+
+    public static String i18n(String key, String placeholder, String replacement, String... placeholders) {
+        if (placeholders.length % 2 != 0) logger.warn("Placeholder without replacement found in: " + Arrays.toString(placeholders));
+        HashMap<String, String> placeholderTable = new HashMap<>();
+        placeholderTable.put(placeholder, replacement);
+        for (int i = 0; i < placeholders.length; i++) {
+            placeholderTable.put(placeholders[i], placeholders[i++]);
+        }
+        return i18n(key, placeholderTable);
+    }
+    public static String[] i18n(String key, boolean ignoredList) {
+        return i18n(key).split("§");
     }
 }

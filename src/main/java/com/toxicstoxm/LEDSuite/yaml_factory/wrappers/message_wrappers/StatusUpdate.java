@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.yaml_factory.wrappers.message_wrappers;
 
+import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import lombok.Getter;
 
@@ -110,14 +111,14 @@ public class StatusUpdate {
 
     public String minimal() {
         StringBuilder sb = new StringBuilder();
-        sb.append("State: ");
+        sb.append(LEDSuite.i18n("status_minimal_state")).append(": ");
         if (this.isNotConnected()) {
-            sb.append("not connected");
+            sb.append(LEDSuite.i18n("status_minimal_not_connected"));
         } else {
             if (isFileLoaded) {
-                sb.append(fileState.name());
-                sb.append("  |   Filename: ").append(fileSelected);
-            } else sb.append("idle");
+                sb.append(LEDSuite.i18n(fileState.getI18nKey()));
+                sb.append("  |   ").append(LEDSuite.i18n("status_minimal_filename")).append(": ").append(fileSelected);
+            } else sb.append(LEDSuite.i18n("status_minimal_idle"));
         }
         return sb.toString();
     }

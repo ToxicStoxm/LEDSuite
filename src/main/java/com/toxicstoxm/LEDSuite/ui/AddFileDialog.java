@@ -262,7 +262,7 @@ public class AddFileDialog extends PreferencesPage {
      */
     private void displayPlayRequestError(Exception e, String fileName) {
         LEDSuite.logger.error("Failed to send play request for uploaded file! File name : '" + fileName + "' File path: '" + filePath + "'");
-        LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
+        LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder()
                         .setTitle(LEDSuite.i18n("add_file_dialog_autostart_request_error"))
                         .build()
@@ -309,7 +309,7 @@ public class AddFileDialog extends PreferencesPage {
         }
         LEDSuite.logger.error("Invalid file type selected! " + path);
         LEDSuite.logger.warn("Only Image, Video and Shared Library files are allowed!");
-        LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
+        LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder().setTitle(LEDSuite.i18n("add_file_dialog_invalid_file_type_error")).build()
         );
     }
@@ -360,8 +360,8 @@ public class AddFileDialog extends PreferencesPage {
      * @since 1.0.0
      */
     private void upload(FinishCallback callback) {
-        @NonNull var progressBar = LEDSuite.mainWindow.cache.get(ProgressBar.class, "progressBar");
-        @NonNull var mainView = LEDSuite.mainWindow.cache.get(ToolbarView.class, "mainView");
+        @NonNull var progressBar = LEDSuite.mainWindow.widgetCache.get(ProgressBar.class, "progressBar");
+        @NonNull var mainView = LEDSuite.mainWindow.widgetCache.get(ToolbarView.class, "mainView");
 
         LEDSuite.logger.debug("Triggered animation upload!");
         if (filePath == null || filePath.isEmpty() || !new java.io.File(filePath).exists()) {
@@ -445,8 +445,8 @@ public class AddFileDialog extends PreferencesPage {
      * @since 1.0.0
      */
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
-        @NonNull var mainView = LEDSuite.mainWindow.cache.get(ToolbarView.class, "mainView");
-        @NonNull var progressBar = LEDSuite.mainWindow.cache.get(ProgressBar.class, "progressBar");
+        @NonNull var mainView = LEDSuite.mainWindow.widgetCache.get(ToolbarView.class, "mainView");
+        @NonNull var progressBar = LEDSuite.mainWindow.widgetCache.get(ProgressBar.class, "progressBar");
         new LEDSuiteGuiRunnable() {
             @Override
             public void processGui() {
@@ -459,7 +459,7 @@ public class AddFileDialog extends PreferencesPage {
                 eta.setSubtitle("N/A");
                 progressBar.setFraction(0.0);
                 if (error) {
-                    LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
+                    LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay").addToast(
                             Toast.builder()
                                     .setTitle(LEDSuite.i18n("error") + ":" + (
                                             invalidPath ?

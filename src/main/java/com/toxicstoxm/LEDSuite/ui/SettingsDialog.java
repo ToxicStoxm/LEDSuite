@@ -54,7 +54,7 @@ public class SettingsDialog extends PreferencesDialog {
      * @since 1.0.0
      */
     private PreferencesPage get_user_pref_page() {
-        @NonNull var statusBar = LEDSuite.mainWindow.cache.get(Banner.class, "statusBar");
+        @NonNull var statusBar = LEDSuite.mainWindow.widgetCache.get(Banner.class, "statusBar");
         // Define new preference page
         var user_pref_page = new PreferencesPage();
 

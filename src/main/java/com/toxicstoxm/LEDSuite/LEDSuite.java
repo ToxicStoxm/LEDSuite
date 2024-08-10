@@ -23,8 +23,6 @@ import lombok.Getter;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
@@ -750,6 +748,37 @@ public class LEDSuite implements EventListener, Runnable {
         return ledSuiteScheduler;
     }
 
+    public static String i18n(String key) {
+        if (!messages.containsKey(key)) {
+            logger.warn("Internationalized string for key '" + key + "' wasn't found!");
+            return key;
+        }
+        return messages.getString(key);
+    }
+
+    public static String i18n(String key, HashMap<String, String> placeholders) {
+        String i18n = i18n(key);
+        if (i18n.contains("%")) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                i18n = i18n.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return i18n;
+    }
+
+    public static String i18n(String key, String placeholder, String replacement, String... placeholders) {
+        if (placeholders.length % 2 != 0) logger.warn("Placeholder without replacement found in: " + Arrays.toString(placeholders));
+        HashMap<String, String> placeholderTable = new HashMap<>();
+        placeholderTable.put(placeholder, replacement);
+        for (int i = 0; i < placeholders.length; i++) {
+            placeholderTable.put(placeholders[i], placeholders[i++]);
+        }
+        return i18n(key, placeholderTable);
+    }
+    public static String[] i18n(String key, boolean ignoredList) {
+        return i18n(key).split("§");
+    }
+
     // listener function for reload event
     @EventHandler
     public void onReload(Events.Reload e) {
@@ -861,42 +890,11 @@ public class LEDSuite implements EventListener, Runnable {
         logger.debug(id + "Received error from server!");
         logger.debug("id" + "Error: " + error);
         sysBeep();
-        mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
+        mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())
                         .setTimeout(Adw.DURATION_INFINITE)
                         .build()
         );
-    }
-
-    public static String i18n(String key) {
-        if (!messages.containsKey(key)) {
-            logger.warn("Internationalized string for key '" + key + "' wasn't found!");
-            return key;
-        }
-        return messages.getString(key);
-    }
-
-    public static String i18n(String key, HashMap<String, String> placeholders) {
-        String i18n = i18n(key);
-        if (i18n.contains("%")) {
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                i18n = i18n.replace(entry.getKey(), entry.getValue());
-            }
-        }
-        return i18n;
-    }
-
-    public static String i18n(String key, String placeholder, String replacement, String... placeholders) {
-        if (placeholders.length % 2 != 0) logger.warn("Placeholder without replacement found in: " + Arrays.toString(placeholders));
-        HashMap<String, String> placeholderTable = new HashMap<>();
-        placeholderTable.put(placeholder, replacement);
-        for (int i = 0; i < placeholders.length; i++) {
-            placeholderTable.put(placeholders[i], placeholders[i++]);
-        }
-        return i18n(key, placeholderTable);
-    }
-    public static String[] i18n(String key, boolean ignoredList) {
-        return i18n(key).split("§");
     }
 }

@@ -38,7 +38,8 @@ public class Window extends ApplicationWindow implements EventListener {
     private HashMap<String, String> availableAnimations = new HashMap<>();
     private Map.Entry<String, String> currentAnimation = null;
 
-    public final Cache<String, Widget> cache = new Cache<>();
+    public final Cache<String, Widget> widgetCache = new Cache<>();
+    private final Cache<String, Object> updateCache = new Cache<>();
 
     // constructor for the main window
     public Window(org.gnome.adw.Application app) {
@@ -84,20 +85,20 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // Gets the rough content hierarchy elements from cache
         // Performs null checks to avoid unexpected behavior
-        @NonNull var mainView = cache.get(ToolbarView.class, "mainView");
-        @NonNull var windowOverlay = cache.get(Overlay.class, "windowOverlay");
-        @NonNull var sidebarContentView = cache.get(ToolbarView.class, "sidebarContentView");
-        @NonNull var contentView = cache.get(ToolbarView.class, "contentView");
+        @NonNull var mainView = widgetCache.get(ToolbarView.class, "mainView");
+        @NonNull var windowOverlay = widgetCache.get(Overlay.class, "windowOverlay");
+        @NonNull var sidebarContentView = widgetCache.get(ToolbarView.class, "sidebarContentView");
+        @NonNull var contentView = widgetCache.get(ToolbarView.class, "contentView");
 
         // creates header bars, status bar and progress bar and caches them
         createBars();
 
         // Gets the created bars from cache
         // Performs null checks to avoid unexpected behavior
-        @NonNull var headerBar = cache.get(HeaderBar.class, "headerBar");
-        @NonNull var statusBar = cache.get(Banner.class, "statusBar");
-        @NonNull var progressBar = cache.get(ProgressBar.class, "progressBar");
-        @NonNull var sidebarHeaderbar = cache.get(HeaderBar.class, "sidebarHeaderBar");
+        @NonNull var headerBar = widgetCache.get(HeaderBar.class, "headerBar");
+        @NonNull var statusBar = widgetCache.get(Banner.class, "statusBar");
+        @NonNull var progressBar = widgetCache.get(ProgressBar.class, "progressBar");
+        @NonNull var sidebarHeaderbar = widgetCache.get(HeaderBar.class, "sidebarHeaderBar");
 
         // Assigns each bar to its container
         contentView.addTopBar(headerBar);
@@ -129,13 +130,13 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setValign(Align.END)
                 .setHalign(Align.CENTER)
                 .build();
-        cache.put("toastOverlay", toastOverlay);
+        widgetCache.put("toastOverlay", toastOverlay);
         return toastOverlay;
     }
 
     private Breakpoint getSideBarBreakpoint() {
-        @NonNull var overlaySplitView = cache.get(OverlaySplitView.class, "overlaySplitView");
-        @NonNull var sideBarToggleButton = cache.get(ToggleButton.class, "sideBarToggleButton");
+        @NonNull var overlaySplitView = widgetCache.get(OverlaySplitView.class, "overlaySplitView");
+        @NonNull var sideBarToggleButton = widgetCache.get(ToggleButton.class, "sideBarToggleButton");
         int min = 680;
 
         var sideBarBreakpoint = Breakpoint.builder()
@@ -172,8 +173,8 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private SimpleActionGroup getGeneralActionGroup() {
-        @NonNull var overlaySplitView = cache.get(OverlaySplitView.class, "overlaySplitView");
-        @NonNull var sideBarToggleButton = cache.get(ToggleButton.class, "sideBarToggleButton");
+        @NonNull var overlaySplitView = widgetCache.get(OverlaySplitView.class, "overlaySplitView");
+        @NonNull var sideBarToggleButton = widgetCache.get(ToggleButton.class, "sideBarToggleButton");
         var sideBarButtonAction = SimpleAction.builder().setName(Constants.GTK.Actions._Actions.SIDEBAR).build();
         sideBarButtonAction.onActivate(_ -> {
             if (overlaySplitView.getCollapsed()) {
@@ -190,11 +191,11 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private void populateSidebar() {
-        @NonNull var sidebarContentBox = cache.get(Box.class, "sidebarContentBox");
-        @NonNull var mainContentRevealer = cache.get(Revealer.class, "mainContentRevealer");
-        @NonNull var contentBox = cache.get(Box.class, "contentBox");
-        @NonNull var sidebarAnimationSection = cache.get(ListBox.class, "sidebarAnimationSection");
-        @NonNull var controlButtonsRevealer = cache.get(Revealer.class, "controlButtonsRevealer");
+        @NonNull var sidebarContentBox = widgetCache.get(Box.class, "sidebarContentBox");
+        @NonNull var mainContentRevealer = widgetCache.get(Revealer.class, "mainContentRevealer");
+        @NonNull var contentBox = widgetCache.get(Box.class, "contentBox");
+        @NonNull var sidebarAnimationSection = widgetCache.get(ListBox.class, "sidebarAnimationSection");
+        @NonNull var controlButtonsRevealer = widgetCache.get(Revealer.class, "controlButtonsRevealer");
 
         var sidebarFileSection = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
@@ -240,7 +241,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setRevealChild(true)
                 .setTransitionType(RevealerTransitionType.CROSSFADE)
                 .build();
-        cache.put("sidebarSpinnerRevealer", sidebarSpinnerRevealer);
+        widgetCache.put("sidebarSpinnerRevealer", sidebarSpinnerRevealer);
 
         AtomicReference<ListBoxRow> current = new AtomicReference<>(new ListBoxRow());
 
@@ -348,8 +349,8 @@ public class Window extends ApplicationWindow implements EventListener {
         sidebarContentBox.append(sidebarAnimationSection);
         sidebarContentBox.append(sidebarSpinnerRevealer);
 
-        cache.put("sidebarFileSection", sidebarFileSection);
-        cache.put("sidebarAnimationSection", sidebarAnimationSection);
+        widgetCache.put("sidebarFileSection", sidebarFileSection);
+        widgetCache.put("sidebarAnimationSection", sidebarAnimationSection);
     }
 
     // creates the main header bar, the sidebar header bar, the status bar and the progress bar
@@ -359,24 +360,24 @@ public class Window extends ApplicationWindow implements EventListener {
         // Inserts the main menu button at the end of the header bar
         headerBar.packEnd(getMainMenuButton());
         headerBar.packStart(getSideBarToggleButton());
-        cache.put("headerBar", headerBar);
+        widgetCache.put("headerBar", headerBar);
 
         // initializes the status bar with a default title and
-        cache.put("statusBar",
+        widgetCache.put("statusBar",
                 Banner.builder()
                         .setTitle("N/A")
                         .build()
         );
 
         // creates a progress bar and caches it
-        cache.put("progressBar",
+        widgetCache.put("progressBar",
                 ProgressBar.builder()
                         .setFraction(0.0)
                         .build()
         );
 
         // creates a header bar for the sidebar and caches it
-        cache.put("sidebarHeaderBar",
+        widgetCache.put("sidebarHeaderBar",
                 HeaderBar.builder()
                         .setTitleWidget(
                                 Label.builder()
@@ -452,14 +453,14 @@ public class Window extends ApplicationWindow implements EventListener {
                 .build();
 
         // adding the base hierarchy elements to the cache
-        cache.put("mainView", mainView);
-        cache.put("windowOverlay", windowOverlay);
-        cache.put("overlaySplitView", overlaySplitView);
-        cache.put("sidebarContentView", sidebarContentView);
-        cache.put("sidebarContentBox", sidebarContentBox);
-        cache.put("contentView", contentView);
-        cache.put("mainContentRevealer", mainContentRevealer);
-        cache.put("contentBox", contentBox);
+        widgetCache.put("mainView", mainView);
+        widgetCache.put("windowOverlay", windowOverlay);
+        widgetCache.put("overlaySplitView", overlaySplitView);
+        widgetCache.put("sidebarContentView", sidebarContentView);
+        widgetCache.put("sidebarContentBox", sidebarContentBox);
+        widgetCache.put("contentView", contentView);
+        widgetCache.put("mainContentRevealer", mainContentRevealer);
+        widgetCache.put("contentBox", contentBox);
     }
 
     private Clamp getAnimationControlButtons() {
@@ -469,7 +470,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setCssClasses(new String[]{"osd", "circular"})
                 .build();
 
-        cache.put("playPauseButton", playPauseButton);
+        widgetCache.put("playPauseButton", playPauseButton);
 
         var stopButton = Button.builder()
                 .setIconName(Constants.GTK.Icons.Symbolic.STOP)
@@ -483,7 +484,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setTransitionType(RevealerTransitionType.CROSSFADE)
                 .build();
 
-        cache.put("stopButtonRevealer", stopButtonRevealer);
+        widgetCache.put("stopButtonRevealer", stopButtonRevealer);
 
         TimeManager.initTimeTracker("control_buttons", 500);
 
@@ -563,7 +564,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setRevealChild(false)
                 .build();
         controlButtonsRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
-        cache.put("controlButtonsRevealer", controlButtonsRevealer);
+        widgetCache.put("controlButtonsRevealer", controlButtonsRevealer);
 
         return Clamp.builder()
                 .setChild(controlButtonsRevealer)
@@ -619,7 +620,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private Button getSideBarToggleButton() {
-        @NonNull var overlaySplitView = cache.get(OverlaySplitView.class, "overlaySplitView");
+        @NonNull var overlaySplitView = widgetCache.get(OverlaySplitView.class, "overlaySplitView");
         var sideBarToggleButton = new ToggleButton();
         sideBarToggleButton.setIconName(Constants.GTK.Icons.Symbolic.SIDEBAR_SHOW);
 
@@ -634,7 +635,7 @@ public class Window extends ApplicationWindow implements EventListener {
             }
         });
 
-        cache.put("sideBarToggleButton", sideBarToggleButton);
+        widgetCache.put("sideBarToggleButton", sideBarToggleButton);
         return sideBarToggleButton;
     }
 
@@ -841,7 +842,7 @@ public class Window extends ApplicationWindow implements EventListener {
 
     // creates a new status bar updater
     private void startAutomaticStatusRequestLoop() {
-        @NonNull var statusBar = cache.get(Banner.class, "statusBar");
+        @NonNull var statusBar = widgetCache.get(Banner.class, "statusBar");
         LEDSuite.logger.debug("Running new StatusBar update Task!");
         statusBarUpdater = new LEDSuiteGuiRunnable() {
             @Override
@@ -856,7 +857,7 @@ public class Window extends ApplicationWindow implements EventListener {
 
     // toggle status bar
     public void setStatusBarVisible(boolean visible) {
-        @NonNull var statusBar = cache.get(Banner.class, "statusBar");
+        @NonNull var statusBar = widgetCache.get(Banner.class, "statusBar");
         LEDSuite.logger.debug("---------------------------------------------------------------");
         LEDSuite.logger.debug("Fulfilling StatusBarToggle: " + statusBar.getRevealed() + " >> " + visible);
         statusBar.setVisible(true);
@@ -895,8 +896,8 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     public void updateStatusBar(StatusUpdate statusUpdate) {
-        @NonNull var statusBar = cache.get(Banner.class, "statusBar");
-        @NonNull var controlButtonsRevealer = cache.get(Revealer.class, "controlButtonsRevealer");
+        @NonNull var statusBar = widgetCache.get(Banner.class, "statusBar");
+        @NonNull var controlButtonsRevealer = widgetCache.get(Revealer.class, "controlButtonsRevealer");
         statusBar.setTitle(statusUpdate.minimal());
         if (statusUpdate.isNotConnected() && controlButtonsRevealer != null)
             controlButtonsRevealer.setRevealChild(false);
@@ -930,7 +931,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     public void setControlButtons(StatusUpdate statusUpdate, Map.Entry<String, String> name, Button playPauseButton, Revealer stopButtonRevealer) {
-        @NonNull var controlButtonsRevealer = cache.get(Revealer.class, "controlButtonsRevealer");
+        @NonNull var controlButtonsRevealer = widgetCache.get(Revealer.class, "controlButtonsRevealer");
         controlButtonsRevealer.setRevealChild(false);
         if (statusUpdate.isNotConnected()) {
             return;
@@ -952,8 +953,8 @@ public class Window extends ApplicationWindow implements EventListener {
 
     @EventHandler
     public void onStatus(Events.Status e) {
-        @NonNull var sidebarAnimationSection = cache.get(ListBox.class, "sidebarAnimationSection");
-        @NonNull var sidebarSpinnerRevealer = cache.get(Revealer.class, "sidebarSpinnerRevealer");
+        @NonNull var sidebarAnimationSection = widgetCache.get(ListBox.class, "sidebarAnimationSection");
+        @NonNull var sidebarSpinnerRevealer = widgetCache.get(Revealer.class, "sidebarSpinnerRevealer");
         GLib.idleAddOnce(() -> {
             try {
                 StatusUpdate statusUpdate = e.statusUpdate();
@@ -963,13 +964,18 @@ public class Window extends ApplicationWindow implements EventListener {
                 String name = "";
                 if (selectedRow != null) name = selectedRow.getName();
                 if (!name.isBlank()) {
-                    var playPauseButton = cache.get(Button.class, "playPauseButton");
-                    var stopButtonRevealer = cache.get(Revealer.class, "stopButtonRevealer");
+                    var playPauseButton = widgetCache.get(Button.class, "playPauseButton");
+                    var stopButtonRevealer = widgetCache.get(Revealer.class, "stopButtonRevealer");
                     if (playPauseButton != null && stopButtonRevealer != null) {
                         setControlButtons(statusUpdate, currentAnimation, playPauseButton, stopButtonRevealer);
                     }
                 }
-                if (name.isBlank() || TimeManager.call("animations")) {
+                Integer previousChecksum = updateCache.get(Integer.class, "statusUpdateChecksum");
+                Integer currentChecksum = statusUpdate.getAvailableAnimations().hashCode();
+                boolean shouldUpdateAnimationList = !currentChecksum.equals(previousChecksum);
+                if (!shouldUpdateAnimationList) LEDSuite.logger.verbose("Skipping update request for the available animations list, because previous checksum (" + previousChecksum + ") == current checksum (" + currentChecksum + ")!");
+                if ((name.isBlank() || TimeManager.call("animations")) && shouldUpdateAnimationList) {
+                    updateCache.put("statusUpdateChecksum", currentChecksum, true);
                     sidebarAnimationSection.unselectAll();
                     sidebarAnimationSection.setSelectionMode(SelectionMode.NONE);
                     sidebarAnimationSection.removeAll();
@@ -1016,7 +1022,7 @@ public class Window extends ApplicationWindow implements EventListener {
 
     @EventHandler
     public void onStarted(Events.Started e) {
-        @NonNull var sidebarFileSection = cache.get(ListBox.class, "sidebarFileSection");
+        @NonNull var sidebarFileSection = widgetCache.get(ListBox.class, "sidebarFileSection");
         sidebarFileSection.emitRowSelected(sidebarFileSection.getRowAtIndex(0));
         sidebarFileSection.emitRowActivated(sidebarFileSection.getRowAtIndex(0));
         sidebarFileSection.emitSelectedRowsChanged();

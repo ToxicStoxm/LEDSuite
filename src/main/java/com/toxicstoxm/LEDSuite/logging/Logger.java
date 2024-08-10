@@ -465,7 +465,7 @@ public class Logger {
     private void visualFeedback(String message, int timeout) {
         // Check if the main window and toast overlay are available
         if (LEDSuite.mainWindow == null) return;
-        ToastOverlay toastOverlay = LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay");
+        ToastOverlay toastOverlay = LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay");
         if (toastOverlay != null) {
             // Create and display new toast with the message and timeout
             toastOverlay

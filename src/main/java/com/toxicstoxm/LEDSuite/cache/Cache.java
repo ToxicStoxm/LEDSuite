@@ -37,8 +37,29 @@ public class Cache<K, V> extends HashMap<K, V> {
      */
     @Override
     public V put(K key, V value) {
+        return put(key, value, false);
+    }
+
+    /**
+     * Associates the specified value with the specified key in this cache, with an option to suppress warnings.
+     * <p>
+     * If the cache previously contained a mapping for the key, the old value is replaced by the specified value.
+     * If the key already exists in the cache, a warning is logged unless the {@code suppressOverrideWarning} parameter is set to {@code true}.
+     * </p>
+     *
+     * @param key            key with which the specified value is to be associated
+     * @param value          value to be associated with the specified key
+     * @param suppressOverrideWarning if {@code true}, suppresses the warning when a key already exists in the cache
+     * @return the previous value associated with {@code key}, or
+     *         {@code null} if there was no mapping for {@code key}.
+     *         (A {@code null} return can also indicate that the map
+     *         previously associated {@code null} with {@code key}.)
+     */
+    public V put(K key, V value, boolean suppressOverrideWarning) {
         if (containsKey(key)) {
-            LEDSuite.logger.warn("Cache already contains object for key: '" + key + "'!");
+            if (!suppressOverrideWarning) {
+                LEDSuite.logger.warn("Cache already contains object for key: '" + key + "'!");
+            }
         }
         return super.put(key, value);
     }

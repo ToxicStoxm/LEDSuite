@@ -268,7 +268,7 @@ public class StatusDialog extends Dialog implements EventListener {
      * @since 1.0.0
      */
     private LEDSuiteTask updateLoop() {
-        @NonNull var statusBar = LEDSuite.mainWindow.cache.get(Banner.class, "statusBar");
+        @NonNull var statusBar = LEDSuite.mainWindow.widgetCache.get(Banner.class, "statusBar");
         LEDSuite.eventManager.registerEvents(this);
         if (!statusBar.getRevealed()) {
             return new LEDSuiteGuiRunnable() {

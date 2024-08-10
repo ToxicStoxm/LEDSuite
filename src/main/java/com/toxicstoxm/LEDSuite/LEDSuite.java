@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.gnome.adw.Adw;
 import org.gnome.adw.Application;
 import org.gnome.adw.Toast;
+import org.gnome.adw.ToastOverlay;
 import org.gnome.gio.ApplicationFlags;
 import picocli.CommandLine;
 
@@ -42,8 +43,6 @@ import static java.awt.Toolkit.getDefaultToolkit;
 @CommandLine.Command(name = "LEDSuite",
         description = "Simple front end application that lets you control decorative matrix's.")
 public class LEDSuite implements EventListener, Runnable {
-
-    private static final Log log = LogFactory.getLog(LEDSuite.class);
     @Getter
     private static LEDSuite instance;
     @Getter
@@ -862,7 +861,7 @@ public class LEDSuite implements EventListener, Runnable {
         logger.debug(id + "Received error from server!");
         logger.debug("id" + "Error: " + error);
         sysBeep();
-        mainWindow.toastOverlay.addToast(
+        mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder()
                         .setTitle(error.humanReadable())
                         .setTimeout(Adw.DURATION_INFINITE)

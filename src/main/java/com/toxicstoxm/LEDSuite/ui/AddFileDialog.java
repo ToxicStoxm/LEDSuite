@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.time.TimeManager;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import com.toxicstoxm.LEDSuite.yaml_factory.YAMLSerializer;
 import io.github.jwharm.javagi.base.GErrorException;
+import lombok.NonNull;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.gnome.adw.*;
 import org.gnome.gio.File;
@@ -261,7 +262,7 @@ public class AddFileDialog extends PreferencesPage {
      */
     private void displayPlayRequestError(Exception e, String fileName) {
         LEDSuite.logger.error("Failed to send play request for uploaded file! File name : '" + fileName + "' File path: '" + filePath + "'");
-        LEDSuite.mainWindow.toastOverlay.addToast(
+        LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder()
                         .setTitle(LEDSuite.i18n("add_file_dialog_autostart_request_error"))
                         .build()
@@ -308,7 +309,7 @@ public class AddFileDialog extends PreferencesPage {
         }
         LEDSuite.logger.error("Invalid file type selected! " + path);
         LEDSuite.logger.warn("Only Image, Video and Shared Library files are allowed!");
-        LEDSuite.mainWindow.toastOverlay.addToast(
+        LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder().setTitle(LEDSuite.i18n("add_file_dialog_invalid_file_type_error")).build()
         );
     }
@@ -359,6 +360,9 @@ public class AddFileDialog extends PreferencesPage {
      * @since 1.0.0
      */
     private void upload(FinishCallback callback) {
+        @NonNull var progressBar = LEDSuite.mainWindow.cache.get(ProgressBar.class, "progressBar");
+        @NonNull var mainView = LEDSuite.mainWindow.cache.get(ToolbarView.class, "mainView");
+
         LEDSuite.logger.debug("Triggered animation upload!");
         if (filePath == null || filePath.isEmpty() || !new java.io.File(filePath).exists()) {
             LEDSuite.logger.debug("File path is null or empty.");
@@ -382,8 +386,8 @@ public class AddFileDialog extends PreferencesPage {
             public void processGui() {
                 if (!cancelled[0] && progressTracker.isUpdated()) {
                     cancelled[0] = true;
-                    LEDSuite.mainWindow.progressBar.setFraction(0.0);
-                    LEDSuite.mainWindow.rootView.setRevealBottomBars(true);
+                    progressBar.setFraction(0.0);
+                    mainView.setRevealBottomBars(true);
                     statsRow.setExpanded(true);
                     new LEDSuiteGuiRunnable() {
                         @Override
@@ -396,14 +400,14 @@ public class AddFileDialog extends PreferencesPage {
                                 if (!error) {
                                     if (!speed.getSubtitle().equals(speedNew)) speed.setSubtitle(speedNew);
                                     if (!eta.getSubtitle().equals(etaNew)) eta.setSubtitle(etaNew);
-                                    if (progressbar - LEDSuite.mainWindow.progressBar.getFraction() > 0.001) LEDSuite.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
+                                    if (progressbar - progressBar.getFraction() > 0.001) progressBar.setFraction(progressTracker.getProgressPercentage());
                                 }
                                 resetUI(1000, error, false, callback);
                                 cancel();
                             }
                             if (!speed.getSubtitle().equals(speedNew)) speed.setSubtitle(speedNew);
                             if (!eta.getSubtitle().equals(etaNew)) eta.setSubtitle(etaNew);
-                            if (progressbar - LEDSuite.mainWindow.progressBar.getFraction() > 0.001) LEDSuite.mainWindow.progressBar.setFraction(progressTracker.getProgressPercentage());
+                            if (progressbar - progressBar.getFraction() > 0.001) progressBar.setFraction(progressTracker.getProgressPercentage());
                         }
                     }.runTaskTimerAsynchronously(0, 100);
                     cancel();
@@ -441,19 +445,21 @@ public class AddFileDialog extends PreferencesPage {
      * @since 1.0.0
      */
     private void resetUI(int delayInMillis, boolean error, boolean invalidPath, FinishCallback callback) {
+        @NonNull var mainView = LEDSuite.mainWindow.cache.get(ToolbarView.class, "mainView");
+        @NonNull var progressBar = LEDSuite.mainWindow.cache.get(ProgressBar.class, "progressBar");
         new LEDSuiteGuiRunnable() {
             @Override
             public void processGui() {
-                LEDSuite.mainWindow.rootView.setRevealBottomBars(false);
+                mainView.setRevealBottomBars(false);
                 uploadButton.setCssClasses(new String[]{"suggested-action", "pill"});
                 uploading = false;
                 spinner.setVisible(false);
                 statsRow.setExpanded(false);
                 speed.setSubtitle("N/A");
                 eta.setSubtitle("N/A");
-                LEDSuite.mainWindow.progressBar.setFraction(0.0);
+                progressBar.setFraction(0.0);
                 if (error) {
-                    LEDSuite.mainWindow.toastOverlay.addToast(
+                    LEDSuite.mainWindow.cache.get(ToastOverlay.class, "toastOverlay").addToast(
                             Toast.builder()
                                     .setTitle(LEDSuite.i18n("error") + ":" + (
                                             invalidPath ?

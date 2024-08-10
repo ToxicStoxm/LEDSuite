@@ -5,6 +5,7 @@ import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
+import lombok.NonNull;
 import org.gnome.adw.*;
 import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
@@ -53,10 +54,9 @@ public class SettingsDialog extends PreferencesDialog {
      * @since 1.0.0
      */
     private PreferencesPage get_user_pref_page() {
+        @NonNull var statusBar = LEDSuite.mainWindow.cache.get(Banner.class, "statusBar");
         // Define new preference page
         var user_pref_page = new PreferencesPage();
-        // Uncomment to set title with application version
-        // user_pref_page.setTitle(Constants.Application.VERSION);
 
         // Define a new preferences group for general settings
         var generalSettings = new PreferencesGroup();
@@ -64,7 +64,7 @@ public class SettingsDialog extends PreferencesDialog {
 
         // Create a switch row to toggle the status bar
         var statusBarToggle = SwitchRow.builder()
-                .setActive(LEDSuite.mainWindow.isBannerVisible())
+                .setActive(statusBar.getRevealed())
                 .setTitle(LEDSuite.i18n("settings_dialog_status_bar_toggle_title"))
                 .setTooltipText(LEDSuite.i18n("settings_dialog_status_bar_toggle_tooltip"))
                 .build();
@@ -75,7 +75,7 @@ public class SettingsDialog extends PreferencesDialog {
             if (!temp[1] == active) {
                 LEDSuite.logger.debug("StatusToggle: " + active);
                 // Set the banner visibility based on the toggle
-                LEDSuite.mainWindow.setBannerVisible(active);
+                LEDSuite.mainWindow.setStatusBarVisible(active);
                 temp[1] = active;
             }
         });

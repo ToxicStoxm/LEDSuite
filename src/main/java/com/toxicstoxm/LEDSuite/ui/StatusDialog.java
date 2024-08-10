@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.event_handling.listener.EventListener;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.message_wrappers.StatusUpdate;
+import lombok.NonNull;
 import org.gnome.adw.*;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Label;
@@ -267,8 +268,9 @@ public class StatusDialog extends Dialog implements EventListener {
      * @since 1.0.0
      */
     private LEDSuiteTask updateLoop() {
+        @NonNull var statusBar = LEDSuite.mainWindow.cache.get(Banner.class, "statusBar");
         LEDSuite.eventManager.registerEvents(this);
-        if (!LEDSuite.mainWindow.isBannerVisible()) {
+        if (!statusBar.getRevealed()) {
             return new LEDSuiteGuiRunnable() {
                 @Override
                 public void processGui() {

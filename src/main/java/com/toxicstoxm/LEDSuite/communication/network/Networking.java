@@ -253,6 +253,9 @@ public class Networking {
             // loading the specified file to memory
             File fileToSend = new File(fileToSendPath);
             try {
+                // disabling periodic requests to prevent unwanted data injection
+                TimeManager.lock("keepalive");
+                TimeManager.lock("status");
                 // send a file upload request to the server
                 sendYAMLDefaultHost(
                         YAMLMessage.builder()
@@ -262,12 +265,18 @@ public class Networking {
                                 .setObjectNewValue(String.valueOf(fileToSend.length()))
                                 .build(),
                         success -> {
-                            // if the request was successful, send the file to the server using the sendFile() method
-                            if (success) {
-                                if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
-                                    LEDSuite.logger.error("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
+                            TimeManager.lock("mgr");
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    // if the request was successful, send the file to the server using the sendFile() method
+                                    if (success) {
+                                        if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
+                                            LEDSuite.logger.error("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
+                                        }
+                                    }
                                 }
-                            }
+                            }.runTaskLaterAsynchronously(100);
                         }
                 );
             } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
@@ -276,7 +285,7 @@ public class Networking {
             }
         }
 
-        // send file to server using sockets
+        // send a file to server using sockets
 
         /**
          *
@@ -313,11 +322,6 @@ public class Networking {
             LEDSuite.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIPv4 + ":" + serverPort);
 
             try {
-
-                // disabling periodic requests to prevent unwanted data injection
-                TimeManager.lock("keepalive");
-                TimeManager.lock("status");
-                TimeManager.lock("mgr");
 
                 // getting current socket from network handler
                 Socket socket = NetworkHandler.getServer();
@@ -430,6 +434,7 @@ public class Networking {
                     // calculating transferred size in MB
                     double temp1 = (double) transferredSize / (1024 * 1024);
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
+                    out.flush();
                 }
 
                 // if the progress tracker object is not null and the upload has finished,
@@ -621,7 +626,6 @@ public class Networking {
                     LEDSuite.logger.verbose("Network Handler: started network handle!");
                 }
 
-
                 // if manager is already running, cancel it
                 if (mgr != null) mgr.cancel();
                 long keepalive = 500;
@@ -638,7 +642,7 @@ public class Networking {
                     @Override
                     public void run() {
                         if (!TimeManager.call("mgr")) return;
-                            // check if keepalive needs to be sent
+                        // check if keepalive needs to be sent
                         if (TimeManager.call("keepalive")) {
                             LEDSuite.logger.verbose("Sending keepalive");
                             try {
@@ -670,7 +674,7 @@ public class Networking {
                         if (!networkQueue.isEmpty() && isConnected()) {
                             Map.Entry<Long, LEDSuiteRunnable> entry = networkQueue.firstEntry();
                             LEDSuite.logger.verbose("Handling request: " + entry.getKey());
-                            entry.getValue().runTaskAsynchronously();
+                            entry.getValue().runTask();
                             networkQueue.remove(entry.getKey());
                         }
                     }
@@ -1301,6 +1305,7 @@ public class Networking {
                 // sending yaml data to server
                 if (displayLog) LEDSuite.logger.verbose(id + "Transmitting data...");
                 out.write(bytes);
+                out.flush();
                 if (displayLog) LEDSuite.logger.verbose(id + "Successfully transmitted data to server!");
 
                 if (displayLog) {
@@ -1332,7 +1337,6 @@ public class Networking {
             err = !err;
             if (callb) callback.onFinish(err);
             return err;
-
         }
     }
 

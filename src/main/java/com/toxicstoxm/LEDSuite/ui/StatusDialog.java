@@ -31,7 +31,7 @@ public class StatusDialog extends Dialog implements EventListener {
     private ActionRow lidState; // Displays lid state information
     private StatusPage statusPage; // Page to hold status-related UI elements
     private boolean statusInit = false; // Flag to track if status has been initialized
-    private boolean reboot = false; // Flag to indicate if a reboot is needed
+    private boolean reboot = false; // Flag to indicate if a reboot is necessary
     private long lastUpdate; // Timestamp of the last update
 
     /**

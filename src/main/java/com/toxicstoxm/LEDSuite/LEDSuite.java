@@ -143,30 +143,6 @@ public class LEDSuite implements EventListener, Runnable {
     )
     private int setStatusClockActive = -1;
 
-    /*@CommandLine.Option(
-            names = {"-w", "--write-log-to-file"},
-            description = "Change if the log should be written to a log file for the current session."
-    )
-    private boolean writeLogToFile;
-
-    @CommandLine.Option(
-            names = {"-W", "--set-write-log-to-file"},
-            description = "Permanently change if the log should be written to a log file."
-    )
-    private boolean setWriteLogToFile;
-
-    @CommandLine.Option(
-            names = {"--write-log-level-all"},
-            description = "Change if all log levels should be written to the log file for the current session."
-    )
-    private boolean writeLogLevelAll = true;
-
-    @CommandLine.Option(
-            names = {"--set-write-log-level-all"},
-            description = "Permanently change if all log levels should be written to the log file."
-    )
-    private boolean setWriteLogLevelAll = false;*/
-
     @CommandLine.Option(
             names = {"--max-log-files"},
             description = "Change the maximum number of log files allowed for the current session."
@@ -191,12 +167,6 @@ public class LEDSuite implements EventListener, Runnable {
     )
     private boolean getPaths;
 
-    /*@CommandLine.Option(
-            names = {"--libadwaita-args"},
-            description = "Pass through arguments to libadwaita."
-    )
-    private String[] libadwaitaArguments;*/
-
     @CommandLine.Option(
             names = {"--stack-trace-depth"},
             description = "Change the maximum stack trace depth for the current session."
@@ -207,17 +177,6 @@ public class LEDSuite implements EventListener, Runnable {
             description = "Permanently change the maximum stack trace depth."
     )
     private int setStackTraceDepth = -2;
-
-    /*@CommandLine.Option(
-            names = {"--color-code-log"},
-            description = "Change if the log should be color coded for the current session."
-    )
-    private boolean colorCodeLog;
-    @CommandLine.Option(
-            names = {"--set-color-code-log"},
-            description = "Permanently change if the log should be color coded."
-    )
-    private boolean setColorCodeLog;*/
 
 
     // main method
@@ -418,20 +377,6 @@ public class LEDSuite implements EventListener, Runnable {
             argumentsSettings.setStatusRequestClockActive(statusClockActive);
         }
 
-        /*if (setWriteLogToFile != argumentsSettings.isLogFileEnabled()) {
-            argumentsSettings.setLogFileEnabled(setWriteLogToFile);
-            settings.setLogFileEnabled(setWriteLogToFile);
-        } else if (writeLogToFile != argumentsSettings.isLogFileEnabled()) {
-            argumentsSettings.setLogFileEnabled(writeLogToFile);
-        }
-
-        if (setWriteLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
-            argumentsSettings.setLogFileLogLevelAll(setWriteLogLevelAll);
-            settings.setLogFileLogLevelAll(setWriteLogLevelAll);
-        } else if (writeLogLevelAll != argumentsSettings.isLogFileLogLevelAll()) {
-            argumentsSettings.setLogFileLogLevelAll(writeLogLevelAll);
-        }*/
-
         if (setMaxLogFiles > -1 && setMaxLogFiles != argumentsSettings.getLogFileMaxFiles()) {
             if (setMaxLogFiles < 1) {
                 logger.warn("Invalid value '" + setMaxLogFiles + "' for '--set-max-log-files', value must be a valid integer greater than 1!");
@@ -451,13 +396,6 @@ public class LEDSuite implements EventListener, Runnable {
             argumentsSettings.setStackTraceDepth(setStackTraceDepth);
             settings.setStackTraceDepth(setStackTraceDepth);
         } else if (stackTraceDepth > -2) argumentsSettings.setStackTraceDepth(stackTraceDepth);
-
-        /*if (setColorCodeLog != argumentsSettings.isLogColorCodingEnabled()) {
-            argumentsSettings.setLogColorCodingEnabled(setColorCodeLog);
-            settings.setLogColorCodingEnabled(setColorCodeLog);
-        } else if (colorCodeLog != argumentsSettings.isLogColorCodingEnabled()) {
-            argumentsSettings.setLogColorCodingEnabled(colorCodeLog);
-        }*/
 
         if (getPaths) {
             logger.log("Paths:");

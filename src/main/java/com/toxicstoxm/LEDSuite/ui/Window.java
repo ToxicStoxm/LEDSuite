@@ -38,7 +38,7 @@ public class Window extends ApplicationWindow implements EventListener {
     private HashMap<String, String> availableAnimations = new HashMap<>();
     private Map.Entry<String, String> currentAnimation = null;
 
-    public final Cache<Widget> cache = new Cache<>();
+    public final Cache<String, Widget> cache = new Cache<>();
 
     // constructor for the main window
     public Window(org.gnome.adw.Application app) {

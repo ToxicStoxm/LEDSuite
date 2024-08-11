@@ -38,6 +38,7 @@ public class Logger {
      * @since 1.0.0
      */
     private final TreeMap<Long, String> cache;
+    private final Stack<List<StackTraceElement>> traceCache;
 
     /**
      * Maximum length of the log message trace for alignment purposes.
@@ -57,6 +58,7 @@ public class Logger {
         AnsiConsole.systemInstall();
         // Initializes the cache to store log messages before writing them to the log file
         cache = new TreeMap<>();
+        traceCache = new Stack<>();
         // Sets initial maximum length for log message trace
         maxLength = 0;
         TimeManager.initTimeTracker("logger", 0);
@@ -171,6 +173,26 @@ public class Logger {
                 stackTrace("Cause:");
                 stackTrace(t.toString());
             }
+        }
+    }
+
+    public void printRecentStackTraces(int count) {
+        if (count < 0) {
+            warn("Invalid stack trace count '" + count + "'!");
+            return;
+        }
+        Stack<List<StackTraceElement>> recentTraces = new Stack<>();
+
+        for (int i = 0; i < count; i++) {
+            recentTraces.push(traceCache.pop());
+        }
+
+        for (int j = 0; j < count; j++) {
+            stackTrace("#" + (count - j) + " most recent stackTrace ------------------------------------------------------------------------");
+            for (StackTraceElement traceElement : recentTraces.pop()) {
+                stackTrace(traceElement.toString());
+            }
+            stackTrace("#" + (count - j) + " most recent stackTrace ------------------------------------------------------------------------");
         }
     }
 
@@ -350,6 +372,7 @@ public class Logger {
      */
     private String getTrace() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        traceCache.push(Arrays.stream(stackTrace).toList().subList(6, stackTrace.length));
         int depth = 6;
         // Retrieve the stack trace of the current thread
         String s = stackTrace[depth].toString();

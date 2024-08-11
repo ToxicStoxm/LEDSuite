@@ -9,9 +9,7 @@ import com.toxicstoxm.LEDSuite.logging.Logger;
 import com.toxicstoxm.LEDSuite.logging.network.NetworkLogger;
 import com.toxicstoxm.LEDSuite.settings.LocalSettings;
 import com.toxicstoxm.LEDSuite.settings.ServerSettings;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
+import com.toxicstoxm.LEDSuite.task_scheduler.*;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.time.TimeManager;
 import com.toxicstoxm.LEDSuite.ui.Window;
@@ -410,6 +408,33 @@ public class LEDSuite implements EventListener, Runnable {
             getInstance().app.emitShutdown();
         }
 
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                String input = "";
+                Scanner inputListener = new Scanner(new InputStreamReader(System.in));
+                while (start != 0) {
+                    while (input.isBlank()) {
+                        input = inputListener.nextLine();
+                    }
+                    if (input.contains("s")) {
+                        int length = input.length();
+                        if (length == 1) {
+                            logger.printRecentStackTraces(1);
+                        } else {
+                            String count = input.replace("s", "");
+                            try {
+                                logger.printRecentStackTraces(Integer.parseInt(count));
+                            } catch (NumberFormatException e) {
+                                logger.warn("Invalid trace count: '" + count + "'! Must be a valid integer value!");
+                            }
+                        }
+                    }
+                    input = "";
+                }
+            }
+        }.runTaskAsynchronously();
+
         logger.debug("Successfully processed CLI arguments!");
 
         logger.debug("Processing log files...");
@@ -615,6 +640,7 @@ public class LEDSuite implements EventListener, Runnable {
 
     // exiting program with specified status code
     public void exit(int status) {
+        start = 0;
         // firing new shutdown event
         if (eventManager != null) eventManager.fireEvent(new Events.Shutdown("Shutdown"));
         if (logger != null) LEDSuite.logger.info("Saving...");

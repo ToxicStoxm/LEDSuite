@@ -183,11 +183,11 @@ public class Logger {
         }
         Stack<List<StackTraceElement>> recentTraces = new Stack<>();
 
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < Math.min(count, traceCache.size()); i++) {
             recentTraces.push(traceCache.pop());
         }
 
-        for (int j = 0; j < count; j++) {
+        for (int j = 0; j < Math.min(count, recentTraces.size()); j++) {
             stackTrace("#" + (count - j) + " most recent stackTrace ------------------------------------------------------------------------");
             for (StackTraceElement traceElement : recentTraces.pop()) {
                 stackTrace(traceElement.toString());
@@ -343,7 +343,11 @@ public class Logger {
         // Create a date formatter for the timestamp
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         // Attach the current timestamp and stack trace to the message
-        return "[" + df.format(new Date()) + "] " + getTrace() + message;
+        return "[" + df.format(new Date()) + "] " + (
+                message.contains("STACKTRACE") ?
+                        "" :
+                        getTrace(false)
+                ) + message;
     }
 
     /**
@@ -358,10 +362,14 @@ public class Logger {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         // Attach the current timestamp and stack trace to the ANSI message
         return "[" + df.format(new Date()) + "] " + (
-                LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
-                        ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get("TRACE")).a(getTrace()).reset() :
-                        ansi().a(getTrace()).reset()
-                )  + message;
+                message.toString().contains("STACKTRACE") ?
+                        "" :
+                        (
+                                LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
+                                        ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get("TRACE")).a(getTrace(true)).reset() :
+                                        ansi().a(getTrace(true)).reset()
+                        )
+                ) + message;
     }
 
     /**
@@ -370,9 +378,10 @@ public class Logger {
      * @return The formatted stack trace information.
      * @since 1.0.0
      */
-    private String getTrace() {
+    private String getTrace(boolean cache) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        traceCache.push(Arrays.stream(stackTrace).toList().subList(6, stackTrace.length));
+        if (traceCache.size() >= LEDSuite.settings.getMaxStackTracesCached()) traceCache.removeLast();
+        if (cache) traceCache.push(Arrays.stream(stackTrace).toList().subList(6, stackTrace.length));
         int depth = 6;
         // Retrieve the stack trace of the current thread
         String s = stackTrace[depth].toString();

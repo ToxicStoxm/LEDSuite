@@ -54,6 +54,7 @@ public class LocalSettings extends Settings {
     );
     private boolean LogColorCodingEnabled = true;
     private int StackTraceDepth = 11;
+    private int MaxStackTracesCached = 100;
 
     private LocalSettings backup;
 
@@ -157,6 +158,13 @@ public class LocalSettings extends Settings {
                 LEDSuite.logger.warn("Error while parsing StackTraceDepth! This needs to be a numeric value!" + LEDSuite.logger.getErrorMessage(e));
             }
 
+
+            try {
+                this.MaxStackTracesCached = config.getInt(Constants.Config.MAX_STACK_TRACES_CACHED);
+            } catch (ClassCastException | ConversionException e) {
+                LEDSuite.logger.warn("Error while parsing MaxStackTracesCached! This needs to be a numeric value!" + LEDSuite.logger.getErrorMessage(e));
+            }
+
             // Setting the remaining values
             this.selectionDir = config.getString(Constants.Config.SELECTION_DIR);
             this.DisplayStatusBar = config.getBoolean(Constants.Config.DISPLAY_STATUS_BAR);
@@ -184,7 +192,7 @@ public class LocalSettings extends Settings {
             LEDSuite.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e) {
             LEDSuite.logger.fatal("Error while parsing config! Settings / values missing! You're probably using an old config file!");
-            LEDSuite.logger.warn("Your can reset the config file by starting the application with the -R CLI argument!");
+            LEDSuite.logger.warn("You can reset the config file by starting the application with the -R CLI argument!");
             LEDSuite.getInstance().exit(3);
         }
     }
@@ -227,18 +235,19 @@ public class LocalSettings extends Settings {
         this.WindowDefHeight = settings.getWindowDefHeight();
         this.LogLevel = settings.getLogLevel();
         this.selectionDir = settings.getSelectionDir();
-        this.DisplayStatusBar = settings.DisplayStatusBar;
-        this.NetworkingCommunicationClock = settings.NetworkingCommunicationClock;
-        this.CheckIPv4 = settings.CheckIPv4;
-        this.AutoPlayAfterUpload = settings.AutoPlayAfterUpload;
-        this.StatusRequestClockPassive = settings.StatusRequestClockPassive;
-        this.StatusRequestClockActive = settings.StatusRequestClockActive;
-        this.LogFileMaxFiles = settings.LogFileMaxFiles;
-        this.LogFileEnabled = settings.LogFileEnabled;
-        this.LogFileLogLevelAll = settings.LogFileLogLevelAll;
-        this.LogColors = settings.LogColors;
-        this.LogColorCodingEnabled = settings.LogColorCodingEnabled;
+        this.DisplayStatusBar = settings.isDisplayStatusBar();
+        this.NetworkingCommunicationClock = settings.getNetworkingCommunicationClock();
+        this.CheckIPv4 = settings.isCheckIPv4();
+        this.AutoPlayAfterUpload = settings.isAutoPlayAfterUpload();
+        this.StatusRequestClockPassive = settings.getStatusRequestClockPassive();
+        this.StatusRequestClockActive = settings.getStatusRequestClockActive();
+        this.LogFileMaxFiles = settings.getLogFileMaxFiles();
+        this.LogFileEnabled = settings.isLogFileEnabled();
+        this.LogFileLogLevelAll = settings.isLogFileLogLevelAll();
+        this.LogColors = settings.getLogColors();
+        this.LogColorCodingEnabled = settings.isLogColorCodingEnabled();
         this.StackTraceDepth = settings.getStackTraceDepth();
+        this.MaxStackTracesCached = settings.getMaxStackTracesCached();
 
         if (log) LEDSuite.logger.debug("Successfully loaded settings from " + settings.getName() + "!");
         if (log) LEDSuite.logger.debug(getName() + " now inherits all values from " + settings.getName());
@@ -300,9 +309,7 @@ public class LocalSettings extends Settings {
             conf.setProperty(Constants.Config.DISPLAY_STATUS_BAR, DisplayStatusBar);
             conf.setProperty(Constants.Config.AUTO_PLAY_AFTER_UPLOAD, AutoPlayAfterUpload);
             conf.setProperty(Constants.Config.COLOR_CODING_ENABLED, LogColorCodingEnabled);
-
-
-
+            conf.setProperty(Constants.Config.MAX_STACK_TRACES_CACHED, MaxStackTracesCached);
 
             // Saving settings to disk
             fH.save(Constants.File_System.config);
@@ -435,6 +442,7 @@ public class LocalSettings extends Settings {
                 StatusRequestClockActive == other.StatusRequestClockActive &&
                 LogColorCodingEnabled == other.LogColorCodingEnabled &&
                 StackTraceDepth == other.StackTraceDepth &&
+                MaxStackTracesCached == other.MaxStackTracesCached &&
                 Objects.equals(selectionDir, other.selectionDir) &&
                 Objects.equals(NetworkingCommunicationClock, other.NetworkingCommunicationClock) &&
                 Objects.equals(LogColors, other.LogColors);
@@ -455,7 +463,8 @@ public class LocalSettings extends Settings {
                 NetworkingCommunicationClock, StatusRequestClockPassive,
                 StatusRequestClockActive, LogFileEnabled,
                 LogFileLogLevelAll, LogFileMaxFiles, LogColors,
-                LogColorCodingEnabled, StackTraceDepth
+                LogColorCodingEnabled, StackTraceDepth,
+                MaxStackTracesCached
         );
     }
 }

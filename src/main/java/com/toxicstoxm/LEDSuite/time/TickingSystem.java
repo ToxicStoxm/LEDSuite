@@ -99,9 +99,8 @@ public class TickingSystem {
                 try {
                     Thread.sleep(TICK_DELAY_MS - elapsedTime);
                 } catch (InterruptedException e) {
-                    LEDSuite.logger.error("Ticking System was interrupted!");
-                    LEDSuite.logger.warn("Stopping program to prevent further errors!");
-                    LEDSuite.getInstance().exit(1);
+                    LEDSuite.logger.fatal("Ticking System was interrupted! " + LEDSuite.logger.getErrorMessage(e));
+                    LEDSuite.getInstance().exit(4);
                 }
             }
         }

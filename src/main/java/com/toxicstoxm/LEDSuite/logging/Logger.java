@@ -72,7 +72,7 @@ public class Logger {
         // Check if INFO level logging is enabled
         if (log_level.INFO.isEnabled()) {
             // Format and log the message with INFO level
-            cInfo("[INFO]:  [" + Constants.Application.NAME + "] " + message);
+            _Info("[INFO]       [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -82,7 +82,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cInfo(String message) {
+    private void _Info(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with default color
@@ -99,7 +99,7 @@ public class Logger {
         // Check if WARN level logging is enabled
         if (log_level.WARN.isEnabled()) {
             // Format and log the message with WARN level
-            cWarn("[WARN]:  [" + Constants.Application.NAME + "] " + message);
+            _warn("[WARN]       [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -109,7 +109,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cWarn(String message) {
+    private void _warn(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with warning color
@@ -137,7 +137,7 @@ public class Logger {
         // Check if ERROR level logging is enabled
         if (log_level.ERROR.isEnabled()) {
             // Format and log the message with ERROR level
-            cError("[ERROR]: [" + Constants.Application.NAME + "] " + message);
+            _error("[ERROR]      [" + Constants.Application.NAME + "] " + message);
         }
         // Display visual feedback if requested
         if (visualFeedback) {
@@ -180,7 +180,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cError(String message) {
+    private void _error(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with error color
@@ -208,7 +208,7 @@ public class Logger {
         // Check if FATAL level logging is enabled
         if (log_level.FATAL.isEnabled()) {
             // Format and log the message with FATAL level
-            cFatal("[FATAL]: [" + Constants.Application.NAME + "] " + message);
+            _fatal("[FATAL]      [" + Constants.Application.NAME + "] " + message);
         }
         // Display visual feedback if requested
         if (visualFeedback) {
@@ -222,7 +222,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cFatal(String message) {
+    private void _fatal(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with fatal color
@@ -239,7 +239,7 @@ public class Logger {
         // Check if DEBUG level logging is enabled
         if (log_level.DEBUG.isEnabled()) {
             // Format and log the message with DEBUG level
-            cDebug("[DEBUG]: [" + Constants.Application.NAME + "] " + message);
+            _debug("[DEBUG]      [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -249,7 +249,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cDebug(String message) {
+    private void _debug(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with debug color
@@ -266,7 +266,7 @@ public class Logger {
         // Check if VERBOSE level logging is enabled
         if (log_level.VERBOSE.isEnabled()) {
             // Format and log the message with VERBOSE level
-            cVerbose("[VERBOSE]: [" + Constants.Application.NAME + "] " + message);
+            _verbose("[VERBOSE]    [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -276,7 +276,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cVerbose(String message) {
+    private void _verbose(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with verbose color
@@ -293,7 +293,7 @@ public class Logger {
         // Check if VERBOSE level logging is enabled
         if (log_level.STACKTRACE.isEnabled()) {
             // Format and log the message with VERBOSE level
-            cStackTrace("[STACKTRACE]: [" + Constants.Application.NAME + "] " + message);
+            _stackTrace("[STACKTRACE] [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -303,7 +303,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cStackTrace(String message) {
+    private void _stackTrace(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with verbose color
@@ -599,5 +599,9 @@ public class Logger {
                 return log_level.INFO; // Default to INFO level if out of range
             }
         }
+    }
+
+    public String getErrorMessage(Exception e) {
+        return e.getMessage() == null ? "Cause: unknown" : e.getMessage();
     }
 }

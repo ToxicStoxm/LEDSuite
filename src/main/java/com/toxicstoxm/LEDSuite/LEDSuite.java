@@ -271,9 +271,8 @@ public class LEDSuite implements EventListener, Runnable {
                 } else {
                     // if the config can't be created for some reason, a waring message is displayed in the console
                     logger.warn("Config couldn't be created!");
-                    logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
-            }
+            } else logger.debug("Found config file: " + config_file.getAbsolutePath());
             // checking if the server side config file already exists
             if (!server_config_file.exists()) {
                 // if the config file doesn't exist, a new one gets loaded from the internal resources folder with its default values using the configs saveDefaultConfig() function
@@ -283,9 +282,8 @@ public class LEDSuite implements EventListener, Runnable {
                 } else {
                     // if the config can't be created for some reason, a waring message is displayed in the console
                     logger.warn("Server config couldn't be created!");
-                    logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
-            }
+            } else logger.debug("Found server config file: " + server_config_file.getAbsolutePath());
             // check if a log file already exists
             if (!log_file.exists()) {
                 Files.createDirectories(Path.of(log_file.getParent()));
@@ -295,9 +293,9 @@ public class LEDSuite implements EventListener, Runnable {
                 } else {
                     // if there are any exceptions during the creation of a new log file, a warning message is displayed in the console
                     logger.warn("Log file couldn't be created!");
-                    logger.warn("Please restart the application to prevent wierd behaviour!");
                 }
             } else {
+                logger.debug("Found log file: " + log_file.getAbsolutePath());
                 temp = getFile(log_file);
                 logger.debug("Moving existing 'latest.log' to '" + temp.getName() + "'...");
                 logger.debug(log_file.renameTo(new File(temp.getAbsolutePath())) ? "Moving success!" : "Moving failed!");
@@ -314,10 +312,7 @@ public class LEDSuite implements EventListener, Runnable {
         } catch (IOException | NullPointerException e) {
             // if any exceptions occur during file creation / modification, an error is displayed in the console
             // additionally the program is halted to prevent any further issues or unexpected behavior
-            logger.error("Settings failed to load!");
-            logger.warn("Application was halted!");
-            logger.warn("If this keeps happening please open an issue on GitHub!");
-            logger.warn("Please restart the application!");
+            logger.fatal("Settings failed to load! " + logger.getErrorMessage(e));
             getInstance().app.emitShutdown();
             return;
         }
@@ -328,11 +323,15 @@ public class LEDSuite implements EventListener, Runnable {
         eventManager.registerEvents(settings);
         eventManager.registerEvents(server_settings);
 
+        logger.debug("Loading settings from config files...");
         // user settings are loaded from config files
         loadConfigsFromFile();
+        logger.debug("Successfully loaded settings from config files!");
 
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         eventManager.fireEvent(new Events.Startup("Starting application! Current date and time: " + df.format(new Date())));
+
+        logger.debug("Processing CLI arguments...");
 
         argumentsSettings.copyImpl(settings, false);
         if (setLogLevel != null) {
@@ -411,10 +410,13 @@ public class LEDSuite implements EventListener, Runnable {
             getInstance().app.emitShutdown();
         }
 
+        logger.debug("Successfully processed CLI arguments!");
+
         logger.debug("Processing log files...");
         // process log files
         // checks if log files need to be moved or deleted
         processLogFiles(log_file, temp);
+        logger.debug("Successfully processed log files!");
 
         tickingSystem = new TickingSystem();
 
@@ -435,8 +437,6 @@ public class LEDSuite implements EventListener, Runnable {
         logger.info("Country: " + messages.getLocale().getDisplayCountry());
         logger.info("Successfully loaded messages!");
 
-        //System.out.println(messages.getString("greeting"));
-
         // check for window os
         // app does not normally work on windows, since windows doesn't natively support libadwaita
         if (Constants.System.NAME.toLowerCase().contains("windows")) {
@@ -444,6 +444,7 @@ public class LEDSuite implements EventListener, Runnable {
             logger.warn("You will be ignored if you open an issue for a windows only bug! You can fork the repo though and fix the bug yourself!");
         }
 
+        logger.info("Initializing connection to server");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -456,6 +457,7 @@ public class LEDSuite implements EventListener, Runnable {
             }
         }.runTaskAsynchronously();
 
+        logger.info("Requesting an initial status update from the server");
         new LEDSuiteGuiRunnable() {
             @Override
             public void processGui() {
@@ -534,12 +536,12 @@ public class LEDSuite implements EventListener, Runnable {
                 }
             // Handle errors and early returns
             } catch (IndexOutOfBoundsException e) {
-                logger.error("Error while handling log files! Error message: " + e.getMessage());
+                logger.fatal("Error while handling log files! Error message: " + logger.getErrorMessage(e));
                 getInstance().app.emitShutdown();
             } catch (NullPointerException | IllegalArgumentException e) {
-                logger.error("Error while handling log files! Error message: " + e.getMessage());
+                logger.error("Error while handling log files! Error message: " + logger.getErrorMessage(e));
             } catch (InterruptedException e) {
-                logger.debug(e.getMessage());
+                logger.debug(logger.getErrorMessage(e));
             }
         }
     }
@@ -593,6 +595,7 @@ public class LEDSuite implements EventListener, Runnable {
         // registering event listener for the main window
         eventManager.registerEvents(mainWindow);
         // showing the main window on screen
+        logger.info("Showing application window");
         mainWindow.present();
         // trigger started to send a started message to console
         // calculating time elapsed during startup and displaying it in the console
@@ -606,8 +609,7 @@ public class LEDSuite implements EventListener, Runnable {
         try {
             Networking.Communication.sendYAMLDefaultHost(YAMLMessage.defaultStatusRequest().build());
         } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
-            LEDSuite.logger.error("Failed to send / get available animations list from the server!");
-            LEDSuite.logger.displayError(e);
+            LEDSuite.logger.warn("Failed to send / get available animations list from the server!" + LEDSuite.logger.getErrorMessage(e));
         }
     }
 
@@ -624,7 +626,11 @@ public class LEDSuite implements EventListener, Runnable {
         if (logger != null) LEDSuite.logger.info("Shutting down...");
         if (logger != null) LEDSuite.logger.info("Goodbye!");
         // displaying status code in the console
-        if (logger != null) LEDSuite.logger.info("Status code: " + status);
+        if (logger != null) {
+            if (status > 0) {
+                LEDSuite.logger.fatal("Error code: " + status);
+            } else LEDSuite.logger.info("Status code: " + status);
+        }
         // exiting program with the specified status code
         System.exit(status);
     }
@@ -640,6 +646,7 @@ public class LEDSuite implements EventListener, Runnable {
     public void loadConfigsFromFile() {
         // parsing config and loading the values from storage (Default: ./LED-Cube-Control-Panel/config.yaml)
         // using Apache-Commons-Configuration2 and SnakeYaml
+        LEDSuite.logger.debug("Parsing config.yaml...");
         try {
             // defining new YamlConfig object from apache-commons-configuration2 lib
             YAMLConfiguration yamlConfig = new YAMLConfiguration();
@@ -653,14 +660,13 @@ public class LEDSuite implements EventListener, Runnable {
         } catch (ConfigurationException e) {
             // if any errors occur during config parsing, an error is displayed in the console;
             // the program is halted to prevent any further unwanted behavior
-            LEDSuite.logger.error("Failed to parse config.yaml!");
-            LEDSuite.logger.warn("Application was halted!");
-            LEDSuite.logger.warn("If this keeps happening please open an issue on GitHub!");
-            LEDSuite.logger.warn("Please restart the application!");
+            LEDSuite.logger.fatal("Failed to parse config.yaml! " + logger.getErrorMessage(e));
             getInstance().exit(1);
             return;
         }
+        LEDSuite.logger.debug("Successfully pares config.yaml!");
 
+        LEDSuite.logger.debug("Parsing server-config.yaml...");
         try {
             // defining new YamlConfig object from apache-commons-configuration2 lib
             YAMLConfiguration yamlConfig = new YAMLConfiguration();
@@ -674,12 +680,10 @@ public class LEDSuite implements EventListener, Runnable {
         } catch (ConfigurationException e) {
             // if any errors occur during config parsing, an error is displayed in the console
             // the program is halted to prevent any further unwanted behavior
-            LEDSuite.logger.error("Failed to parse server_config.yaml!");
-            LEDSuite.logger.warn("Application was halted!");
-            LEDSuite.logger.warn("If this keeps happening please open an issue on GitHub!");
-            LEDSuite.logger.warn("Please restart the application!");
-            getInstance().exit(1);
+            LEDSuite.logger.fatal("Failed to parse server_config.yaml! " + logger.getErrorMessage(e));
+            getInstance().exit(2);
         }
+        LEDSuite.logger.debug("Successfully pares server-config.yaml!");
     }
 
     public static LEDSuiteScheduler getScheduler() {
@@ -763,7 +767,7 @@ public class LEDSuite implements EventListener, Runnable {
             case reply -> {
                 switch (yaml.getReplyType()) {
                     case status -> eventManager.fireEvent(new Events.Status(StatusUpdate.fromYAMLMessage(yaml)));
-                    case menu -> LEDSuite.logger.fatal("Redundancy catcher caught a menu reply while not expecting it!");
+                    case menu -> LEDSuite.logger.warn("Unexpected menu reply packet was detected!");
                 }
 
             }
@@ -774,7 +778,7 @@ public class LEDSuite implements EventListener, Runnable {
                             )
             );
         }
-        logger.debug(id + "---------------------------------------------------------------");
+        logger.verbose(id + "---------------------------------------------------------------");
     }
     @EventHandler
     public void onDataSend(Events.DataOut e) {
@@ -789,7 +793,7 @@ public class LEDSuite implements EventListener, Runnable {
             logger.error(id + "Failed to get internal network event id from YAML!");
             logger.error(id + "Error message: " + ex.getMessage());
         }
-        logger.debug(id + "Data stream direction: out");
+        logger.verbose(id + "Data stream direction: out");
         try {
             logger.verbose(id + "Data: " + YAMLSerializer.deserializeYAML(e.yaml()));
         } catch (YAMLSerializer.YAMLException ex) {
@@ -803,8 +807,8 @@ public class LEDSuite implements EventListener, Runnable {
         StatusUpdate status = e.statusUpdate();
         TimeManager.ping("status");
         String id = "[" + status.getNetworkEventID() + "] ";
-        logger.debug(id + "Received status update from server!");
-        logger.debug(id + "Status: " + status);
+        logger.verbose(id + "Received status update from server!");
+        logger.verbose(id + "Status: " + status);
     }
     @EventHandler
     public void onSend(Events.DataOut e) {

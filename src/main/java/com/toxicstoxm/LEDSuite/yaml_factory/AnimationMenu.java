@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.yaml_factory;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.LEDSuite;
+import com.toxicstoxm.LEDSuite.logging.Logger;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.menu_wrappers.Container;
 import lombok.Getter;
 import lombok.Setter;
@@ -294,19 +295,17 @@ public class AnimationMenu implements Container {
             try {
                 result = type.deserialize(this, yaml, id);
             } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException e) {
-                LEDSuite.logger.error(id + "Failed to deserialize " + type + " from yaml! Error message: " + e.getMessage());
+                LEDSuite.logger.warn(id + "Failed to deserialize " + type + " from yaml! Error message: " + LEDSuite.logger.getErrorMessage(e));
                 LEDSuite.logger.warn("Replacing entry with default missing value placeholder!");
                 LEDSuite.logger.debug("Possible causes: missing or malformed values");
-                LEDSuite.logger.displayError(e);
                 Configuration config = new YAMLConfiguration();
-                config.setProperty(Constants.Network.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + e.getMessage());
+                config.setProperty(Constants.Network.YAML.MENU.WIDGET_CONTENT, "Failed to deserialize! Error message: " + LEDSuite.logger.getErrorMessage(e));
                 try {
                     result = result.deserialize(config, id, "missing-value-" + System.currentTimeMillis());
 
                 } catch (ConversionException | IllegalArgumentException | NoSuchElementException | NullPointerException ex) {
-                    LEDSuite.logger.displayError(e);
-                    LEDSuite.logger.fatal("FAILED TO DISPLAY MISSING VALUE PLACEHOLDER!");
-                    LEDSuite.getInstance().exit(1);
+                    LEDSuite.logger.fatal("Failed to display missing value placeholder! " + LEDSuite.logger.getErrorMessage(e));
+                    LEDSuite.getInstance().exit(5);
                 }
             }
             return result;

@@ -104,6 +104,7 @@ public class LocalSettings extends Settings {
      */
     @Override
     public void load(YAMLConfiguration config) {
+        super.load(config);
         LEDSuite.logger.debug("Loading config values to memory...");
         try {
             // Setting values to parsed config values
@@ -114,53 +115,46 @@ public class LocalSettings extends Settings {
                 this.WindowDefWidth = config.getInt(Constants.Config.WINDOW_DEFAULT_WIDTH);
                 this.WindowDefHeight = config.getInt(Constants.Config.WINDOW_DEFAULT_HEIGHT);
             } catch (ConversionException e) {
-                LEDSuite.logger.error("Error while parsing Window-Default-Height and Window-Default-Width! Not a valid Number!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing Window-Default-Height and Window-Default-Width! Not a valid Number!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 this.LogLevel = config.getInt(Constants.Config.LOG_LEVEL);
             } catch (ConversionException e) {
-                LEDSuite.logger.error("Error while parsing Log-Level! Not a valid Number!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing Log-Level! Not a valid Number!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 double temp = config.getDouble(Constants.Config.NETWORK_COMMUNICATION_CLOCK);
                 this.NetworkingCommunicationClock = (int) (Math.round((temp * 1000)));
             } catch (ClassCastException | ConversionException e) {
-                LEDSuite.logger.error("Error while parsing NetworkingCommunicationClock! Not a valid time argument (seconds)!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing NetworkingCommunicationClock! Not a valid time argument (seconds)!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 LogFileMaxFiles = config.getInt(Constants.Config.LOG_FILE_MAX_FILES);
             } catch (ConversionException e) {
-                LEDSuite.logger.error("Error while parsing LogFileMaxFiles! Not a valid time argument (seconds)!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing LogFileMaxFiles! Not a valid time argument (seconds)!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 double temp = config.getDouble(Constants.Config.STATUS_REQUEST_CLOCK_ACTIVE);
                 this.StatusRequestClockActive = (int) (Math.round((temp * 1000)));
             } catch (ClassCastException | ConversionException e) {
-                LEDSuite.logger.error("Error while parsing StatusRequestClockActive! Not a valid time argument (seconds)!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing StatusRequestClockActive! Not a valid time argument (seconds)!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 double temp = config.getDouble(Constants.Config.STATUS_REQUEST_CLOCK_PASSIVE);
                 this.StatusRequestClockPassive = (int) (Math.round((temp * 1000)));
             } catch (ClassCastException | ConversionException e) {
-                LEDSuite.logger.error("Error while parsing StatusRequestClockPassive! Not a valid time argument (seconds)!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing StatusRequestClockPassive! Not a valid time argument (seconds)!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             try {
                 this.StackTraceDepth = config.getInt(Constants.Config.STACK_TRACE_DEPTH);
             } catch (ClassCastException | ConversionException e) {
-                LEDSuite.logger.error("Error while parsing StackTraceDepth! This needs to be a numeric value!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
+                LEDSuite.logger.warn("Error while parsing StackTraceDepth! This needs to be a numeric value!" + LEDSuite.logger.getErrorMessage(e));
             }
 
             // Setting the remaining values
@@ -189,10 +183,9 @@ public class LocalSettings extends Settings {
 
             LEDSuite.logger.debug("Loaded config values to memory!");
         } catch (NoSuchElementException e) {
-            LEDSuite.logger.error("Error while parsing config! Settings / values missing! You're probably using an old config file!");
-            LEDSuite.logger.warn("Program halted to prevent any further errors!");
-            LEDSuite.logger.warn("Please delete the old config file from your .config folder and restart the application!");
-            LEDSuite.getInstance().exit(1);
+            LEDSuite.logger.fatal("Error while parsing config! Settings / values missing! You're probably using an old config file!");
+            LEDSuite.logger.warn("Your can reset the config file by starting the application with the -R CLI argument!");
+            LEDSuite.getInstance().exit(3);
         }
     }
 
@@ -278,8 +271,7 @@ public class LocalSettings extends Settings {
             fH.load(Constants.File_System.config);
             comments = new TreeMap<>(CommentPreservation.extractComments(Constants.File_System.config));
         } catch (ConfigurationException e) {
-            LEDSuite.logger.error("Error occurred while writing config values to config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
+            LEDSuite.logger.warn("Error occurred while writing config values to config.yaml!");
             return;
         }
 
@@ -316,16 +308,10 @@ public class LocalSettings extends Settings {
             fH.save(Constants.File_System.config);
             CommentPreservation.insertComments(Constants.File_System.config, comments);
         } catch (ConfigurationException e) {
-            LEDSuite.logger.error("Something went wrong while saving the config values for config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
-            LEDSuite.logger.warn("Previously made changes to the config may be lost!");
-            LEDSuite.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
+            LEDSuite.logger.warn("Something went wrong while saving the config values for config.yaml!" + LEDSuite.logger.getErrorMessage(e));
             return;
         } catch (IOException e) {
-            LEDSuite.logger.error("Something went wrong while saving the config comments for config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
-            LEDSuite.logger.warn("Previously made changes to the config may be lost!");
-            LEDSuite.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
+            LEDSuite.logger.warn("Something went wrong while saving the config comments for config.yaml!" + LEDSuite.logger.getErrorMessage(e));
             return;
         }
 

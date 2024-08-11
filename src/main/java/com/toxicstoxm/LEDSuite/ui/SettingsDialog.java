@@ -164,7 +164,7 @@ public class SettingsDialog extends PreferencesDialog {
                                                             .build()
                                             );
                                         } catch (Networking.NetworkException ex) {
-                                            LEDSuite.logger.error("Fallback connection failed! Stopping network communication!");
+                                            LEDSuite.logger.warn("Fallback connection failed! Stopping network communication!"  + LEDSuite.logger.getErrorMessage(e));
                                             Networking.Communication.NetworkHandler.cancel();
                                         }
                                     }
@@ -222,7 +222,7 @@ public class SettingsDialog extends PreferencesDialog {
                             LEDSuite.server_settings.setPort(Integer.parseInt(prevPort.get()));
                             Networking.Communication.NetworkHandler.hostChanged();
                         } catch (NumberFormatException | Networking.NetworkException ex) {
-                            LEDSuite.logger.error("Fallback connection failed! Stopping network communication!");
+                            LEDSuite.logger.warn("Fallback connection failed! Stopping network communication!"  + LEDSuite.logger.getErrorMessage(e));
                             Networking.Communication.NetworkHandler.cancel();
                         }
                     } finally {

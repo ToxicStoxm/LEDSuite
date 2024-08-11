@@ -47,6 +47,8 @@ public class Window extends ApplicationWindow implements EventListener {
         // initializing an application window using the superclass constructor
         super(app);
 
+        LEDSuite.logger.verbose("Assembling application window...");
+
         // set window title, default window size, minimum window size and app icon
         this.setTitle(Constants.Application.NAME);
         this.setDefaultSize(
@@ -56,6 +58,8 @@ public class Window extends ApplicationWindow implements EventListener {
         this.setSizeRequest(360, 500);
         this.setIconName(Constants.Application.ICON);
 
+        LEDSuite.logger.verbose("Loading content...");
+
         // gets the GUI and adds it to the window
         // checks for null pointer exceptions that indicate problems with GUI creation
         // if any are found a shutdown is initiated
@@ -63,26 +67,38 @@ public class Window extends ApplicationWindow implements EventListener {
 
             this.setContent(getGUI());
         } catch (NullPointerException e) {
-            LEDSuite.logger.fatal("Failed to create rough content hierarchy!");
+            LEDSuite.logger.fatal("Failed to create rough content hierarchy! " + LEDSuite.logger.getErrorMessage(e));
             app.emitShutdown();
         }
+
+        LEDSuite.logger.verbose("Loading actions...");
 
         // adding the main and general action groups to the application window
         this.insertActionGroup(Constants.GTK.Actions.Groups.MENU, getMainActionGroup());
         this.insertActionGroup(Constants.GTK.Actions.Groups.GENERAL, getGeneralActionGroup());
 
+
+        LEDSuite.logger.verbose("Loading keyboard shortcuts...");
+
         // Add the keyboard controller to the window
         this.addController(getKeyboardShortcutController());
         this.addController(getGeneralShortcutController());
 
+        LEDSuite.logger.verbose("Loading breakpoints...");
+
         this.addBreakpoint(getSideBarBreakpoint());
+
+        LEDSuite.logger.verbose("Successfully assembled application window!");
     }
     // Creates the GUI structure and populates it with widgets
     private ToolbarView getGUI() {
 
+        LEDSuite.logger.verbose("Loading rough content hierarchy...");
+
         // Creates rough content hierarchy (hierarchy is in reverse order)
         createRoughContentHierarchy();
 
+        LEDSuite.logger.verbose("Loading cached hierarchy components...");
         // Gets the rough content hierarchy elements from cache
         // Performs null checks to avoid unexpected behavior
         @NonNull var mainView = widgetCache.get(ToolbarView.class, "mainView");
@@ -90,9 +106,11 @@ public class Window extends ApplicationWindow implements EventListener {
         @NonNull var sidebarContentView = widgetCache.get(ToolbarView.class, "sidebarContentView");
         @NonNull var contentView = widgetCache.get(ToolbarView.class, "contentView");
 
+        LEDSuite.logger.verbose("Loading bars...");
         // creates header bars, status bar and progress bar and caches them
         createBars();
 
+        LEDSuite.logger.verbose("Loading cached bars...");
         // Gets the created bars from cache
         // Performs null checks to avoid unexpected behavior
         @NonNull var headerBar = widgetCache.get(HeaderBar.class, "headerBar");
@@ -100,36 +118,45 @@ public class Window extends ApplicationWindow implements EventListener {
         @NonNull var progressBar = widgetCache.get(ProgressBar.class, "progressBar");
         @NonNull var sidebarHeaderbar = widgetCache.get(HeaderBar.class, "sidebarHeaderBar");
 
+        LEDSuite.logger.verbose("Inserting each bar into its parent container...");
         // Assigns each bar to its container
         contentView.addTopBar(headerBar);
         contentView.addTopBar(statusBar);
         mainView.addBottomBar(progressBar);
         sidebarContentView.addTopBar(sidebarHeaderbar);
 
+        LEDSuite.logger.verbose("Configuring status bar...");
         // populates the status bar with some default values bases on user preference
         setStatusBarVisible(LEDSuite.settings.isDisplayStatusBar());
         updateStatusBar(StatusUpdate.notConnected());
+        // configuring status button
+        statusBar.onButtonClicked(this::triggerStatusRow);
+        statusBar.setButtonLabel(LEDSuite.i18n("status_button"));
 
+        LEDSuite.logger.verbose("Loading overlays...");
         // gets the animation control buttons and add them to the window overlay
         windowOverlay.addOverlay(getAnimationControlButtons());
         windowOverlay.addOverlay(getToastOverlay());
 
+        LEDSuite.logger.verbose("Loading sidebar...");
         populateSidebar();
 
-        statusBar.onButtonClicked(this::triggerStatusRow);
-        statusBar.setButtonLabel(LEDSuite.i18n("status_button"));
+        LEDSuite.logger.verbose("Successfully Assembled GUI!");
 
         // adding the main container to the window
         return mainView;
     }
 
     private ToastOverlay getToastOverlay() {
+        LEDSuite.logger.verbose("Loading toast overlay...");
         // creates a new toast overlay which is used to display toasts (notifications) inside the application window
         // and add it to the window overlay
+        LEDSuite.logger.verbose("Assembling overlay...");
         var toastOverlay = ToastOverlay.builder()
                 .setValign(Align.END)
                 .setHalign(Align.CENTER)
                 .build();
+        LEDSuite.logger.verbose("Caching overlay...");
         widgetCache.put("toastOverlay", toastOverlay);
         return toastOverlay;
     }
@@ -191,12 +218,14 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private void populateSidebar() {
+        LEDSuite.logger.verbose("Loading cached parent views and containers...");
         @NonNull var sidebarContentBox = widgetCache.get(Box.class, "sidebarContentBox");
         @NonNull var mainContentRevealer = widgetCache.get(Revealer.class, "mainContentRevealer");
         @NonNull var contentBox = widgetCache.get(Box.class, "contentBox");
         @NonNull var sidebarAnimationSection = widgetCache.get(ListBox.class, "sidebarAnimationSection");
         @NonNull var controlButtonsRevealer = widgetCache.get(Revealer.class, "controlButtonsRevealer");
 
+        LEDSuite.logger.verbose("Loading sidebar sections...");
         var sidebarFileSection = ListBox.builder()
                 .setSelectionMode(SelectionMode.BROWSE)
                 .setCssClasses(
@@ -233,6 +262,8 @@ public class Window extends ApplicationWindow implements EventListener {
                 )
                 .build();
 
+        LEDSuite.logger.verbose("Loading update spinner...");
+
         var spinnerBox = Box.builder().setHalign(Align.CENTER).build();
         spinnerBox.append(Spinner.builder().setSpinning(true).build());
 
@@ -241,12 +272,14 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setRevealChild(true)
                 .setTransitionType(RevealerTransitionType.CROSSFADE)
                 .build();
+        LEDSuite.logger.verbose("Caching update spinner...");
         widgetCache.put("sidebarSpinnerRevealer", sidebarSpinnerRevealer);
 
         AtomicReference<ListBoxRow> current = new AtomicReference<>(new ListBoxRow());
 
         TimeManager.initTimeTracker("sidebarClickDebounce", 200, System.currentTimeMillis() - 1000);
 
+        LEDSuite.logger.verbose("Creating handlers...");
         @NonNull ListBox finalSidebarAnimationSection = sidebarAnimationSection;
         sidebarFileSection.onRowActivated(_ -> {
             if (!TimeManager.call("sidebarClickDebounce")) {
@@ -255,7 +288,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 return;
             }
             controlButtonsRevealer.setRevealChild(false);
-            LEDSuite.logger.debug("Clicked add file row!");
+            LEDSuite.logger.verbose("Clicked add file row!");
             mainContentRevealer.setRevealChild(false);
             if (contentBox.getFirstChild() != null) contentBox.remove(contentBox.getFirstChild());
             contentBox.setValign(Align.START);
@@ -310,7 +343,7 @@ public class Window extends ApplicationWindow implements EventListener {
                                 LEDSuite.logger.debug("Requesting animation menu for '" + rowName + "' from server.");
                                 getStatus(null);
                             } else {
-                                LEDSuite.logger.error("Failed to load menu for '" + rowName + "'!");
+                                LEDSuite.logger.warn("Failed to load menu for '" + rowName + "'!");
                             }
                         },
                         new LEDSuiteProcessor() {
@@ -335,7 +368,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         }
                 );
             } catch (ConfigurationException | YAMLSerializer.YAMLException e) {
-                LEDSuite.logger.error("Failed to send / get menu request for: " + rowName);
+                LEDSuite.logger.warn("Failed to send / get menu request for: " + rowName);
                 finalSidebarAnimationSection1.remove(row);
                 LEDSuite.logger.displayError(e);
             }
@@ -343,12 +376,14 @@ public class Window extends ApplicationWindow implements EventListener {
             sidebarFileSection.setSelectionMode(SelectionMode.NONE);
             sidebarFileSection.setSelectionMode(SelectionMode.BROWSE);
         });
+        LEDSuite.logger.verbose("Assembling sidebar...");
         sidebarContentBox.append(sidebarFileSection);
         sidebarContentBox.append(Separator.builder().build());
         sidebarContentBox.append(Animations);
         sidebarContentBox.append(sidebarAnimationSection);
         sidebarContentBox.append(sidebarSpinnerRevealer);
 
+        LEDSuite.logger.verbose("Caching sidebar...");
         widgetCache.put("sidebarFileSection", sidebarFileSection);
         widgetCache.put("sidebarAnimationSection", sidebarAnimationSection);
     }
@@ -356,12 +391,14 @@ public class Window extends ApplicationWindow implements EventListener {
     // creates the main header bar, the sidebar header bar, the status bar and the progress bar
     // and caches them
     private void createBars() {
+        LEDSuite.logger.verbose("Loading header bars...");
         var headerBar = HeaderBar.builder().build();
         // Inserts the main menu button at the end of the header bar
         headerBar.packEnd(getMainMenuButton());
         headerBar.packStart(getSideBarToggleButton());
         widgetCache.put("headerBar", headerBar);
 
+        LEDSuite.logger.verbose("Loading status bar...");
         // initializes the status bar with a default title and
         widgetCache.put("statusBar",
                 Banner.builder()
@@ -369,6 +406,7 @@ public class Window extends ApplicationWindow implements EventListener {
                         .build()
         );
 
+        LEDSuite.logger.verbose("Loading progress bar...");
         // creates a progress bar and caches it
         widgetCache.put("progressBar",
                 ProgressBar.builder()
@@ -388,9 +426,12 @@ public class Window extends ApplicationWindow implements EventListener {
                         .setCssClasses(new String[]{"flat"})
                         .build()
         );
+        LEDSuite.logger.verbose("Caching bars...");
     }
 
     private void createRoughContentHierarchy() {
+
+        LEDSuite.logger.verbose("Loading containers...");
         // the content box holds all main content widgets, outside the sidebar
         var contentBox = Box.builder()
                 .setOrientation(Orientation.VERTICAL)
@@ -401,6 +442,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setValign(Align.CENTER)
                 .build();
 
+        LEDSuite.logger.verbose("Loading revealers...");
         // main content box revealer manages visibility of the content box
         var mainContentRevealer = Revealer.builder()
                 .setChild(contentBox)
@@ -408,6 +450,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setTransitionType(RevealerTransitionType.CROSSFADE)
                 .build();
 
+        LEDSuite.logger.verbose("Loading views...");
         // contains the header bar and content box
         var contentView = ToolbarView.builder()
                 .setContent(mainContentRevealer)
@@ -441,6 +484,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setShowSidebar(true)
                 .build();
 
+        LEDSuite.logger.verbose("Loading overlays...");
         // adds various overlays to the overlay split view
         var windowOverlay = Overlay.builder()
                 .setChild(overlaySplitView)
@@ -452,6 +496,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setRevealBottomBars(false)
                 .build();
 
+        LEDSuite.logger.verbose("Caching loaded hierarchy components...");
         // adding the base hierarchy elements to the cache
         widgetCache.put("mainView", mainView);
         widgetCache.put("windowOverlay", windowOverlay);
@@ -464,6 +509,8 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private Clamp getAnimationControlButtons() {
+        LEDSuite.logger.verbose("Loading animation control button overlay...");
+        LEDSuite.logger.verbose("Assembling buttons...");
         var playPauseButton = Button.builder()
                 .setIconName(Constants.GTK.Icons.Symbolic.PLAY)
                 .setName("play")
@@ -491,8 +538,12 @@ public class Window extends ApplicationWindow implements EventListener {
         AtomicBoolean allowPlayPause = new AtomicBoolean(true);
         String playState = "play";
         String pauseState = "pause";
+
+        LEDSuite.logger.verbose("Creating handlers...");
+
         playPauseButton.onClicked(() -> {
             if (!TimeManager.call("control_buttons")) return;
+            LEDSuite.logger.verbose("Play pause button pressed!");
             AtomicReference<String> state = new AtomicReference<>(playPauseButton.getName());
             if (allowPlayPause.get() && currentAnimation != null && availableAnimations.containsKey(currentAnimation.getKey())) {
                 try {
@@ -506,13 +557,13 @@ public class Window extends ApplicationWindow implements EventListener {
                                 if (!success) {
                                     idle(playPauseButton, stopButtonRevealer);
                                     errorFeedback(playPauseButton, allowPlayPause);
-                                    LEDSuite.logger.error(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.capitalizeFirstLetter(state.get()) + " request for " + currentAnimation.getKey() + " failed!");
+                                    LEDSuite.logger.warn(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.capitalizeFirstLetter(state.get()) + " request for " + currentAnimation.getKey() + " failed!");
                                 }
                             }
                     );
                 } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                          YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
-                    LEDSuite.logger.error(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.capitalizeFirstLetter(state.get()) + " request for " + currentAnimation.getKey() + " failed!");
+                    LEDSuite.logger.warn(com.toxicstoxm.LEDSuite.yaml_factory.AnimationMenu.capitalizeFirstLetter(state.get()) + " request for " + currentAnimation.getKey() + " failed!");
                 }
             } else {
                 idle(playPauseButton, stopButtonRevealer);
@@ -527,6 +578,7 @@ public class Window extends ApplicationWindow implements EventListener {
         AtomicBoolean allowStop = new AtomicBoolean(true);
         stopButton.onClicked(() -> {
             if (!TimeManager.call("control_buttons")) return;
+            LEDSuite.logger.verbose("Stop button pressed!");
             if (allowStop.get() && currentAnimation != null && availableAnimations.containsKey(currentAnimation.getKey())) {
                 try {
                     Networking.Communication.sendYAMLDefaultHost(
@@ -538,19 +590,21 @@ public class Window extends ApplicationWindow implements EventListener {
                             success -> {
                                 if (!success) {
                                     errorFeedback(stopButton, allowStop);
-                                    LEDSuite.logger.error("Stop request for " + currentAnimation.getKey() + " failed!");
+                                    LEDSuite.logger.warn("Stop request for " + currentAnimation.getKey() + " failed!");
                                 }
                             }
                     );
                 } catch (ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                          YAMLSerializer.InvalidPacketTypeException | YAMLSerializer.TODOException _) {
-                    LEDSuite.logger.error("Stop request for " + currentAnimation.getKey() + " failed!");
+                    LEDSuite.logger.warn("Stop request for " + currentAnimation.getKey() + " failed!");
 
                 }
             } else errorFeedback(stopButton, allowStop);
             idle(playPauseButton, stopButtonRevealer);
             LEDSuite.logger.debug("Successfully send Stop request for " + currentAnimation.getKey() + "!");
         });
+
+        LEDSuite.logger.verbose("Assembling final overlay...");
 
         var controlButtons = Box.builder()
                 .setOrientation(Orientation.HORIZONTAL)
@@ -564,6 +618,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setRevealChild(false)
                 .build();
         controlButtonsRevealer.setTransitionType(RevealerTransitionType.CROSSFADE);
+        LEDSuite.logger.verbose("Caching assembled overlay...");
         widgetCache.put("controlButtonsRevealer", controlButtonsRevealer);
 
         return Clamp.builder()
@@ -579,6 +634,7 @@ public class Window extends ApplicationWindow implements EventListener {
     }
 
     private MenuButton getMainMenuButton() {
+        LEDSuite.logger.verbose("Loading main menu button...");
         // creating new menu button with hamburger menu icon
         var mainMenuButton = MenuButton.builder()
                 .setLabel(LEDSuite.i18n("main_menu_button_label"))
@@ -587,6 +643,7 @@ public class Window extends ApplicationWindow implements EventListener {
                 .setIconName(Constants.GTK.Icons.Symbolic.MENU)
                 .build();
 
+        LEDSuite.logger.verbose("Loading main menu...");
         // creating a new main menu dropdown, which will be displayed when pressing the main menu button
         var mainMenu = Menu.builder().build();
 
@@ -607,6 +664,8 @@ public class Window extends ApplicationWindow implements EventListener {
         about.setLabel(LEDSuite.i18n("about_row", "%APP_NAME%", Constants.Application.NAME));
         about.setDetailedAction(Constants.GTK.Actions._Actions._ABOUT);
 
+        LEDSuite.logger.verbose("Assembling main menu...");
+
         // adding the menu items to the main menu, in this specific order
         mainMenu.appendItem(mainMenuStatusRow);
         mainMenu.appendItem(mainMenuSettingsRow);
@@ -615,11 +674,12 @@ public class Window extends ApplicationWindow implements EventListener {
 
         // assigning the main menu to the main menu button
         mainMenuButton.setMenuModel(mainMenu);
-        mainMenuButton.onActivate(() -> LEDSuite.logger.debug("Menu button clicked"));
+        mainMenuButton.onActivate(() -> LEDSuite.logger.verbose("Main menu button clicked"));
         return mainMenuButton;
     }
 
     private Button getSideBarToggleButton() {
+        LEDSuite.logger.verbose("Loading sidebar toggle button...");
         @NonNull var overlaySplitView = widgetCache.get(OverlaySplitView.class, "overlaySplitView");
         var sideBarToggleButton = new ToggleButton();
         sideBarToggleButton.setIconName(Constants.GTK.Icons.Symbolic.SIDEBAR_SHOW);
@@ -628,13 +688,14 @@ public class Window extends ApplicationWindow implements EventListener {
 
         sideBarToggleButton.onToggled(() -> {
             if (sideBarToggleButton.getActive() && !overlaySplitView.getShowSidebar()) {
-                LEDSuite.logger.debug("Sidebar show button pressed (toggle:true)");
+                LEDSuite.logger.verbose("Sidebar toggle button was pressed. Showing sidebar");
                 overlaySplitView.setShowSidebar(true);
                 // resetting the button to avoid checking continuously for sidebar hide signal
                 sideBarToggleButton.setActive(false);
             }
         });
 
+        LEDSuite.logger.verbose("Caching assembled button...");
         widgetCache.put("sideBarToggleButton", sideBarToggleButton);
         return sideBarToggleButton;
     }
@@ -832,7 +893,7 @@ public class Window extends ApplicationWindow implements EventListener {
             );
         } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
                  YAMLSerializer.InvalidPacketTypeException e) {
-            LEDSuite.logger.error("Failed to send status request to server! Error message: " + e.getMessage());
+            LEDSuite.logger.warn("Failed to send status request to server! " + LEDSuite.logger.getErrorMessage(e));
             LEDSuite.logger.displayError(e);
         }
     }
@@ -899,8 +960,9 @@ public class Window extends ApplicationWindow implements EventListener {
         @NonNull var statusBar = widgetCache.get(Banner.class, "statusBar");
         @NonNull var controlButtonsRevealer = widgetCache.get(Revealer.class, "controlButtonsRevealer");
         statusBar.setTitle(statusUpdate.minimal());
-        if (statusUpdate.isNotConnected() && controlButtonsRevealer != null)
+        if (statusUpdate.isNotConnected() && controlButtonsRevealer != null) {
             controlButtonsRevealer.setRevealChild(false);
+        }
     }
 
     public ListBoxRow listBoxWrap(Widget widget) {
@@ -970,22 +1032,23 @@ public class Window extends ApplicationWindow implements EventListener {
                         setControlButtons(statusUpdate, currentAnimation, playPauseButton, stopButtonRevealer);
                     }
                 }
-                Integer previousChecksum = updateCache.get(Integer.class, "statusUpdateChecksum");
-                Integer currentChecksum = statusUpdate.getAvailableAnimations().hashCode();
-                boolean shouldUpdateAnimationList = !currentChecksum.equals(previousChecksum);
-                if (!shouldUpdateAnimationList) LEDSuite.logger.verbose("Skipping update request for the available animations list, because previous checksum (" + previousChecksum + ") == current checksum (" + currentChecksum + ")!");
-                if ((name.isBlank() || TimeManager.call("animations")) && shouldUpdateAnimationList) {
-                    updateCache.put("statusUpdateChecksum", currentChecksum, true);
-                    sidebarAnimationSection.unselectAll();
-                    sidebarAnimationSection.setSelectionMode(SelectionMode.NONE);
-                    sidebarAnimationSection.removeAll();
+                availableAnimations = statusUpdate.getAvailableAnimations();
+                if (availableAnimations != null) {
+                    Integer previousChecksum = updateCache.get(Integer.class, "statusUpdateChecksum");
+                    Integer currentChecksum = statusUpdate.getAvailableAnimations().hashCode();
+                    boolean shouldUpdateAnimationList = !currentChecksum.equals(previousChecksum);
+                    if (!shouldUpdateAnimationList)
+                        LEDSuite.logger.verbose("Skipping update request for the available animations list, because previous checksum (" + previousChecksum + ") == current checksum (" + currentChecksum + ")!");
+                    if ((name.isBlank() || TimeManager.call("animations")) && shouldUpdateAnimationList) {
+                        updateCache.put("statusUpdateChecksum", currentChecksum, true);
+                        sidebarAnimationSection.unselectAll();
+                        sidebarAnimationSection.setSelectionMode(SelectionMode.NONE);
+                        sidebarAnimationSection.removeAll();
 
-                    sidebarSpinnerRevealer.setRevealChild(true);
+                        sidebarSpinnerRevealer.setRevealChild(true);
 
-                    List<ListBoxRow> anims = new ArrayList<>();
+                        List<ListBoxRow> anims = new ArrayList<>();
 
-                    availableAnimations = statusUpdate.getAvailableAnimations();
-                    if (availableAnimations != null) {
                         for (Map.Entry<String, String> entry : availableAnimations.entrySet()) {
                             var availableAnimation = Box.builder()
                                     .setOrientation(Orientation.HORIZONTAL)
@@ -1009,9 +1072,10 @@ public class Window extends ApplicationWindow implements EventListener {
                         for (ListBoxRow lbr : anims) {
                             sidebarAnimationSection.append(lbr);
                         }
+
+                        sidebarAnimationSection.setSelectionMode(SelectionMode.BROWSE);
+                        sidebarAnimationSection.selectRow(selectedRow);
                     }
-                    sidebarAnimationSection.setSelectionMode(SelectionMode.BROWSE);
-                    sidebarAnimationSection.selectRow(selectedRow);
                 }
             } catch (NumberFormatException ex) {
                 LEDSuite.logger.warn("Status update failed!");

@@ -49,10 +49,7 @@ public final class CommentPreservation {
                 lineNumber++;
             }
         } catch (Exception e) {
-            // Log the stack trace if an exception occurs
-            for (StackTraceElement s : e.getStackTrace()) {
-                LEDSuite.logger.error(s.toString());
-            }
+            LEDSuite.logger.error("Failed to extract comments from YAML file! " + LEDSuite.logger.getErrorMessage(e));
         }
 
         // Return the TreeMap containing the comments and their line numbers

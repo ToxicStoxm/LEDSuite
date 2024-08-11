@@ -307,7 +307,7 @@ public class AddFileDialog extends PreferencesPage {
                 return;
             }
         }
-        LEDSuite.logger.error("Invalid file type selected! " + path);
+        LEDSuite.logger.warn("Invalid file type selected! " + path);
         LEDSuite.logger.warn("Only Image, Video and Shared Library files are allowed!");
         LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay").addToast(
                 Toast.builder().setTitle(LEDSuite.i18n("add_file_dialog_invalid_file_type_error")).build()

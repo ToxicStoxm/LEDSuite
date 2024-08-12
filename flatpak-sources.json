@@ -722,20 +722,6 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.jar",
-    "sha512": "2ab88a9e9eb01b72ce65c06694549fe1d46e0a78c802c6bd72ed362c42f4428a85240df8d604ac7735869029693eedb299bfb2427e6f91eca14ced944a8fab60",
-    "dest": "./offline-repository/org/fusesource/jansi/jansi/2.4.1",
-    "dest-filename": "jansi-2.4.1.jar"
-  },
-  {
-    "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.pom",
-    "sha512": "e248e631415b61339f8bd17aa9dca864d416247eb0e9658658df5ff1fb58d6dde6d88fe8f10f36a2ead1ea7813c4671da2744db27065aa2e5adea402cc7061d6",
-    "dest": "./offline-repository/org/fusesource/jansi/jansi/2.4.1",
-    "dest-filename": "jansi-2.4.1.pom"
-  },
-  {
-    "type": "file",
     "url": "https://plugins.gradle.org/m2/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar",
     "sha512": "81642db76358fbf131dfe9c2f1d9c280fc23b6bfde6a16a2d36dacc490a1a2af4e0fb4abb5cd78005718bb1d158a42fd6834cd2bfe616ec59625df01951f2478",
     "dest": "./offline-repository/org/jdom/jdom2/2.0.6.1",

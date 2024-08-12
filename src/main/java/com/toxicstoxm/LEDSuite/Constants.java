@@ -57,6 +57,7 @@ public final class Constants {
         public static final String LOG_FILE_ENABLED = LOGGING_FILE_SECTION + SEPARATOR + "Enabled";
         public static final String LOG_FILE_LOG_LEVEL_ALL = LOGGING_FILE_SECTION + SEPARATOR + "Log-Level-All";
         public static final String LOG_FILE_MAX_FILES = LOGGING_FILE_SECTION + SEPARATOR + "Max-Files";
+        public static final String MAX_STACK_TRACES_CACHED = LOGGING_SECTION + SEPARATOR + "Max-Stack-Traces-Cached";
 
         public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
         public static final String NETWORK_COMMUNICATION_CLOCK = PERIODIC_SECTION + SEPARATOR + "Network-Communication-Clock";

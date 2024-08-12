@@ -38,6 +38,7 @@ public class Logger {
      * @since 1.0.0
      */
     private final TreeMap<Long, String> cache;
+    private final Stack<List<StackTraceElement>> traceCache;
 
     /**
      * Maximum length of the log message trace for alignment purposes.
@@ -57,6 +58,7 @@ public class Logger {
         AnsiConsole.systemInstall();
         // Initializes the cache to store log messages before writing them to the log file
         cache = new TreeMap<>();
+        traceCache = new Stack<>();
         // Sets initial maximum length for log message trace
         maxLength = 0;
         TimeManager.initTimeTracker("logger", 0);
@@ -72,7 +74,7 @@ public class Logger {
         // Check if INFO level logging is enabled
         if (log_level.INFO.isEnabled()) {
             // Format and log the message with INFO level
-            cInfo("[INFO]:  [" + Constants.Application.NAME + "] " + message);
+            _Info("[INFO]       [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -82,7 +84,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cInfo(String message) {
+    private void _Info(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with default color
@@ -99,7 +101,7 @@ public class Logger {
         // Check if WARN level logging is enabled
         if (log_level.WARN.isEnabled()) {
             // Format and log the message with WARN level
-            cWarn("[WARN]:  [" + Constants.Application.NAME + "] " + message);
+            _warn("[WARN]       [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -109,7 +111,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cWarn(String message) {
+    private void _warn(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with warning color
@@ -137,7 +139,7 @@ public class Logger {
         // Check if ERROR level logging is enabled
         if (log_level.ERROR.isEnabled()) {
             // Format and log the message with ERROR level
-            cError("[ERROR]: [" + Constants.Application.NAME + "] " + message);
+            _error("[ERROR]      [" + Constants.Application.NAME + "] " + message);
         }
         // Display visual feedback if requested
         if (visualFeedback) {
@@ -174,13 +176,33 @@ public class Logger {
         }
     }
 
+    public void printRecentStackTraces(int count) {
+        if (count < 0) {
+            warn("Invalid stack trace count '" + count + "'!");
+            return;
+        }
+        Stack<List<StackTraceElement>> recentTraces = new Stack<>();
+
+        for (int i = 0; i < Math.min(count, traceCache.size()); i++) {
+            recentTraces.push(traceCache.pop());
+        }
+
+        for (int j = 0; j < Math.min(count, recentTraces.size()); j++) {
+            stackTrace("#" + (count - j) + " most recent stackTrace ------------------------------------------------------------------------");
+            for (StackTraceElement traceElement : recentTraces.pop()) {
+                stackTrace(traceElement.toString());
+            }
+            stackTrace("#" + (count - j) + " most recent stackTrace ------------------------------------------------------------------------");
+        }
+    }
+
     /**
      * Internal method for logging an error message with ANSI color formatting.
      *
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cError(String message) {
+    private void _error(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with error color
@@ -208,7 +230,7 @@ public class Logger {
         // Check if FATAL level logging is enabled
         if (log_level.FATAL.isEnabled()) {
             // Format and log the message with FATAL level
-            cFatal("[FATAL]: [" + Constants.Application.NAME + "] " + message);
+            _fatal("[FATAL]      [" + Constants.Application.NAME + "] " + message);
         }
         // Display visual feedback if requested
         if (visualFeedback) {
@@ -222,7 +244,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cFatal(String message) {
+    private void _fatal(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with fatal color
@@ -239,7 +261,7 @@ public class Logger {
         // Check if DEBUG level logging is enabled
         if (log_level.DEBUG.isEnabled()) {
             // Format and log the message with DEBUG level
-            cDebug("[DEBUG]: [" + Constants.Application.NAME + "] " + message);
+            _debug("[DEBUG]      [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -249,7 +271,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cDebug(String message) {
+    private void _debug(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with debug color
@@ -266,7 +288,7 @@ public class Logger {
         // Check if VERBOSE level logging is enabled
         if (log_level.VERBOSE.isEnabled()) {
             // Format and log the message with VERBOSE level
-            cVerbose("[VERBOSE]: [" + Constants.Application.NAME + "] " + message);
+            _verbose("[VERBOSE]    [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -276,7 +298,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cVerbose(String message) {
+    private void _verbose(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with verbose color
@@ -293,7 +315,7 @@ public class Logger {
         // Check if VERBOSE level logging is enabled
         if (log_level.STACKTRACE.isEnabled()) {
             // Format and log the message with VERBOSE level
-            cStackTrace("[STACKTRACE]: [" + Constants.Application.NAME + "] " + message);
+            _stackTrace("[STACKTRACE] [" + Constants.Application.NAME + "] " + message);
         }
     }
 
@@ -303,7 +325,7 @@ public class Logger {
      * @param message The formatted message to log.
      * @since 1.0.0
      */
-    private void cStackTrace(String message) {
+    private void _stackTrace(String message) {
         // Write the message to the log file
         writeLog(message);
         // Log to console with verbose color
@@ -321,7 +343,11 @@ public class Logger {
         // Create a date formatter for the timestamp
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         // Attach the current timestamp and stack trace to the message
-        return "[" + df.format(new Date()) + "] " + getTrace() + message;
+        return "[" + df.format(new Date()) + "] " + (
+                message.contains("STACKTRACE") ?
+                        "" :
+                        getTrace(false)
+                ) + message;
     }
 
     /**
@@ -336,10 +362,14 @@ public class Logger {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         // Attach the current timestamp and stack trace to the ANSI message
         return "[" + df.format(new Date()) + "] " + (
-                LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
-                        ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get("TRACE")).a(getTrace()).reset() :
-                        ansi().a(getTrace()).reset()
-                )  + message;
+                message.toString().contains("STACKTRACE") ?
+                        "" :
+                        (
+                                LEDSuite.argumentsSettings.isLogColorCodingEnabled() ?
+                                        ansi().fgRgb(LEDSuite.argumentsSettings.getLogColors().get("TRACE")).a(getTrace(true)).reset() :
+                                        ansi().a(getTrace(true)).reset()
+                        )
+                ) + message;
     }
 
     /**
@@ -348,8 +378,10 @@ public class Logger {
      * @return The formatted stack trace information.
      * @since 1.0.0
      */
-    private String getTrace() {
+    private String getTrace(boolean cache) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (traceCache.size() >= LEDSuite.settings.getMaxStackTracesCached()) traceCache.removeLast();
+        if (cache) traceCache.push(Arrays.stream(stackTrace).toList().subList(6, stackTrace.length));
         int depth = 6;
         // Retrieve the stack trace of the current thread
         String s = stackTrace[depth].toString();
@@ -465,7 +497,7 @@ public class Logger {
     private void visualFeedback(String message, int timeout) {
         // Check if the main window and toast overlay are available
         if (LEDSuite.mainWindow == null) return;
-        ToastOverlay toastOverlay = LEDSuite.mainWindow.toastOverlay;
+        ToastOverlay toastOverlay = LEDSuite.mainWindow.widgetCache.get(ToastOverlay.class, "toastOverlay");
         if (toastOverlay != null) {
             // Create and display new toast with the message and timeout
             toastOverlay
@@ -599,5 +631,9 @@ public class Logger {
                 return log_level.INFO; // Default to INFO level if out of range
             }
         }
+    }
+
+    public String getErrorMessage(Exception e) {
+        return e.getMessage() == null ? "Cause: unknown" : e.getMessage();
     }
 }

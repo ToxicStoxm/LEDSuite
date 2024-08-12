@@ -1,5 +1,5 @@
 # Changes made to this config file will be overwritten by the application on shutdown
-# If you want to change anything, first shutdown the application, adjust the settings and start the application again
+# If you want to change anything, first shutdown the application, adjust the settings and start the application again,
 # Any changes made to this config file can have an impact on performance or break the application
 # If you want to reset the values to default, delete this file or start the application with the -R argument
 Local-Settings:
@@ -33,7 +33,8 @@ Local-Settings:
         # Trace color is used for color coding metadata (file name and line number)
         # DEFAULT: '0x009432' = Dark Green
         TRACE: '0x009432'
-    # Logger Settings
+    # Set how many stack traces are allowed to be cached, before the application starts overwriting the oldest one
+    Max-Stack-Traces-Cached: 100
     # higher log levels include everything from lower log levels
     # Log - Levels:
     # 0 --> OFF:        logger turned off
@@ -52,7 +53,7 @@ Local-Settings:
       # If the application log should be written to a log file
       # Enabling, this can impact performance
       Enabled: false
-      # If set to true, all log messages will be written to the log file regardless of Log-Level above
+      # If set to true, all log messages will be written to the log file regardless of the Log-Level above
       # If set to false, only log messages with the above-specified Log-Level will be written to the log file
       Log-Level-All: true
       # Set how many log files are allowed to exist, before the application starts overwriting the oldest one

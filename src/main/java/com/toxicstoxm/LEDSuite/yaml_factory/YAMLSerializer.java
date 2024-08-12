@@ -52,6 +52,7 @@ public class YAMLSerializer {
             LEDSuite.logger.fatal("Unsupported operation: Tried to serialize menu yaml request!");
             LEDSuite.logger.warn("This wont be implemented since the front-end never sends menus back to the back-end!");
             LEDSuite.logger.warn("If you want to implement it you can do so by contributing to the project on GitHub!");
+            LEDSuite.getInstance().exit(6);
         }
         if (menuYaml == null) return null;
         if (yamlMessage.getPacketTypeV() != null) menuYaml.setProperty(Constants.Network.YAML.PACKET_TYPE, yamlMessage.getPacketTypeV());

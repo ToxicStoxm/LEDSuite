@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.event_handling.listener.EventListener;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.yaml_factory.wrappers.message_wrappers.StatusUpdate;
+import lombok.NonNull;
 import org.gnome.adw.*;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Label;
@@ -30,7 +31,7 @@ public class StatusDialog extends Dialog implements EventListener {
     private ActionRow lidState; // Displays lid state information
     private StatusPage statusPage; // Page to hold status-related UI elements
     private boolean statusInit = false; // Flag to track if status has been initialized
-    private boolean reboot = false; // Flag to indicate if a reboot is needed
+    private boolean reboot = false; // Flag to indicate if a reboot is necessary
     private long lastUpdate; // Timestamp of the last update
 
     /**
@@ -41,27 +42,27 @@ public class StatusDialog extends Dialog implements EventListener {
     private void initialize() {
         // Initialize action rows for different status elements
         currentDraw = ActionRow.builder()
-                .setTitle("Current Draw")
+                .setTitle(LEDSuite.i18n("status_dialog_current_draw_title"))
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
         voltage = ActionRow.builder()
-                .setTitle("Voltage")
+                .setTitle(LEDSuite.i18n("status_dialog_voltage_title"))
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
         currentFile = ActionRow.builder()
-                .setTitle("Current File")
+                .setTitle(LEDSuite.i18n("status_dialog_current_file_title"))
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
         fileState = ActionRow.builder()
-                .setTitle("Current State")
+                .setTitle(LEDSuite.i18n("status_dialog_file_state_title"))
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
         lidState = ActionRow.builder()
-                .setTitle("Lid State")
+                .setTitle(LEDSuite.i18n("status_dialog_lid_state_title"))
                 .setSubtitleSelectable(true)
                 .setCssClasses(new String[]{"property"})
                 .build();
@@ -69,7 +70,7 @@ public class StatusDialog extends Dialog implements EventListener {
         // Initialize the status page
         statusPage = StatusPage.builder()
                 .setIconName(Constants.Application.ICON)
-                .setTitle("Server Status")
+                .setTitle(LEDSuite.i18n("status_dialog_title"))
                 .build();
     }
 
@@ -98,7 +99,7 @@ public class StatusDialog extends Dialog implements EventListener {
         // Create a header bar with a title widget
         var headerBar1 = HeaderBar.builder()
                 .setShowTitle(false)
-                .setTitleWidget(Label.builder().setLabel("Server Status").build())
+                .setTitleWidget(Label.builder().setLabel(LEDSuite.i18n("status_dialog_title")).build())
                 .build();
 
         // Add the header bar to the toolbar view
@@ -155,12 +156,12 @@ public class StatusDialog extends Dialog implements EventListener {
         // Create and configure groups for power usage and file stats
         var powerUsage = PreferencesGroup.builder()
                 .setCssClasses(new String[]{"background"})
-                .setTitle("Power")
+                .setTitle(LEDSuite.i18n("status_dialog_power_section_title"))
                 .build();
 
         var fileStats = PreferencesGroup.builder()
                 .setCssClasses(new String[]{"background"})
-                .setTitle("Animation")
+                .setTitle(LEDSuite.i18n("status_dialog_animation_section_title"))
                 .build();
 
         // Add action rows to the groups
@@ -168,7 +169,7 @@ public class StatusDialog extends Dialog implements EventListener {
         fileStats.add(fileState);
 
         var general = PreferencesGroup.builder()
-                .setTitle("General")
+                .setTitle(LEDSuite.i18n("status_dialog_general_section"))
                 .build();
 
         general.add(lidState);
@@ -209,12 +210,12 @@ public class StatusDialog extends Dialog implements EventListener {
 
             // Add not connected status information
             statusList.append(
-                    ActionRow.builder().setTitle("Not connected to Cube!")
+                    ActionRow.builder().setTitle(LEDSuite.i18n("status_dialog_not_connected"))
                             .setSubtitle(LEDSuite.server_settings.getIPv4() + ":" + LEDSuite.server_settings.getPort() + " is currently not responding!").build()
             );
             statusList.append(
-                    ActionRow.builder().setTitle("Possible causes")
-                            .setSubtitle("Waiting for response, Connection failed due to invalid host / port, Connection refused by host").build()
+                    ActionRow.builder().setTitle(LEDSuite.i18n("status_dialog_not_connected_causes_title"))
+                            .setSubtitle(LEDSuite.i18n("status_dialog_not_connected_causes_subtitle")).build()
             );
 
             statusPage.setChild(statusList);
@@ -238,14 +239,14 @@ public class StatusDialog extends Dialog implements EventListener {
         voltage.setSubtitle(statusUpdate.getVoltage() + "V");
         if (statusUpdate.isFileLoaded()) {
             currentFile.setSubtitle(statusUpdate.getFileSelected());
-            fileState.setSubtitle(statusUpdate.getFileState().name());
+            fileState.setSubtitle(LEDSuite.i18n(statusUpdate.getFileState().getI18nKey()));
         } else {
             currentFile.setSubtitle("N/A");
-            fileState.setSubtitle(statusUpdate.getFileState().name());
-            fileState.setSubtitle("No animation selected!");
+            fileState.setSubtitle(LEDSuite.i18n(statusUpdate.getFileState().getI18nKey()));
+            fileState.setSubtitle(LEDSuite.i18n("status_dialog_no_animation_loaded"));
         }
 
-        lidState.setSubtitle(statusUpdate.humanReadableLidState(statusUpdate.isLidState()));
+        lidState.setSubtitle(statusUpdate.isLidState() ? LEDSuite.i18n("lid_state_closed") : LEDSuite.i18n("lid_state_open"));
     }
 
     /**
@@ -267,8 +268,9 @@ public class StatusDialog extends Dialog implements EventListener {
      * @since 1.0.0
      */
     private LEDSuiteTask updateLoop() {
+        @NonNull var statusBar = LEDSuite.mainWindow.widgetCache.get(Banner.class, "statusBar");
         LEDSuite.eventManager.registerEvents(this);
-        if (!LEDSuite.mainWindow.isBannerVisible()) {
+        if (!statusBar.getRevealed()) {
             return new LEDSuiteGuiRunnable() {
                 @Override
                 public void processGui() {

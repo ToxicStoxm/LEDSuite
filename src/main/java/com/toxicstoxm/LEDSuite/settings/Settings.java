@@ -50,7 +50,9 @@ public class Settings implements EventListener {
      * @param config The `YAMLConfiguration` object containing the configuration settings.
      * @since 1.0.0
      */
-    public void load(YAMLConfiguration config) {}
+    public void load(YAMLConfiguration config) {
+        LEDSuite.logger.verbose("[" + name + "] Loading settings for '" + type.name() + "' config.");
+    }
 
     /**
      * Saves the current settings. To be implemented by subclasses.

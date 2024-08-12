@@ -42,7 +42,7 @@ public class EventManager {
                 // Add the method to the listeners map for the specific event type
                 listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(new RegisteredListener(eventListener, method));
                 // Log the registration of the listener method
-                LEDSuite.logger.debug("Registering listener method: " +
+                LEDSuite.logger.verbose("Registering listener method: " +
                         eventListener.toString().split("@")[0] +
                         "." +
                         method.getName() +
@@ -58,7 +58,7 @@ public class EventManager {
      * @since 1.0.0
      */
     public void unregisterEvents(EventListener eventListener) {
-        // Iterate over all entries in the listeners map
+        // Iterate over all entries in the listener map
         for (Map.Entry<Class<?>, List<RegisteredListener>> entry : listeners.entrySet()) {
             // Get the list of registered listeners for the current event type
             List<RegisteredListener> registeredListeners = entry.getValue();
@@ -82,7 +82,7 @@ public class EventManager {
         String id = tryToGetNetworkID(event);
 
         // Log the firing of the event
-        LEDSuite.logger.debug(id + "Firing event: " + event);
+        LEDSuite.logger.verbose(id + "Firing event: " + event);
         // Get the list of registered listeners for the event's class
         List<RegisteredListener> registeredListeners = listeners.get(event.getClass());
         // Temporary list to keep track of listeners to remove
@@ -95,7 +95,7 @@ public class EventManager {
                     // Invoke the listener method with the event
                     Class<?> eventType = registeredListener.method.getParameterTypes()[0];
                     // Log the calling of the listener method
-                    LEDSuite.logger.debug("Calling listener method: " +
+                    LEDSuite.logger.verbose("Calling listener method: " +
                             registeredListener.eventListener.toString().split("@")[0] +
                             "." +
                             registeredListener.method.getName() +
@@ -106,7 +106,6 @@ public class EventManager {
                     // Log any exception that occurs during method invocation
                     LEDSuite.logger.warn(id + "Error while trying to fire event: " + event);
                     LEDSuite.logger.warn(id + "This warning can be ignored!");
-                    LEDSuite.logger.debug(id + "Stack trace: ");
                     LEDSuite.logger.displayError(e);
                     // Add the listener to the removal list
                     toRemove.add(registeredListener);

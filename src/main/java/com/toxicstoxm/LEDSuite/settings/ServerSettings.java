@@ -112,22 +112,21 @@ public class ServerSettings extends Settings {
      */
     @Override
     public void load(YAMLConfiguration config) {
+        super.load(config);
         try {
             // Load IPv4 address
             this.IPv4 = config.getString(Constants.Server_Config.IPV4);
             int tempPort = config.getInt(Constants.Server_Config.PORT);
             // Validate the port number
             if (!Networking.Validation.isValidPORT(String.valueOf(tempPort))) {
-                LEDSuite.logger.error("Error while parsing Server-Port! Invalid Port!");
+                LEDSuite.logger.warn("Error while parsing Server-Port! Invalid Port!");
                 LEDSuite.logger.warn("Port is outside the valid range of 0-65535!");
-                LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
             } else {
                 this.Port = tempPort;
             }
         } catch (ConversionException | NullPointerException e) {
-            LEDSuite.logger.error("Error while parsing Server-IP and Server-Port! Not a valid number!");
+            LEDSuite.logger.warn("Error while parsing Server-IP and Server-Port! Not a valid number!");
             LEDSuite.logger.warn("Invalid port and / or IPv4 address! Please restart the application!");
-            LEDSuite.logger.warn("There was an error while reading the config file, some settings may be broken!");
         }
         // Load and convert LED brightness
         this.LED_Brightness = (float) config.getInt(Constants.Server_Config.BRIGHTNESS) / 100;
@@ -158,8 +157,7 @@ public class ServerSettings extends Settings {
             fH.load(Constants.File_System.server_config);
             comments = new TreeMap<>(CommentPreservation.extractComments(Constants.File_System.server_config));
         } catch (ConfigurationException e) {
-            LEDSuite.logger.error("Error occurred while writing server-config values to server-config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
+            LEDSuite.logger.warn("Error occurred while writing server-config values to server-config.yaml!" + LEDSuite.logger.getErrorMessage(e));
             return;
         }
 
@@ -171,16 +169,12 @@ public class ServerSettings extends Settings {
             fH.save(Constants.File_System.server_config);
             CommentPreservation.insertComments(Constants.File_System.server_config, comments);
         } catch (ConfigurationException e) {
-            LEDSuite.logger.error("Something went wrong while saving the config values for server-config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
+            LEDSuite.logger.warn("Something went wrong while saving the config values for server-config.yaml!" + LEDSuite.logger.getErrorMessage(e));
             LEDSuite.logger.warn("Previously made changes to the server-config may be lost!");
-            LEDSuite.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
             return;
         } catch (IOException e) {
-            LEDSuite.logger.error("Something went wrong while saving the config comments for server-config.yaml!");
-            LEDSuite.logger.warn("Please restart the application to prevent further errors!");
+            LEDSuite.logger.warn("Something went wrong while saving the config comments for server-config.yaml!" + LEDSuite.logger.getErrorMessage(e));
             LEDSuite.logger.warn("Previously made changes to the server-config may be lost!");
-            LEDSuite.logger.warn("If this message appears on every attempt to save config changes please open an issue on GitHub!");
             return;
         }
 

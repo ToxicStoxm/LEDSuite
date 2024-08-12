@@ -68,13 +68,13 @@ public class NetworkLogger {
     public void printEvents() {
         alignNetworkEvents(); // Align event descriptions
         boolean empty = networkEvents.isEmpty() && order.isEmpty();
-        LEDSuite.logger.debug("-------------------- Network Events ---------------------------------------------------------------------------------------------------------");
-        LEDSuite.logger.debug(empty ? "Couldn't find any network events!" : "Network event count: " + networkEvents.size());
+        LEDSuite.logger.verbose("-------------------- Network Events ---------------------------------------------------------------------------------------------------------");
+        LEDSuite.logger.verbose(empty ? "Couldn't find any network events!" : "Network event count: " + networkEvents.size());
         for (Map.Entry<Integer, UUID> entry : order.entrySet()) {
             // Print each event with its description and UUID
-            LEDSuite.logger.debug(networkEvents.get(entry.getValue()) + " " + entry.getValue());
+            LEDSuite.logger.verbose(networkEvents.get(entry.getValue()) + " " + entry.getValue());
         }
-        LEDSuite.logger.debug("----------------------------------------------------------------------------------------------------------------------------------------------");
+        LEDSuite.logger.verbose("----------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     /**

@@ -253,6 +253,9 @@ public class Networking {
             // loading the specified file to memory
             File fileToSend = new File(fileToSendPath);
             try {
+                // disabling periodic requests to prevent unwanted data injection
+                TimeManager.lock("keepalive");
+                TimeManager.lock("status");
                 // send a file upload request to the server
                 sendYAMLDefaultHost(
                         YAMLMessage.builder()
@@ -262,12 +265,18 @@ public class Networking {
                                 .setObjectNewValue(String.valueOf(fileToSend.length()))
                                 .build(),
                         success -> {
-                            // if the request was successful, send the file to the server using the sendFile() method
-                            if (success) {
-                                if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
-                                    LEDSuite.logger.error("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
+                            TimeManager.lock("mgr");
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    // if the request was successful, send the file to the server using the sendFile() method
+                                    if (success) {
+                                        if (!sendFile(serverIP4, serverPort, progressTracker, fileToSend)) {
+                                            LEDSuite.logger.warn("Failed to send file '" + fileToSendPath + "' to server '" + serverIP4 + ":" + serverPort + "'!");
+                                        }
+                                    }
                                 }
-                            }
+                            }.runTaskLaterAsynchronously(100);
                         }
                 );
             } catch (YAMLSerializer.TODOException | ConfigurationException | YAMLSerializer.InvalidReplyTypeException |
@@ -276,7 +285,7 @@ public class Networking {
             }
         }
 
-        // send file to server using sockets
+        // send a file to server using sockets
 
         /**
          *
@@ -313,11 +322,6 @@ public class Networking {
             LEDSuite.logger.info(id + "Sending File: '" + fileToSend.getAbsolutePath() + "' to " + serverIPv4 + ":" + serverPort);
 
             try {
-
-                // disabling periodic requests to prevent unwanted data injection
-                TimeManager.lock("keepalive");
-                TimeManager.lock("status");
-                TimeManager.lock("mgr");
 
                 // getting current socket from network handler
                 Socket socket = NetworkHandler.getServer();
@@ -430,6 +434,7 @@ public class Networking {
                     // calculating transferred size in MB
                     double temp1 = (double) transferredSize / (1024 * 1024);
                     mbTransferredSize = (double) Math.round(temp1 * 1000) / 1000;
+                    out.flush();
                 }
 
                 // if the progress tracker object is not null and the upload has finished,
@@ -451,12 +456,11 @@ public class Networking {
                 LEDSuite.logger.verbose(id + "Sending complete!");
             } catch (IOException e) {
                 if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
-                LEDSuite.logger.error(id + "Error occurred! Transmission terminated!");
-                LEDSuite.logger.displayError(e);
+                LEDSuite.logger.warn(id + "Error occurred! Transmission terminated! " + LEDSuite.logger.getErrorMessage(e));
                 return false;
             } catch (NetworkException e) {
                 if (track) progressTracker.setError(true); // inform the progress tracker of the occurred error
-                LEDSuite.logger.fatal(id + "Network error: " + e.getMessage());
+                LEDSuite.logger.warn(id + "Network error! " + LEDSuite.logger.getErrorMessage(e));
             } finally {
                 // re enabling periodic requests
                 TimeManager.release("keepalive");
@@ -606,8 +610,7 @@ public class Networking {
                     LEDSuite.logger.verbose("Successfully connected to server!");
                 } catch (IOException e) {
                     // if connection fails, inform the caller function using the callback
-                    LEDSuite.logger.fatal("Failed to initialize connection to server! Error: " + e.getMessage());
-                    LEDSuite.logger.displayError(e);
+                    LEDSuite.logger.warn("Failed to initialize connection to server! " + LEDSuite.logger.getErrorMessage(e));
                     serverIsRebooting = false;
                     if (callback != null) callback.getResult(false);
                     return;
@@ -620,7 +623,6 @@ public class Networking {
                     LEDSuite.eventManager.registerEvents(handle = new NetworkHandle());
                     LEDSuite.logger.verbose("Network Handler: started network handle!");
                 }
-
 
                 // if manager is already running, cancel it
                 if (mgr != null) mgr.cancel();
@@ -638,7 +640,7 @@ public class Networking {
                     @Override
                     public void run() {
                         if (!TimeManager.call("mgr")) return;
-                            // check if keepalive needs to be sent
+                        // check if keepalive needs to be sent
                         if (TimeManager.call("keepalive")) {
                             LEDSuite.logger.verbose("Sending keepalive");
                             try {
@@ -670,7 +672,7 @@ public class Networking {
                         if (!networkQueue.isEmpty() && isConnected()) {
                             Map.Entry<Long, LEDSuiteRunnable> entry = networkQueue.firstEntry();
                             LEDSuite.logger.verbose("Handling request: " + entry.getKey());
-                            entry.getValue().runTaskAsynchronously();
+                            entry.getValue().runTask();
                             networkQueue.remove(entry.getKey());
                         }
                     }
@@ -750,8 +752,7 @@ public class Networking {
                                 }
                             }
                         } catch (Exception e) {
-                            LEDSuite.logger.fatal("Network Handler: master listener: Error: " + e.getMessage());
-                            LEDSuite.logger.displayError(e);
+                            LEDSuite.logger.error("Network Handler: Error while running master listener! " + LEDSuite.logger.getErrorMessage(e));
                         }
 
                     }
@@ -818,8 +819,7 @@ public class Networking {
                         if (!success) throw new NetworkException("connection failed");
                     });
                 } catch (NetworkException e) {
-                    LEDSuite.logger.fatal("Network Handler: reboot failed!");
-                    LEDSuite.logger.displayError(e);
+                    LEDSuite.logger.warn("Network Handler: reboot failed! " + LEDSuite.logger.getErrorMessage(e));
                     throw new NetworkException("connection failed!");
                 }
             }
@@ -885,7 +885,7 @@ public class Networking {
                         );
                     } catch (YAMLSerializer.TODOException | ConfigurationException |
                              YAMLSerializer.InvalidReplyTypeException | YAMLSerializer.InvalidPacketTypeException ex) {
-                        LEDSuite.logger.error("Failed to send (1) settings change request!");
+                        LEDSuite.logger.warn("Failed to send (1) settings change request!");
                     }
                     LEDSuite.logger.verbose("Successfully send (1) settings change request to server!");
                 }
@@ -907,7 +907,7 @@ public class Networking {
                         );
                     } catch (YAMLSerializer.TODOException | ConfigurationException |
                              YAMLSerializer.InvalidReplyTypeException | YAMLSerializer.InvalidPacketTypeException ex) {
-                        LEDSuite.logger.error("Failed to send (" + changedSettings.size() +") settings change request!");
+                        LEDSuite.logger.warn("Failed to send (" + changedSettings.size() +") settings change request!");
                     }
                     LEDSuite.logger.verbose("Successfully send (" + changedSettings.size() +") settings change request to server!");
                 }
@@ -1059,7 +1059,7 @@ public class Networking {
          */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml) {
             if (!sendYAML(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort(), yaml, null)) {
-                LEDSuite.logger.error("Failed to send YAML message to server! Callback = false | ReplyHandler = false");
+                LEDSuite.logger.warn("Failed to send YAML message to server!");
             }
         }
 
@@ -1075,7 +1075,7 @@ public class Networking {
          */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback) {
             if (!sendYAML(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort(), yaml, callback)) {
-                LEDSuite.logger.error("Failed to send YAML message with callback to server! Callback = true | ReplyHandler = false");
+                LEDSuite.logger.warn("Failed to send YAML message to server!");
             }
         }
 
@@ -1092,7 +1092,7 @@ public class Networking {
          */
         public static void sendYAMLDefaultHost(YAMLConfiguration yaml, FinishCallback callback, LEDSuiteProcessor replyHandler) {
             if (!sendYAML(LEDSuite.server_settings.getIPv4(), LEDSuite.server_settings.getPort(), yaml, callback, replyHandler)) {
-                LEDSuite.logger.error("Failed to send YAML message with to server! Callback = true | ReplyHandler = true");
+                LEDSuite.logger.warn("Failed to send YAML message to server!");
             }
         }
 
@@ -1144,8 +1144,7 @@ public class Networking {
                     if (callback != null) callback.onFinish(true);
                     LEDSuite.logger.verbose("Successfully reconnected to previous server!");
                 } catch (NetworkException e) {
-                    LEDSuite.logger.fatal(e.getMessage());
-                    LEDSuite.logger.error("Reconnection attempt to previous server failed!");
+                    LEDSuite.logger.warn("Reconnection attempt to previous server failed! " + LEDSuite.logger.getErrorMessage(e));
                     if (callback != null) callback.onFinish(false);
                     return false;
                 }
@@ -1178,7 +1177,7 @@ public class Networking {
          */
         private static void sendYAMLMessage(String serverIP4, int serverPort, YAMLConfiguration yaml, FinishCallback callback, LEDSuiteProcessor replyHandle) {
             if (!sendYAMLMessage(serverIP4, serverPort, yaml, callback, replyHandle, true)) {
-                LEDSuite.logger.error("Failed to send YAML message to server!");
+                LEDSuite.logger.warn("Failed to send YAML message to server!");
             }
         }
 
@@ -1301,6 +1300,7 @@ public class Networking {
                 // sending yaml data to server
                 if (displayLog) LEDSuite.logger.verbose(id + "Transmitting data...");
                 out.write(bytes);
+                out.flush();
                 if (displayLog) LEDSuite.logger.verbose(id + "Successfully transmitted data to server!");
 
                 if (displayLog) {
@@ -1316,13 +1316,12 @@ public class Networking {
                 } catch (NetworkException ex) {
                     // if an error occurs, print an error message and give up
                     if (displayLog) {
-                        LEDSuite.logger.error(id + "Error occurred! Transmission terminated!");
-                        LEDSuite.logger.displayError(e);
+                        LEDSuite.logger.warn(id + "Error occurred! Transmission terminated! " + LEDSuite.logger.getErrorMessage(e));
                     }
                     err = true;
                 }
             } catch (NetworkException e) {
-                if (displayLog) LEDSuite.logger.fatal(id + "Network error: " + e.getMessage());
+                if (displayLog) LEDSuite.logger.warn(id + "Network error! " + LEDSuite.logger.getErrorMessage(e));
             }
             finally {
                 if (displayLog) LEDSuite.logger.verbose(id + "---------------------------------------------------------------");
@@ -1332,7 +1331,6 @@ public class Networking {
             err = !err;
             if (callb) callback.onFinish(err);
             return err;
-
         }
     }
 

@@ -5,6 +5,7 @@ import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.communication.network.Networking;
 import com.toxicstoxm.LEDSuite.event_handling.Events;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteGuiRunnable;
+import lombok.NonNull;
 import org.gnome.adw.*;
 import org.gnome.gtk.Spinner;
 import org.gnome.gtk.Widget;
@@ -34,7 +35,7 @@ public class SettingsDialog extends PreferencesDialog {
      */
     public SettingsDialog() {
         // Configuring settings window appearance
-        setTitle("Settings");
+        setTitle(LEDSuite.i18n("settings_dialog_title"));
         setSearchEnabled(true);
 
         // Setting the default values
@@ -53,20 +54,19 @@ public class SettingsDialog extends PreferencesDialog {
      * @since 1.0.0
      */
     private PreferencesPage get_user_pref_page() {
+        @NonNull var statusBar = LEDSuite.mainWindow.widgetCache.get(Banner.class, "statusBar");
         // Define new preference page
         var user_pref_page = new PreferencesPage();
-        // Uncomment to set title with application version
-        // user_pref_page.setTitle(Constants.Application.VERSION);
 
         // Define a new preferences group for general settings
         var generalSettings = new PreferencesGroup();
-        generalSettings.setTitle("General Settings");
+        generalSettings.setTitle(LEDSuite.i18n("settings_dialog_generaL_settings_title"));
 
         // Create a switch row to toggle the status bar
         var statusBarToggle = SwitchRow.builder()
-                .setActive(LEDSuite.mainWindow.isBannerVisible())
-                .setTitle("Status Bar")
-                .setTooltipText("Toggles the small status bar on the main window.")
+                .setActive(statusBar.getRevealed())
+                .setTitle(LEDSuite.i18n("settings_dialog_status_bar_toggle_title"))
+                .setTooltipText(LEDSuite.i18n("settings_dialog_status_bar_toggle_tooltip"))
                 .build();
 
         // Handle state change of status bar toggle
@@ -75,7 +75,7 @@ public class SettingsDialog extends PreferencesDialog {
             if (!temp[1] == active) {
                 LEDSuite.logger.debug("StatusToggle: " + active);
                 // Set the banner visibility based on the toggle
-                LEDSuite.mainWindow.setBannerVisible(active);
+                LEDSuite.mainWindow.setStatusBarVisible(active);
                 temp[1] = active;
             }
         });
@@ -86,7 +86,7 @@ public class SettingsDialog extends PreferencesDialog {
 
         // Define preferences group for server settings
         serverSettings = new PreferencesGroup();
-        serverSettings.setTitle("Cube Settings");
+        serverSettings.setTitle(LEDSuite.i18n("settings_dialog_server_settings_backend_title"));
 
         // Create a spin row for LED brightness adjustment
         var brightnessRow = SpinRow.withRange(0, 100, 1);
@@ -95,7 +95,7 @@ public class SettingsDialog extends PreferencesDialog {
         brightnessRow.setWrap(false);
         brightnessRow.setClimbRate(2);
         brightnessRow.setNumeric(true);
-        brightnessRow.setTitle("LED - Brightness");
+        brightnessRow.setTitle(LEDSuite.i18n("settings_dialog_brightness_slider_title"));
         prev1 = brightnessRow.getValue();
 
         // Handle brightness value change
@@ -117,7 +117,7 @@ public class SettingsDialog extends PreferencesDialog {
         var spinner = new Spinner();
 
         // Create an entry row for IPv4 address
-        var ipv4Row = EntryRow.builder().setTitle("IPv4").build();
+        var ipv4Row = EntryRow.builder().setTitle(LEDSuite.i18n("settings_dialog_ipv4_title")).build();
         ipv4Row.setShowApplyButton(true);
         ipv4Row.setText(LEDSuite.server_settings.getIPv4());
         ipv4Row.setEnableUndo(true);
@@ -144,7 +144,7 @@ public class SettingsDialog extends PreferencesDialog {
                                     LEDSuite.sysBeep();
                                     addToast(
                                             Toast.builder()
-                                                    .setTitle("Server unreachable!")
+                                                    .setTitle(LEDSuite.i18n("settings_dialog_ipv4_server_unreachable_error"))
                                                     .setTimeout(10)
                                                     .build()
                                     );
@@ -159,12 +159,12 @@ public class SettingsDialog extends PreferencesDialog {
                                             Networking.Communication.NetworkHandler.hostChanged();
                                             addToast(
                                                     Toast.builder()
-                                                            .setTitle("Connection failed! Reconnected to previous host: '" + prevIPv4.get() + "'")
+                                                            .setTitle(LEDSuite.i18n("settings_dialog_ipv4_fallback_connect", "%PREVIOUS_HOST%", prevIPv4.get()))
                                                             .setTimeout(10)
                                                             .build()
                                             );
                                         } catch (Networking.NetworkException ex) {
-                                            LEDSuite.logger.error("Fallback connection failed! Stopping network communication!");
+                                            LEDSuite.logger.warn("Fallback connection failed! Stopping network communication!"  + LEDSuite.logger.getErrorMessage(e));
                                             Networking.Communication.NetworkHandler.cancel();
                                         }
                                     }
@@ -184,7 +184,7 @@ public class SettingsDialog extends PreferencesDialog {
         var spinner1 = new Spinner();
 
         // Create an entry row for port number
-        var port = EntryRow.builder().setTitle("Port").build();
+        var port = EntryRow.builder().setTitle(LEDSuite.i18n("settings_dialog_port_title")).build();
         port.setShowApplyButton(true);
         port.setText(String.valueOf(LEDSuite.server_settings.getPort()));
         port.setEnableUndo(true);
@@ -214,7 +214,7 @@ public class SettingsDialog extends PreferencesDialog {
                         LEDSuite.sysBeep();
                         addToast(
                                 Toast.builder()
-                                        .setTitle("Invalid Port!")
+                                        .setTitle(LEDSuite.i18n("settings_dialog_port_invalid_port_error"))
                                         .setTimeout(10)
                                         .build()
                         );
@@ -222,7 +222,7 @@ public class SettingsDialog extends PreferencesDialog {
                             LEDSuite.server_settings.setPort(Integer.parseInt(prevPort.get()));
                             Networking.Communication.NetworkHandler.hostChanged();
                         } catch (NumberFormatException | Networking.NetworkException ex) {
-                            LEDSuite.logger.error("Fallback connection failed! Stopping network communication!");
+                            LEDSuite.logger.warn("Fallback connection failed! Stopping network communication!"  + LEDSuite.logger.getErrorMessage(e));
                             Networking.Communication.NetworkHandler.cancel();
                         }
                     } finally {
@@ -235,7 +235,7 @@ public class SettingsDialog extends PreferencesDialog {
         });
         serverSettings.add(port);
 
-        // Add server settings to the preferences page
+        // Add server settings to the preference page
         user_pref_page.add(serverSettings);
         return user_pref_page;
     }

@@ -16,6 +16,18 @@
   <project_license>GPL-3.0-or-later</project_license>
 
   <releases>
+    <release version="0.1.4" date="2024-08-12" type="stable">
+      <description>
+        <p>This is our second stable release. Please report any bugs on the projects GitHub</p>
+        <ul>
+          <li>Added internationalization (en_US, de_DE, it_IT)</li>
+          <li>Fixed a ton of bugs</li>
+          <li>Code cleanup and refactoring</li>
+          <li>Added a lot of features to the logger</li>
+          <li>General refactoring of GUI logic</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.3" date="2024-07-28" type="stable">
       <description>
         <p>This is our first stable release. Please report any bugs on the projects GitHub</p>

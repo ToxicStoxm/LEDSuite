@@ -33,7 +33,8 @@ Local-Settings:
         # Trace color is used for color coding metadata (file name and line number)
         # DEFAULT: '0x009432' = Dark Green
         TRACE: '0x009432'
-    # Logger Settings
+    # Set how many stack traces are allowed to be cached, before the application starts overwriting the oldest one
+    Max-Stack-Traces-Cached: 100
     # higher log levels include everything from lower log levels
     # Log - Levels:
     # 0 --> OFF:        logger turned off
@@ -48,8 +49,6 @@ Local-Settings:
     # Set the maximum depth of stack traces (line count)
     # Setting this to -1 will print all available lines (maximum depth)
     Stack-Trace-Depth: 11
-    # Set how many stack traces are allowed to be cached, before the application starts overwriting the oldest one
-    Max-Stack-Traces-Cached: 100
     Log-File:
       # If the application log should be written to a log file
       # Enabling, this can impact performance

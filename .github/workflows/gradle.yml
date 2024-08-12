@@ -60,7 +60,7 @@ jobs:
       
     - uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit-message: "Update flatpak-sources.json"
+        commit_message: "Update flatpak-sources.json"
     
   dependency-submission:
 

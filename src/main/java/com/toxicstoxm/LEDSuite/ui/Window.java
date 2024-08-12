@@ -281,12 +281,14 @@ public class Window extends ApplicationWindow implements EventListener {
 
         LEDSuite.logger.verbose("Creating handlers...");
         @NonNull ListBox finalSidebarAnimationSection = sidebarAnimationSection;
-        sidebarFileSection.onRowActivated(_ -> {
+        sidebarFileSection.onRowActivated(row -> {
             if (!TimeManager.call("sidebarClickDebounce")) {
                 sidebarFileSection.setSelectionMode(SelectionMode.NONE);
                 sidebarFileSection.setSelectionMode(SelectionMode.BROWSE);
                 return;
             }
+            if (current.get() == row) return;
+            current.set(row);
             controlButtonsRevealer.setRevealChild(false);
             LEDSuite.logger.verbose("Clicked add file row!");
             mainContentRevealer.setRevealChild(false);
@@ -300,14 +302,13 @@ public class Window extends ApplicationWindow implements EventListener {
 
         @NonNull ListBox finalSidebarAnimationSection1 = sidebarAnimationSection;
         sidebarAnimationSection.onRowActivated(row -> {
-            controlButtonsRevealer.setRevealChild(true);
-            if (current.get() == row) return;
             if (!TimeManager.call("sidebarClickDebounce")) {
                 finalSidebarAnimationSection1.setSelectionMode(SelectionMode.NONE);
-                finalSidebarAnimationSection1.unselectAll();
                 finalSidebarAnimationSection1.setSelectionMode(SelectionMode.BROWSE);
                 return;
             }
+            if (current.get() == row) return;
+            controlButtonsRevealer.setRevealChild(true);
             current.set(row);
             if (!row.getSelectable()) return;
             if (contentBox.getFirstChild() != null) {

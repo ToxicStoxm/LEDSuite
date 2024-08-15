@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk" version="4.0"/>
+    <requires lib="Adw" version="1.0"/>
+    <template class="LEDSuiteWindow" parent="AdwApplicationWindow">
+        <property name="title">Tribute to Paganitzu</property>
+        <property name="default-width">580</property>
+        <property name="default-height">480</property>
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                    <object class="AdwHeaderBar" id="headerBar">
+                        <child type="start">
+                            <object class="GtkInscription" id="levelLabel">
+                                <property name="nat-chars">6</property>
+                            </object>
+                        </child>
+                        <child type="start">
+                            <object class="GtkInscription" id="livesLabel">
+                                <property name="nat-chars">6</property>
+                            </object>
+                        </child>
+                        <child type="start">
+                            <object class="GtkInscription" id="scoreLabel">
+                                <property name="nat-chars">9</property>
+                            </object>
+                        </child>
+                        <child type="start">
+                            <object class="GtkInscription" id="bonusLabel">
+                                <property name="nat-chars">9</property>
+                            </object>
+                        </child>
+                        <child type="end">
+                            <object class="GtkMenuButton">
+                                <property name="icon-name">open-menu-symbolic</property>
+                                <property name="menu-model">primary_menu</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+    <menu id="primary_menu">
+        <section>
+            <item>
+                <attribute name="label" translatable="yes">_Quit</attribute>
+                <attribute name="action">app.quit</attribute>
+            </item>
+        </section>
+    </menu>
+</interface>

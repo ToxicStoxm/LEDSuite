@@ -1,14 +1,11 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
-    id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'application'
+    id 'org.beryx.jlink' version '3.0.1'
     id 'io.github.jwharm.flatpak-gradle-generator' version '1.2.0'
 }
 
-group = 'com.toxicstoxm'
+group = 'com.toxicstoxm.LEDSuite'
 version = '0.1.4'
-var mainClass = group + "." + name + ".LEDSuite"
 
 repositories {
     maven { url './offline-repository/' }
@@ -16,27 +13,58 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.fusesource.jansi:jansi:2.4.1'
     implementation 'io.github.jwharm.javagi:adw:0.10.2'
-    implementation 'org.apache.commons:commons-configuration2:2.11.0'
-    implementation 'org.yaml:snakeyaml:2.2'
+
+    implementation 'org.jetbrains:annotations:24.1.0'
+    annotationProcessor 'org.jetbrains:annotations:24.1.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
-
-    implementation 'info.picocli:picocli:4.7.6'
-    annotationProcessor 'info.picocli:picocli:4.7.6'
 }
 
-// copy the Constants class and replace the version placeholder with the application version
-tasks.register("processVersion", Copy) {
-    from("src/main/java/com/toxicstoxm/LEDSuite/") {
-        include("Constants.java")
-        filter(ReplaceTokens, tokens: ['version': version])
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(22)
     }
-    into layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/")
+}
 
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+tasks.register('glibCompileResources') {
+    doLast {
+        exec {
+            workingDir 'src/main/resources'
+            commandLine 'glib-compile-resources', 'LEDSuite.gresource.xml'
+        }
+    }
+}
+
+tasks.named('classes') {
+    dependsOn glibCompileResources
+}
+
+application {
+    mainClass = 'com.toxicstoxm.LEDSuite.Main'
+    mainModule = 'com.toxicstoxm.LEDSuite'
+    applicationDefaultJvmArgs = [
+            '--enable-native-access=org.gnome.glib',
+            '--enable-native-access=org.gnome.gobject',
+            '--enable-native-access=org.gnome.gio',
+            '--enable-native-access=org.gnome.gdk',
+            '--enable-native-access=org.gnome.gtk',
+            '--enable-native-access=org.gnome.adw',
+            '--enable-native-access=org.freedesktop.cairo',
+            '--enable-native-access=com.toxicstoxm.LEDSuite'
+    ]
+}
+
+jlink {
+    options = [
+            '--strip-debug',
+            '--no-header-files',
+            '--no-man-pages',
+    ]
+    launcher {
+        name = 'LEDSuite'
+    }
 }
 
 tasks.flatpakGradleGenerator {
@@ -44,28 +72,22 @@ tasks.flatpakGradleGenerator {
     downloadDirectory = './offline-repository'
 }
 
-// exclude the original Constants class from the source set so gradle doesn't compile it in
-sourceSets {
-    main {
-        java {
-            exclude ("com/toxicstoxm/LEDSuite/Constants.java")
-        }
-    }
-}
-
-// include the new Constants class that was previously generated
-tasks.named("compileJava", JavaCompile) {
-    dependsOn("processVersion")
-    source(layout.buildDirectory.dir("generated/sources/classes/src/java/main/com/toxicstoxm/LEDSuite/"))
-}
-
-shadowJar {
-    archiveClassifier.set('final')
-}
 
 tasks.jar {
+    dependsOn('fatJar')
     manifest {
-        attributes["Main-Class"] = mainClass;
+        attributes['Main-Class'] = 'com.toxicstoxm.LEDSuite.Main';
     }
-    dependsOn("shadowJar")
+}
+
+tasks.register('fatJar', Jar) {
+    manifest {
+        attributes['Main-Class'] = 'com.toxicstoxm.LEDSuite.Main';
+    }
+
+    archiveBaseName = "${rootProject.name}-fat"
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

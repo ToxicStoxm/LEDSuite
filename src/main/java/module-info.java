@@ -3,6 +3,10 @@ module com.toxicstoxm.LEDSuite {
     requires static lombok;
     requires org.jetbrains.annotations;
     requires java.desktop;
+    requires java.datatransfer;
     exports com.toxicstoxm.LEDSuite;
+    exports com.toxicstoxm.LEDSuite.logger;
     exports com.toxicstoxm.LEDSuite.ui to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;
+    exports com.toxicstoxm.LEDSuite.logger.areas;
+    exports com.toxicstoxm.LEDSuite.logger.levels;
 }

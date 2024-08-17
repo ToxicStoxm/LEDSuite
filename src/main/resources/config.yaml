@@ -1,0 +1,69 @@
+Logger:
+  Enable: true
+  On-Demand-Trace:
+    Enable: true
+    Trace-Buffer-Limit: 100
+  Color-Coding:
+    Enable: true
+    Priority:
+      Log-Level:
+        # ALL_OFF ALL_SOFT ALL_FORCE ALL_OVERWRITE SELF_SOFT SELF_FORCE
+        Modes:
+          Self: SELF_FORCE
+          All: ALL_FORCE
+      Log-Area:
+        Modes:
+          Self: SELF_FORCE
+          All: ALL_SOFT
+      Trace:
+        Modes:
+          Self: SELF_FORCE
+          All: ALL_OFF
+  # %TIME% %TRACE% %LOG_LEVEL %LOG_AREA% %MESSAGE%
+  Style: '[%TIME%] [%TRACE%] [%LOG_LEVEL%] [%LOG_AREA%]: %MESSAGE%'
+  Trace:
+    # %CLASS_PATH% %CLASS_NAME% %CLASS_NAME_CLEAN% %LINE_NUMBER%
+    Style: '%CLASS_PATH%(%CLASS_NAME_CLEAN%%:%LINE_NUMBER%)'
+    Color: '#138C35'
+  Levels:
+    Enable: true
+
+    Fatal:
+      Enable: true
+      Text: 'FATAL'
+      Color: '#730000'
+    Error:
+      Enable: true
+      Text: 'ERROR'
+      Color: '#FF0000'
+    Warn:
+      Enable: true
+      Text: 'WARN'
+      Color: '#FFDC15'
+    Info:
+      Enable: true
+      Text: 'INFO'
+      Color: '#E4E4E4'
+    Debug:
+      Enable: true
+      Text: 'DEBUG'
+      Color: '#008CFF'
+    Verbose:
+      Enable: true
+      Text: 'VERBOSE'
+      Color: '#8300FF'
+    Stacktrace:
+      Enable: true
+      Text: 'STACKTRACE'
+      Color: '#474747'
+  Areas:
+    Enabled: true
+    Shown-Areas:
+      - 'ALL'
+      - 'NETWORK'
+      - 'YAML_EVENTS'
+      - 'COMMUNICATION'
+      - 'UI'
+      - 'USER_INTERFACE'
+      - 'UI_CONSTRUCTION'
+      - 'CUSTOM'

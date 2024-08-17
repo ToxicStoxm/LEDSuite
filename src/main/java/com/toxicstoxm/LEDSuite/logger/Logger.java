@@ -1,13 +1,15 @@
 package com.toxicstoxm.LEDSuite.logger;
 
+import com.toxicstoxm.LEDSuite.logger.areas.LogArea;
+
 public interface Logger {
 
     default void setDefaultLogArea(LogArea logArea) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
 
     default LogArea getLogArea() {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
+        unsupportedOperation();
+        return null;
     }
 
     default void fatal(String message) {
@@ -25,26 +27,30 @@ public interface Logger {
     default void debug(String message) {
         log("[DEBUG]:      " + message);
     }
+    default void verbose(String message) {
+        log("[VERBOSE]:    " + message);
+    }
     default void stacktrace(String message) {
         log("[STACKTRACE]: " + message);
     }
 
     default void fatal(String message, LogArea area) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
     default void error(String message, LogArea area) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
     default void warn(String message, LogArea area) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
     default void info(String message, LogArea area) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
     default void debug(String message, LogArea area) {
-        throw new UnsupportedOperationException("This logger implementation does not support log areas!");
-    }
+        unsupportedOperation();    }
+    default void verbose(String message, LogArea area) {
+        unsupportedOperation();    }
     default void stacktrace(String message, LogArea area) {
+        unsupportedOperation();
+    }
+
+    default void unsupportedOperation() {
         throw new UnsupportedOperationException("This logger implementation does not support log areas!");
     }
 

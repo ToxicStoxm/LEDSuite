@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.logger.Colors;
+package com.toxicstoxm.LEDSuite.logger.colors;
 
 import lombok.NonNull;
 

@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.logger.Colors.LEDSuiteMessage;
+import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
+import com.toxicstoxm.LEDSuite.logger.areas.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogger;
 import com.toxicstoxm.LEDSuite.logger.Logger;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
@@ -27,7 +28,7 @@ public class LEDSuiteApplication extends Application {
         super(address);
     }
 
-    public Logger logger;
+    public static Logger logger;
 
     public static LEDSuiteApplication create() {
         return GObject.newInstance(getType(),
@@ -43,7 +44,7 @@ public class LEDSuiteApplication extends Application {
 
         setAccelsForAction("app.quit", new String[]{"<control>q"});
 
-        logger = new LEDSuiteLogger();
+        logger = new LEDSuiteLogger(new LEDSuiteLogAreas.General());
 
         logger.log(
                 LEDSuiteMessage.builder()

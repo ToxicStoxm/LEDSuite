@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.logger;
+package com.toxicstoxm.LEDSuite.logger.areas;
 
 import lombok.NonNull;
 

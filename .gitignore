@@ -45,3 +45,4 @@ bin/
 /.run/
 /update-todo.txt
 /JavaDoc/
+/src/main/resources/LEDSuite.gresource

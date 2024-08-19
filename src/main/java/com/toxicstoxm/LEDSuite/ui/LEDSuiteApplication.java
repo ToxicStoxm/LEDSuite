@@ -48,7 +48,7 @@ public class LEDSuiteApplication extends Application {
 
         setAccelsForAction("app.quit", new String[]{"<control>q"});
 
-        logger = new LEDSuiteLogger(new LEDSuiteLogAreas.General());
+        logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.General());
 
         logger.log(
                 LEDSuiteMessage.builder()
@@ -76,7 +76,6 @@ public class LEDSuiteApplication extends Application {
         for (String entry : yaml.getKeys(true)) {
             logger.log(entry + ": " + yaml.get(entry));
         }
-
     }
 
     @Override

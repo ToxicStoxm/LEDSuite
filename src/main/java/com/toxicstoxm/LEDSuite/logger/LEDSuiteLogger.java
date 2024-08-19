@@ -6,14 +6,17 @@ import com.toxicstoxm.LEDSuite.logger.levels.LogLevel;
 import lombok.NonNull;
 
 import java.awt.*;
+import java.io.PrintStream;
 
 public class LEDSuiteLogger implements Logger {
 
     private record LogMessageBluePrint(LogLevel logLevel, LogArea logArea, String message) {}
 
     private LogArea defaultLogArea;
+    private final PrintStream out;
 
-    public LEDSuiteLogger(LogArea defaultLogArea) {
+    public LEDSuiteLogger(PrintStream out, LogArea defaultLogArea) {
+        this.out = out;
         this.defaultLogArea = defaultLogArea;
     }
 
@@ -184,6 +187,6 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void log(String message) {
-        System.out.println(message);
+       out.println(message);
     }
 }

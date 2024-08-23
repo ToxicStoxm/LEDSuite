@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.settings.config;
 
 public interface Setting<T> {
+
     T get();
     void set(T value);
 
@@ -15,5 +16,10 @@ public interface Setting<T> {
     }
 
     String toString();
+
+    default String getIdentifier(boolean withVarType) {
+        return toString();
+    }
+
     boolean equals(Object obj);
 }

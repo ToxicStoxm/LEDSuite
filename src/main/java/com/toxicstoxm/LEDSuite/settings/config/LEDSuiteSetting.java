@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.settings.config;
 
+import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
 
 public class LEDSuiteSetting<T> implements Setting<T> {
     private T value;
@@ -40,6 +41,17 @@ public class LEDSuiteSetting<T> implements Setting<T> {
     @Override
     public String toString() {
         return "LEDSuiteSetting: [ Name: " + getClass().getName() + " Type: " + getType().getName() + " Value: " + value.toString() + " ]";
+    }
+
+    @Override
+    public String getIdentifier(boolean withVarType) {
+        String[] nameParts = getClass().getName().split("\\$");
+        String[] typeParts = getType().getName().split("\\.");
+        return LEDSuiteMessage.builder()
+                .text(nameParts[nameParts.length - 1])
+                .text(withVarType, " [" + typeParts[typeParts.length - 1] + "]")
+                .text(" -> " + value.toString())
+                .getMessage();
     }
 
     @Override

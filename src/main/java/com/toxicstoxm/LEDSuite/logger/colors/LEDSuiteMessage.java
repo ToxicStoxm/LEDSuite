@@ -62,9 +62,19 @@ public class LEDSuiteMessage implements ColoredMessage {
     }
 
     @Override
+    public LEDSuiteMessage color(boolean condition, @NonNull Color color) {
+        return condition ? color(color) : this;
+    }
+
+    @Override
     public LEDSuiteMessage text(@NonNull String string) {
         message.append(colored ? getMessageCode(string) : string);
         return this;
+    }
+
+    @Override
+    public LEDSuiteMessage text(boolean condition, @NonNull String string) {
+        return condition ? text(string) : this;
     }
 
     @Override
@@ -72,6 +82,11 @@ public class LEDSuiteMessage implements ColoredMessage {
         colored = false;
         message.append(RESET);
         return this;
+    }
+
+    @Override
+    public LEDSuiteMessage reset(boolean condition) {
+        return condition ? reset() : this;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.toxicstoxm.LEDSuite.settings.config;
 
-
-
 import com.toxicstoxm.LEDSuite.settings.yaml.file.YamlConfiguration;
 
 import java.lang.reflect.Constructor;
@@ -18,29 +16,32 @@ public class SettingsHandler<T> {
         if (!List.of(settingsBundle.getInterfaces()).contains(SettingsBundle.class)) {
             throw new IllegalArgumentException(settingsBundle.getName() + " must implement SettingsBundle interface!");
         }
+        System.out.println("Loading settings: ");
         for (Class<?> innerClass : settingsBundle.getDeclaredClasses()) {
             if (innerClass.isAnnotationPresent(YAMLSetting.class)) {
                 String path = innerClass.getAnnotation(YAMLSetting.class).path();
                 Constructor<?> constructor = innerClass.getConstructor(com.toxicstoxm.LEDSuite.settings.config.Setting.class);
                 T setting = (T) constructor.newInstance(accessor.get(path));
-                System.out.println(setting);
+                if (setting instanceof LEDSuiteSetting<?> ledSuiteSetting)
+                    System.out.println(ledSuiteSetting.getIdentifier(true));
+                else System.out.print(setting);
             }
         }
     }
 
-    public void saveSettings(Class<? extends SettingsBundle> settingsBundle, YamlConfiguration yaml)
-            throws InvocationTargetException, IllegalAccessException {
+    public void saveSettings(Class<? extends SettingsBundle> settingsBundle, YamlConfiguration yaml) {
         if (!List.of(settingsBundle.getInterfaces()).contains(SettingsBundle.class)) {
             throw new IllegalArgumentException(settingsBundle.getName() + " must implement SettingsBundle interface!");
         }
         for (Class<?> innerClass : settingsBundle.getDeclaredClasses()) {
             if (innerClass.isAnnotationPresent(YAMLSetting.class)) {
                 String path = innerClass.getAnnotation(YAMLSetting.class).path();
-                Optional<Method> getterOpt = findGetter(innerClass);
+
+                Optional<Method> getterOpt = getInstanceGetter(innerClass);
                 if (getterOpt.isPresent()) {
                     Method getter = getterOpt.get();
                     try {
-                        T value = (T) getter.invoke(null); // Assuming static getter methods
+                        T value = (T) ((Setting<?>) getter.invoke(innerClass)).get();
                         yaml.set(path, value);
                     } catch (InvocationTargetException e) {
                         throw new RuntimeException("Error invoking method: " + getter.getName(), e);
@@ -54,12 +55,11 @@ public class SettingsHandler<T> {
         }
     }
 
-    private Optional<Method> findGetter(Class<?> clazz) {
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Getter.class) && method.getParameterCount() == 0) {
-                return Optional.of(method);
-            }
+    private Optional<Method> getInstanceGetter(Class<?> clazz) {
+        try {
+            return Optional.of(clazz.getMethod("getInstance"));
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }

@@ -20,4 +20,13 @@ public interface ColoredMessage {
     default String getMessage() {
         throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
     }
+    default ColoredMessage color(boolean condition, @NonNull Color color) {
+        throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
+    }
+    default ColoredMessage text(boolean condition, @NonNull String string) {
+        throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
+    }
+    default ColoredMessage reset(boolean condition) {
+        throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
+    }
 }

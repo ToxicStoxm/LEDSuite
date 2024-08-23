@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.logger;
 import com.toxicstoxm.LEDSuite.logger.areas.LogArea;
 import com.toxicstoxm.LEDSuite.logger.levels.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.logger.levels.LogLevel;
+import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
 import lombok.NonNull;
 
 import java.awt.*;
@@ -78,6 +79,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void fatal(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableFatalLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Fatal(
@@ -93,6 +95,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void error(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableErrorLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(
@@ -108,6 +111,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void warn(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableWarnLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Warn(
@@ -123,6 +127,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void info(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableInfoLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(
@@ -138,6 +143,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void debug(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableDebugLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(
@@ -153,6 +159,8 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void verbose(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableVerboseLevel.getInstance().get()) return;
+
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(
@@ -168,6 +176,7 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void stacktrace(String message, LogArea area) {
+        if (!LEDSuiteSettingsBundle.EnableStacktraceLevel.getInstance().get()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(

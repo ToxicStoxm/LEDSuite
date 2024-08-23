@@ -317,6 +317,7 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
 
     @YAMLSetting(path = "Logger.Levels.Debug.Color")
     public static class DebugColor extends LEDSuiteSetting<String> {
+
         @Getter
         private static DebugColor instance;
 

@@ -4,8 +4,8 @@ import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
 import com.toxicstoxm.LEDSuite.logger.areas.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogger;
 import com.toxicstoxm.LEDSuite.logger.Logger;
-import com.toxicstoxm.LEDSuite.settings.yaml.InvalidConfigurationException;
-import com.toxicstoxm.LEDSuite.settings.yaml.file.YamlConfiguration;
+import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
+import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
 import org.gnome.adw.Application;
@@ -16,8 +16,6 @@ import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.lang.foreign.MemorySegment;
 
 public class LEDSuiteApplication extends Application {
@@ -33,6 +31,8 @@ public class LEDSuiteApplication extends Application {
     }
 
     public static Logger logger;
+
+    public static LEDSuiteSettingsManager configMgr;
 
     public static LEDSuiteApplication create() {
         return GObject.newInstance(getType(),
@@ -50,6 +50,8 @@ public class LEDSuiteApplication extends Application {
 
         logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.General());
 
+        configMgr = new LEDSuiteSettingsManager(System.getProperty("user.home") + "/config.yaml");
+
         logger.log(
                 LEDSuiteMessage.builder()
                         .color(Color.BLUE)
@@ -66,16 +68,7 @@ public class LEDSuiteApplication extends Application {
                         " This should not be blue, if it is you fucked up!"
         );
 
-        File f = new File(System.getProperty("user.home") + "/config.yaml");
-        YamlConfiguration yaml = new YamlConfiguration();
-        try {
-            yaml.load(f);
-        } catch (IOException | InvalidConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-        for (String entry : yaml.getKeys(true)) {
-            logger.log(entry + ": " + yaml.get(entry));
-        }
+        logger.log(LEDSuiteSettingsBundle.ShownAreas.getInstance().get().toString());
     }
 
     @Override

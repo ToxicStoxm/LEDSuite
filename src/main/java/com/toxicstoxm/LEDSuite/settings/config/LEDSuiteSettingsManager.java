@@ -3,28 +3,13 @@ package com.toxicstoxm.LEDSuite.settings.config;
 
 import com.toxicstoxm.LEDSuite.settings.yaml.InvalidConfigurationException;
 import com.toxicstoxm.LEDSuite.settings.yaml.file.YamlConfiguration;
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LEDSuiteSettingsManager {
     private final ConcurrentHashMap<String, Setting<Object>> settings = new ConcurrentHashMap<>();
-
-    public static class Settings implements SettingsBundle {
-        @YAMLSetting(path = "Logger.Enable")
-        public static class EnableLogger extends LEDSuiteSetting<Boolean> {
-            @Getter
-            private static EnableLogger instance;
-
-            public EnableLogger(Setting<Object> setting) {
-                super(setting, Boolean.class);
-                instance = this;
-            }
-        }
-    }
 
     public LEDSuiteSettingsManager(String file) {
         load(file);
@@ -44,11 +29,7 @@ public class LEDSuiteSettingsManager {
         }
 
         // Optionally load settings via SettingsManager
-        try {
-            new SettingsHandler<>().loadSettings(Settings.class, settings::get);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw e;
-        }
+        new SettingsHandler<>().loadSettings(LEDSuiteSettingsBundle.class, settings::get);
     }
 
     public <T> T getSetting(Class<? extends LEDSuiteSetting<T>> settingClass) {
@@ -76,11 +57,7 @@ public class LEDSuiteSettingsManager {
         }
 
         // Save settings via SettingsManager
-        try {
-            new SettingsHandler<>().saveSettings(Settings.class, yaml);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw e;
-        }
+        new SettingsHandler<>().saveSettings(LEDSuiteSettingsBundle.class, yaml);
 
         try {
             yaml.save(file);

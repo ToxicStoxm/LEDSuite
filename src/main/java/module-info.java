@@ -6,6 +6,7 @@ module com.toxicstoxm.LEDSuite {
     requires java.desktop;
     requires java.logging;
     exports com.toxicstoxm.LEDSuite;
+    exports com.toxicstoxm.LEDSuite.settings.config;
     exports com.toxicstoxm.LEDSuite.logger;
     exports com.toxicstoxm.LEDSuite.ui to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.logger.areas;

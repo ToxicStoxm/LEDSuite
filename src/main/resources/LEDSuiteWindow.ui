@@ -11,26 +11,6 @@
                 <property name="orientation">vertical</property>
                 <child>
                     <object class="AdwHeaderBar" id="headerBar">
-                        <child type="start">
-                            <object class="GtkInscription" id="levelLabel">
-                                <property name="nat-chars">6</property>
-                            </object>
-                        </child>
-                        <child type="start">
-                            <object class="GtkInscription" id="livesLabel">
-                                <property name="nat-chars">6</property>
-                            </object>
-                        </child>
-                        <child type="start">
-                            <object class="GtkInscription" id="scoreLabel">
-                                <property name="nat-chars">9</property>
-                            </object>
-                        </child>
-                        <child type="start">
-                            <object class="GtkInscription" id="bonusLabel">
-                                <property name="nat-chars">9</property>
-                            </object>
-                        </child>
                         <child type="end">
                             <object class="GtkMenuButton">
                                 <property name="icon-name">open-menu-symbolic</property>
@@ -44,6 +24,18 @@
     </template>
     <menu id="primary_menu">
         <section>
+            <item>
+                <attribute name="label">_Status Menu</attribute>
+                <attribute name="action">menu.status</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Settings Menu</attribute>
+                <attribute name="action">menu.settings</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Shortcuts Menu</attribute>
+                <attribute name="action">menu.shortcuts</attribute>
+            </item>
             <item>
                 <attribute name="label" translatable="yes">_Quit</attribute>
                 <attribute name="action">app.quit</attribute>

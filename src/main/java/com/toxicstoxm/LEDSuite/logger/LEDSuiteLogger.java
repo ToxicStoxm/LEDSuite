@@ -220,7 +220,7 @@ public class LEDSuiteLogger implements Logger {
                             return '%';
                         }
                     },
-                    _ -> logLevel.getText()
+                    (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), logLevel.getText())
             );
         }
         placeholderManager.registerPlaceholder(
@@ -235,7 +235,7 @@ public class LEDSuiteLogger implements Logger {
                         return '%';
                     }
                 },
-                _ -> getTrace()
+                (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), getTrace())
         );
 
 
@@ -282,7 +282,7 @@ public class LEDSuiteLogger implements Logger {
                         return '%';
                     }
                 },
-                placeholder -> trace
+                (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), trace)
         );
 
         return placeholderManager.processPlaceholders(

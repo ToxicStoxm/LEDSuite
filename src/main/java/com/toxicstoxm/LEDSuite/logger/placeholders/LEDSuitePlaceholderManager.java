@@ -26,9 +26,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("HH:mm:ss");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -43,9 +43,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("yy.MM.dd");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -60,9 +60,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("HH");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -77,9 +77,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("mm");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -94,9 +94,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("ss");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -111,9 +111,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("yy");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -128,9 +128,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("MM");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -145,9 +145,9 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    _ -> {
+                    (stringWithPlaceHolders, placeholder) -> {
                         SimpleDateFormat simpleFormat = new SimpleDateFormat("dd");
-                        return simpleFormat.format(new Date());
+                        return stringWithPlaceHolders.replace(placeholder.getPlaceholder(), simpleFormat.format(new Date()));
                     }
             );
             this.registerPlaceholder(
@@ -162,30 +162,29 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
                             return '%';
                         }
                     },
-                    placeholder -> {
-                        String placeholderString = placeholder.getPlaceholder();
-
-                        String sub = placeholderString.substring(
-                                placeholderString.indexOf(
-                                        placeholder.getText()
-                                ) - placeholder.getText().length() - 1
+                    (stringWithPlaceHolders, placeholder) -> {
+                        String placeholderText = placeholder.getText().replace("*", "");
+                        String prefixCalc = stringWithPlaceHolders.substring(
+                                stringWithPlaceHolders.indexOf(
+                                        placeholderText
+                                ) - 1
                         );
-                        sub = sub.substring(
+                        String suffixCalc = prefixCalc.substring(
                                 1,
-                                sub.indexOf(
-                                        placeholder.getRegex()
+                                prefixCalc.indexOf(
+                                        placeholder.getRegex(),
+                                        1
                                 )
-                        ).replace(
-                                String.valueOf(placeholder.getRegex()),
-                                ""
-                        ).replace(
-                                placeholder.getText(),
-                                ""
                         );
-
-
-                        SimpleDateFormat simpleFormat = new SimpleDateFormat(sub);
-                        return simpleFormat.format(new Date());
+                        SimpleDateFormat simpleFormat = new SimpleDateFormat(
+                                suffixCalc.replace(
+                                        String.valueOf(placeholder.getRegex()),
+                                        ""
+                                ).replace(
+                                        placeholderText,
+                                        ""
+                                ).strip());
+                        return stringWithPlaceHolders.replace(placeholder.getRegex() + suffixCalc + placeholder.getRegex(), (simpleFormat.format(new Date())));
                     }
             );
         }
@@ -201,21 +200,20 @@ public class LEDSuitePlaceholderManager implements PlaceholderManager {
         AtomicReference<String> result = new AtomicReference<>(stringWithPlaceholders);
         placeholders.forEach((placeholder, replacer) -> result.set(
                 contains(result.get(), placeholder) ?
-                result.get().replace(
-                        placeholder.getPlaceholder(),
                         replacer.onPlaceholderRequest(
+                                result.get(),
                                 placeholder
-                        )
-                ) : result.get()
-        ));
+                        ) :
+                        result.get()
+                )
+        );
         return result.get();
     }
 
     private boolean contains(String base, Placeholder placeholder) {
         String placeholderString = placeholder.getPlaceholder();
-        if (placeholderString.contains("*") && base.contains("*")) {
-            return base.contains(placeholder.getText());
-        } else return base.contains(placeholderString);
+        if (placeholderString.contains("*")) placeholderString = placeholder.getText().replace("*", "");
+        return base.contains(placeholderString);
     }
 
     public static LEDSuitePlaceholderManager withDefault() {

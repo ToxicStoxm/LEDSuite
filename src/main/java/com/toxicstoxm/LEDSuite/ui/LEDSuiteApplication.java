@@ -4,11 +4,17 @@ import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
 import com.toxicstoxm.LEDSuite.logger.areas.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogger;
 import com.toxicstoxm.LEDSuite.logger.Logger;
+import com.toxicstoxm.LEDSuite.logger.placeholders.LEDSuitePlaceholderManager;
+import com.toxicstoxm.LEDSuite.logger.placeholders.PlaceholderManager;
+import com.toxicstoxm.LEDSuite.network.LEDSuiteSocketComms;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsManager;
-import io.github.jwharm.javagi.gobject.SignalConnection;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
+import lombok.SneakyThrows;
+import org.glassfish.tyrus.client.ClientManager;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
@@ -18,7 +24,7 @@ import org.gnome.gtk.Window;
 
 import java.awt.*;
 import java.lang.foreign.MemorySegment;
-import java.util.List;
+import java.net.URI;
 
 public class LEDSuiteApplication extends Application {
 
@@ -42,15 +48,34 @@ public class LEDSuiteApplication extends Application {
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
     }
 
+    @SneakyThrows
     @InstanceInit
     public void init() {
         var quit = new SimpleAction("quit", null);
+        var status = new SimpleAction("status", null);
+        var settings = new SimpleAction("settings", null);
+        var shortcuts = new SimpleAction("shortcuts", null);
+        var about = new SimpleAction("about", null);
+
         quit.onActivate(_ -> {
             quit();
         });
-        addAction(quit);
+        status.onActivate(_ -> {logger.debug("status");});
+        settings.onActivate(_ -> {logger.fatal("settings");});
+        shortcuts.onActivate(_ -> {logger.error("shortcuts");});
+        about.onActivate(_ -> {logger.stacktrace("about");});
 
-        setAccelsForAction("app.quit", new String[]{"<control>q"});
+        addAction(quit);
+        addAction(status);
+        addAction(settings);
+        addAction(shortcuts);
+        addAction(about);
+
+        setAccelsForAction("app.quit", new String[]{"<Control>q"});
+        setAccelsForAction("app.status", new String[]{"<Alt>s"});
+        setAccelsForAction("app.settings", new String[]{"<Control>comma"});
+        setAccelsForAction("app.shortcuts", new String[]{"<Control>question"});
+        setAccelsForAction("app.about", new String[]{"<Alt>a"});
 
         this.onShutdown(this::exit);
 
@@ -77,6 +102,11 @@ public class LEDSuiteApplication extends Application {
 
             logger.log(LEDSuiteSettingsBundle.ShownAreas.getInstance().get().toString());
         }
+
+        WebSocketContainer container = ClientManager.createClient();
+        String uri = "wss://echo.websocket.org/";
+        container.connectToServer(LEDSuiteSocketComms.class, URI.create(uri));
+
         //LEDSuiteSettingsBundle.ShownAreas.getInstance().set(List.of("ALL", "NETWORK", "YAML_EVENTS", "COMMUNICATION", "UI", "USER_INTERFACE", "UI_CONSTRUCTION", "CUSTOM"));
         //LEDSuiteSettingsBundle.ShownAreas.getInstance().set(List.of("IF", "THIS", "APPEARS", "WE", "HAVE", "A", "FINAL", "SAVE", "IMPLEMENTATION", "CANDIDATE", "!"));
     }

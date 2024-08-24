@@ -17,6 +17,10 @@ dependencies {
 
     implementation 'org.yaml:snakeyaml:2.2'
 
+    implementation 'jakarta.websocket:jakarta.websocket-client-api:2.2.0'
+    implementation 'org.glassfish.tyrus:tyrus-client:2.2.0'
+    implementation 'org.glassfish.tyrus:tyrus-container-grizzly-client:2.2.0'
+
     implementation 'org.jetbrains:annotations:24.1.0'
     annotationProcessor 'org.jetbrains:annotations:24.1.0'
 

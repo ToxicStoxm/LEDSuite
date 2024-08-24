@@ -4,6 +4,9 @@ module com.toxicstoxm.LEDSuite {
     requires org.jetbrains.annotations;
     requires org.yaml.snakeyaml;
     requires java.desktop;
+    requires java.net.http;
+    requires org.glassfish.tyrus.client;
+    requires jakarta.websocket.client;
     requires java.logging;
     exports com.toxicstoxm.LEDSuite;
     exports com.toxicstoxm.LEDSuite.settings.config;

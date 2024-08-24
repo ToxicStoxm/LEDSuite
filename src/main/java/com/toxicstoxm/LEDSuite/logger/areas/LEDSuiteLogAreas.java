@@ -10,7 +10,7 @@ public class LEDSuiteLogAreas {
 
     public static class General extends LEDSuiteLogArea {
         public General() {
-            super("General");
+            super("General", new Color(0,0,0));
         }
     }
 

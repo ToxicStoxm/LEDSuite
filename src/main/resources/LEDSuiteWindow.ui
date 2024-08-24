@@ -3,7 +3,7 @@
     <requires lib="gtk" version="4.0"/>
     <requires lib="Adw" version="1.0"/>
     <template class="LEDSuiteWindow" parent="AdwApplicationWindow">
-        <property name="title">Tribute to Paganitzu</property>
+        <property name="title">LEDSuite</property>
         <property name="default-width">580</property>
         <property name="default-height">480</property>
         <child>
@@ -25,16 +25,20 @@
     <menu id="primary_menu">
         <section>
             <item>
-                <attribute name="label">_Status Menu</attribute>
-                <attribute name="action">menu.status</attribute>
+                <attribute name="label" translatable="yes">_Status Menu</attribute>
+                <attribute name="action">app.status</attribute>
             </item>
             <item>
-                <attribute name="label">_Settings Menu</attribute>
-                <attribute name="action">menu.settings</attribute>
+                <attribute name="label" translatable="yes">_Settings Menu</attribute>
+                <attribute name="action">app.settings</attribute>
             </item>
             <item>
-                <attribute name="label">_Shortcuts Menu</attribute>
-                <attribute name="action">menu.shortcuts</attribute>
+                <attribute name="label" translatable="yes">_Shortcuts Menu</attribute>
+                <attribute name="action">app.shortcuts</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">_About LEDSuite</attribute>
+                <attribute name="action">app.about</attribute>
             </item>
             <item>
                 <attribute name="label" translatable="yes">_Quit</attribute>

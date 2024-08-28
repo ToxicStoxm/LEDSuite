@@ -4,14 +4,11 @@ import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
 import com.toxicstoxm.LEDSuite.logger.areas.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogger;
 import com.toxicstoxm.LEDSuite.logger.Logger;
-import com.toxicstoxm.LEDSuite.logger.placeholders.LEDSuitePlaceholderManager;
-import com.toxicstoxm.LEDSuite.logger.placeholders.PlaceholderManager;
 import com.toxicstoxm.LEDSuite.network.LEDSuiteSocketComms;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
-import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
 import lombok.SneakyThrows;
 import org.glassfish.tyrus.client.ClientManager;
@@ -25,6 +22,7 @@ import org.gnome.gtk.Window;
 import java.awt.*;
 import java.lang.foreign.MemorySegment;
 import java.net.URI;
+import java.util.UUID;
 
 public class LEDSuiteApplication extends Application {
 
@@ -57,9 +55,7 @@ public class LEDSuiteApplication extends Application {
         var shortcuts = new SimpleAction("shortcuts", null);
         var about = new SimpleAction("about", null);
 
-        quit.onActivate(_ -> {
-            quit();
-        });
+        quit.onActivate(_ -> quit());
         status.onActivate(_ -> {logger.debug("status");});
         settings.onActivate(_ -> {logger.fatal("settings");});
         shortcuts.onActivate(_ -> {logger.error("shortcuts");});
@@ -101,6 +97,12 @@ public class LEDSuiteApplication extends Application {
             );
 
             logger.log(LEDSuiteSettingsBundle.ShownAreas.getInstance().get().toString());
+
+            for (int i = 250; i > 6; i--) {
+                logger.fatal(LEDSuiteMessage.builder().colorMessage(String.valueOf(UUID.randomUUID()), new Color(i, i + 5, i - 5) ));
+            }
+
+            logger.fatal("Some error occurred!", new LEDSuiteLogAreas.General());
         }
 
         WebSocketContainer container = ClientManager.createClient();

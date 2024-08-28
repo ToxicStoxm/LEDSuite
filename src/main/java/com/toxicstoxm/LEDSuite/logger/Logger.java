@@ -7,7 +7,7 @@ public interface Logger {
     default void setDefaultLogArea(LogArea logArea) {
         unsupportedOperation();    }
 
-    default LogArea getLogArea() {
+    default LogArea getDefaultLogArea() {
         unsupportedOperation();
         return null;
     }

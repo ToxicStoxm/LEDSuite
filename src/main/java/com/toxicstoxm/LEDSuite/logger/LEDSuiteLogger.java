@@ -1,26 +1,28 @@
 package com.toxicstoxm.LEDSuite.logger;
 
-import com.toxicstoxm.LEDSuite.logger.areas.LogArea;
+import com.toxicstoxm.LEDSuite.logger.areas.*;
 import com.toxicstoxm.LEDSuite.logger.colors.ColorConverter;
 import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
 import com.toxicstoxm.LEDSuite.logger.levels.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.logger.levels.LogLevel;
-import com.toxicstoxm.LEDSuite.logger.placeholders.LEDSuitePlaceholderManager;
-import com.toxicstoxm.LEDSuite.logger.placeholders.Placeholder;
-import com.toxicstoxm.LEDSuite.logger.placeholders.PlaceholderManager;
-import com.toxicstoxm.LEDSuite.logger.placeholders.PlaceholderReplacer;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
 import lombok.NonNull;
 
 import java.awt.*;
 import java.io.PrintStream;
-import java.net.Socket;
-import java.net.http.WebSocket;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import static com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle.*;
 
 public class LEDSuiteLogger implements Logger {
 
-    private record LogMessageBluePrint(LogLevel logLevel, LogArea logArea, String message) {}
+    public record LogMessageBluePrint(LogLevel logLevel, LogArea logArea, String message) {}
+
+    public static LogAreaManager logAreaManager;
+    public static Spacer elementSpacer;
 
     private LogArea defaultLogArea;
     private final PrintStream out;
@@ -28,6 +30,11 @@ public class LEDSuiteLogger implements Logger {
     public LEDSuiteLogger(PrintStream out, LogArea defaultLogArea) {
         this.out = out;
         this.defaultLogArea = defaultLogArea;
+
+        logAreaManager = new LEDSuiteLogAreaManger();
+        logAreaManager.registerAreaBundle(new LEDSuiteLogAreas());
+
+        elementSpacer = new LEDSuiteSpacer();
     }
 
     @Override
@@ -36,7 +43,7 @@ public class LEDSuiteLogger implements Logger {
     }
 
     @Override
-    public LogArea getLogArea() {
+    public LogArea getDefaultLogArea() {
         return defaultLogArea;
     }
 
@@ -46,54 +53,62 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void fatal(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) fatal(message, defaultLogArea);
 
     }
 
     @Override
     public void error(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) error(message, defaultLogArea);
 
     }
 
     @Override
     public void warn(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) warn(message, defaultLogArea);
 
     }
 
     @Override
     public void info(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) info(message, defaultLogArea);
 
     }
 
     @Override
     public void debug(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) debug(message, defaultLogArea);
 
     }
 
     @Override
     public void verbose(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) verbose(message, defaultLogArea);
 
     }
 
     @Override
     public void stacktrace(String message) {
+        if (isLoggerDisabled()) return;
         if (hasDefaultLogArea()) stacktrace(message, defaultLogArea);
 
     }
 
     @Override
     public void fatal(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Fatal(
-                                LEDSuiteSettingsBundle.EnableFatalLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.FatalText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.FatalColor.getInstance().get())
+                                EnableFatalLevel.getInstance().get(),
+                                FatalText.getInstance().get(),
+                                ColorConverter.getColorFromHex(FatalColor.getInstance().get())
                         ),
                         area,
                         message
@@ -103,12 +118,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void error(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Error(
-                                LEDSuiteSettingsBundle.EnableErrorLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.ErrorText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.ErrorColor.getInstance().get())
+                                EnableErrorLevel.getInstance().get(),
+                                ErrorText.getInstance().get(),
+                                ColorConverter.getColorFromHex(ErrorColor.getInstance().get())
                         ),
                         area,
                         message
@@ -118,12 +134,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void warn(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Warn(
                                 LEDSuiteSettingsBundle.EnableWarnLevel.getInstance().get(),
                                 LEDSuiteSettingsBundle.WarnText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.WarnColor.getInstance().get())
+                                ColorConverter.getColorFromHex(WarnColor.getInstance().get())
                         ),
                         area,
                         message
@@ -133,12 +150,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void info(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Info(
-                                LEDSuiteSettingsBundle.EnableInfoLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.InfoText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.InfoColor.getInstance().get())
+                                EnableInfoLevel.getInstance().get(),
+                                InfoText.getInstance().get(),
+                                ColorConverter.getColorFromHex(InfoColor.getInstance().get())
                         ),
                         area,
                         message
@@ -148,12 +166,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void debug(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Debug(
-                                LEDSuiteSettingsBundle.EnableDebugLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.DebugText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.DebugColor.getInstance().get())
+                                EnableDebugLevel.getInstance().get(),
+                                DebugText.getInstance().get(),
+                                ColorConverter.getColorFromHex(DebugColor.getInstance().get())
                         ),
                         area,
                         message
@@ -163,13 +182,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void verbose(String message, LogArea area) {
-
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Verbose(
-                                LEDSuiteSettingsBundle.EnableVerboseLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.VerboseText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.VerboseColor.getInstance().get())
+                                EnableVerboseLevel.getInstance().get(),
+                                VerboseText.getInstance().get(),
+                                ColorConverter.getColorFromHex(VerboseColor.getInstance().get())
                         ),
                         area,
                         message
@@ -179,12 +198,13 @@ public class LEDSuiteLogger implements Logger {
 
     @Override
     public void stacktrace(String message, LogArea area) {
+        if (isLoggerDisabled()) return;
         assembleLogMessage(
                 new LogMessageBluePrint(
                         new LEDSuiteLogLevels.Stacktrace(
-                                LEDSuiteSettingsBundle.EnableStacktraceLevel.getInstance().get(),
-                                LEDSuiteSettingsBundle.StacktraceText.getInstance().get(),
-                                ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.StacktraceColor.getInstance().get())
+                                EnableStacktraceLevel.getInstance().get(),
+                                StacktraceText.getInstance().get(),
+                                ColorConverter.getColorFromHex(StacktraceColor.getInstance().get())
                         ),
                         area,
                         message
@@ -192,102 +212,101 @@ public class LEDSuiteLogger implements Logger {
         );
     }
 
-    private void assembleLogMessage(LogMessageBluePrint logMessageBluePrint) {
-        if (!LEDSuiteSettingsBundle.EnableLogger.getInstance().get()) return;
-        if (!check(logMessageBluePrint)) return;
+    private void assembleLogMessage(LogMessageBluePrint bluePrint) {
+        LogLevel logLevel = bluePrint.logLevel;
+        LogArea logArea = bluePrint.logArea;
+        String message = bluePrint.message;
 
-        String result = LEDSuiteSettingsBundle.LoggerStyle.getInstance().get();
-        PlaceholderManager placeholderManager = LEDSuitePlaceholderManager.withDefault();
+        if (logArea == null || logArea.getColor() == null) logArea = defaultLogArea;
 
-        LogLevel logLevel = logMessageBluePrint.logLevel;
-        LogArea logArea = logMessageBluePrint.logArea;
-        String message = logMessageBluePrint.message;
+        //log("LEVEL: " + logLevel.isEnabled() + "                     AREA: " + logAreaManager.isAreaEnabled(logArea));
+        if (logLevel.isEnabled() && logAreaManager.isAreaEnabled(logArea)) {
+            log(
+                    LEDSuiteMessage.builder()
+                            .text(
+                                    elementSpacer.getSpacingFor("timestamp","[" + getTimestamp() + "]")
+                            )
+                            .color(
+                                    EnableTrace.getInstance().get() &&
+                                            EnableColorCoding.getInstance().get(),
+                                    TraceColor.getInstance().get()
+                            )
+                            .text(
+                                    EnableTrace.getInstance().get(),
+                                    elementSpacer.getSpacingFor("trace", "[" + getTrace() + "]")
+                            )
+                            .reset(EnableTrace.getInstance().get())
+                            .color(
+                                    EnableColorCoding.getInstance().get(),
+                                    logLevel.getColor()
+                            )
 
-        if (LEDSuiteSettingsBundle.EnableLevels.getInstance().get()) {
-            if (!logLevel.isEnabled()) {
-                System.out.println("Log level " + logLevel +  " is disabled!");
-                return;
-            }
-            placeholderManager.registerPlaceholder(
-                    new Placeholder() {
-                        @Override
-                        public String getText() {
-                            return "LOG_LEVEL";
-                        }
-
-                        @Override
-                        public char getRegex() {
-                            return '%';
-                        }
-                    },
-                    (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), logLevel.getText())
+                            .text(
+                                    elementSpacer.getSpacingFor("level", "[" + logLevel.getText() + "]")
+                            )
+                            .reset()
+                            .color(
+                                    EnableAreas.getInstance().get() &&
+                                            EnableColorCoding.getInstance().get(),
+                                    logArea.getColor()
+                            )
+                            .text(
+                                    EnableAreas.getInstance().get(),
+                                   elementSpacer.getSpacingFor("area", "[" + logArea.getName() + "]" + Separator.getInstance().get())
+                            )
+                            .reset(EnableAreas.getInstance().get())
+                            .color(
+                                    EnableColorCoding.getInstance().get(),
+                                    computeColor(logLevel, logArea)
+                            )
+                            .text(message)
+                            .reset()
+                            .build()
             );
         }
-        placeholderManager.registerPlaceholder(
-                new Placeholder() {
-                    @Override
-                    public String getText() {
-                        return "TRACE";
-                    }
-
-                    @Override
-                    public char getRegex() {
-                        return '%';
-                    }
-                },
-                (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), getTrace())
-        );
-
-
-        //result = result.text(message);
-
-
-        log(
-                placeholderManager.processPlaceholders(
-                        result
-                )
-        );
     }
 
+    private Color computeColor(LogLevel level, LogArea area) {
+        String mode = ColorCodingMode.getInstance().get();
+        try {
+            return switch (mode) {
+                case "MIX" -> ColorConverter.mixColors(level.getColor(), area.getColor());
+                case "AREA" -> area.getColor();
+                case "LEVEL" -> level.getColor();
+                case "STATIC" -> ColorConverter.getColorFromHex(ColorCodingStaticColor.getInstance().get());
+                default -> hasDefaultLogArea() ? defaultLogArea.getColor() : new Color(-1, -1, -1);
+            };
+        } catch (IllegalArgumentException e) {
+            log("Invalid mode '" + mode + "' Supported modes: 'MIX', 'AREA', 'LEVEL', 'STATIC'");
+        }
+        return new Color(0, 0, 0, 0);
+    }
+
+    private String getTimestamp() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        return dateFormat.format(new Date());
+    }
+
+    private boolean isLoggerDisabled() {
+        return !LEDSuiteSettingsBundle.EnableLogger.getInstance().get();
+    }
 
     private String getTrace() {
         StackTraceElement currentTrace = Thread.currentThread().getStackTrace()[0];
+        int cnt = 0;
         for (StackTraceElement traceElement : Thread.currentThread().getStackTrace()) {
-            if (!traceElement.toString().contains(this.getClass().getName())) {
+            //System.out.println(traceElement.toString());
+            if (!traceElement.toString().contains(this.getClass().getName()) && cnt >= 14) {
                 currentTrace = traceElement;
                 break;
             }
+            cnt++;
         }
-        return formatTrace(currentTrace.toString()); /*LEDSuiteMessage.builder()
-                .color(ColorConverter.getColorFromHex(LEDSuiteSettingsBundle.TraceColor.getInstance().get()))
-                .text(formatTrace(currentTrace.toString()))
-                .getMessage();*/
-
+        return formatTrace(currentTrace.toString());
     }
 
     private String formatTrace(String trace) {
-        String result = LEDSuiteSettingsBundle.TraceStyle.getInstance().get();
-
-        LEDSuitePlaceholderManager placeholderManager = new LEDSuitePlaceholderManager();
-
-        placeholderManager.registerPlaceholder(
-                new Placeholder() {
-                    @Override
-                    public String getText() {
-                        return "CLASS_PATH";
-                    }
-
-                    @Override
-                    public char getRegex() {
-                        return '%';
-                    }
-                },
-                (stringWithPlaceHolders, placeholder) -> stringWithPlaceHolders.replace(placeholder.getPlaceholder(), trace)
-        );
-
-        return placeholderManager.processPlaceholders(
-                result
-        );
+        return Arrays.stream(trace.split("\\(")).toList().getLast().replace("(", "").replace(")", "").replace(".java", "").strip();
     }
 
     private boolean isLogAreaEnabled() {
@@ -295,13 +314,10 @@ public class LEDSuiteLogger implements Logger {
         return true;
     }
 
-    private boolean check(LogMessageBluePrint bP) {
-        return bP != null && bP.logLevel != null && bP.logArea != null && bP.message != null;
-    }
-
     @Override
     public void log(String message) {
-       out.println(message);
-       out.flush();
+        if (isLoggerDisabled()) return;
+        out.println(message);
+        out.flush();
     }
 }

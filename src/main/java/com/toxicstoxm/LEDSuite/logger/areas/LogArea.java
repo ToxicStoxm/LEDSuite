@@ -1,10 +1,15 @@
 package com.toxicstoxm.LEDSuite.logger.areas;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
 public interface LogArea {
-    String getName();
+    default String getName() {
+        return Arrays.stream(Arrays.stream(getClass().getName().split("\\.")).toList().getLast().split("\\$")).toList().getLast();
+    }
+    void setColor(Color color);
+    void setParents(List<String> parents);
     List<String> getParents();
     Color getColor();
 }

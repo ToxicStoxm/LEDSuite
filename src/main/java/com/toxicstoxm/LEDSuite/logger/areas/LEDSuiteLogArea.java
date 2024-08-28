@@ -16,10 +16,28 @@ public class LEDSuiteLogArea implements LogArea {
     @Setter
     private List<String> parents;
 
+    public LEDSuiteLogArea() {
+        this.name = null;
+        this.color = null;
+        this.parents = null;
+    }
+
     public LEDSuiteLogArea(@NonNull String name) {
         this.name = name;
         this.color = null;
         this.parents = null;
+    }
+
+    public LEDSuiteLogArea(@NonNull Color color) {
+        this.name = null;
+        this.color = color;
+        this.parents = null;
+    }
+
+    public LEDSuiteLogArea(@NonNull Collection<String> parents) {
+        this.name = null;
+        this.color = null;
+        this.parents = parents.stream().toList();
     }
 
     public LEDSuiteLogArea(@NonNull String name, @NonNull Color color) {
@@ -31,6 +49,12 @@ public class LEDSuiteLogArea implements LogArea {
     public LEDSuiteLogArea(@NonNull String name, @NonNull Collection<String> parents) {
         this.name = name;
         this.color = null;
+        this.parents = parents.stream().toList();
+    }
+
+    public LEDSuiteLogArea(@NonNull Color color, @NonNull Collection<String> parents) {
+        this.name = null;
+        this.color = color;
         this.parents = parents.stream().toList();
     }
 
@@ -61,7 +85,7 @@ public class LEDSuiteLogArea implements LogArea {
 
     @Override
     public String getName() {
-        return name;
+        return name == null ? LogArea.super.getName() : name;
     }
 
     @Override

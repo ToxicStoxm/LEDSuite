@@ -1,71 +1,41 @@
 package com.toxicstoxm.LEDSuite.logger.areas;
 
-import lombok.NonNull;
-
 import java.awt.*;
-import java.util.Collection;
 import java.util.List;
 
-public class LEDSuiteLogAreas {
+public class LEDSuiteLogAreas implements LogAreaBundle {
 
     public static class General extends LEDSuiteLogArea {
         public General() {
-            super("General", new Color(0,0,0));
+            super(new Color(0, 140, 255));
         }
     }
 
-    public static class Network extends LEDSuiteLogArea {
-
-        public Network() {
-            super("Network");
-        }
-    }
+    public static class Network extends LEDSuiteLogArea {}
 
     public static class YAMLEvents extends LEDSuiteLogArea {
         public YAMLEvents() {
-            super("YAMLEvents", List.of(new Network().getName()));
+            super(List.of(new Network().getName()));
         }
     }
 
     public static class Communication extends LEDSuiteLogArea {
         public Communication() {
-            super("Communication", List.of(new Network().getName()));
+            super(List.of(new Network().getName()));
         }
     }
 
-    public static class UI extends LEDSuiteLogArea {
-        public UI() {
-            super("UI");
-        }
-    }
+    public static class UI extends LEDSuiteLogArea {}
 
     public static class UserInteractions extends LEDSuiteLogArea {
         public UserInteractions() {
-            super("UserInteractions", List.of(new UI().getName()));
+            super(List.of(new UI().getName()));
         }
     }
 
     public static class UIConstruction extends LEDSuiteLogArea {
         public UIConstruction() {
-            super("UI Construction", List.of(new UI().getName()));
-        }
-    }
-
-    public static class Custom extends LEDSuiteLogArea {
-        public Custom(@NonNull String name) {
-            super(name);
-        }
-
-        public Custom(@NonNull String name, Color color) {
-            super(name, color);
-        }
-
-        public Custom(@NonNull String name, Collection<String> parents) {
-            super(name, parents);
-        }
-
-        public Custom(@NonNull String name, Color color, Collection<String> parents) {
-            super(name, color, parents);
+            super(List.of(new UI().getName()));
         }
     }
 }

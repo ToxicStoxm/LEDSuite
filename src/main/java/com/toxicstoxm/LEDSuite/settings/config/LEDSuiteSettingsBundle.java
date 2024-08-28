@@ -51,90 +51,35 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         }
     }
 
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Log-Level.Modes.Self")
-    public static class LogLevelSelfMode extends LEDSuiteSetting<String> {
+    @YAMLSetting(path = "Logger.Color-Coding.Mode")
+    public static class ColorCodingMode extends LEDSuiteSetting<String> {
         @Getter
-        private static LogLevelSelfMode instance;
+        private static ColorCodingMode instance;
 
-        public LogLevelSelfMode(Setting<Object> setting) {
+        public ColorCodingMode(Setting<Object> setting) {
             super(setting, String.class);
             instance = this;
         }
     }
 
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Log-Level.Modes.All")
-    public static class LogLevelAllMode extends LEDSuiteSetting<String> {
+    @YAMLSetting(path = "Logger.Color-Coding.Static-Color")
+    public static class ColorCodingStaticColor extends LEDSuiteSetting<String> {
         @Getter
-        private static LogLevelAllMode instance;
+        private static ColorCodingStaticColor instance;
 
-        public LogLevelAllMode(Setting<Object> setting) {
+        public ColorCodingStaticColor(Setting<Object> setting) {
             super(setting, String.class);
             instance = this;
         }
     }
 
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Log-Area.Modes.Self")
-    public static class LogAreaSelfMode extends LEDSuiteSetting<String> {
+    @YAMLSetting(path = "Logger.Trace.Enable")
+    public static class EnableTrace extends LEDSuiteSetting<Boolean> {
         @Getter
-        private static LogAreaSelfMode instance;
+        private static EnableTrace instance;
 
-        public LogAreaSelfMode(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
-        }
-    }
-
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Log-Area.Modes.All")
-    public static class LogAreaAllMode extends LEDSuiteSetting<String> {
-        @Getter
-        private static LogAreaAllMode instance;
-
-        public LogAreaAllMode(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
-        }
-    }
-
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Trace.Modes.Self")
-    public static class TraceSelfMode extends LEDSuiteSetting<String> {
-        @Getter
-        private static TraceSelfMode instance;
-
-        public TraceSelfMode(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
-        }
-    }
-
-    @YAMLSetting(path = "Logger.Color-Coding.Priority.Trace.Modes.All")
-    public static class TraceAllMode extends LEDSuiteSetting<String> {
-        @Getter
-        private static TraceAllMode instance;
-
-        public TraceAllMode(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
-        }
-    }
-
-    @YAMLSetting(path = "Logger.Style")
-    public static class LoggerStyle extends LEDSuiteSetting<String> {
-        @Getter
-        private static LoggerStyle instance;
-
-        public LoggerStyle(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
-        }
-    }
-
-    @YAMLSetting(path = "Logger.Trace.Style")
-    public static class TraceStyle extends LEDSuiteSetting<String> {
-        @Getter
-        private static TraceStyle instance;
-
-        public TraceStyle(Setting<Object> setting) {
-            super(setting, String.class);
+        public EnableTrace(Setting<Object> setting) {
+            super(setting, Boolean.class);
             instance = this;
         }
     }
@@ -145,6 +90,50 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         private static TraceColor instance;
 
         public TraceColor(Setting<Object> setting) {
+            super(setting, String.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "Logger.Spacing.Enable-Auto-Spacing")
+    public static class EnableAutoSpacing extends LEDSuiteSetting<Boolean> {
+        @Getter
+        private static EnableAutoSpacing instance;
+
+        public EnableAutoSpacing(Setting<Object> setting) {
+            super(setting, Boolean.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "Logger.Spacing.Base-Spacing")
+    public static class BaseSpacing extends LEDSuiteSetting<String> {
+        @Getter
+        private static BaseSpacing instance;
+
+        public BaseSpacing(Setting<Object> setting) {
+            super(setting, String.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "Logger.Spacing.Enable-Auto-Reset")
+    public static class EnableAutoReset extends LEDSuiteSetting<Boolean> {
+        @Getter
+        private static EnableAutoReset instance;
+
+        public EnableAutoReset(Setting<Object> setting) {
+            super(setting, Boolean.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "Logger.Separator")
+    public static class Separator extends LEDSuiteSetting<String> {
+        @Getter
+        private static Separator instance;
+
+        public Separator(Setting<Object> setting) {
             super(setting, String.class);
             instance = this;
         }
@@ -317,7 +306,6 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
 
     @YAMLSetting(path = "Logger.Levels.Debug.Color")
     public static class DebugColor extends LEDSuiteSetting<String> {
-
         @Getter
         private static DebugColor instance;
 

@@ -62,13 +62,24 @@ public class LEDSuiteMessage implements ColoredMessage {
     }
 
     @Override
+    public LEDSuiteMessage color(@NonNull String hex) {
+        return color(ColorConverter.getColorFromHex(hex));
+    }
+
+    @Override
     public LEDSuiteMessage color(boolean condition, @NonNull Color color) {
         return condition ? color(color) : this;
     }
 
     @Override
+    public LEDSuiteMessage color(boolean condition, @NonNull String hex) {
+        return color(condition, ColorConverter.getColorFromHex(hex));
+    }
+
+    @Override
     public LEDSuiteMessage text(@NonNull String string) {
         message.append(colored ? getMessageCode(string) : string);
+        colored = false;
         return this;
     }
 

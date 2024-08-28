@@ -11,6 +11,9 @@ public interface ColoredMessage {
     default ColoredMessage color(@NonNull Color color) {
         throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
     }
+    default ColoredMessage color(@NonNull String hex) {
+        throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
+    }
     default ColoredMessage text(@NonNull String string) {
         throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
     }
@@ -21,6 +24,9 @@ public interface ColoredMessage {
         throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
     }
     default ColoredMessage color(boolean condition, @NonNull Color color) {
+        throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
+    }
+    default ColoredMessage color(boolean condition, @NonNull String hex) {
         throw new UnsupportedOperationException("This colors implementation doesn't provide a message factory!");
     }
     default ColoredMessage text(boolean condition, @NonNull String string) {

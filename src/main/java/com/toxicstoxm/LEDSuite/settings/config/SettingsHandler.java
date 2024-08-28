@@ -21,10 +21,13 @@ public class SettingsHandler<T> {
             if (innerClass.isAnnotationPresent(YAMLSetting.class)) {
                 String path = innerClass.getAnnotation(YAMLSetting.class).path();
                 Constructor<?> constructor = innerClass.getConstructor(com.toxicstoxm.LEDSuite.settings.config.Setting.class);
-                T setting = (T) constructor.newInstance(accessor.get(path));
-                if (setting instanceof LEDSuiteSetting<?> ledSuiteSetting)
-                    System.out.println(ledSuiteSetting.getIdentifier(true));
-                else System.out.print(setting);
+                Setting<Object> fetchedSetting = accessor.get(path);
+                if (fetchedSetting != null) {
+                    T setting = (T) constructor.newInstance(fetchedSetting);
+                    if (setting instanceof LEDSuiteSetting<?> ledSuiteSetting)
+                        System.out.println(ledSuiteSetting.getIdentifier(true));
+                    else System.out.print(setting);
+                } else System.out.println(innerClass.getName() + " could not be loaded from config! Path '" + path + "' doesn't exist!");
             }
         }
     }

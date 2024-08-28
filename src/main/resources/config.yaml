@@ -5,26 +5,18 @@ Logger:
     Trace-Buffer-Limit: 100
   Color-Coding:
     Enable: true
-    Priority:
-      Log-Level:
-        # ALL_OFF ALL_SOFT ALL_FORCE ALL_OVERWRITE SELF_SOFT SELF_FORCE
-        Modes:
-          Self: SELF_FORCE
-          All: ALL_FORCE
-      Log-Area:
-        Modes:
-          Self: SELF_FORCE
-          All: ALL_SOFT
-      Trace:
-        Modes:
-          Self: SELF_FORCE
-          All: ALL_OFF
-  # %TIME% %TRACE% %LOG_LEVEL %LOG_AREA% %MESSAGE%
-  Style: '[%TIME%] [%TRACE%] [%LOG_LEVEL%] [%LOG_AREA%]: %MESSAGE%'
+    # MIX | AREA | LEVEL | STATIC
+    Mode: 'MIX'
+    # Only used if mode is static
+    Static-Color: '#959595'
   Trace:
-    # %CLASS_PATH% %CLASS_NAME% %CLASS_NAME_CLEAN% %LINE_NUMBER%
-    Style: '%CLASS_PATH%(%CLASS_NAME_CLEAN%%:%LINE_NUMBER%)'
+    Enable: true
     Color: '#138C35'
+  Spacing:
+    Enable-Auto-Spacing: true
+    Enable-Auto-Reset: true
+    Base-Spacing: ' '
+  Separator: ':'
   Levels:
     Enable: true
 

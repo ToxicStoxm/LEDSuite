@@ -4,8 +4,7 @@ package com.toxicstoxm.LEDSuite.logger.areas;
 import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
 public class LEDSuiteLogAreaManger implements LogAreaManager {
@@ -21,8 +20,28 @@ public class LEDSuiteLogAreaManger implements LogAreaManager {
     }
 
     @Override
+    public Color getAreaColor(String area) {
+        return registeredAreas.containsArea(area) ? registeredAreas.getColorOfArea(area) : new Color(0, 0, 0, 0);
+    }
+
+    @Override
+    public boolean enableArea(String area) {
+        return registeredAreas.enableArea(area);
+    }
+
+    @Override
+    public boolean disableArea(String area) {
+        return registeredAreas.disableArea(area);
+    }
+
+    @Override
     public boolean isAreaEnabled(String area) {
-        return registeredAreas.containsArea(area);
+        return registeredAreas.isAreaEnabled(area) || registeredAreas.isAreaEnabled("ALL");
+    }
+
+    @Override
+    public boolean isAreaEnabled(LogArea area) {
+        return LogAreaManager.super.isAreaEnabled(area) || registeredAreas.isAreaEnabled(area);
     }
 
     @Override
@@ -70,5 +89,10 @@ public class LEDSuiteLogAreaManger implements LogAreaManager {
     @Override
     public boolean unregisterArea(LogArea logArea) {
         return registeredAreas.unregisterArea(logArea);
+    }
+
+    @Override
+    public Set<Map.Entry<String, LogArea>> entrySet() {
+        return registeredAreas.entrySet();
     }
 }

@@ -52,10 +52,10 @@ Logger:
     Enabled: true
     Shown-Areas:
       - 'ALL'
-      - 'NETWORK'
-      - 'YAML_EVENTS'
-      - 'COMMUNICATION'
-      - 'UI'
-      - 'USER_INTERFACE'
-      - 'UI_CONSTRUCTION'
-      - 'CUSTOM'
+#      - 'GENERAL'
+#      - 'NETWORK'
+#      - 'YAML_EVENTS'
+#      - 'COMMUNICATION'
+#      - 'UI'
+#      - 'USER_INTERACTIONS'
+#      - 'UI_CONSTRUCTION'

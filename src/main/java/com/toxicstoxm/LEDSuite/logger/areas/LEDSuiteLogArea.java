@@ -15,6 +15,8 @@ public class LEDSuiteLogArea implements LogArea {
     private Color color;
     @Setter
     private List<String> parents;
+    @Setter
+    private boolean enabled = false;
 
     public LEDSuiteLogArea() {
         this.name = null;
@@ -86,6 +88,11 @@ public class LEDSuiteLogArea implements LogArea {
     @Override
     public String getName() {
         return name == null ? LogArea.super.getName() : name;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override

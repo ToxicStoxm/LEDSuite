@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.settings.config;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -396,6 +397,10 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
     public static class ShownAreas extends LEDSuiteSetting<List<String>> {
         @Getter
         private static ShownAreas instance;
+
+        static {
+            instance = new ShownAreas(new LEDSuiteSetting<>(new ArrayList<>()));
+        }
 
         public ShownAreas(Setting<Object> setting) {
             super(setting, (Class<List<String>>) (Class<?>) List.class);

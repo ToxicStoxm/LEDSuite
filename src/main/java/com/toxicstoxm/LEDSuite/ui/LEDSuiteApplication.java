@@ -77,7 +77,7 @@ public class LEDSuiteApplication extends Application {
 
         configMgr = new LEDSuiteSettingsManager(System.getProperty("user.home") + "/config.yaml");
 
-        logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.General());
+        logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.GENERAL());
 
         if (false) {
             logger.log(
@@ -102,7 +102,13 @@ public class LEDSuiteApplication extends Application {
                 logger.fatal(LEDSuiteMessage.builder().colorMessage(String.valueOf(UUID.randomUUID()), new Color(i, i + 5, i - 5) ));
             }
 
-            logger.fatal("Some error occurred!", new LEDSuiteLogAreas.General());
+            logger.fatal("Some general fatal occurred!", new LEDSuiteLogAreas.GENERAL());
+            logger.error("Some ui error occurred!", new LEDSuiteLogAreas.UI());
+            logger.warn("Some network warn occurred!", new LEDSuiteLogAreas.NETWORK());
+            logger.info("Some yaml events info occurred!", new LEDSuiteLogAreas.YAML_EVENTS());
+            logger.debug("Some communication debug occurred!", new LEDSuiteLogAreas.COMMUNICATION());
+            logger.verbose("Some ui construction verbose occurred!", new LEDSuiteLogAreas.UI_CONSTRUCTION());
+            logger.stacktrace("Some user interactions stacktrace occurred!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         }
 
         WebSocketContainer container = ClientManager.createClient();

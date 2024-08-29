@@ -35,17 +35,23 @@ public interface Logger {
     }
 
     default void fatal(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void error(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void warn(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void info(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void debug(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void verbose(String message, LogArea area) {
-        unsupportedOperation();    }
+        unsupportedOperation();
+    }
     default void stacktrace(String message, LogArea area) {
         unsupportedOperation();
     }

@@ -33,7 +33,8 @@ public class LEDSuiteLogger implements Logger {
 
         logAreaManager = new LEDSuiteLogAreaManger();
         logAreaManager.registerAreaBundle(new LEDSuiteLogAreas());
-
+        logAreaManager.registerArea(new LEDSuiteLogArea("ALL"));
+        logAreaManager.enableAreasByName(ShownAreas.getInstance().get());
         elementSpacer = new LEDSuiteSpacer();
     }
 
@@ -219,7 +220,6 @@ public class LEDSuiteLogger implements Logger {
 
         if (logArea == null || logArea.getColor() == null) logArea = defaultLogArea;
 
-        //log("LEVEL: " + logLevel.isEnabled() + "                     AREA: " + logAreaManager.isAreaEnabled(logArea));
         if (logLevel.isEnabled() && logAreaManager.isAreaEnabled(logArea)) {
             log(
                     LEDSuiteMessage.builder()
@@ -292,17 +292,12 @@ public class LEDSuiteLogger implements Logger {
     }
 
     private String getTrace() {
-        StackTraceElement currentTrace = Thread.currentThread().getStackTrace()[0];
-        int cnt = 0;
-        for (StackTraceElement traceElement : Thread.currentThread().getStackTrace()) {
-            //System.out.println(traceElement.toString());
-            if (!traceElement.toString().contains(this.getClass().getName()) && cnt >= 14) {
-                currentTrace = traceElement;
-                break;
-            }
-            cnt++;
+        StackTraceElement[] currentStackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement traceElement : currentStackTrace) {
+            String traceElementString = traceElement.toString();
+            if (traceElementString.contains("com.toxicstoxm.LEDSuite") && !traceElementString.contains("logger")) return formatTrace(traceElementString);
         }
-        return formatTrace(currentTrace.toString());
+        return formatTrace(currentStackTrace[0].toString());
     }
 
     private String formatTrace(String trace) {

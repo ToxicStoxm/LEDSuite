@@ -1,12 +1,11 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.logger.colors.LEDSuiteMessage;
-import com.toxicstoxm.LEDSuite.logger.areas.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogger;
-import com.toxicstoxm.LEDSuite.logger.Logger;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.network.LEDSuiteSocketComms;
-import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsBundle;
-import com.toxicstoxm.LEDSuite.settings.config.LEDSuiteSettingsManager;
+import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
+import com.toxicstoxm.YAJL.YAJLLogger;
+import com.toxicstoxm.YAJL.colors.YAJLMessage;
+import com.toxicstoxm.YAJSI.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
 import jakarta.websocket.WebSocketContainer;
@@ -22,7 +21,8 @@ import org.gnome.gtk.Window;
 import java.awt.*;
 import java.lang.foreign.MemorySegment;
 import java.net.URI;
-import java.util.UUID;
+import java.util.*;
+import java.util.List;
 
 public class LEDSuiteApplication extends Application {
 
@@ -36,9 +36,9 @@ public class LEDSuiteApplication extends Application {
         super(address);
     }
 
-    public static Logger logger;
+    public static YAJLLogger logger;
 
-    public static LEDSuiteSettingsManager configMgr;
+    public static YAJSISettingsManager configMgr;
 
     public static LEDSuiteApplication create() {
         return GObject.newInstance(getType(),
@@ -75,13 +75,21 @@ public class LEDSuiteApplication extends Application {
 
         this.onShutdown(this::exit);
 
-        configMgr = new LEDSuiteSettingsManager(System.getProperty("user.home") + "/config.yaml");
+        //configMgr = new LEDSuiteSettingsManager(System.getProperty("user.home") + "/config.yaml");
+        configMgr = YAJSISettingsManager.withConfigFile(
+                new YAJSISettingsManager.ConfigFile(
+                        System.getProperty("user.home") + "/config.yaml",
+                        getClass().getClassLoader().getResource("config.yaml")
+                ),
+                LEDSuiteSettingsBundle.class
+        );
 
-        logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.GENERAL());
+        //logger = new LEDSuiteLogger(System.out, new LEDSuiteLogAreas.GENERAL());
+        logger = YAJLLogger.withArea(System.getProperty("user.home"), System.out, new LEDSuiteLogAreas.GENERAL(), new LEDSuiteLogAreas(), true);
 
         if (false) {
             logger.log(
-                    LEDSuiteMessage.builder()
+                    YAJLMessage.builder()
                             .color(Color.BLUE)
                             .text("Hello ")
                             .color(Color.CYAN)
@@ -91,15 +99,13 @@ public class LEDSuiteApplication extends Application {
                             .build()
             );
             logger.log(
-                    new LEDSuiteMessage().colorMessage("Hello ", Color.CYAN) +
-                            new LEDSuiteMessage().colorMessage("World! :)", Color.BLUE) +
+                    new YAJLMessage().colorMessage("Hello ", Color.CYAN) +
+                            new YAJLMessage().colorMessage("World! :)", Color.BLUE) +
                             " This should not be blue, if it is you fucked up!"
             );
 
-            logger.log(LEDSuiteSettingsBundle.ShownAreas.getInstance().get().toString());
-
             for (int i = 250; i > 6; i--) {
-                logger.fatal(LEDSuiteMessage.builder().colorMessage(String.valueOf(UUID.randomUUID()), new Color(i, i + 5, i - 5) ));
+                logger.fatal(YAJLMessage.builder().colorMessage(String.valueOf(UUID.randomUUID()), new Color(i, i + 5, i - 5) ));
             }
 
             logger.fatal("Some general fatal occurred!", new LEDSuiteLogAreas.GENERAL());
@@ -120,7 +126,7 @@ public class LEDSuiteApplication extends Application {
     }
 
     public void exit() {
-        configMgr.save(System.getProperty("user.home") + "/config.yaml");
+        configMgr.save();
         System.exit(0);
     }
 

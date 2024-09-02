@@ -876,16 +876,16 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.2/snakeyaml-2.2.jar",
-    "sha512": "11547e75cc80bee26f532e2598bc6e4ffa802941496dc0d8ce017f1b15e01ebbb80e91ed17d1047916e32bf2fc58da532bc71a1dfe93afccc277a296d86634ba",
-    "dest": "./offline-repository/org/yaml/snakeyaml/2.2",
-    "dest-filename": "snakeyaml-2.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.3/snakeyaml-2.3.jar",
+    "sha512": "1c9c78f0d102ae49a7c06f9e20c6a79a4fb9a2af962230ee6e136bda0caf10dcbb9deadc1c3ab15f74a4982ec8f8266217115e357329fde5b3f4f1858882de0c",
+    "dest": "./offline-repository/org/yaml/snakeyaml/2.3",
+    "dest-filename": "snakeyaml-2.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.2/snakeyaml-2.2.pom",
-    "sha512": "5bcfdbe7b57b29eabb5c4ced03ca1ac5a0ce15de64f3557a855f05a373932aa5bdee71798c2a678cd4126826ad50e8b5c43d285911b4d691b71393cfeb4e1059",
-    "dest": "./offline-repository/org/yaml/snakeyaml/2.2",
-    "dest-filename": "snakeyaml-2.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/yaml/snakeyaml/2.3/snakeyaml-2.3.pom",
+    "sha512": "f83f34a04dd37bd0ff3423a84e8d0cae04311528736a5954a244b067f25b2b345f8384c544f987b02efc81b6c96a2b6f05aa744cc656c8111ad7d7f9c814a0dd",
+    "dest": "./offline-repository/org/yaml/snakeyaml/2.3",
+    "dest-filename": "snakeyaml-2.3.pom"
   }
 ]

@@ -46,3 +46,5 @@ bin/
 /update-todo.txt
 /JavaDoc/
 /src/main/resources/LEDSuite.gresource
+/ledsuite-main-window.cmb
+/ledsuite-main-window.ui

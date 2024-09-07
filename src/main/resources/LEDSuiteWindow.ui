@@ -1,49 +1,179 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.90.4 -->
 <interface>
-    <requires lib="gtk" version="4.0"/>
-    <requires lib="Adw" version="1.0"/>
+    <!-- interface-name ledsuite-main-window.ui -->
+    <requires lib="gio" version="2.0"/>
+    <requires lib="gtk" version="4.12"/>
+    <requires lib="libadwaita" version="1.4"/>
     <template class="LEDSuiteWindow" parent="AdwApplicationWindow">
-        <property name="title">LEDSuite</property>
-        <property name="default-width">580</property>
-        <property name="default-height">480</property>
-        <child>
-            <object class="GtkBox">
-                <property name="orientation">vertical</property>
+        <property name="content">
+            <object class="AdwOverlaySplitView" id="split_view">
+                <property name="enable-hide-gesture">False</property>
+                <property name="enable-show-gesture">False</property>
+                <property name="sidebar">
+                    <object class="AdwToolbarView">
+                        <child type="top">
+                            <object class="AdwHeaderBar">
+                                <property name="title-widget">
+                                    <object class="GtkLabel">
+                                        <property name="label">File Management</property>
+                                    </object>
+                                </property>
+                            </object>
+                        </child>
+                    </object>
+                </property>
+                <property name="sidebar-width-fraction">0.2</property>
+                <property name="sidebar-width-unit">px</property>
                 <child>
-                    <object class="AdwHeaderBar" id="headerBar">
-                        <child type="end">
-                            <object class="GtkMenuButton">
-                                <property name="icon-name">open-menu-symbolic</property>
-                                <property name="menu-model">primary_menu</property>
+                    <object class="AdwToolbarView">
+                        <property name="content">
+                            <object class="GtkRevealer">
+                                <property name="child">
+                                    <object class="GtkBox"/>
+                                </property>
+                                <property name="reveal-child">True</property>
+                                <property name="transition-type">crossfade</property>
+                            </object>
+                        </property>
+                        <child type="top">
+                            <object class="AdwHeaderBar">
+                                <property name="height-request">0</property>
+                                <property name="title-widget">
+                                    <object class="GtkLabel">
+                                        <property name="label">LEDSuite</property>
+                                    </object>
+                                </property>
+                                <child type="start">
+                                    <object class="GtkRevealer" id="sidebar_toggle_button_revealer">
+                                        <property name="transition-type">crossfade</property>
+                                        <child>
+                                            <object class="GtkButton" id="sidebar_toggle_button">
+                                                <property name="action-name">app.sidebar_toggle</property>
+                                                <property name="icon-name">sidebar-show-symbolic</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                                <child type="end">
+                                    <object class="GtkMenuButton">
+                                        <property name="icon-name">open-menu-symbolic</property>
+                                        <!-- Custom object fragments -->
+                                        <property name="menu-model">primary_menu</property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </property>
+        <property name="default-height">720</property>
+        <property name="default-width">1280</property>
+        <child>
+            <object class="AdwBreakpoint">
+                <signal name="apply" handler="sidebar_breakpoint_apply"/>
+                <signal name="unapply" handler="sidebar_breakpoint_unapply"/>
+                <!-- Custom object fragments -->
+                <condition>max-width: 682sp</condition>
+                <setter object="split_view" property="collapsed">True</setter>
+                <setter object="split_view" property="enable-show-gesture">True</setter>
+                <setter object="split_view" property="enable-hide-gesture">True</setter>
+                <setter object="sidebar_toggle_button_revealer" property="reveal-child">True</setter>
+            </object>
+        </child>
+        <!-- Custom template fragments -->
+        <property name="width-request">300</property>
+        <property name="height-request">600</property>
+    </template>
+    <menu id="primary_menu">
+        <section>
+            <item>
+                <attribute name="action">app.status</attribute>
+                <attribute name="label">_Status Menu</attribute>
+            </item>
+            <item>
+                <attribute name="action">app.settings</attribute>
+                <attribute name="label">_Settings Menu</attribute>
+            </item>
+            <item>
+                <attribute name="action">app.shortcuts</attribute>
+                <attribute name="label">_Shortcuts Menu</attribute>
+            </item>
+            <item>
+                <attribute name="action">app.about</attribute>
+                <attribute name="label">_About LEDSuite</attribute>
+            </item>
+            <item>
+                <attribute name="action">app.quit</attribute>
+                <attribute name="label">_Quit</attribute>
+            </item>
+        </section>
+    </menu>
+    <object class="GtkShortcutsWindow" id="shortcuts_window">
+        <property name="destroy-with-parent">True</property>
+        <property name="hide-on-close">True</property>
+        <property name="modal">True</property>
+        <property name="transient-for">LEDSuiteWindow</property>
+        <property name="view-name">shortcuts_section</property>
+        <child>
+            <object class="GtkShortcutsSection" id="shortcuts_section">
+                <property name="section-name">Shortcuts</property>
+                <child>
+                    <object class="GtkShortcutsGroup">
+                        <property name="title">General</property>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;Alt&gt;s</property>
+                                <property name="action-name">app.status</property>
+                                <property name="title">Show Status</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;Control&gt;comma</property>
+                                <property name="action-name">app.settings</property>
+                                <property name="title">Show Settings</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;Control&gt;question</property>
+                                <property name="action-name">app.shortcuts</property>
+                                <property name="title">Shortcuts</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;Alt&gt;a</property>
+                                <property name="action-name">app.about</property>
+                                <property name="title">About LEDSuite</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">&lt;Control&gt;Q</property>
+                                <property name="action-name">app.quit</property>
+                                <property name="direction">ltr</property>
+                                <property name="title">Quit</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkShortcutsGroup">
+                        <property name="title">UI</property>
+                        <child>
+                            <object class="GtkShortcutsShortcut">
+                                <property name="accelerator">F9</property>
+                                <property name="action-name">app.sidebar_toggle</property>
+                                <property name="title">Toggle Sidebar</property>
                             </object>
                         </child>
                     </object>
                 </child>
             </object>
         </child>
-    </template>
-    <menu id="primary_menu">
-        <section>
-            <item>
-                <attribute name="label" translatable="yes">_Status Menu</attribute>
-                <attribute name="action">app.status</attribute>
-            </item>
-            <item>
-                <attribute name="label" translatable="yes">_Settings Menu</attribute>
-                <attribute name="action">app.settings</attribute>
-            </item>
-            <item>
-                <attribute name="label" translatable="yes">_Shortcuts Menu</attribute>
-                <attribute name="action">app.shortcuts</attribute>
-            </item>
-            <item>
-                <attribute name="label" translatable="yes">_About LEDSuite</attribute>
-                <attribute name="action">app.about</attribute>
-            </item>
-            <item>
-                <attribute name="label" translatable="yes">_Quit</attribute>
-                <attribute name="action">app.quit</attribute>
-            </item>
-        </section>
-    </menu>
+    </object>
+    <!-- Custom interface fragments -->
 </interface>

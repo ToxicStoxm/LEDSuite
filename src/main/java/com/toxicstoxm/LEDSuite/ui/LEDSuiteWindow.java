@@ -1,11 +1,13 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
+import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.Types;
-import org.gnome.adw.Application;
-import org.gnome.adw.ApplicationWindow;
+import org.gnome.adw.*;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
+import org.gnome.gtk.ShortcutsWindow;
 
 import java.lang.foreign.MemorySegment;
 
@@ -25,6 +27,38 @@ public class LEDSuiteWindow extends ApplicationWindow {
     public static LEDSuiteWindow create(Application app) {
         return GObject.newInstance(getType(),
                 "application", app);
+    }
+
+    @GtkChild
+    public OverlaySplitView split_view;
+
+    private boolean sideBarBreakpointState = false;
+
+    @GtkCallback(name = "sidebar_breakpoint_apply")
+    public void sidebarBreakpointApply() {
+        sideBarBreakpointState = true;
+    }
+
+    @GtkCallback(name = "sidebar_breakpoint_unapply")
+    public void sidebarBreakpointUnapply() {
+        sideBarBreakpointState = false;
+    }
+
+    public void toggle_sidebar() {
+        if (sideBarBreakpointState) split_view.setShowSidebar(!split_view.getShowSidebar());
+    }
+
+    public void displayAboutDialog() {
+        AboutDialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.appdata.xml", LEDSuiteApplication.version);
+        aboutDialog.setApplicationIcon("com.toxicstoxm.LEDSuite");
+        aboutDialog.present(this);
+    }
+
+    @GtkChild
+    public ShortcutsWindow shortcuts_window;
+
+    public void displayShortcutsWindow() {
+        shortcuts_window.present();
     }
 
 }

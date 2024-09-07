@@ -5,3 +5,4 @@
  - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
  - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
+ - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details

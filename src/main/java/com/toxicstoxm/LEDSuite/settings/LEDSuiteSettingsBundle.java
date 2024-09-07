@@ -1,9 +1,10 @@
 package com.toxicstoxm.LEDSuite.settings;
 
-import com.toxicstoxm.YAJSI.Setting;
-import com.toxicstoxm.YAJSI.SettingsBundle;
-import com.toxicstoxm.YAJSI.YAJSISetting;
-import com.toxicstoxm.YAJSI.YAMLSetting;
+
+import com.toxicstoxm.YAJSI.api.settings.Setting;
+import com.toxicstoxm.YAJSI.api.settings.SettingsBundle;
+import com.toxicstoxm.YAJSI.api.settings.YAJSISetting;
+import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
 import lombok.Getter;
 
 public class LEDSuiteSettingsBundle implements SettingsBundle {

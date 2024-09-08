@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.network.LEDSuiteSocketComms;
+import com.toxicstoxm.LEDSuite.cummunication.LEDSuiteSocketComms;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.colors.YAJLMessage;
@@ -23,6 +24,8 @@ import java.awt.*;
 import java.lang.foreign.MemorySegment;
 import java.net.URI;
 import java.util.*;
+
+import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.*;
 
 public class LEDSuiteApplication extends Application {
 
@@ -63,12 +66,8 @@ public class LEDSuiteApplication extends Application {
             var sidebarToggle = new SimpleAction("sidebar_toggle", null);
 
             quit.onActivate(_ -> quit());
-            status.onActivate(_ -> {
-                logger.debug("status");
-            });
-            settings.onActivate(_ -> {
-                logger.fatal("settings");
-            });
+            status.onActivate(_ -> window.displayStatusDialog());
+            settings.onActivate(_ -> window.displayPreferencesDialog());
             shortcuts.onActivate(_ -> window.displayShortcutsWindow());
             about.onActivate(_ -> window.displayAboutDialog());
             sidebarToggle.onActivate(_ -> {
@@ -94,7 +93,7 @@ public class LEDSuiteApplication extends Application {
             configMgr = YAJSISettingsManager.builder()
                     .buildWithConfigFile(
                             new YAJSISettingsManager.ConfigFile(
-                                    System.getProperty("user.home") + "/config.yaml",
+                                    Constants.FileSystem.configFilePath,
                                     getClass().getClassLoader().getResource("config.yaml")
                             ),
                             LEDSuiteSettingsBundle.class
@@ -104,21 +103,21 @@ public class LEDSuiteApplication extends Application {
                     // share settingsManager with the logger to use the same settings log implementation
                     .setSettingsManager(configMgr)
                     .buildWithArea(
-                            System.getProperty("user.home"),
+                            Constants.FileSystem.getAppDir(),
                             System.out, new LEDSuiteLogAreas.GENERAL(),
                             new LEDSuiteLogAreas(),
                             true
                     )
                     // configure how the log should be displayed
                     .configureYajsiLog(
-                            false,
+                            PrintLoggerTestMessages.getInstance().get(),
                             new YAJLLogger.LogMeta(
                                     new YAJLLogLevels.Info(),
                                     new LEDSuiteLogAreas.YAML_EVENTS()
                             )
                     );
 
-            if (false) {
+            if (PrintLoggerTestMessages.getInstance().get()) {
                 logger.log(
                         YAJLMessage.builder()
                                 .color(Color.BLUE)
@@ -154,9 +153,6 @@ public class LEDSuiteApplication extends Application {
             WebSocketContainer container = ClientManager.createClient();
             String uri = "wss://echo.websocket.org/";
             container.connectToServer(LEDSuiteSocketComms.class, URI.create(uri));
-
-            // LEDSuiteSettingsBundle.ShownAreas.getInstance().set(List.of("ALL", "NETWORK", "YAML_EVENTS", "COMMUNICATION", "UI", "USER_INTERFACE", "UI_CONSTRUCTION", "CUSTOM"));
-            // LEDSuiteSettingsBundle.ShownAreas.getInstance().set(List.of("IF", "THIS", "APPEARS", "WE", "HAVE", "A", "FINAL", "SAVE", "IMPLEMENTATION", "CANDIDATE", "!"));
         } catch (UnsupportedOperationException e) {
             e.printStackTrace();
         }

@@ -1,2 +1,4 @@
 LEDSuite:
-  Test: true
+  Debugging:
+    Enable-Settings-Logging: false
+    Print-Logger-Test-Messages: false

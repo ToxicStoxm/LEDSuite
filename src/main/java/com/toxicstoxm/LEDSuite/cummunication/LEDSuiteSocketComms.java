@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.network;
+package com.toxicstoxm.LEDSuite.cummunication;
 
 import jakarta.websocket.*;
 

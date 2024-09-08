@@ -61,4 +61,18 @@ public class LEDSuiteWindow extends ApplicationWindow {
         shortcuts_window.present();
     }
 
+    @GtkChild
+    public PreferencesDialog settings_dialog;
+
+    public void displayPreferencesDialog() {
+        settings_dialog.present(this);
+    }
+
+    @GtkChild
+    public Dialog status_dialog;
+
+    public void displayStatusDialog() {
+        status_dialog.present(this);
+    }
+
 }

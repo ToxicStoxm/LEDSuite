@@ -2,74 +2,84 @@
 <!-- Created with Cambalache 0.90.4 -->
 <interface>
     <!-- interface-name ledsuite-main-window.ui -->
-    <requires lib="gio" version="2.0"/>
-    <requires lib="gtk" version="4.12"/>
-    <requires lib="libadwaita" version="1.4"/>
+    <requires lib="gio" version="2.44"/>
+    <requires lib="gtk" version="4.14"/>
+    <requires lib="libadwaita" version="1.5"/>
     <template class="LEDSuiteWindow" parent="AdwApplicationWindow">
         <property name="content">
-            <object class="AdwOverlaySplitView" id="split_view">
-                <property name="enable-hide-gesture">False</property>
-                <property name="enable-show-gesture">False</property>
-                <property name="sidebar">
-                    <object class="AdwToolbarView">
-                        <child type="top">
-                            <object class="AdwHeaderBar">
-                                <property name="title-widget">
-                                    <object class="GtkLabel">
-                                        <property name="label">File Management</property>
-                                    </object>
-                                </property>
-                            </object>
-                        </child>
-                    </object>
-                </property>
-                <property name="sidebar-width-fraction">0.2</property>
-                <property name="sidebar-width-unit">px</property>
-                <child>
-                    <object class="AdwToolbarView">
+            <object class="AdwToolbarView">
+                <property name="content">
+                    <object class="AdwOverlaySplitView" id="split_view">
                         <property name="content">
-                            <object class="GtkRevealer">
-                                <property name="child">
-                                    <object class="GtkBox"/>
-                                </property>
-                                <property name="reveal-child">True</property>
-                                <property name="transition-type">crossfade</property>
-                            </object>
-                        </property>
-                        <child type="top">
-                            <object class="AdwHeaderBar">
-                                <property name="height-request">0</property>
-                                <property name="title-widget">
-                                    <object class="GtkLabel">
-                                        <property name="label">LEDSuite</property>
+                            <object class="AdwToolbarView">
+                                <property name="content">
+                                    <object class="GtkRevealer">
+                                        <property name="child">
+                                            <object class="GtkBox"/>
+                                        </property>
+                                        <property name="reveal-child">True</property>
+                                        <property name="transition-type">crossfade</property>
                                     </object>
                                 </property>
-                                <child type="start">
-                                    <object class="GtkRevealer" id="sidebar_toggle_button_revealer">
-                                        <property name="transition-type">crossfade</property>
-                                        <child>
-                                            <object class="GtkButton" id="sidebar_toggle_button">
-                                                <property name="action-name">app.sidebar_toggle</property>
-                                                <property name="icon-name">sidebar-show-symbolic</property>
+                                <child type="top">
+                                    <object class="AdwHeaderBar">
+                                        <property name="height-request">0</property>
+                                        <property name="title-widget">
+                                            <object class="GtkLabel">
+                                                <property name="label">LEDSuite</property>
+                                            </object>
+                                        </property>
+                                        <child type="start">
+                                            <object class="GtkRevealer" id="sidebar_toggle_button_revealer">
+                                                <property name="transition-type">crossfade</property>
+                                                <child>
+                                                    <object class="GtkButton" id="sidebar_toggle_button">
+                                                        <property name="action-name">app.sidebar_toggle</property>
+                                                        <property name="icon-name">sidebar-show-symbolic</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                        <child type="end">
+                                            <object class="GtkMenuButton">
+                                                <property name="icon-name">open-menu-symbolic</property>
+                                                <!-- Custom object fragments -->
+                                                <property name="menu-model">primary_menu</property>
                                             </object>
                                         </child>
                                     </object>
                                 </child>
-                                <child type="end">
-                                    <object class="GtkMenuButton">
-                                        <property name="icon-name">open-menu-symbolic</property>
-                                        <!-- Custom object fragments -->
-                                        <property name="menu-model">primary_menu</property>
+                            </object>
+                        </property>
+                        <property name="enable-hide-gesture">False</property>
+                        <property name="enable-show-gesture">False</property>
+                        <property name="sidebar">
+                            <object class="AdwToolbarView">
+                                <child type="top">
+                                    <object class="AdwHeaderBar">
+                                        <property name="title-widget">
+                                            <object class="GtkLabel">
+                                                <property name="label">File Management</property>
+                                            </object>
+                                        </property>
                                     </object>
                                 </child>
                             </object>
-                        </child>
+                        </property>
+                        <property name="sidebar-width-fraction">0.2</property>
+                        <property name="sidebar-width-unit">px</property>
                     </object>
+                </property>
+                <child type="bottom">
+                    <object class="GtkProgressBar"/>
                 </child>
             </object>
         </property>
         <property name="default-height">720</property>
         <property name="default-width">1280</property>
+        <property name="height-request">600</property>
+        <!-- Custom template fragments -->
+        <property name="width-request">300</property>
         <child>
             <object class="AdwBreakpoint">
                 <signal name="apply" handler="sidebar_breakpoint_apply"/>
@@ -82,9 +92,6 @@
                 <setter object="sidebar_toggle_button_revealer" property="reveal-child">True</setter>
             </object>
         </child>
-        <!-- Custom template fragments -->
-        <property name="width-request">300</property>
-        <property name="height-request">600</property>
     </template>
     <menu id="primary_menu">
         <section>
@@ -175,5 +182,98 @@
             </object>
         </child>
     </object>
-    <!-- Custom interface fragments -->
+    <object class="AdwPreferencesDialog" id="settings_dialog">
+        <property name="search-enabled">True</property>
+        <child>
+            <object class="AdwPreferencesPage" id="settings">
+                <property name="name">settings</property>
+                <property name="title">Settings</property>
+                <child>
+                    <object class="AdwPreferencesGroup">
+                        <property name="title">General</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+    <object class="AdwDialog" id="status_dialog">
+        <property name="child">
+            <object class="AdwClamp">
+                <property name="child">
+                    <object class="AdwStatusPage" id="server_status_page">
+                        <property name="child">
+                            <object class="GtkBox">
+                                <property name="hexpand">True</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">12</property>
+                                <child>
+                                    <object class="AdwPreferencesGroup">
+                                        <property name="css-classes">background</property>
+                                        <property name="title">General</property>
+                                        <child>
+                                            <object class="AdwActionRow" id="status_lid_state">
+                                                <property name="css-classes">property</property>
+                                                <property name="subtitle">open</property>
+                                                <property name="subtitle-selectable">True</property>
+                                                <property name="title">Lid State</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="AdwPreferencesGroup">
+                                        <property name="css-classes">background</property>
+                                        <property name="title">Animation</property>
+                                        <child>
+                                            <object class="AdwActionRow" id="status_current_file">
+                                                <property name="css-classes">property</property>
+                                                <property name="subtitle">N/A</property>
+                                                <property name="subtitle-selectable">True</property>
+                                                <property name="title">Current File</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="AdwActionRow" id="status_current_state">
+                                                <property name="css-classes">property</property>
+                                                <property name="subtitle">idle</property>
+                                                <property name="subtitle-selectable">True</property>
+                                                <property name="title">Current State</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="AdwPreferencesGroup">
+                                        <property name="css-classes">background</property>
+                                        <property name="title">Power</property>
+                                        <child>
+                                            <object class="AdwActionRow" id="status_current">
+                                                <property name="css-classes">property</property>
+                                                <property name="subtitle">1000 TA</property>
+                                                <property name="subtitle-selectable">True</property>
+                                                <property name="title">Current Draw</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="AdwActionRow" id="status_voltage">
+                                                <property name="css-classes">property</property>
+                                                <property name="subtitle">50000 TV</property>
+                                                <property name="subtitle-selectable">True</property>
+                                                <property name="title">Voltage</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </property>
+                        <property name="icon-name">com.toxicstoxm.ledsuite</property>
+                        <property name="title">Server Status</property>
+                    </object>
+                </property>
+                <property name="maximum-size">700</property>
+                <property name="tightening-threshold">600</property>
+            </object>
+        </property>
+        <property name="follows-content-size">True</property>
+    </object>
 </interface>

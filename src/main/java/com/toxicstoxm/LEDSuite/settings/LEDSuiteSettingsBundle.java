@@ -8,13 +8,26 @@ import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
 import lombok.Getter;
 
 public class LEDSuiteSettingsBundle implements SettingsBundle {
-    @YAMLSetting(path = "LEDSuite.Test")
-    public static class EnableTest extends YAJSISetting<Boolean> {
+
+    @YAMLSetting(path = "LEDSuite.Debugging.Enable-Settings-Logging")
+    public static class EnableSettingsLogging extends YAJSISetting<Boolean> {
 
         @Getter
-        public static EnableTest instance;
+        private static EnableSettingsLogging instance;
 
-        public EnableTest(Setting<Object> setting) {
+        public EnableSettingsLogging(Setting<Object> setting) {
+            super(setting, Boolean.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "LEDSuite.Debugging.Print-Logger-Test-Messages")
+    public static class PrintLoggerTestMessages extends YAJSISetting<Boolean> {
+
+        @Getter
+        private static PrintLoggerTestMessages instance;
+
+        public PrintLoggerTestMessages(Setting<Object> setting) {
             super(setting, Boolean.class);
             instance = this;
         }

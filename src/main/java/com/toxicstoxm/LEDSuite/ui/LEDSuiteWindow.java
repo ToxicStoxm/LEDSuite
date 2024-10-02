@@ -7,6 +7,8 @@ import io.github.jwharm.javagi.gtk.types.Types;
 import org.gnome.adw.*;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
+import org.gnome.gtk.Align;
+import org.gnome.gtk.Box;
 import org.gnome.gtk.ShortcutsWindow;
 
 import java.lang.foreign.MemorySegment;

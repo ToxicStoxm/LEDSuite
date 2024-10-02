@@ -70,9 +70,7 @@ public class LEDSuiteApplication extends Application {
             settings.onActivate(_ -> window.displayPreferencesDialog());
             shortcuts.onActivate(_ -> window.displayShortcutsWindow());
             about.onActivate(_ -> window.displayAboutDialog());
-            sidebarToggle.onActivate(_ -> {
-                window.toggle_sidebar();
-            });
+            sidebarToggle.onActivate(_ -> window.toggle_sidebar());
 
             addAction(quit);
             addAction(status);

@@ -2,8 +2,9 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.cummunication.LEDSuiteSocketComms;
+import com.toxicstoxm.LEDSuite.communication.LEDSuiteSocketComms;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
+import com.toxicstoxm.LEDSuite.task_scheduler.TaskScheduler;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.colors.YAJLMessage;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
@@ -11,6 +12,7 @@ import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
 import jakarta.websocket.WebSocketContainer;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.glassfish.tyrus.client.ClientManager;
 import org.gnome.adw.Application;
@@ -41,18 +43,23 @@ public class LEDSuiteApplication extends Application {
 
     public static String version = "@version@";
 
-    public static YAJLLogger logger;
+    @Getter
+    private static YAJLLogger logger;
 
-    public static YAJSISettingsManager configMgr;
+    @Getter
+    private static YAJSISettingsManager configMgr;
 
-    public LEDSuiteWindow window;
+    @Getter
+    private LEDSuiteWindow window;
+
+    @Getter
+    private static TaskScheduler scheduler;
 
     public static LEDSuiteApplication create() {
         return GObject.newInstance(getType(),
                 "application-id", "com.toxicstoxm.LEDSuite",
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
     }
-
 
     @SneakyThrows
     @InstanceInit
@@ -102,7 +109,8 @@ public class LEDSuiteApplication extends Application {
                     .setSettingsManager(configMgr)
                     .buildWithArea(
                             Constants.FileSystem.getAppDir(),
-                            System.out, new LEDSuiteLogAreas.GENERAL(),
+                            System.out,
+                            new LEDSuiteLogAreas.GENERAL(),
                             new LEDSuiteLogAreas(),
                             true
                     )
@@ -114,6 +122,8 @@ public class LEDSuiteApplication extends Application {
                                     new LEDSuiteLogAreas.YAML_EVENTS()
                             )
                     );
+
+            scheduler = new TaskScheduler();
 
             if (PrintLoggerTestMessages.getInstance().get()) {
                 logger.log(
@@ -143,7 +153,6 @@ public class LEDSuiteApplication extends Application {
                 logger.debug("Some communication debug occurred!", new LEDSuiteLogAreas.COMMUNICATION());
                 logger.verbose("Some ui construction verbose occurred!", new LEDSuiteLogAreas.UI_CONSTRUCTION());
                 logger.stacktrace("Some user interactions stacktrace occurred!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-
                 logger.debug("newline \n support \n test \n\n\n newline \n support \n test\n", new LEDSuiteLogAreas.UI_CONSTRUCTION());
 
             }

@@ -7,8 +7,8 @@ import io.github.jwharm.javagi.gtk.types.Types;
 import org.gnome.adw.*;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
-import org.gnome.gtk.Align;
 import org.gnome.gtk.Box;
+import org.gnome.gtk.Revealer;
 import org.gnome.gtk.ShortcutsWindow;
 
 import java.lang.foreign.MemorySegment;
@@ -77,4 +77,15 @@ public class LEDSuiteWindow extends ApplicationWindow {
         status_dialog.present(this);
     }
 
+    @GtkChild(name = "content-box-revealer")
+    public Revealer contentBoxRevealer;
+
+    @GtkChild(name = "content-box")
+    public Box contentBox;
+
+    @Override
+    public void present() {
+        contentBox.append(UploadPage.create(this));
+        super.present();
+    }
 }

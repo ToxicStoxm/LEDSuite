@@ -13,9 +13,10 @@
                         <property name="content">
                             <object class="AdwToolbarView">
                                 <property name="content">
-                                    <object class="GtkRevealer">
+                                    <object class="GtkRevealer" id="content-box-revealer">
                                         <property name="child">
-                                            <object class="GtkBox"/>
+                                            <object class="GtkBox" id="content-box">
+                                            </object>
                                         </property>
                                         <property name="reveal-child">True</property>
                                         <property name="transition-type">crossfade</property>

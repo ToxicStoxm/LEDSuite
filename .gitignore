@@ -48,3 +48,4 @@ bin/
 /src/main/resources/LEDSuite.gresource
 /ledsuite-main-window.cmb
 /ledsuite-main-window.ui
+/src/main/resources/upload-page.cmb

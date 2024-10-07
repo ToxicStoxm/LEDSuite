@@ -6,3 +6,68 @@
 ## Estimated time until official release:
  - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
  - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
+
+## ToDo 
+###### (?) -> planned but not final
+- [ ] Networking
+  - [X] Find websocket Implementation
+  - [ ] Handle IP and Port changes
+  - [ ] Communication handlers
+    - [ ] Request handling
+    - [ ] Response handling
+    - [ ] Error handling
+  - [ ] File sending
+  - [ ] Define communication protocol with YAML
+  - [ ] Additional features
+    - [ ] Auto reconnect
+    - [ ] Multiple servers (?)
+- [ ] UI
+  - [ ] Elements
+    -  [ ] Dialogs
+      - [ ] Settings dialog
+      - [ ] Status dialog
+      - [ ] Keyboard shortcuts dialog
+      - [ ] About dialog
+      - [ ] Alert dialogs (?)
+    - [ ] Main window
+      - [ ] Sidebar
+      - [ ] Main view
+      - [ ] Progress bar
+      - [ ] Header bar
+      - [ ] Error toasts
+- [ ] YAML
+  - [ ] Serialization
+    - [ ] Adwaita- & Gtk widgets
+    - [ ] YAML packets
+  - [ ] Deserialization
+    - [ ] Adwaita- & Gtk widgets
+    - [ ] YAML packets
+- [ ] Documentation
+  - [ ] Add Java doc to all classes and functions
+  - [ ] Add tons of comments to the code
+  - [ ] Create examples (?)
+- [ ] I18N
+  - [ ] Languages
+    - [ ] English
+    - [ ] German
+    - [ ] Italian
+    - [ ] French (?)
+    - [ ] Spanish (?)
+    - [ ] Chinese (?)
+- [ ] Flathub Release
+  - [ ] Update metadata
+    - [ ] Description
+    - [ ] Screenshots
+    - [ ] Icon
+    - [ ] Version
+    - [ ] Patch notes
+  - [ ] Update dependencies
+- [ ] Logging
+  - [X] Use YAJL (Yet Another Java Logger)
+  - [ ] Create log areas
+  - [ ] add a lot of log messages
+- [ ] Settings
+  - [X] Use YAJSI (Yet Another Java Settings Implementation) 
+  - [ ] Implement all necessary settings
+- [ ] Other
+  - [ ] Create project website at (https://toxicstoxm.com/LEDSuite) 

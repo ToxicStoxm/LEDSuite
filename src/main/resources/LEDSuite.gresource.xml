@@ -2,6 +2,7 @@
 <gresources>
     <gresource prefix="/com/toxicstoxm/LEDSuite">
         <file preprocess="xml-stripblanks">LEDSuiteWindow.ui</file>
+        <file preprocess="xml-stripblanks">upload-page.ui</file>
         <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>
     </gresource>
 </gresources>

@@ -63,11 +63,11 @@
     - [ ] Patch notes
   - [ ] Update dependencies
 - [ ] Logging
-  - [X] Use YAJL (Yet Another Java Logger)
+  - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
   - [ ] Create log areas
   - [ ] add a lot of log messages
 - [ ] Settings
-  - [X] Use YAJSI (Yet Another Java Settings Implementation) 
+  - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation) 
   - [ ] Implement all necessary settings
 - [ ] Other
-  - [ ] Create project website at (https://toxicstoxm.com/LEDSuite) 
+  - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 

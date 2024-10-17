@@ -1,15 +1,17 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.Types;
 import org.gnome.adw.*;
+import org.gnome.adw.AboutDialog;
+import org.gnome.adw.Application;
+import org.gnome.adw.ApplicationWindow;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
-import org.gnome.gtk.Box;
-import org.gnome.gtk.Revealer;
-import org.gnome.gtk.ShortcutsWindow;
+import org.gnome.gtk.*;
 
 import java.lang.foreign.MemorySegment;
 
@@ -56,25 +58,19 @@ public class LEDSuiteWindow extends ApplicationWindow {
         aboutDialog.present(this);
     }
 
-    @GtkChild
-    public ShortcutsWindow shortcuts_window;
+    @GtkChild(name = "shortcuts_dialog")
+    public ShortcutsWindow shortcutsDialog;
 
     public void displayShortcutsWindow() {
-        shortcuts_window.present();
+        shortcutsDialog.present();
     }
-
-    @GtkChild
-    public PreferencesDialog settings_dialog;
-
-    public void displayPreferencesDialog() {
-        settings_dialog.present(this);
-    }
-
-    @GtkChild
-    public Dialog status_dialog;
 
     public void displayStatusDialog() {
-        status_dialog.present(this);
+        StatusDialog.create().present(this);
+    }
+
+    public void displayPreferencesDialog() {
+        SettingsDialog.create().present(this);
     }
 
     @GtkChild(name = "content-box-revealer")
@@ -83,9 +79,63 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "content-box")
     public Box contentBox;
 
+    public void changeMainContent(Widget newChild) {
+        clearMainContent();
+        contentBox.append(newChild);
+    }
+
+    public void clearMainContent() {
+        Widget child = contentBox.getFirstChild();
+        if (child != null) contentBox.remove(child);
+    }
+
+    @GtkChild(name = "animation_list")
+    public ListBox animationList;
+
+    @GtkChild(name = "file_management_list")
+    public ListBox fileManagementList;
+
+    @GtkChild(name = "file_management_upload_files_page")
+    public ListBoxRow fileManagementUploadFilesPage;
+
+    public void uploadPageSelect() {
+        LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+        changeMainContent(UploadPage.create(this));
+        animationList.setSelectionMode(SelectionMode.NONE);
+        animationList.setSelectionMode(SelectionMode.BROWSE);
+    }
+
     @Override
     public void present() {
-        contentBox.append(UploadPage.create(this));
+        animationList.append(AnimationRow.create(getApplication(), "emoji-food-symbolic", "Test", () -> {
+            clearMainContent();
+            LEDSuiteApplication.getLogger().info("Fuck!57864587");
+        }));
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit", () -> {
+            clearMainContent();
+            LEDSuiteApplication.getLogger().info("dfhjasdhfjasdf");
+        }));
         super.present();
     }
 }
+
+/*
+
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.1 -->
+<interface>
+  <!-- interface-name ttest.ui -->
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <object class="AdwApplicationWindow">
+    <child>
+      <object class="GtkLabel">
+        <attributes>
+          <attribute end="-1" name="scale" value="2"/>
+        </attributes>
+      </object>
+    </child>
+  </object>
+</interface>
+
+ */

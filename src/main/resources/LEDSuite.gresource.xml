@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/com/toxicstoxm/LEDSuite">
-        <file preprocess="xml-stripblanks">LEDSuiteWindow.ui</file>
-        <file preprocess="xml-stripblanks">upload-page.ui</file>
+        <file preprocess="xml-stripblanks" alias="LEDSuiteWindow.ui">ui/LEDSuiteWindow.ui</file>
+        <file preprocess="xml-stripblanks" alias="UploadPage.ui">ui/UploadPage.ui</file>
+        <file preprocess="xml-stripblanks" alias="AnimationRow.ui">ui/AnimationRow.ui</file>
+        <file preprocess="xml-stripblanks" alias="StatusDialog.ui">ui/StatusDialog.ui</file>
+        <!--<file preprocess="xml-stripblanks" alias="ShortcutsDialog.ui">ui/ShortcutsDialog.ui</file>-->
+        <file preprocess="xml-stripblanks" alias="SettingsDialog.ui">ui/SettingsDialog.ui</file>
         <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>
     </gresource>
 </gresources>

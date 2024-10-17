@@ -18,7 +18,7 @@ import org.gnome.gtk.*;
 
 import java.lang.foreign.MemorySegment;
 
-@GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/upload-page.ui")
+@GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage {
 
     private static final Type gtype = Types.register(UploadPage.class);
@@ -77,7 +77,7 @@ public class UploadPage extends PreferencesPage {
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(filePath));
                 }
             } catch (GErrorException e) {
-                throw new RuntimeException(e);
+                LEDSuiteApplication.getLogger().info("User canceled file picker! No file selected!", new LEDSuiteLogAreas.UI());
             }
         });
 

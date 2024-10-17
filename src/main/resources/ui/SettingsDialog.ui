@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface>
+    <requires lib="gio" version="2.44"/>
+    <requires lib="gtk" version="4.14"/>
+    <requires lib="libadwaita" version="1.6"/>
+    <template class="SettingsDialog" parent="AdwPreferencesDialog">
+        <property name="search-enabled">True</property>
+        <child>
+            <object class="AdwPreferencesPage">
+                <child>
+                    <object class="AdwPreferencesGroup">
+                        <property name="title">General</property>
+                        <child>
+                            <object class="AdwSwitchRow">
+                                <property name="title">Work</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>

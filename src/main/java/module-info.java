@@ -13,5 +13,7 @@ module com.toxicstoxm.LEDSuite {
     exports com.toxicstoxm.LEDSuite;
     exports com.toxicstoxm.LEDSuite.logger;
     exports com.toxicstoxm.LEDSuite.ui to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;
+    exports com.toxicstoxm.LEDSuite.ui.dialogs to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.settings;
+    exports com.toxicstoxm.LEDSuite.time;
 }

@@ -11,6 +11,7 @@
 ###### (?) -> planned but not final
 - [ ] Networking
   - [X] Find websocket Implementation
+  - [X] Basic websocket Implementation
   - [ ] Handle IP and Port changes
   - [ ] Communication handlers
     - [ ] Request handling
@@ -26,14 +27,14 @@
     -  [ ] Dialogs
       - [ ] Settings dialog
       - [ ] Status dialog
-      - [ ] Keyboard shortcuts dialog
-      - [ ] About dialog
+      - [X] Keyboard shortcuts dialog
+      - [X] About dialog
       - [ ] Alert dialogs (?)
     - [ ] Main window
-      - [ ] Sidebar
+      - [X] Sidebar
       - [ ] Main view
       - [ ] Progress bar
-      - [ ] Header bar
+      - [X] Header bar
       - [ ] Error toasts
 - [ ] YAML
   - [ ] Serialization

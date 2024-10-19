@@ -1,69 +1,128 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import java.util.concurrent.*;
+import java.util.List;
 
-public class TaskScheduler {
-    private final ScheduledExecutorService asyncExecutor;
-    private final ExecutorService syncExecutor;
-    private final BlockingQueue<Runnable> syncTaskQueue;
+/**
+ * Interface for scheduling and managing tasks within the LEDSuite system.
+ * Provides methods to schedule tasks with various timing and execution
+ * options, check task statuses, and manage active and pending tasks.
+ *
+ * @since 1.0.0
+ */
+public interface TaskScheduler {
 
-    public TaskScheduler() {
-        // A single-threaded executor to handle synchronous tasks
-        this.syncExecutor = Executors.newSingleThreadExecutor();
-        this.syncTaskQueue = new LinkedBlockingQueue<>();
+    /**
+     * Cancels a task with the specified ID.
+     *
+     * @param taskId The ID of the task to cancel.
+     * @since 1.0.0
+     */
+    void cancelTask(int taskId);
 
-        // A scheduled thread pool for asynchronous tasks
-        this.asyncExecutor = Executors.newScheduledThreadPool(4); // You can adjust the thread pool size
-        startSyncTaskRunner();
-    }
+    /**
+     * Cancels all currently scheduled tasks.
+     *
+     * @since 1.0.0
+     */
+    void cancelAllTasks();
 
-    private void startSyncTaskRunner() {
-        // Starts the synchronous task runner in a loop to process tasks one by one
-        syncExecutor.submit(() -> {
-            while (true) {
-                try {
-                    Runnable task = syncTaskQueue.take();
-                    task.run();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        });
-    }
+    /**
+     * Checks if a task with the specified ID is currently running.
+     *
+     * @param taskId The ID of the task to check.
+     * @return {@code true} if the task is currently running, {@code false} otherwise.
+     * @since 1.0.0
+     */
+    boolean isCurrentlyRunning(int taskId);
 
-    public void scheduleSyncTask(SchedulerTask task, long delayMillis) {
-        syncExecutor.submit(() -> {
-            try {
-                Thread.sleep(delayMillis);
-                syncTaskQueue.put(task::run);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-    }
+    /**
+     * Checks if a task with the specified ID is queued for execution.
+     *
+     * @param taskId The ID of the task to check.
+     * @return {@code true} if the task is queued, {@code false} otherwise.
+     * @since 1.0.0
+     */
+    boolean isQueued(int taskId);
 
-    public void scheduleAsyncTask(SchedulerTask task, long delayMillis) {
-        asyncExecutor.schedule(task::run, delayMillis, TimeUnit.MILLISECONDS);
-    }
+    /**
+     * Retrieves a list of currently active workers.
+     *
+     * @return A list of {@link LEDSuiteWorker} instances representing the active workers.
+     * @since 1.0.0
+     */
+    List<LEDSuiteWorker> getActiveWorkers();
 
-    public void scheduleRepeatingAsyncTask(SchedulerTask task, long initialDelayMillis, long periodMillis) {
-        asyncExecutor.scheduleAtFixedRate(task::run, initialDelayMillis, periodMillis, TimeUnit.MILLISECONDS);
-    }
+    /**
+     * Retrieves a list of currently pending tasks.
+     *
+     * @return A list of {@link LEDSuiteTask} instances representing the pending tasks.
+     * @since 1.0.0
+     */
+    List<LEDSuiteTask> getPendingTasks();
 
-    public void shutdown() {
-        asyncExecutor.shutdown();
-        syncExecutor.shutdown();
-        try {
-            if (!asyncExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                asyncExecutor.shutdownNow();
-            }
-            if (!syncExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-                syncExecutor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            asyncExecutor.shutdownNow();
-            syncExecutor.shutdownNow();
-        }
-    }
+    /**
+     * Schedules a task to run immediately.
+     *
+     * @param task The task to be scheduled.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTask(Runnable task) throws IllegalStateException;
+
+    /**
+     * Schedules a task to run asynchronously.
+     *
+     * @param task The task to be scheduled.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTaskAsynchronously(Runnable task) throws IllegalStateException;
+
+    /**
+     * Schedules a task to run after a specified delay.
+     *
+     * @param task  The task to be scheduled.
+     * @param delay The delay in ticks before the task runs.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTaskLater(Runnable task, long delay) throws IllegalStateException;
+
+    /**
+     * Schedules a task to run asynchronously after a specified delay.
+     *
+     * @param task  The task to be scheduled.
+     * @param delay The delay in ticks before the task runs.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTaskLaterAsynchronously(Runnable task, long delay) throws IllegalStateException;
+
+    /**
+     * Schedules a task to run repeatedly with a specified delay and period.
+     *
+     * @param task   The task to be scheduled.
+     * @param delay  The delay in ticks before the first run.
+     * @param period The period in ticks between subsequent runs.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTaskTimer(Runnable task, long delay, long period) throws IllegalStateException;
+
+    /**
+     * Schedules a task to run asynchronously and repeatedly with a specified delay and period.
+     *
+     * @param task   The task to be scheduled.
+     * @param delay  The delay in ticks before the first run.
+     * @param period The period in ticks between subsequent runs.
+     * @return The scheduled {@link LEDSuiteTask} instance.
+     * @throws IllegalStateException If the task cannot be scheduled.
+     * @since 1.0.0
+     */
+    LEDSuiteTask runTaskTimerAsynchronously(Runnable task, long delay, long period) throws IllegalStateException;
 }

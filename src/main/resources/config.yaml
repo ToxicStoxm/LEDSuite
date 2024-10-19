@@ -1,4 +1,6 @@
 LEDSuite:
+  Network:
+    Websocket-URI: "wss://www.yourWebsocket.com/yourWebsocketEndpoint/"
   Debugging:
     Enable-Settings-Logging: false
     Print-Logger-Test-Messages: false

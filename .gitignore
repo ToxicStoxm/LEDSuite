@@ -49,3 +49,4 @@ bin/
 /ledsuite-main-window.cmb
 /ledsuite-main-window.ui
 /src/main/resources/upload-page.cmb
+/src/main/resources/ui/AnimationMenu.cmb

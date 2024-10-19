@@ -2,9 +2,11 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
+import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.Types;
+import lombok.Getter;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
@@ -15,6 +17,7 @@ import org.gnome.gtk.ListBoxRow;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
+import java.util.HashMap;
 
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
@@ -29,57 +32,76 @@ public class AnimationRow extends ListBoxRow {
         return gtype;
     }
 
+    private static final HashMap<String, AnimationRow> animationRowNames = new HashMap<>();
+
+    @Getter
+    private String rowID = "";
+
     @GtkChild(name = "animation_icon")
     public Image animationIcon;
 
-    public void setIconName(String iconName) {
+    public final void setIconName(String iconName) {
         animationIcon.setFromIconName(iconName);
     }
 
     @GtkChild(name = "animation_label")
-    public Label animationLabel;
+    public Label animationRowLabel;
 
-    public void setAnimationLabel(String animationLabel) {
-        this.animationLabel.setLabel(animationLabel);
+    public final void setAnimationLabel(String animationLabel) {
+        this.animationRowLabel.setLabel(animationLabel);
     }
 
-    public static AnimationRow create() {
+    private static AnimationRow create() {
         return GObject.newInstance(getType());
     }
 
     public static @NotNull AnimationRow create(String iconName, String label) {
-        AnimationRow row = GObject.newInstance(getType());
+        AnimationRow row = create();
         row.setIconName(iconName);
         row.setAnimationLabel(label);
         return row;
     }
 
-    public static @NotNull AnimationRow create(String iconName, String label, String actionName) {
-        AnimationRow row = GObject.newInstance(getType(), "action-name", actionName);
+    public static @NotNull AnimationRow create(Application app, String iconName, String label, String rowID, Action action) {
+        return create(app, iconName, label, rowID, action, 500);
+    }
+
+    public static @NotNull AnimationRow create(@NotNull Application app, String iconName, String label, String rowID, Action action, long cooldown) {
+        CooldownManger.addAction(rowID, action, cooldown);
+        createAction(app, rowID, label);
+
+        AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + rowID);
+        row.rowID = rowID;
         row.setIconName(iconName);
         row.setAnimationLabel(label);
+
+        String animationRowIdentifier = label.toLowerCase();
+
+        AnimationRow otherRow = animationRowNames.get(animationRowIdentifier);
+
+        if (otherRow != null) {
+            otherRow.setTooltipText(getRowID(otherRow.rowID));
+            row.setTooltipText(getRowID(rowID));
+        }
+        else animationRowNames.putIfAbsent(animationRowIdentifier, row);
         return row;
     }
 
-    public static @NotNull AnimationRow create(Application app, String iconName, String label, Action action) {
-        return create(app, iconName, label, action, 500);
-    }
-
-
-    public static @NotNull AnimationRow create(@NotNull Application app, String iconName, String label, Action action, long cooldown) {
-        CooldownManger.addAction(label, action, cooldown);
-        var simpleAction = new SimpleAction(label, null);
+    private static void createAction(Application app, String rowID, String animationLabel) {
+        LEDSuiteWindow window = (LEDSuiteWindow) app.getActiveWindow();
+        var simpleAction = new SimpleAction(String.valueOf(rowID), null);
         simpleAction.onActivate(_ -> {
-            if (!CooldownManger.call(label)) {
-                LEDSuiteApplication.getLogger().info("The animation row " + label + " is on cooldown!");
-            } else ((LEDSuiteWindow) app.getActiveWindow()).fileManagementList.unselectAll();
+            if (!CooldownManger.call(String.valueOf(rowID))) {
+                LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + rowID + ") is on cooldown!");
+            } else {
+                window.fileManagementList.unselectAll();
+            }
         });
         app.addAction(simpleAction);
+    }
 
-        AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + label);
-        row.setIconName(iconName);
-        row.setAnimationLabel(label);
-        return row;
+    private static String getRowID(String rowID) {
+        return "crc32: '" + rowID + "'";
     }
 
 }

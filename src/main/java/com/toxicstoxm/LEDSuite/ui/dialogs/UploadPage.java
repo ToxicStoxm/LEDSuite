@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -99,12 +100,15 @@ public class UploadPage extends PreferencesPage {
         uploadButton.setCssClasses(new String[]{"pill", loading ? "Regular" : "suggested-action"});
         LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
 
-        LEDSuiteApplication.getScheduler().scheduleAsyncTask(() -> {
-            loading = false;
-            uploadButtonSpinner.setVisible(false);
-            uploadButton.setCssClasses(new String[]{"pill", loading ? "Regular" : "suggested-action"});
-            LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
-        }, 2000);
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                loading = false;
+                uploadButtonSpinner.setVisible(false);
+                uploadButton.setCssClasses(new String[]{"pill", loading ? "Regular" : "suggested-action"});
+                LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
+            }
+        }.runTaskLaterAsynchronously(2000);
     }
 
 

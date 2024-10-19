@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.ui;
+package com.toxicstoxm.LEDSuite.ui.dialogs;
 
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.Types;

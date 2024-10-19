@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.1 -->
+<interface>
+  <!-- interface-name AnimationMenu.ui -->
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="AnimationMenu" parent="AdwPreferencesPage"/>
+</interface>

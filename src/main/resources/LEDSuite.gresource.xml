@@ -7,6 +7,7 @@
         <file preprocess="xml-stripblanks" alias="StatusDialog.ui">ui/StatusDialog.ui</file>
         <!--<file preprocess="xml-stripblanks" alias="ShortcutsDialog.ui">ui/ShortcutsDialog.ui</file>-->
         <file preprocess="xml-stripblanks" alias="SettingsDialog.ui">ui/SettingsDialog.ui</file>
+        <file preprocess="xml-stripblanks" alias="AnimationMenu.ui">ui/AnimationMenu.ui</file>
         <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>
     </gresource>
 </gresources>

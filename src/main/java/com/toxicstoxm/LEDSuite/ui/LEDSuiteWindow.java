@@ -1,6 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.ui.dialogs.SettingsDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.StatusDialog;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -14,6 +16,7 @@ import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 
 import java.lang.foreign.MemorySegment;
+import java.util.UUID;
 
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow {
@@ -100,42 +103,40 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     public void uploadPageSelect() {
         LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        changeMainContent(UploadPage.create(this));
+        changeMainContent(com.toxicstoxm.LEDSuite.ui.UploadPage.create(this));
         animationList.setSelectionMode(SelectionMode.NONE);
         animationList.setSelectionMode(SelectionMode.BROWSE);
     }
 
     @Override
     public void present() {
-        animationList.append(AnimationRow.create(getApplication(), "emoji-food-symbolic", "Test", () -> {
+        animationList.append(AnimationRow.create(getApplication(), "emoji-food-symbolic", "Test", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            LEDSuiteApplication.getLogger().info("Fuck!57864587");
+            LEDSuiteApplication.getLogger().info("Test");
         }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit", () -> {
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            LEDSuiteApplication.getLogger().info("dfhjasdhfjasdf");
+            LEDSuiteApplication.getLogger().info("Shit");
+        }));
+
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "test", String.valueOf(UUID.randomUUID()), () -> {
+            clearMainContent();
+            LEDSuiteApplication.getLogger().info("test");
+        }));
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "SHIT", String.valueOf(UUID.randomUUID()), () -> {
+            clearMainContent();
+            LEDSuiteApplication.getLogger().info("SHIT");
+        }));
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit2", String.valueOf(UUID.randomUUID()), () -> {
+            clearMainContent();
+            LEDSuiteApplication.getLogger().info("Shit2");
         }));
         super.present();
     }
 }
 
 /*
-
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.92.1 -->
-<interface>
-  <!-- interface-name ttest.ui -->
-  <requires lib="gtk" version="4.14"/>
-  <requires lib="libadwaita" version="1.6"/>
-  <object class="AdwApplicationWindow">
-    <child>
-      <object class="GtkLabel">
-        <attributes>
-          <attribute end="-1" name="scale" value="2"/>
-        </attributes>
-      </object>
-    </child>
-  </object>
-</interface>
-
+<attributes>
+  <attribute end="-1" name="scale" value="2"/>
+</attributes>
  */

@@ -1,36 +1,38 @@
 package com.toxicstoxm.LEDSuite;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Holds all constant values used by the application. E.g. YAML-Keys, paths, project-website,
- * @since 1.0
+ * @since 1.0.0
  */
 public class Constants {
 
     public static class FileSystem {
 
-        public static String getAppDir() {
+        public static @NotNull String getAppDir() {
             String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything
                     java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
                     confHome + "/"; // else it gets the environment variable and appends / because, if it's missing, it will error, but when there are two it will still work
         }
 
-        public static String getTmpDir() {
+        public static @NotNull String getTmpDir() {
             String cacheHome = java.lang.System.getenv("XDG_CACHE_HOME");
             return cacheHome == null ? // Check if the cache home or just temp directory (mainly for flatpak) contains anything
                     java.lang.System.getProperty("java.io.tmpdir") + "/" + Application.NAME + "/" : // If not, it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as a path
                     cacheHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
-        public static String getDataDir() {
+        public static @NotNull String getDataDir() {
             String dataHome = java.lang.System.getenv("XDG_DATA_HOME");
             return dataHome == null ? // Check if the data home directory (mainly for flatpak) contains anything
                     java.lang.System.getProperty("user.home") + "/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
                     dataHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
-        public static final String configFileName = "config.yaml";
-        public static final String configFilePath = getAppDir() + "/" + configFileName;
+        public static final String CONFIG_FILE_NAME = "config.yaml";
+        public static final String CONFIG_FILE_PATH = getAppDir() + "/" + CONFIG_FILE_NAME;
 
     }
 
@@ -44,34 +46,44 @@ public class Constants {
         public static final class YAML {
             public static final class Keys {
                 public static final class General {
-                    public static final String InternalNetworkId = "internal_network_event_id";
-                    public static final String PacketType = "packet_type";
-                    public static final String ReplyType = "reply_type";
+                    public static final String PACKET_TYPE = "packet_type";
+                    public static final String SUB_TYPE = "type";
                 }
 
                 public static final class Error {
-                    public static final String Source = "error_source";
-                    public static final String Code = "error_code";
-                    public static final String Name = "error_name";
-                    public static final String Severity = "error_severity";
+                    public static final String SOURCE = "error_source";
+                    public static final String CODE = "error_code";
+                    public static final String NAME = "error_name";
+                    public static final String SEVERITY = "error_severity";
                 }
 
                 public static final class Status {
-                    public static final String IsFileLoaded = "file_is_loaded";
-                    public static final String FileState = "file_state";
-                    public static final String SelectedFile = "file_selected";
-                    public static final String CurrentDraw = "current_draw";
-                    public static final String Voltage = "voltage";
-                    public static final String LidState = "lid_state";
-                    public static final String Animations = "available_animations";
+                    public static final String IS_FILE_LOADED = "file_is_loaded";
+                    public static final String FILE_STATE = "file_state";
+                    public static final String SELECTED_FILE = "file_selected";
+                    public static final String CURRENT_DRAW = "current_draw";
+                    public static final String VOLTAGE = "voltage";
+                    public static final String LID_STATE = "lid_state";
+                    public static final String ANIMATIONS = "available_animations";
+
+                    public static final class AnimationList {
+                        public static final String ICON = "icon";
+                        public static final String NAME = "name";
+                        public static final String PAUSEABLE = "pause_able";
+                    }
                 }
 
                 public static final class Request {
-                    public static final String Type = "type";
-                    public static final String File = "file";
-                    public static final String ObjectPath = "object_path";
-                    public static final String ObjectValue = "object_new_value";
-                    public static final String FileSize = ObjectValue;
+                    public static final String FILE = "request_file";
+                    public static final String OBJECT_PATH = "request_object_path";
+                    public static final String OBJECT_VALUE = "request_object_new_value";
+                    public static final String FILE_SIZE = "request_file_size";
+                    public static final String UPLOAD_SESSION_ID = "request_upload_session_id";
+                    public static final String NEW_NAME = "new_name";
+                }
+
+                public static final class UploadRenameRequest {
+                    public static final String CURRENT_NAME = "current_name";
                 }
 
                 public static final class Menu {
@@ -81,47 +93,59 @@ public class Constants {
 
             public static final class Values {
                 public static final class PacketTypes {
-                    public static final String Error = "error";
-                    public static final String Reply = "reply";
-                    public static final String Request = "request";
+                    public static final String ERROR = "error";
+                    public static final String REPLY = "reply";
+                    public static final String REQUEST = "request";
                 }
 
                 public static final class ReplyTypes {
-                    public static final String Status = "status";
-                    public static final String Menu = "menu";
+                    public static final String STATUS = "status";
+                    public static final String MENU = "menu";
+                    public static final String UPLOAD_SUCCESS = "upload_success";
+                    public static final String UPLOAD_RENAME_REQUEST = "upload_rename_request";
                 }
 
                 public static final class Error {
                     public static final class Sources {
-                        public static final String Power = "power";
-                        public static final String InvalidFile = "invalid_file";
-                        public static final String ParsingError = "parsing_error";
-                        public static final String Other = "other";
+                        public static final String POWER = "power";
+                        public static final String INVALID_FILE = "invalid_file";
+                        public static final String PARSING_ERROR = "parsing_error"; // Weird TODO: change communication YAML
+                        public static final String OTHER = "other";
                     }
+
+                    public static final String UNKNOWN_ERROR = "Unknown error";
                 }
 
                 public static final class Status {
                     public static final class FileState {
-                        public static final String Playing = "playing";
-                        public static final String Paused = "paused";
+                        public static final String PLAYING = "playing";
+                        public static final String PAUSED = "paused";
                     }
                 }
 
                 public static final class RequestTypes {
-                    public static final String Status = "status";
-                    public static final String Play = "play";
-                    public static final String Pause = "pause";
-                    public static final String Stop = "stop";
-                    public static final String Menu = "menu";
-                    public static final String MenuChange = "menu_change";
-                    public static final String FileUpload = "file_upload";
-                    public static final String KeepAlive = "keepalive";
+                    public static final String STATUS = "status";
+                    public static final String PLAY = "play";
+                    public static final String PAUSE = "pause";
+                    public static final String STOP = "stop";
+                    public static final String MENU = "menu";
+                    public static final String MENU_CHANGE = "menu_change";
+                    public static final String FILE_UPLOAD = "file_upload";
+                    public static final String RENAME_REQUEST = "rename_request";
                 }
             }
         }
 
         public static final class ErrorCodes {
-            public static final int FailedToParseRequestType = 1;
+            public static final int FAILED_TO_PARSE_REQUEST_TYPE = 1;
         }
+
+        public static final class WebSocketPaths {
+            public static final String UPLOAD = "/upload";
+            public static final String COMMUNICATION = "/communication";
+            public static final String DEFAULT_SERVER_ROOT = "/";
+        }
+
+        public static final int DEFAULT_PORT = 80;
     }
 }

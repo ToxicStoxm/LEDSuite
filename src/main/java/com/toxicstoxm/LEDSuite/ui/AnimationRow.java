@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
-import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.Types;
@@ -92,7 +92,7 @@ public class AnimationRow extends ListBoxRow {
         var simpleAction = new SimpleAction(String.valueOf(rowID), null);
         simpleAction.onActivate(_ -> {
             if (!CooldownManger.call(String.valueOf(rowID))) {
-                LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + rowID + ") is on cooldown!");
+                LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + rowID + ") is on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
             } else {
                 window.fileManagementList.unselectAll();
             }

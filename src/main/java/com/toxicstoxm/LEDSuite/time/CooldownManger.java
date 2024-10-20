@@ -9,7 +9,7 @@ import java.util.HashMap;
  * New action can be registered with {@link #addAction(String, Action, long)}.
  * Registered actions can be called with {@link #call(String)} and the specified action name.
  * The action will only be executed if the action is not on cooldown.
- * @since 1.0
+ * @since 1.0.0
  */
 public class CooldownManger {
 

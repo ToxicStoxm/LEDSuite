@@ -109,7 +109,7 @@ public class Constants {
                     public static final class Sources {
                         public static final String POWER = "power";
                         public static final String INVALID_FILE = "invalid_file";
-                        public static final String PARSING_ERROR = "parsing_error"; // Weird TODO: change communication YAML
+                        public static final String PARSING_ERROR = "parsing_error";
                         public static final String OTHER = "other";
                     }
 

@@ -1,9 +1,12 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
-import com.toxicstoxm.LEDSuite.communication.packet_management.StatusPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -35,7 +38,7 @@ import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.*;
 /**
  * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital components like: <br>
  * {@link YAJLLogger} {@link LEDSuiteScheduler} {@link YAJSISettingsManager}
- * @since 1.0
+ * @since 1.0.0
  */
 public class LEDSuiteApplication extends Application {
 
@@ -72,6 +75,9 @@ public class LEDSuiteApplication extends Application {
 
     @Getter
     private static PacketManager packetManager;
+
+    @Getter
+    private static PacketReceivedHandler packetReceivedHandler;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -129,7 +135,7 @@ public class LEDSuiteApplication extends Application {
         configMgr = YAJSISettingsManager.builder()
                 .buildWithConfigFile(
                         new YAJSISettingsManager.ConfigFile(
-                                Constants.FileSystem.configFilePath,
+                                Constants.FileSystem.CONFIG_FILE_PATH,
                                 getClass().getClassLoader().getResource("config.yaml")
                         ),
                         LEDSuiteSettingsBundle.class
@@ -157,8 +163,8 @@ public class LEDSuiteApplication extends Application {
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
-        packetManager = new PacketManager();
-
+        packetManager = new PacketManager(CommunicationPacket.class);
+        packetReceivedHandler = new PacketReceivedHandler();
         registerPackets();
 
         startWebsocket();
@@ -176,8 +182,6 @@ public class LEDSuiteApplication extends Application {
         }
 
         webSocketCommunication = new WebSocketClient(WebSocketCommunication.class, serverAddress);
-
-        webSocketCommunication.enqueueMessage("Greeting: Hello!");
 
         new LEDSuiteRunnable() {
             @Override
@@ -197,9 +201,13 @@ public class LEDSuiteApplication extends Application {
      */
     private void registerPackets() {
 
-        StatusPacket statusPacket = StatusPacket.builder().build();
+        StatusRequestPacket requestPacket = StatusRequestPacket.builder().build();
 
-        packetManager.registerPacket(statusPacket.getPacketType(), statusPacket);
+        packetManager.registerPacket(requestPacket);
+
+        StatusReplyPacket statusReplyPacket = StatusReplyPacket.builder().build();
+
+        packetManager.registerPacket(statusReplyPacket);
 
     }
 

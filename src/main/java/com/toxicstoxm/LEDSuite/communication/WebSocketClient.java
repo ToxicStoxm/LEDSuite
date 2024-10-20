@@ -11,7 +11,10 @@ import java.net.URI;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * Wrapper class that manages basic communication with the server. It features a sending queue (First In First Out) to ensure that the messages are sent in the correct order.
+ * @since 1.0
+ */
 public class WebSocketClient {
 
     private final LinkedBlockingDeque<String> sendQueue = new LinkedBlockingDeque<>();
@@ -22,6 +25,11 @@ public class WebSocketClient {
         run(clientEndpoint, path);
     }
 
+    /**
+     * Creates a new websocket client in an async thread and connects it to the specified server address.
+     * @param clientEndpoint The client endpoint implementation with lifecycle methods
+     * @param path The server address to connect to
+     */
     private void run(Class<?> clientEndpoint, URI path) {
         new LEDSuiteRunnable() {
             @Override
@@ -46,11 +54,20 @@ public class WebSocketClient {
         }.runTaskAsynchronously();
     }
 
+    /**
+     * Stops this websocket client.
+     */
     public void shutdown() {
         cancelled = true;
     }
 
-    public boolean send(String message) {
+    /**
+     * Adds the specified message to the sending queue.<br>
+     * WARNING: This does not guarantee that this message will be sent.
+     * @param message the message to send to the server
+     * @return {@code true} if the message was successfully added to the sending queue, otherwise {@code false}.
+     */
+    public boolean enqueueMessage(String message) {
         return sendQueue.offer(message);
     }
 

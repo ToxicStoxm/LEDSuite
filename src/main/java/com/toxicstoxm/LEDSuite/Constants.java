@@ -1,5 +1,9 @@
 package com.toxicstoxm.LEDSuite;
 
+/**
+ * Holds all constant values used by the application. E.g. YAML-Keys, paths, project-website,
+ * @since 1.0
+ */
 public class Constants {
 
     public static class FileSystem {

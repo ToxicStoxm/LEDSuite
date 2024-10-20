@@ -18,6 +18,11 @@ import org.gnome.gtk.*;
 import java.lang.foreign.MemorySegment;
 import java.util.UUID;
 
+/**
+ * Main application window class. Holds and manages all UI related elements.
+ * <br>Template file: {@code LEDSuiteWindow.ui}
+ * @since 1.0
+ */
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow {
 
@@ -82,11 +87,20 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "content-box")
     public Box contentBox;
 
+    /**
+     * Clears the main window content box and display the specified object instead.
+     * @param newChild the new object to display
+     * @see #clearMainContent()
+     */
     public void changeMainContent(Widget newChild) {
         clearMainContent();
         contentBox.append(newChild);
     }
 
+    /**
+     * Clears the main window content box.
+     * @see #changeMainContent(Widget)
+     */
     public void clearMainContent() {
         Widget child = contentBox.getFirstChild();
         if (child != null) contentBox.remove(child);

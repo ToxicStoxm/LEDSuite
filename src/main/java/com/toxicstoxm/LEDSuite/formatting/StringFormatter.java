@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public final class StringFormatter {
 
@@ -14,8 +15,13 @@ public final class StringFormatter {
     }
 
     public static @NotNull String getFileNameFromPath(@NotNull String path, String delimiter) {
-        String[] parts = path.strip().split(delimiter);
+        String[] parts = path.strip().split(Pattern.quote(delimiter));
+        if (parts.length == 0) return path;
         return parts[parts.length - 1].strip();
+    }
+
+    public static @NotNull String getClassName(@NotNull Class<?> clazz) {
+        return getFileNameFromPath(clazz.getName(), ".");
     }
 
     public static @NotNull String formatDateTime(Date currentDate, String format) {

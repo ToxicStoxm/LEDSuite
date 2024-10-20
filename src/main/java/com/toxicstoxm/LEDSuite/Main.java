@@ -7,7 +7,7 @@ import org.gnome.glib.Bytes;
 import java.util.Objects;
 
 /**
- * @since 1.0
+ * @since 1.0.0
  * @see LEDSuiteApplication
  * @author ToxicStoxm
  */

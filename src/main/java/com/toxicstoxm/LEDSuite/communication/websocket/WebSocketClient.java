@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication;
+package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;

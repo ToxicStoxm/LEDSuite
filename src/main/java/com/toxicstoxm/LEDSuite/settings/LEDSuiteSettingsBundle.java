@@ -21,18 +21,6 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         }
     }
 
-    @YAMLSetting(path = "LEDSuite.Debugging.Print-Logger-Test-Messages")
-    public static class PrintLoggerTestMessages extends YAJSISetting<Boolean> {
-
-        @Getter
-        private static PrintLoggerTestMessages instance;
-
-        public PrintLoggerTestMessages(Setting<Object> setting) {
-            super(setting, Boolean.class);
-            instance = this;
-        }
-    }
-
     @YAMLSetting(path = "LEDSuite.Network.Websocket-URI")
     public static class WebsocketURI extends YAJSISetting<String> {
 

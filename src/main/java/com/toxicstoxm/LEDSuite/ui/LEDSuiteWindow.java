@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.dialogs.SettingsDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.StatusDialog;
@@ -126,24 +127,29 @@ public class LEDSuiteWindow extends ApplicationWindow {
     public void present() {
         animationList.append(AnimationRow.create(getApplication(), "emoji-food-symbolic", "Test", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
+
+            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                    StatusRequestPacket.builder().build().serialize()
+            );
+
             LEDSuiteApplication.getLogger().info("Test");
         }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit", String.valueOf(UUID.randomUUID()), () -> {
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            LEDSuiteApplication.getLogger().info("Shit");
+            LEDSuiteApplication.getLogger().info("TestRow");
         }));
 
         animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "test", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
             LEDSuiteApplication.getLogger().info("test");
         }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "SHIT", String.valueOf(UUID.randomUUID()), () -> {
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            LEDSuiteApplication.getLogger().info("SHIT");
+            LEDSuiteApplication.getLogger().info("TestRow");
         }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "Shit2", String.valueOf(UUID.randomUUID()), () -> {
+        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow2", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            LEDSuiteApplication.getLogger().info("Shit2");
+            LEDSuiteApplication.getLogger().info("TestRow2");
         }));
         super.present();
     }

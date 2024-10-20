@@ -12,33 +12,39 @@ import java.util.HashMap;
 
 /**
  * Wrapper class for managing serialization and deserialization of network packets.
- * @see #registerPacket(String, Packet)
+ * @see #registerPacket(Packet)
  * @see #serialize(Packet)
  * @see #deserialize(Class, String)
- * @since 1.0
+ * @since 1.0.0
  */
 public class PacketManager {
+
+    Class<? extends Packet> defaultPacket;
+
+    public PacketManager(Class<? extends Packet> defaultPacket) {
+        this.defaultPacket = defaultPacket;
+
+    }
 
     private final HashMap<String, Packet> registeredPackets = new HashMap<>();
 
     /**
      * Registers the specified packet interface under the specified name. After a packet is registered it can be serialized and deserialized using the {@link #serialize(Packet)} and {@link #deserialize(Class, String)} methods.<br>
      * If another packet is already registered under the specified packet name. This method will fail and return {@code false}.
-     * @param packet_type the packet type (name)
      * @param packet the packet interface with serialization and deserialization methods to register
      * @return {@code true} if the packet was successfully registered, otherwise {@code false}
      * @see #unregisterPacket(String)
      * @see #clearPackets()
      */
-    public boolean registerPacket(String packet_type, Packet packet) {
-        return registeredPackets.putIfAbsent(packet_type, packet) == null;
+    public boolean registerPacket(Packet packet) {
+        return registeredPackets.putIfAbsent(packet.getIdentifier(), packet) == null;
     }
 
     /**
      * Unregisters the packet registered under the specified packet name.
      * @param packet_type the packet type (name) to unregister
      * @return {@code true} if the specified packet was previously registered and was successfully unregistered, otherwise {@code false}
-     * @see #registerPacket(String, Packet)
+     * @see #registerPacket(Packet)
      * @see #clearPackets()
      */
     public boolean unregisterPacket(String packet_type) {
@@ -47,7 +53,7 @@ public class PacketManager {
 
     /**
      * Clears all registered packets.
-     * @see #registerPacket(String, Packet)
+     * @see #registerPacket(Packet)
      * @see #unregisterPacket(String)
      */
     public void clearPackets() {
@@ -61,11 +67,11 @@ public class PacketManager {
      * @see #deserialize(Class, String)
      */
     public @Nullable String serialize(@NotNull Packet packet) {
-        String packetType = packet.getPacketType();
+        String packetIdentifier = packet.getIdentifier();
 
         // Validate if the packet type exists in the registered packets
-        if (!registeredPackets.containsKey(packetType)) {
-            LEDSuiteApplication.getLogger().info("Error: Packet type not registered: " + packetType, new LEDSuiteLogAreas.YAML());
+        if (!registeredPackets.containsKey(packetIdentifier)) {
+            LEDSuiteApplication.getLogger().info("Error: Packet type not registered: " + packetIdentifier, new LEDSuiteLogAreas.YAML());
             System.err.println();
             return null;
         }
@@ -75,7 +81,7 @@ public class PacketManager {
     }
 
     /**
-     * Attempts to deserialize the specified YAML string by trying to load the string into a {@link YamlConfiguration} and retrieving its {@code packet-type} value using {@link #extractPacketType(String)}.
+     * Attempts to deserialize the specified YAML string by trying to load the string into a {@link YamlConfiguration} and retrieving its {@code packet-type} value using {@link #extractPacketIdentifier(String)}.
      * If the retrieved packet-type is registered, the string will be deserialized using the specific packets {@link Packet#deserialize(String)} method.
      * @param clazz the corresponding packet implementation class
      * @param yamlString the YAML string to deserialize
@@ -87,17 +93,23 @@ public class PacketManager {
      * the deserialized packet could not be cast the specified packet implementation class
      */
     public <T extends Packet> T deserialize(@NotNull Class<T> clazz, @NotNull String yamlString) throws DeserializationException {
-        String packetType = extractPacketType(yamlString);
+        String packetIdentifier = extractPacketIdentifier(yamlString);
+
+        if (!registeredPackets.containsKey(packetIdentifier)) {
+            throw new DeserializationException("Invalid packet type: '" + packetIdentifier + "'!");
+        }
 
         // Retrieve the packet type and perform the deserialization
         try {
-            Packet packetInstance = registeredPackets.get(packetType).deserialize(yamlString);
+            Packet packetInstance = registeredPackets.get(packetIdentifier).deserialize(yamlString);
             if (!clazz.isInstance(packetInstance)) {
                 throw new ClassCastException("Deserialized object is not of the expected type: " + clazz.getName());
             }
             return clazz.cast(packetInstance);
         } catch (ClassCastException e) {
             throw new DeserializationException("Couldn't create " + clazz.getName() + " from the provided YAML string!", e);
+        } catch (Exception e) {
+            throw new DeserializationException("Deserialization for " + clazz.getName() + " failed!", e);
         }
     }
 
@@ -105,9 +117,9 @@ public class PacketManager {
      * Tries to extract a {@code packet-type} from this YAML string
      * @param yamlString the YAML string to extract the packet type from
      * @return the retrieved packet type
-     * @throws DeserializationException if the given YAML string isn't valid YAML or the extracted packet type is not registered
+     * @throws DeserializationException if the given YAML string isn't valid YAML
      */
-    private @NotNull String extractPacketType(@NotNull String yamlString) throws DeserializationException {
+    private @NotNull String extractPacketIdentifier(@NotNull String yamlString) throws DeserializationException {
         YamlConfiguration yaml = new YamlConfiguration();
         try {
             yaml.loadFromString(yamlString);
@@ -115,17 +127,25 @@ public class PacketManager {
             throw new DeserializationException("Failed to deserialize YAML!", e);
         }
 
-        String packetType = yaml.getString(Constants.Communication.YAML.Keys.General.PacketType);
-        if (packetType == null || !registeredPackets.containsKey(packetType)) {
-            throw new DeserializationException("Invalid or unknown packet type '" + packetType + "'");
+        String packetType = yaml.getString(Constants.Communication.YAML.Keys.General.PACKET_TYPE);
+        String subType = yaml.getString(Constants.Communication.YAML.Keys.General.SUB_TYPE);
+        if (packetType == null) {
+            throw new DeserializationException("Invalid packet type '" + null + "'");
         }
-        return packetType;
+        String packetIdentifier = packetType;
+        if (!(subType == null || subType.isBlank())) packetIdentifier = packetIdentifier + "." + subType;
+
+        return packetIdentifier;
     }
 
     /**
      * {@code DeserializationException} is an unchecked exception and is used to express an error during deserialization of a communication packet.
      */
     public static class DeserializationException extends RuntimeException {
+        public DeserializationException(Throwable cause) {
+            super(cause);
+        }
+
         public DeserializationException(String message) {
             super(message);
         }

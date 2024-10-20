@@ -1,8 +1,11 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.WebSocketClient;
-import com.toxicstoxm.LEDSuite.communication.WebSocketCommunication;
+import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.communication.packet_management.StatusPacket;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
@@ -65,7 +68,10 @@ public class LEDSuiteApplication extends Application {
     private static TickingSystem tickingSystem;
 
     @Getter
-    private static WebSocketClient webSocketClient;
+    private static WebSocketClient webSocketCommunication;
+
+    @Getter
+    private static PacketManager packetManager;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -144,12 +150,57 @@ public class LEDSuiteApplication extends Application {
                         EnableSettingsLogging.getInstance().get(),
                         new YAJLLogger.LogMeta(
                                 new YAJLLogLevels.Info(),
-                                new LEDSuiteLogAreas.YAML_EVENTS()
+                                new LEDSuiteLogAreas.YAML()
                         )
                 );
 
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
+
+        packetManager = new PacketManager();
+
+        registerPackets();
+
+        startWebsocket();
+    }
+
+    /**
+     * Creates a new websocket client instance and connects it with the websocket server.
+     */
+    private void startWebsocket() {
+        URI serverAddress;
+        try {
+            serverAddress = new URI(WebsocketURI.getInstance().get());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        webSocketCommunication = new WebSocketClient(WebSocketCommunication.class, serverAddress);
+
+        webSocketCommunication.enqueueMessage("Greeting: Hello!");
+
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    webSocketCommunication.enqueueMessage(scanner.nextLine().replace("\\n", "\n"));
+                }
+            }
+        }.runTaskAsynchronously();
+    }
+
+    /**
+     * Registers all supported network packets in {@link PacketManager}.
+     * @see PacketManager
+     * @see Packet
+     */
+    private void registerPackets() {
+
+        StatusPacket statusPacket = StatusPacket.builder().build();
+
+        packetManager.registerPacket(statusPacket.getPacketType(), statusPacket);
+
     }
 
     /**
@@ -163,7 +214,7 @@ public class LEDSuiteApplication extends Application {
 
     /**
      * Called when the application starts. From {@link Application} <br>
-     * Creates a new instance of the application window and presents it. Creates a new websocket client instance and connects it with the websocket server.
+     * Creates a new instance of the application window and presents it.
      */
     @Override
     public void activate() {
@@ -172,24 +223,5 @@ public class LEDSuiteApplication extends Application {
             win = LEDSuiteWindow.create(this);
         window = (LEDSuiteWindow) win;
         win.present();
-
-        URI serverAddress;
-        try {
-            serverAddress = new URI(WebsocketURI.getInstance().get());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        webSocketClient = new WebSocketClient(WebSocketCommunication.class, serverAddress);
-
-        new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                Scanner scanner = new Scanner(System.in);
-                while (true) {
-                    webSocketClient.enqueueMessage(scanner.nextLine().replace("\\n", "\n"));
-                }
-            }
-        }.runTaskAsynchronously();
     }
 }

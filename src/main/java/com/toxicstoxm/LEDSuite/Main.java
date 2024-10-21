@@ -4,6 +4,10 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.Objects;
 
 /**
@@ -25,5 +29,6 @@ public class Main {
         // creates new app instance and runs it
         var app = LEDSuiteApplication.create();
         app.run(args);
+
     }
 }

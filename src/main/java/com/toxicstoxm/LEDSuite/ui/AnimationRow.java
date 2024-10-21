@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
@@ -95,6 +96,11 @@ public class AnimationRow extends ListBoxRow {
                 LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + rowID + ") is on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
             } else {
                 window.fileManagementList.unselectAll();
+                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                        MenuRequestPacket.builder()
+                                .requestFile(rowID)
+                                .build().serialize()
+                );
             }
         });
         app.addAction(simpleAction);

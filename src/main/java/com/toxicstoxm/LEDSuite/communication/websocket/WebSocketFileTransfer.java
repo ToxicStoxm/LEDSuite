@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.*;
 
 @ClientEndpoint
@@ -7,6 +8,12 @@ public class WebSocketFileTransfer extends WebSocketClientEndpoint {
 
     @OnOpen
     public void onOpen(Session session) {
+
+        // TODO send over file transfer endpoint, not communication endpoint
+        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                session.getId()
+        );
+
         super.onOpen(session);
     }
 

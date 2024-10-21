@@ -12,13 +12,24 @@
 - [ ] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
+    - [X] Connect to server endpoints
+      - [X] Connect to multiple endpoints concurrently 
+    - [X] Exchange packets
   - [ ] Handle IP and Port changes
-  - [ ] Communication handlers
+  - [ ] Communication handling
     - [ ] Request handling
     - [ ] Response handling
     - [ ] Error handling
   - [ ] File sending
-  - [ ] Define communication protocol with YAML
+    - [ ] Loading file
+    - [ ] Sending file data to server
+    - [ ] Sending metadata to server
+    - [ ] Calculating upload statistics
+    - [ ] Error handling
+    - [ ] Handle duplicate names
+      - [ ] Rename support
+      - [ ] Overwrite support
+  - [X] Define communication protocol with YAML
   - [ ] Additional features
     - [ ] Auto reconnect
     - [ ] Multiple servers (?)
@@ -34,17 +45,32 @@
       - [X] Sidebar
       - [ ] Main view
       - [ ] Progress bar
+      - [ ] Animation control buttons
       - [X] Header bar
       - [ ] Error toasts
 - [ ] YAML
   - [ ] Serialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
+      - [ ] Request packets
+        - [X] Status request
+        - [X] Manu request
+      - [ ] Reply sackets
+        - [X] Status reply
+        - [ ] Menu reply
+      - [X] Error packets
   - [ ] Deserialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
+      - [ ] Request packets
+        - [X] Status request
+        - [X] Menu request
+      - [ ] Reply sackets
+        - [X] Status reply
+        - [ ] Menu reply
+      - [X] Error packets
 - [ ] Documentation
-  - [ ] Add Java doc to all classes and functions
+  - [ ] Add Javadoc to all classes and functions
   - [ ] Add tons of comments to the code
   - [ ] Create examples (?)
 - [ ] I18N

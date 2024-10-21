@@ -48,4 +48,12 @@ public abstract class CommunicationPacket implements Packet {
         if (clazz.isInstance(packet)) return clazz.cast(packet);
         return null;
     }
+
+    protected boolean checkIfKeyExists(String key, YamlConfiguration yaml) {
+        return yaml.contains(key);
+    }
+
+    protected void ensureKeyExists(String key, YamlConfiguration yaml) {
+        if (!yaml.contains(key)) throw new PacketManager.DeserializationException("Deserialization failed! Required value " + key + " is missing!");
+    }
 }

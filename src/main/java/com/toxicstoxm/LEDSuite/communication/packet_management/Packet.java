@@ -56,5 +56,6 @@ public interface Packet {
      */
     default void handlePacket() {
         LEDSuiteApplication.getLogger().warn("Implementation for handling packet type '" + getIdentifier() + "' wasn't found!", new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().debug("Using default implementation to display packet:\n " + serialize());
     }
 }

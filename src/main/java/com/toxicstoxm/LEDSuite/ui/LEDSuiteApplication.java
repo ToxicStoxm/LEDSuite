@@ -5,7 +5,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPack
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
@@ -202,12 +204,16 @@ public class LEDSuiteApplication extends Application {
     private void registerPackets() {
 
         StatusRequestPacket requestPacket = StatusRequestPacket.builder().build();
-
         packetManager.registerPacket(requestPacket);
 
         StatusReplyPacket statusReplyPacket = StatusReplyPacket.builder().build();
-
         packetManager.registerPacket(statusReplyPacket);
+
+        ErrorPacket errorPacket = ErrorPacket.builder().build();
+        packetManager.registerPacket(errorPacket);
+
+        MenuRequestPacket menuRequestPacket = MenuRequestPacket.builder().build();
+        packetManager.registerPacket(menuRequestPacket);
 
     }
 

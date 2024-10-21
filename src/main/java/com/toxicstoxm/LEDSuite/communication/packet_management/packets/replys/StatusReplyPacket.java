@@ -10,21 +10,28 @@ import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.*;
 
 @Builder
+@Getter
 public class StatusReplyPacket extends CommunicationPacket {
 
     public record InteractiveAnimation(String id, String label, String iconName, boolean pauseable) {}
 
-    private boolean isFileLoaded;
-    private String fileState;
-    public String selectedFile;
-    public double currentDraw;
-    public double voltage;
-    public boolean lidState;
-    public List<InteractiveAnimation> animations;
+    private boolean isFileLoaded;                    // guaranteed
+    private String fileState;                        // guaranteed
+    private String selectedFile;                     // only if isFileLoaded is true
+    private double currentDraw;
+    private boolean currentDrawAvailable;            // not guaranteed
+    private double voltage;
+    private boolean voltageAvailable;                // not guaranteed
+    private boolean lidState;
+    private boolean lidStateAvailable;               // not guaranteed
+    private List<InteractiveAnimation> animations;   // only available
+    private boolean animationsAvailable;
+
 
     @Override
     public String getType() {
@@ -45,17 +52,31 @@ public class StatusReplyPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
+        ensureKeyExists(Constants.Communication.YAML.Keys.Status.IS_FILE_LOADED, yaml);
         isFileLoaded = yaml.getBoolean(Constants.Communication.YAML.Keys.Status.IS_FILE_LOADED);
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.Status.FILE_STATE, yaml);
         fileState = yaml.getString(Constants.Communication.YAML.Keys.Status.FILE_STATE);
+
         if (isFileLoaded) selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Status.SELECTED_FILE);
         else selectedFile = "";
-        currentDraw = yaml.getDouble(Constants.Communication.YAML.Keys.Status.CURRENT_DRAW);
-        voltage = yaml.getDouble(Constants.Communication.YAML.Keys.Status.VOLTAGE);
-        lidState = yaml.getBoolean(Constants.Communication.YAML.Keys.Status.LID_STATE);
+
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Status.CURRENT_DRAW, yaml)) {
+            currentDraw = yaml.getDouble(Constants.Communication.YAML.Keys.Status.CURRENT_DRAW);
+        } else currentDrawAvailable = false;
+
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Status.VOLTAGE, yaml)) {
+            voltage = yaml.getDouble(Constants.Communication.YAML.Keys.Status.VOLTAGE);
+        } else voltageAvailable = false;
+
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Status.LID_STATE, yaml)) {
+            lidState = yaml.getBoolean(Constants.Communication.YAML.Keys.Status.LID_STATE);
+        } lidStateAvailable = false;
+
         animations = new ArrayList<>();
 
-        ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Status.ANIMATIONS);
-        if (animationsSection != null) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Status.ANIMATIONS, yaml)) {
+            ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Status.ANIMATIONS);
             for (String key : animationsSection.getKeys(false)) {
                 animations.add(new InteractiveAnimation(
                         key,
@@ -64,7 +85,7 @@ public class StatusReplyPacket extends CommunicationPacket {
                         animationsSection.getBoolean(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.PAUSEABLE)
                 ));
             }
-        }
+        } else animationsAvailable = false;
 
         return this;
     }
@@ -73,7 +94,7 @@ public class StatusReplyPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = new YamlConfiguration();
 
-        // Set the object's state into the YAML structure using the same keys as in deserialize
+        // Set the object's state into the YAML structure using the same keys as in deserializing
         yaml.set(Constants.Communication.YAML.Keys.Status.IS_FILE_LOADED, isFileLoaded);
         yaml.set(Constants.Communication.YAML.Keys.Status.FILE_STATE, fileState);
         yaml.set(Constants.Communication.YAML.Keys.Status.SELECTED_FILE, isFileLoaded ? selectedFile : "");

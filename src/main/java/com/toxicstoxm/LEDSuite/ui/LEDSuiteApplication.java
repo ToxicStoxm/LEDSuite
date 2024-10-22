@@ -7,8 +7,13 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.status.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -30,6 +35,8 @@ import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.foreign.MemorySegment;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -169,6 +176,8 @@ public class LEDSuiteApplication extends Application {
         packetReceivedHandler = new PacketReceivedHandler();
         registerPackets();
 
+        testPackets();
+
         startWebsocket();
     }
 
@@ -203,11 +212,10 @@ public class LEDSuiteApplication extends Application {
      */
     private void registerPackets() {
 
-        StatusRequestPacket requestPacket = StatusRequestPacket.builder().build();
-        packetManager.registerPacket(requestPacket);
+        // request packets
 
-        StatusReplyPacket statusReplyPacket = StatusReplyPacket.builder().build();
-        packetManager.registerPacket(statusReplyPacket);
+        StatusRequestPacket statusRequestPacket = StatusRequestPacket.builder().build();
+        packetManager.registerPacket(statusRequestPacket);
 
         ErrorPacket errorPacket = ErrorPacket.builder().build();
         packetManager.registerPacket(errorPacket);
@@ -215,10 +223,167 @@ public class LEDSuiteApplication extends Application {
         MenuRequestPacket menuRequestPacket = MenuRequestPacket.builder().build();
         packetManager.registerPacket(menuRequestPacket);
 
+        PlayRequestPacket playRequestPacket = PlayRequestPacket.builder().build();
+        packetManager.registerPacket(playRequestPacket);
+
+        PauseRequestPacket pauseRequestPacket = PauseRequestPacket.builder().build();
+        packetManager.registerPacket(pauseRequestPacket);
+
+        StopRequestPacket stopRequestPacket = StopRequestPacket.builder().build();
+        packetManager.registerPacket(stopRequestPacket);
+
+        FileUploadRequest fileUploadRequest = FileUploadRequest.builder().build();
+        packetManager.registerPacket(fileUploadRequest);
+
+        MenuChangeRequestPacket menuChangeRequestPacket = MenuChangeRequestPacket.builder().build();
+        packetManager.registerPacket(menuChangeRequestPacket);
+
+        RenameRequestPacket renameRequestPacket = RenameRequestPacket.builder().build();
+        packetManager.registerPacket(renameRequestPacket);
+
+        // reply packets
+
+        StatusReplyPacket statusReplyPacket = StatusReplyPacket.builder().build();
+        packetManager.registerPacket(statusReplyPacket);
+
+        UploadFileCollisionReplyPacket uploadFileCollisionReplyPacket = UploadFileCollisionReplyPacket.builder().build();
+        packetManager.registerPacket(uploadFileCollisionReplyPacket);
+
+        UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder().build();
+        packetManager.registerPacket(uploadSuccessReplyPacket);
     }
 
     /**
-     * Called when application window is closed. <br>
+     * Tests all registered communication packets.
+     * @see PacketManager
+     * @see CommunicationPacket
+     */
+    private void testPackets() {
+
+        try {
+
+            logger.debug("Testing communication packets:", new LEDSuiteLogAreas.COMMUNICATION());
+
+            // request packets
+            logger.debug("\nTesting request packets:", new LEDSuiteLogAreas.COMMUNICATION());
+
+            logger.debug("\nTesting status request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            StatusRequestPacket statusRequestPacket = StatusRequestPacket.builder().build();
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusRequestPacket.serialize()));
+
+            logger.debug("\nTesting menu request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            MenuRequestPacket menuRequestPacket = MenuRequestPacket.builder()
+                    .requestFile("Test-Animation")
+                    .build();
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuRequestPacket.serialize()));
+
+            logger.debug("\nTesting play request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            PlayRequestPacket playRequestPacket = PlayRequestPacket.builder()
+                    .requestFile("Test-Animation")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(playRequestPacket.serialize()));
+
+            logger.debug("\nTesting pause request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            PauseRequestPacket pauseRequestPacket = PauseRequestPacket.builder()
+                    .requestFile("Test-Animation")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(pauseRequestPacket.serialize()));
+
+            logger.debug("\nTesting stop request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            StopRequestPacket stopRequestPacket = StopRequestPacket.builder()
+                    .requestFile("Test-Animation")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(stopRequestPacket.serialize()));
+
+            logger.debug("\nTesting file upload request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            FileUploadRequest fileUploadRequest = FileUploadRequest.builder()
+                    .requestFile("Test-Animation")
+                    .packetCount(512)
+                    .uploadSessionId(String.valueOf(UUID.randomUUID()))
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(fileUploadRequest.serialize()));
+
+            logger.debug("\nTesting menu change request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            MenuChangeRequestPacket menuChangeRequestPacket = MenuChangeRequestPacket.builder()
+                    .objectPath("Test-Object")
+                    .objectValue("6942")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuChangeRequestPacket.serialize()));
+
+            logger.debug("\nTesting rename request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            RenameRequestPacket renameRequestPacket = RenameRequestPacket.builder()
+                    .requestFile("Test-Animation")
+                    .newName("Test-Animation-2")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(renameRequestPacket.serialize()));
+
+            // reply packets
+            logger.debug("\nTesting reply packets:", new LEDSuiteLogAreas.COMMUNICATION());
+
+            logger.debug("\nTesting status reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            StatusReplyPacket statusReplyPacket  = StatusReplyPacket.builder()
+                    .isFileLoaded(true)
+                    .fileState("playing")
+                    .selectedFile("Test-Animation")
+                    .currentDraw(1.9)
+                    .voltage(5)
+                    .lidState(true)
+                    .animations(List.of(
+                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation1", "some-gnome-label", true),
+                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation2", "some-gnome-label", false),
+                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation3", "some-gnome-label", true)
+                    ))
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusReplyPacket.serialize()));
+
+            logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            UploadFileCollisionReplyPacket uploadFileCollisionReplyPacket = UploadFileCollisionReplyPacket.builder()
+                    .currentName("Test-Animation")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(uploadFileCollisionReplyPacket.serialize()));
+
+            logger.debug("\nTesting upload file success reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder()
+                    .requestFile("Test-Animation")
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(uploadSuccessReplyPacket.serialize()));
+
+            // error packets
+            logger.debug("\nTesting error packets:", new LEDSuiteLogAreas.COMMUNICATION());
+
+            logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            ErrorPacket errorPacket = ErrorPacket.builder()
+                    .code(1)
+                    .source(Constants.Communication.YAML.Values.Error.Sources.PARSING_ERROR)
+                    .name("Failed to parse YAML!")
+                    .severity(5)
+                    .build();
+            
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(errorPacket.serialize()));
+
+            logger.info("All packet tests passed!", new LEDSuiteLogAreas.COMMUNICATION());
+
+        } catch (PacketManager.DeserializationException e) {
+            logger.warn("Tests for communication packets failed!\n", new LEDSuiteLogAreas.COMMUNICATION());
+            logger.stacktrace("Stacktrace: \n", new LEDSuiteLogAreas.COMMUNICATION());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            logger.stacktrace(sw.toString());
+        }
+
+    }
+
+    /**
+     * Called when the application window is closed. <br>
      * Saves all settings and exits.
      */
     public void exit() {

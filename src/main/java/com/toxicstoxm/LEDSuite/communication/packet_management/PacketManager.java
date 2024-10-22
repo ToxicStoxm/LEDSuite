@@ -81,6 +81,16 @@ public class PacketManager {
     }
 
     /**
+     * Attempts to deserialize the specified YAML string.
+     * @param yamlString the YAML string to deserialize
+     * @return the deserialized packet as instance of {@link CommunicationPacket}
+     * @see #deserialize(Class, String)
+     */
+    public CommunicationPacket deserialize(String yamlString) throws DeserializationException {
+        return deserialize(CommunicationPacket.class, yamlString);
+    }
+
+    /**
      * Attempts to deserialize the specified YAML string by trying to load the string into a {@link YamlConfiguration} and retrieving its {@code packet-type} value using {@link #extractPacketIdentifier(String)}.
      * If the retrieved packet-type is registered, the string will be deserialized using the specific packets {@link Packet#deserialize(String)} method.
      * @param clazz the corresponding packet implementation class
@@ -91,6 +101,7 @@ public class PacketManager {
      * the {@code packet-type} entry does not exist,
      * the {@code packet-type} value is not registered,
      * the deserialized packet could not be cast the specified packet implementation class
+     * @see #deserialize(String)
      */
     public <T extends Packet> T deserialize(@NotNull Class<T> clazz, @NotNull String yamlString) throws DeserializationException {
         String packetIdentifier = extractPacketIdentifier(yamlString);

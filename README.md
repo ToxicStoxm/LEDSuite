@@ -52,17 +52,17 @@
   - [ ] Serialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
-      - [ ] Request packets
+      - [X] Request packets
         - [X] Status request
-        - [X] Manu request
-      - [ ] Reply sackets
+        - [X] Menu request
+      - [ ] Reply packets
         - [X] Status reply
         - [ ] Menu reply
       - [X] Error packets
   - [ ] Deserialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
-      - [ ] Request packets
+      - [X] Request packets
         - [X] Status request
         - [X] Menu request
       - [ ] Reply sackets

@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.status.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.dialogs.SettingsDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.StatusDialog;

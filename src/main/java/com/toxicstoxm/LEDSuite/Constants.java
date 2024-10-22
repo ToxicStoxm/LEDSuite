@@ -75,18 +75,28 @@ public class Constants {
 
                 public static final class Request {
                     public static final String FILE = "request_file";
-                    public static final String OBJECT_PATH = "request_object_path";
-                    public static final String OBJECT_VALUE = "request_object_new_value";
-                    public static final String FILE_SIZE = "request_file_size";
-                    public static final String UPLOAD_SESSION_ID = "request_upload_session_id";
+                }
+
+                public static final class RenameRequest {
                     public static final String NEW_NAME = "new_name";
                 }
 
-                public static final class UploadRenameRequest {
+                public static final class MenuChangeRequest{
+                    public static final String OBJECT_PATH = "object_path";
+                    public static final String OBJECT_VALUE = "object_value";
+                }
+
+                public static final class FileUploadRequest {
+                    public static final String PACKET_COUNT = "packet_count";
+                    public static final String UPLOAD_SESSION_ID = "upload_session_id";
+
+                }
+
+                public static final class FileCollisionReply {
                     public static final String CURRENT_NAME = "current_name";
                 }
 
-                public static final class Menu {
+                public static final class MenuReply {
 
                 }
             }
@@ -96,13 +106,14 @@ public class Constants {
                     public static final String ERROR = "error";
                     public static final String REPLY = "reply";
                     public static final String REQUEST = "request";
+                    public static final String STATUS = "status";
                 }
 
                 public static final class ReplyTypes {
                     public static final String STATUS = "status";
                     public static final String MENU = "menu";
                     public static final String UPLOAD_SUCCESS = "upload_success";
-                    public static final String UPLOAD_RENAME_REQUEST = "upload_rename_request";
+                    public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
                 }
 
                 public static final class Error {

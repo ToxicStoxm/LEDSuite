@@ -22,7 +22,7 @@ public class ErrorPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return "error";
+        return Constants.Communication.YAML.Values.PacketTypes.ERROR;
     }
 
     @Override

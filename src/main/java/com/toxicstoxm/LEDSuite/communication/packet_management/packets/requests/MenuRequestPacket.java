@@ -17,12 +17,12 @@ public class MenuRequestPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return "request";
+        return Constants.Communication.YAML.Values.PacketTypes.REQUEST;
     }
 
     @Override
     public String getSubType() {
-        return "menu";
+        return Constants.Communication.YAML.Values.RequestTypes.MENU;
     }
 
     @Override
@@ -48,4 +48,5 @@ public class MenuRequestPacket extends CommunicationPacket {
 
         return yaml.saveToString();
     }
+
 }

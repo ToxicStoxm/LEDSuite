@@ -35,12 +35,12 @@ public class StatusReplyPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return "reply";
+        return Constants.Communication.YAML.Values.PacketTypes.REPLY;
     }
 
     @Override
     public String getSubType() {
-        return "status";
+        return Constants.Communication.YAML.Values.ReplyTypes.STATUS;
     }
 
     @Override
@@ -76,8 +76,17 @@ public class StatusReplyPacket extends CommunicationPacket {
         animations = new ArrayList<>();
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Status.ANIMATIONS, yaml)) {
+
+            ensureKeyExists(Constants.Communication.YAML.Keys.Status.ANIMATIONS, yaml);
             ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Status.ANIMATIONS);
+
+            if (animationsSection == null) throw new PacketManager.DeserializationException("Deserialization failed! ", new NullPointerException(Constants.Communication.YAML.Keys.Status.ANIMATIONS + " wasn't found!"));
             for (String key : animationsSection.getKeys(false)) {
+
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.NAME, yaml);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.ICON, yaml);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.PAUSEABLE, yaml);
+
                 animations.add(new InteractiveAnimation(
                         key,
                         animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.NAME),
@@ -92,18 +101,18 @@ public class StatusReplyPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = new YamlConfiguration();
+        YamlConfiguration yaml = saveYAML();
 
         // Set the object's state into the YAML structure using the same keys as in deserializing
         yaml.set(Constants.Communication.YAML.Keys.Status.IS_FILE_LOADED, isFileLoaded);
         yaml.set(Constants.Communication.YAML.Keys.Status.FILE_STATE, fileState);
-        yaml.set(Constants.Communication.YAML.Keys.Status.SELECTED_FILE, isFileLoaded ? selectedFile : "");
-        yaml.set(Constants.Communication.YAML.Keys.Status.CURRENT_DRAW, currentDraw);
-        yaml.set(Constants.Communication.YAML.Keys.Status.VOLTAGE, voltage);
-        yaml.set(Constants.Communication.YAML.Keys.Status.LID_STATE, lidState);
+        if (isFileLoaded) yaml.set(Constants.Communication.YAML.Keys.Status.SELECTED_FILE, selectedFile);
+        if (currentDrawAvailable) yaml.set(Constants.Communication.YAML.Keys.Status.CURRENT_DRAW, currentDraw);
+        if (voltageAvailable) yaml.set(Constants.Communication.YAML.Keys.Status.VOLTAGE, voltage);
+        if (lidStateAvailable) yaml.set(Constants.Communication.YAML.Keys.Status.LID_STATE, lidState);
 
         // Save the list of animations
-        if (animations != null && !animations.isEmpty()) {
+        if (animationsAvailable && animations != null && !animations.isEmpty()) {
             for (int i = 0; i < animations.size(); i++) {
                 InteractiveAnimation animation = animations.get(i);
                 String baseKey = Constants.Communication.YAML.Keys.Status.ANIMATIONS + "." + i;

@@ -43,10 +43,10 @@ public class WebSocketClient {
                         clientEndpoint,
                         path
                 )) {
-                    session.setMaxIdleTimeout(-1);
+                    session.setMaxIdleTimeout(Long.MAX_VALUE);
                     while (!cancelled) {
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
-                        LEDSuiteApplication.getLogger().verbose("Sending: " + toSend, new LEDSuiteLogAreas.COMMUNICATION());
+                        LEDSuiteApplication.getLogger().verbose("Sending: \n[\n" + toSend + "]", new LEDSuiteLogAreas.COMMUNICATION());
                         session.getAsyncRemote().sendText(
                                 toSend
                         );

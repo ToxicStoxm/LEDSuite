@@ -97,7 +97,7 @@ public class Constants {
                 }
 
                 public static final class MenuReply {
-
+                    public static final String MENU = "menu";
                 }
             }
 
@@ -135,7 +135,6 @@ public class Constants {
                 }
 
                 public static final class RequestTypes {
-                    public static final String STATUS = "status";
                     public static final String PLAY = "play";
                     public static final String PAUSE = "pause";
                     public static final String STOP = "stop";

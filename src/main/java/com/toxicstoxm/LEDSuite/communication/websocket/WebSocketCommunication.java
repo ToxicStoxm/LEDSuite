@@ -24,7 +24,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
         LEDSuiteApplication.getLogger().info("Received message from session ID " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
 
         // deserialize the incoming packet
-        CommunicationPacket incomingPacket = LEDSuiteApplication.getPacketManager().deserialize(CommunicationPacket.class, message);
+        CommunicationPacket incomingPacket = LEDSuiteApplication.getPacketManager().deserialize(message);
 
         // handle the incoming packet using the packet received handler
         LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(incomingPacket);

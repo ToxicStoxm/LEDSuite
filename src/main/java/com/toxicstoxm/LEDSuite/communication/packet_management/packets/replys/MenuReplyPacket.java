@@ -15,7 +15,6 @@ public class MenuReplyPacket extends CommunicationPacket {
 
     private String menuYAML;
 
-
     @Override
     public String getType() {
         return Constants.Communication.YAML.Values.PacketTypes.REPLY;
@@ -29,7 +28,7 @@ public class MenuReplyPacket extends CommunicationPacket {
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
-        yaml.set(Constants.Communication.YAML.Keys.MenuReply.MENU, menuYAML);
+        yaml.set(Constants.Communication.YAML.Keys.MenuReply.CONTENT, menuYAML);
         return yaml.saveToString();
     }
 
@@ -42,8 +41,8 @@ public class MenuReplyPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.MENU, yaml);
-        menuYAML = yaml.getString(Constants.Communication.YAML.Keys.MenuReply.MENU);
+        ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.CONTENT, yaml);
+        menuYAML = yaml.getString(Constants.Communication.YAML.Keys.MenuReply.CONTENT);
         return this;
     }
 }

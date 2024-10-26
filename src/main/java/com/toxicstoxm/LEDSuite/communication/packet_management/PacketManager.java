@@ -72,7 +72,6 @@ public class PacketManager {
         // Validate if the packet type exists in the registered packets
         if (!registeredPackets.containsKey(packetIdentifier)) {
             LEDSuiteApplication.getLogger().info("Error: Packet type not registered: " + packetIdentifier, new LEDSuiteLogAreas.YAML());
-            System.err.println();
             return null;
         }
 
@@ -87,6 +86,7 @@ public class PacketManager {
      * @see #deserialize(Class, String)
      */
     public CommunicationPacket deserialize(String yamlString) throws DeserializationException {
+        //LEDSuiteApplication.getLogger().info("----------\n" + yamlString + "\n----------");
         return deserialize(CommunicationPacket.class, yamlString);
     }
 

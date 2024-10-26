@@ -1,6 +1,7 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management;
+package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -9,22 +10,20 @@ import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-/**
- * Default implementation for a {@link Packet}
- * @since 1.0.0
- */
-public abstract class CommunicationPacket implements Packet {
+public abstract class AnimationMenuWidget implements Widget {
 
     @Override
-    public String serialize() {
-        return saveYAML().saveToString();
+    public abstract String getType();
+
+    @Override
+    public YamlConfiguration serialize() {
+        return saveYAML();
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
-        LEDSuiteApplication.getLogger().warn("Deserialization implementation missing for:\n" + yamlString, new LEDSuiteLogAreas.YAML());
+    public Widget deserialize(@NotNull ConfigurationSection widgetSection) throws PacketManager.DeserializationException {
+        LEDSuiteApplication.getLogger().warn("Deserialization implementation missing for: " + StringFormatter.getClassName(getClass()) + "!", new LEDSuiteLogAreas.YAML());
         return null;
     }
 
@@ -36,19 +35,8 @@ public abstract class CommunicationPacket implements Packet {
 
     protected YamlConfiguration saveYAML() {
         YamlConfiguration yaml = new YamlConfiguration();
-        yaml.set(Constants.Communication.YAML.Keys.General.PACKET_TYPE, getType());
-        if (getSubType() != null && !getSubType().isBlank()) yaml.set(Constants.Communication.YAML.Keys.General.SUB_TYPE, getSubType());
+        yaml.set(Constants.Communication.YAML.Keys.MenuReply.TYPE, getType());
         return yaml;
-    }
-
-    @Override
-    public String toString() {
-        return StringFormatter.getClassName(getClass()) + "(Type = " + getIdentifier() + ")" + " --> " + "\n[\n" + serialize() + "]";
-    }
-
-    protected <T> @Nullable T convert(@NotNull Class<T > clazz, CommunicationPacket packet) {
-        if (clazz.isInstance(packet)) return clazz.cast(packet);
-        return null;
     }
 
     protected boolean checkIfKeyExists(String key, @NotNull ConfigurationSection yaml) {

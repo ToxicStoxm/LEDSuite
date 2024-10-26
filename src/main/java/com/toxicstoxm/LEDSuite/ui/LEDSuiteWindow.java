@@ -150,6 +150,10 @@ public class LEDSuiteWindow extends ApplicationWindow {
         animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow2", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
             LEDSuiteApplication.getLogger().info("TestRow2");
+
+            changeMainContent(
+                    LEDSuiteApplication.getAnimationMenuConstructor().constructMenuFromYAML("test")
+            );
         }));
         super.present();
     }

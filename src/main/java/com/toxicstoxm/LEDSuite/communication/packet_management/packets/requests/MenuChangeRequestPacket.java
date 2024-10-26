@@ -8,9 +8,11 @@ import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 public class MenuChangeRequestPacket extends CommunicationPacket {
 
     private String objectPath;

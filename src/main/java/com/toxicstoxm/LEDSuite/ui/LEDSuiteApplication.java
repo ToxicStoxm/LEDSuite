@@ -22,6 +22,8 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuConstructor;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.widgets.PropertyRowWidget;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
@@ -45,7 +47,7 @@ import java.util.*;
 import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.*;
 
 /**
- * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital components like: <br>
+ * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital elements like: <br>
  * {@link YAJLLogger} {@link LEDSuiteScheduler} {@link YAJSISettingsManager}
  * @since 1.0.0
  */
@@ -87,6 +89,9 @@ public class LEDSuiteApplication extends Application {
 
     @Getter
     private static PacketReceivedHandler packetReceivedHandler;
+
+    @Getter
+    private static AnimationMenuConstructor animationMenuConstructor;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -178,13 +183,17 @@ public class LEDSuiteApplication extends Application {
 
         testPackets();
 
-        startWebsocket();
+        startCommunicationSocket();
+
+        animationMenuConstructor = new AnimationMenuConstructor(webSocketCommunication::enqueueMessage);
+
+        registerWidgets();
     }
 
     /**
      * Creates a new websocket client instance and connects it with the websocket server.
      */
-    private void startWebsocket() {
+    private void startCommunicationSocket() {
         URI serverAddress;
         try {
             serverAddress = new URI(WebsocketURI.getInstance().get());
@@ -203,6 +212,15 @@ public class LEDSuiteApplication extends Application {
                 }
             }
         }.runTaskAsynchronously();
+
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                webSocketCommunication.enqueueMessage(
+                        StatusRequestPacket.builder().build().serialize()
+                );
+            }
+        }.runTaskTimerAsynchronously(1000, 1000);
     }
 
     /**
@@ -379,6 +397,13 @@ public class LEDSuiteApplication extends Application {
             e.printStackTrace(new PrintWriter(sw));
             logger.stacktrace(sw.toString());
         }
+
+    }
+
+    private void registerWidgets() {
+
+        PropertyRowWidget propertyRowWidget = PropertyRowWidget.builder().build();
+        animationMenuConstructor.registerWidget(propertyRowWidget);
 
     }
 

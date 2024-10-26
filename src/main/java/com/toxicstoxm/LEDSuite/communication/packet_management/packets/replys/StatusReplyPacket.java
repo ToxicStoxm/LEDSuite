@@ -83,13 +83,13 @@ public class StatusReplyPacket extends CommunicationPacket {
             if (animationsSection == null) throw new PacketManager.DeserializationException("Deserialization failed! ", new NullPointerException(Constants.Communication.YAML.Keys.Status.ANIMATIONS + " wasn't found!"));
             for (String key : animationsSection.getKeys(false)) {
 
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.NAME, yaml);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.LABEL, yaml);
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.ICON, yaml);
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.PAUSEABLE, yaml);
 
                 animations.add(new InteractiveAnimation(
                         key,
-                        animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.NAME),
+                        animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.LABEL),
                         animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.ICON),
                         animationsSection.getBoolean(key + "." + Constants.Communication.YAML.Keys.Status.AnimationList.PAUSEABLE)
                 ));
@@ -117,7 +117,7 @@ public class StatusReplyPacket extends CommunicationPacket {
                 InteractiveAnimation animation = animations.get(i);
                 String baseKey = Constants.Communication.YAML.Keys.Status.ANIMATIONS + "." + i;
 
-                yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Status.AnimationList.NAME, animation.label);
+                yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Status.AnimationList.LABEL, animation.label);
                 yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Status.AnimationList.ICON, animation.iconName);
                 yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Status.AnimationList.PAUSEABLE, animation.pauseable);
             }

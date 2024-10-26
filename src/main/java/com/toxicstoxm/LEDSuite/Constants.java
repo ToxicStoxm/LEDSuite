@@ -68,7 +68,7 @@ public class Constants {
 
                     public static final class AnimationList {
                         public static final String ICON = "icon";
-                        public static final String NAME = "name";
+                        public static final String LABEL = "label";
                         public static final String PAUSEABLE = "pause_able";
                     }
                 }
@@ -97,7 +97,21 @@ public class Constants {
                 }
 
                 public static final class MenuReply {
-                    public static final String MENU = "menu";
+                    public static final String CONTENT = "content";
+                    public static final String LABEL = "label";
+                    public static final String SUBTITLE = "subtitle";
+                    public static final String TYPE = "type";
+
+                    public static final class Groups {
+                        public static final String SUFFIX = "suffix";
+                        public static final class Suffix {
+                            public static final String ICON_NAME = "icon_name";
+                        }
+                    }
+
+                    public static final class Property {
+                        public static final String TEXT = "text";
+                    }
                 }
             }
 
@@ -125,6 +139,21 @@ public class Constants {
                     }
 
                     public static final String UNKNOWN_ERROR = "Unknown error";
+                }
+
+                public static final class MenuReply {
+                    public static final class Types {
+                        public static final String GROUP = "group";
+                        public static final String BUTTON_ROW = "button_row";
+                        public static final String BUTTON = "button";
+                        public static final String ENTRY_ROW = "entry_row";
+                        public static final String PROPERTY_ROW = "property_row";
+                        public static final String COMBO_ROW = "combo_row";
+                        public static final String SWITCH_ROW = "switch_row";
+                        public static final String SPIN_ROW = "spin_row";
+                        public static final String EXPANDER_ROW = "expander_row";
+                        public static final String DROPDOWN_ROW = "dropdown_row";
+                    }
                 }
 
                 public static final class Status {

@@ -39,17 +39,17 @@ public class ErrorPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Error.SOURCE, yaml);
-        source = yaml.getString(Constants.Communication.YAML.Keys.Error.SOURCE);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Error.NAME, yaml);
+        name = yaml.getString(Constants.Communication.YAML.Keys.Error.NAME);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.CODE, yaml);
         code = yaml.getInt(Constants.Communication.YAML.Keys.Error.CODE);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Error.NAME, yaml);
-        name = yaml.getString(Constants.Communication.YAML.Keys.Error.NAME);
-
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.SEVERITY, yaml);
         severity = yaml.getInt(Constants.Communication.YAML.Keys.Error.SEVERITY);
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.Error.SOURCE, yaml);
+        source = yaml.getString(Constants.Communication.YAML.Keys.Error.SOURCE);
 
         return this;
     }
@@ -58,10 +58,10 @@ public class ErrorPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Error.SOURCE, source);
-        yaml.set(Constants.Communication.YAML.Keys.Error.CODE, code);
         yaml.set(Constants.Communication.YAML.Keys.Error.NAME, name);
+        yaml.set(Constants.Communication.YAML.Keys.Error.CODE, code);
         yaml.set(Constants.Communication.YAML.Keys.Error.SEVERITY, severity);
+        yaml.set(Constants.Communication.YAML.Keys.Error.SOURCE, source);
 
         return yaml.saveToString();
     }

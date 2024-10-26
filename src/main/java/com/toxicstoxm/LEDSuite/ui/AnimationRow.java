@@ -18,7 +18,6 @@ import org.gnome.gtk.ListBoxRow;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
-import java.util.HashMap;
 
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
@@ -32,8 +31,6 @@ public class AnimationRow extends ListBoxRow {
     public static Type getType() {
         return gtype;
     }
-
-    private static final HashMap<String, AnimationRow> animationRowNames = new HashMap<>();
 
     @Getter
     private String rowID = "";
@@ -76,15 +73,7 @@ public class AnimationRow extends ListBoxRow {
         row.setIconName(iconName);
         row.setAnimationLabel(label);
 
-        String animationRowIdentifier = label.toLowerCase();
-
-        AnimationRow otherRow = animationRowNames.get(animationRowIdentifier);
-
-        if (otherRow != null) {
-            otherRow.setTooltipText(getRowID(otherRow.rowID));
-            row.setTooltipText(getRowID(rowID));
-        }
-        else animationRowNames.putIfAbsent(animationRowIdentifier, row);
+        row.setTooltipText(rowID);
         return row;
     }
 
@@ -105,9 +94,4 @@ public class AnimationRow extends ListBoxRow {
         });
         app.addAction(simpleAction);
     }
-
-    private static String getRowID(String rowID) {
-        return "crc32: '" + rowID + "'";
-    }
-
 }

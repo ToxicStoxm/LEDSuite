@@ -2,16 +2,22 @@ package com.toxicstoxm.LEDSuite.ui.animation_menu.widgets;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuWidget;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.CallbackRelay;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.Widget;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.gnome.adw.PreferencesGroup;
+import org.gnome.gtk.Button;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -20,6 +26,7 @@ import java.util.List;
 public class GroupWidget extends AnimationMenuWidget {
 
     private GroupSuffixWidget suffixWidget;
+    private String label;
     private List<Widget> content;
 
     @Override
@@ -41,7 +48,12 @@ public class GroupWidget extends AnimationMenuWidget {
     }
 
     @Override
-    public Widget deserialize(@NotNull ConfigurationSection widgetSection) throws PacketManager.DeserializationException {
+    public Widget deserialize(@NotNull ConfigurationSection widgetSection, String yamlPath) throws PacketManager.DeserializationException {
+
+        callbackPath = yamlPath;
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.LABEL, widgetSection);
+        label = widgetSection.getString(Constants.Communication.YAML.Keys.MenuReply.LABEL);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.MenuReply.Groups.SUFFIX, widgetSection)) {
             ConfigurationSection suffixSection = widgetSection.getConfigurationSection(Constants.Communication.YAML.Keys.MenuReply.Groups.SUFFIX);
@@ -60,8 +72,40 @@ public class GroupWidget extends AnimationMenuWidget {
         for (String contentWidget : contentSection.getKeys(false)) {
             ConfigurationSection contentWidgetSection = contentSection.getConfigurationSection(contentWidget);
             if (contentWidgetSection == null) throw new PacketManager.DeserializationException("Wasn't able to correctly retrieve content widget section for group!", new NullPointerException("Content widget section is null!"));
-            content.add(LEDSuiteApplication.getAnimationMenuConstructor().deserialize(contentWidgetSection));
+            content = new ArrayList<>();
+            content.add(LEDSuiteApplication.getAnimationMenuConstructor().deserialize(contentWidgetSection, callbackPath + "." + contentWidget));
         }
         return this;
+    }
+
+    @Override
+    public PreferencesGroup asAdwaitaWidget(CallbackRelay callbackRelay) {
+
+        PreferencesGroup group = PreferencesGroup.builder().setTitle(label).build();
+
+        if (suffixWidget != null) {
+            var suffixButton = Button.withLabel(suffixWidget.label());
+            String iconName = suffixWidget.icon_name();
+            if (iconName != null && !iconName.isBlank()) suffixButton.setIconName(iconName);
+
+            suffixButton.onClicked(() ->
+                    callbackRelay.enqueueMessage(
+                            MenuChangeRequestPacket.builder()
+                                    .objectPath(callbackPath + "suffix")
+                                    .objectValue("")
+                                    .build().serialize()
+                    )
+            );
+
+            group.setHeaderSuffix(
+                suffixButton
+            );
+        }
+
+        for (Widget widget : content) {
+            group.add(widget.asAdwaitaWidget(callbackRelay));
+        }
+
+        return group;
     }
 }

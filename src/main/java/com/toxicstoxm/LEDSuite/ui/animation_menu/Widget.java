@@ -10,5 +10,7 @@ public interface Widget {
 
     YamlConfiguration serialize();
 
-    Widget deserialize(ConfigurationSection yaml) throws PacketManager.DeserializationException;
+    Widget deserialize(ConfigurationSection yaml, String yamlPath) throws PacketManager.DeserializationException;
+
+    org.gnome.gtk.Widget asAdwaitaWidget(CallbackRelay callbackRelay);
 }

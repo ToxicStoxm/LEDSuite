@@ -100,6 +100,7 @@ public class Constants {
                     public static final String CONTENT = "content";
                     public static final String LABEL = "label";
                     public static final String SUBTITLE = "subtitle";
+                    public static final String FILENAME = "filename";
                     public static final String TYPE = "type";
 
                     public static final class Groups {

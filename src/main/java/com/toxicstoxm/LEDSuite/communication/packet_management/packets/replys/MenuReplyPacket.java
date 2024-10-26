@@ -4,6 +4,8 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.Builder;
@@ -44,5 +46,12 @@ public class MenuReplyPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.CONTENT, yaml);
         menuYAML = yaml.getString(Constants.Communication.YAML.Keys.MenuReply.CONTENT);
         return this;
+    }
+
+    @Override
+    public void handlePacket() {
+        AnimationMenu menu = LEDSuiteApplication.getAnimationMenuConstructor().constructMenu(menuYAML);
+
+        LEDSuiteApplication.getWindow().changeMainContent(menu);
     }
 }

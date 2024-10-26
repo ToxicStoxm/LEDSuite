@@ -3,12 +3,14 @@ package com.toxicstoxm.LEDSuite.ui.animation_menu.widgets;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuWidget;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.CallbackRelay;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.Widget;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.gnome.adw.ActionRow;
 import org.jetbrains.annotations.NotNull;
 
 @Builder
@@ -35,7 +37,9 @@ public class PropertyRowWidget extends AnimationMenuWidget {
     }
 
     @Override
-    public Widget deserialize(@NotNull ConfigurationSection widgetSection) throws PacketManager.DeserializationException {
+    public Widget deserialize(@NotNull ConfigurationSection widgetSection, String yamlPath) throws PacketManager.DeserializationException {
+
+        callbackPath = yamlPath;
 
         ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.LABEL, widgetSection);
         label = widgetSection.getString(Constants.Communication.YAML.Keys.MenuReply.LABEL);
@@ -44,5 +48,14 @@ public class PropertyRowWidget extends AnimationMenuWidget {
         text = widgetSection.getString(Constants.Communication.YAML.Keys.MenuReply.Property.TEXT);
 
         return this;
+    }
+
+    @Override
+    public org.gnome.gtk.Widget asAdwaitaWidget(CallbackRelay callbackRelay) {
+        return ActionRow.builder()
+                .setTitle(label)
+                .setSubtitle(text)
+                .setCssClasses(new String[]{"property"})
+                .build();
     }
 }

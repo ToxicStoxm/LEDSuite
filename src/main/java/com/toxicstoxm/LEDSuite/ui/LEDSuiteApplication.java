@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
@@ -23,9 +24,11 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuConstructor;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.widgets.GroupWidget;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.widgets.PropertyRowWidget;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
+import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.Types;
@@ -73,7 +76,7 @@ public class LEDSuiteApplication extends Application {
     private static YAJSISettingsManager configMgr;
 
     @Getter
-    private LEDSuiteWindow window;
+    private static LEDSuiteWindow window;
 
     @Getter
     private static LEDSuiteScheduler scheduler;
@@ -89,9 +92,6 @@ public class LEDSuiteApplication extends Application {
 
     @Getter
     private static PacketReceivedHandler packetReceivedHandler;
-
-    @Getter
-    private static AnimationMenuConstructor animationMenuConstructor;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -184,10 +184,6 @@ public class LEDSuiteApplication extends Application {
         testPackets();
 
         startCommunicationSocket();
-
-        animationMenuConstructor = new AnimationMenuConstructor(webSocketCommunication::enqueueMessage);
-
-        registerWidgets();
     }
 
     /**
@@ -269,6 +265,9 @@ public class LEDSuiteApplication extends Application {
 
         UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder().build();
         packetManager.registerPacket(uploadSuccessReplyPacket);
+
+        MenuReplyPacket menuReplyPacket = MenuReplyPacket.builder().build();
+        packetManager.registerPacket(menuReplyPacket);
     }
 
     /**
@@ -397,13 +396,6 @@ public class LEDSuiteApplication extends Application {
             e.printStackTrace(new PrintWriter(sw));
             logger.stacktrace(sw.toString());
         }
-
-    }
-
-    private void registerWidgets() {
-
-        PropertyRowWidget propertyRowWidget = PropertyRowWidget.builder().build();
-        animationMenuConstructor.registerWidget(propertyRowWidget);
 
     }
 

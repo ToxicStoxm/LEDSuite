@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AnimationMenuWidget implements Widget {
 
+    protected String callbackPath;
+
     @Override
     public abstract String getType();
 
@@ -22,7 +24,7 @@ public abstract class AnimationMenuWidget implements Widget {
     }
 
     @Override
-    public Widget deserialize(@NotNull ConfigurationSection widgetSection) throws PacketManager.DeserializationException {
+    public Widget deserialize(@NotNull ConfigurationSection widgetSection, String yamlPath) throws PacketManager.DeserializationException {
         LEDSuiteApplication.getLogger().warn("Deserialization implementation missing for: " + StringFormatter.getClassName(getClass()) + "!", new LEDSuiteLogAreas.YAML());
         return null;
     }

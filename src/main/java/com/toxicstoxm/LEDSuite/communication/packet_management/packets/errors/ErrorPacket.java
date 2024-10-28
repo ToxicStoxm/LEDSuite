@@ -69,6 +69,6 @@ public class ErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        LEDSuiteApplication.getLogger().info(toString(), new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().warn(toString(), new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

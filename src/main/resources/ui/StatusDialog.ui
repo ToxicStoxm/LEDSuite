@@ -1,99 +1,101 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.1 -->
 <interface>
-    <requires lib="gio" version="2.44"/>
-    <requires lib="gtk" version="4.14"/>
-    <requires lib="libadwaita" version="1.6"/>
-    <template class="StatusDialog" parent="AdwDialog">
-        <property name="child">
-            <object class="AdwToolbarView">
-                <property name="content">
-                    <object class="AdwClamp">
-                        <property name="child">
-                            <object class="AdwStatusPage" id="server_status_page">
-                                <property name="child">
-                                    <object class="GtkBox">
-                                        <property name="hexpand">True</property>
-                                        <property name="orientation">vertical</property>
-                                        <property name="spacing">12</property>
-                                        <child>
-                                            <object class="AdwPreferencesGroup">
-                                                <property name="css-classes">background</property>
-                                                <property name="title">General</property>
-                                                <child>
-                                                    <object class="AdwActionRow" id="status_lid_state">
-                                                        <property name="css-classes">property</property>
-                                                        <property name="subtitle">open</property>
-                                                        <property name="subtitle-selectable">True</property>
-                                                        <property name="title">Lid State</property>
-                                                    </object>
-                                                </child>
-                                            </object>
-                                        </child>
-                                        <child>
-                                            <object class="AdwPreferencesGroup">
-                                                <property name="css-classes">background</property>
-                                                <property name="title">Animation</property>
-                                                <child>
-                                                    <object class="AdwActionRow" id="status_current_file">
-                                                        <property name="css-classes">property</property>
-                                                        <property name="subtitle">N/A</property>
-                                                        <property name="subtitle-selectable">True</property>
-                                                        <property name="title">Current File</property>
-                                                    </object>
-                                                </child>
-                                                <child>
-                                                    <object class="AdwActionRow" id="status_current_state">
-                                                        <property name="css-classes">property</property>
-                                                        <property name="subtitle">idle</property>
-                                                        <property name="subtitle-selectable">True</property>
-                                                        <property name="title">Current State</property>
-                                                    </object>
-                                                </child>
-                                            </object>
-                                        </child>
-                                        <child>
-                                            <object class="AdwPreferencesGroup">
-                                                <property name="css-classes">background</property>
-                                                <property name="title">Power</property>
-                                                <child>
-                                                    <object class="AdwActionRow" id="status_current">
-                                                        <property name="css-classes">property</property>
-                                                        <property name="subtitle">1000 TA</property>
-                                                        <property name="subtitle-selectable">True</property>
-                                                        <property name="title">Current Draw</property>
-                                                    </object>
-                                                </child>
-                                                <child>
-                                                    <object class="AdwActionRow" id="status_voltage">
-                                                        <property name="css-classes">property</property>
-                                                        <property name="subtitle">50000 TV</property>
-                                                        <property name="subtitle-selectable">True</property>
-                                                        <property name="title">Voltage</property>
-                                                    </object>
-                                                </child>
-                                            </object>
-                                        </child>
-                                    </object>
-                                </property>
-                                <property name="icon-name">com.toxicstoxm.ledsuite</property>
-                                <property name="title">Server Status</property>
-                            </object>
-                        </property>
-                        <property name="maximum-size">700</property>
-                        <property name="tightening-threshold">600</property>
-                    </object>
+  <!-- interface-name StatusDialog.ui -->
+  <requires lib="gio" version="2.44"/>
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="StatusDialog" parent="AdwDialog">
+    <property name="child">
+      <object class="AdwToolbarView">
+        <property name="content">
+          <object class="AdwClamp">
+            <property name="child">
+              <object class="AdwStatusPage" id="server_status_page">
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="hexpand">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="AdwPreferencesGroup" id="status_general_group">
+                        <property name="css-classes">background</property>
+                        <property name="title">General</property>
+                        <child>
+                          <object class="AdwActionRow" id="status_lid_state">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Lid State</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup" id="status_animation_group">
+                        <property name="css-classes">background</property>
+                        <property name="title">Animation</property>
+                        <child>
+                          <object class="AdwActionRow" id="status_current_file">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Current File</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="status_current_state">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Current State</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup" id="status_power_group">
+                        <property name="css-classes">background</property>
+                        <property name="title">Power</property>
+                        <child>
+                          <object class="AdwActionRow" id="status_current">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Current Draw</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="status_voltage">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Voltage</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
                 </property>
-                <child type="top">
-                    <object class="AdwHeaderBar">
-                        <property name="title-widget">
-                            <object class="GtkLabel">
-                                <property name="label">Status</property>
-                            </object>
-                        </property>
-                    </object>
-                </child>
-            </object>
+                <property name="icon-name">com.toxicstoxm.ledsuite</property>
+                <property name="title">Server Status</property>
+              </object>
+            </property>
+            <property name="maximum-size">700</property>
+            <property name="tightening-threshold">600</property>
+          </object>
         </property>
-        <property name="follows-content-size">True</property>
-    </template>
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <property name="title-widget">
+              <object class="GtkLabel">
+                <property name="label">Status</property>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="follows-content-size">True</property>
+  </template>
 </interface>

@@ -40,14 +40,22 @@ public class Constants {
         public static final String NAME = "LEDSuite";
         public static final String WEBSITE = "https://github.com/ToxicStoxm/LEDSuite";
         public static final String ISSUES = WEBSITE + "/issues";
+
+    }
+
+    public static class UI {
+        public static final String NOT_AVAILABLE_VALUE = "N/A";
+        public static final Double DEFAULT_OPACITY = 1.0;
+        public static final Double REDUCED_OPACITY = 0.5;
     }
 
     public static final class Communication {
         public static final class YAML {
             public static final class Keys {
+
                 public static final class General {
                     public static final String PACKET_TYPE = "packet_type";
-                    public static final String SUB_TYPE = "type";
+                    public static final String SUB_TYPE = "subtype";
                 }
 
                 public static final class Error {
@@ -57,78 +65,95 @@ public class Constants {
                     public static final String SEVERITY = "error_severity";
                 }
 
-                public static final class Status {
-                    public static final String IS_FILE_LOADED = "file_is_loaded";
-                    public static final String FILE_STATE = "file_state";
-                    public static final String SELECTED_FILE = "file_selected";
-                    public static final String CURRENT_DRAW = "current_draw";
-                    public static final String VOLTAGE = "voltage";
-                    public static final String LID_STATE = "lid_state";
-                    public static final String ANIMATIONS = "available_animations";
+                public static final class Request {
+                    public static final class General {
+                        public static final String FILE = "request_file";
+                    }
 
-                    public static final class AnimationList {
-                        public static final String ICON = "icon";
-                        public static final String LABEL = "label";
-                        public static final String PAUSEABLE = "pause_able";
+                    public static final class StatusRequest {}
+
+                    public static final class RenameRequest {
+                        public static final String NEW_NAME = "new_name";
+                    }
+
+                    public static final class MenuChangeRequest{
+                        public static final String OBJECT_PATH = "object_path";
+                        public static final String OBJECT_VALUE = "object_value";
+                    }
+
+                    public static final class FileUploadRequest {
+                        public static final String PACKET_COUNT = "packet_count";
+                        public static final String UPLOAD_SESSION_ID = "upload_session_id";
+
+                    }
+
+                    public static final class SettingsRequest {}
+
+                    public static final class SettingsChangeRequest {
+                        public static final String BRIGHTNESS = "brightness";
+                        public static final String SELECTED_COLOR_MODE = "selected_color_mode";
                     }
                 }
 
-                public static final class Request {
-                    public static final String FILE = "request_file";
-                }
+                public static final class Reply {
+                    public static final class StatusReply {
+                        public static final String IS_FILE_LOADED = "file_is_loaded";
+                        public static final String FILE_STATE = "file_state";
+                        public static final String SELECTED_FILE = "file_selected";
+                        public static final String CURRENT_DRAW = "current_draw";
+                        public static final String VOLTAGE = "voltage";
+                        public static final String LID_STATE = "lid_state";
+                        public static final String ANIMATIONS = "available_animations";
 
-                public static final class RenameRequest {
-                    public static final String NEW_NAME = "new_name";
-                }
-
-                public static final class MenuChangeRequest{
-                    public static final String OBJECT_PATH = "object_path";
-                    public static final String OBJECT_VALUE = "object_value";
-                }
-
-                public static final class FileUploadRequest {
-                    public static final String PACKET_COUNT = "packet_count";
-                    public static final String UPLOAD_SESSION_ID = "upload_session_id";
-
-                }
-
-                public static final class FileCollisionReply {
-                    public static final String CURRENT_NAME = "current_name";
-                }
-
-                public static final class MenuReply {
-                    public static final String CONTENT = "content";
-                    public static final String LABEL = "label";
-                    public static final String SUBTITLE = "subtitle";
-                    public static final String FILENAME = "filename";
-                    public static final String TYPE = "type";
-
-                    public static final class Groups {
-                        public static final String SUFFIX = "suffix";
-                        public static final class Suffix {
-                            public static final String ICON_NAME = "icon_name";
+                        public static final class AnimationList {
+                            public static final String ICON = "icon";
+                            public static final String LABEL = "label";
+                            public static final String PAUSEABLE = "pause_able";
                         }
                     }
 
-                    public static final class Property {
-                        public static final String TEXT = "text";
+                    public static final class SettingsReply {
+                        public static final String BRIGHTNESS = "brightness";
+                        public static final String SELECTED_COLOR_MODE = "selected_color_mode";
+                        public static final String AVAILABLE_COLOR_MODES = "available_color_modes";
+                    }
+
+                    public static final class UploadFileCollisionReply {
+                        public static final String CURRENT_NAME = "current_name";
+                    }
+
+                    public static final class UploadSuccessReply {
+                        public static final String FILE_NAME = "file";
+                    }
+
+                    public static final class MenuReply {
+                        public static final String CONTENT = "content";
+                        public static final String LABEL = "label";
+                        public static final String SUBTITLE = "subtitle";
+                        public static final String FILENAME = "filename";
+                        public static final String TYPE = "type";
+
+                        public static final class Groups {
+                            public static final String SUFFIX = "suffix";
+                            public static final class Suffix {
+                                public static final String ICON_NAME = "icon_name";
+                            }
+                        }
+
+                        public static final class Property {
+                            public static final String TEXT = "text";
+                        }
                     }
                 }
             }
 
             public static final class Values {
-                public static final class PacketTypes {
-                    public static final String ERROR = "error";
-                    public static final String REPLY = "reply";
-                    public static final String REQUEST = "request";
-                    public static final String STATUS = "status";
-                }
-
-                public static final class ReplyTypes {
-                    public static final String STATUS = "status";
-                    public static final String MENU = "menu";
-                    public static final String UPLOAD_SUCCESS = "upload_success";
-                    public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
+                public static final class General {
+                    public static final class PacketTypes {
+                        public static final String ERROR = "error";
+                        public static final String REPLY = "reply";
+                        public static final String REQUEST = "request";
+                    }
                 }
 
                 public static final class Error {
@@ -142,36 +167,53 @@ public class Constants {
                     public static final String UNKNOWN_ERROR = "Unknown error";
                 }
 
-                public static final class MenuReply {
+                public static final class Request {
+
                     public static final class Types {
-                        public static final String GROUP = "group";
-                        public static final String BUTTON_ROW = "button_row";
-                        public static final String BUTTON = "button";
-                        public static final String ENTRY_ROW = "entry_row";
-                        public static final String PROPERTY_ROW = "property_row";
-                        public static final String COMBO_ROW = "combo_row";
-                        public static final String SWITCH_ROW = "switch_row";
-                        public static final String SPIN_ROW = "spin_row";
-                        public static final String EXPANDER_ROW = "expander_row";
-                        public static final String DROPDOWN_ROW = "dropdown_row";
+                        public static final String PLAY = "play";
+                        public static final String PAUSE = "pause";
+                        public static final String STOP = "stop";
+                        public static final String MENU = "menu";
+                        public static final String MENU_CHANGE = "menu_change";
+                        public static final String FILE_UPLOAD = "file_upload";
+                        public static final String RENAME_REQUEST = "rename_request";
+                        public static final String SETTINGS_CHANGE = "settings_change";
+                        public static final String STATUS = "status";
+                        public static final String SETTINGS = "settings";
                     }
                 }
 
-                public static final class Status {
-                    public static final class FileState {
-                        public static final String PLAYING = "playing";
-                        public static final String PAUSED = "paused";
-                    }
-                }
+                public static final class Reply {
 
-                public static final class RequestTypes {
-                    public static final String PLAY = "play";
-                    public static final String PAUSE = "pause";
-                    public static final String STOP = "stop";
-                    public static final String MENU = "menu";
-                    public static final String MENU_CHANGE = "menu_change";
-                    public static final String FILE_UPLOAD = "file_upload";
-                    public static final String RENAME_REQUEST = "rename_request";
+                    public static final class Types {
+                        public static final String STATUS = "status";
+                        public static final String MENU = "menu";
+                        public static final String UPLOAD_SUCCESS = "upload_success";
+                        public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
+                        public static final String SETTINGS = "settings";
+                    }
+
+                    public static final class MenuReply {
+                        public static final class Types {
+                            public static final String GROUP = "group";
+                            public static final String BUTTON_ROW = "button_row";
+                            public static final String BUTTON = "button";
+                            public static final String ENTRY_ROW = "entry_row";
+                            public static final String PROPERTY_ROW = "property_row";
+                            public static final String COMBO_ROW = "combo_row";
+                            public static final String SWITCH_ROW = "switch_row";
+                            public static final String SPIN_ROW = "spin_row";
+                            public static final String EXPANDER_ROW = "expander_row";
+                            public static final String DROPDOWN_ROW = "dropdown_row";
+                        }
+                    }
+
+                    public static final class StatusReply {
+                        public static final class FileState {
+                            public static final String PLAYING = "playing";
+                            public static final String PAUSED = "paused";
+                        }
+                    }
                 }
             }
         }

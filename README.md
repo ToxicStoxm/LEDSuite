@@ -5,4 +5,96 @@
  - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
  - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
- - V2 is already under development check out the [dev](https://github.com/ToxicStoxm/LEDSuite/tree/dev) branch for further details
+ - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
+
+## ToDo 
+###### (?) -> planned but not final
+- [ ] Networking
+  - [X] Find websocket Implementation
+  - [X] Basic websocket Implementation
+    - [X] Connect to server endpoints
+      - [X] Connect to multiple endpoints concurrently 
+    - [X] Exchange packets
+  - [ ] Handle IP and Port changes
+  - [ ] Communication handling
+    - [ ] Request handling
+    - [ ] Response handling
+    - [ ] Error handling
+  - [ ] File sending
+    - [ ] Loading file
+    - [ ] Sending file data to server
+    - [ ] Sending metadata to server
+    - [ ] Calculating upload statistics
+    - [ ] Error handling
+    - [ ] Handle duplicate names
+      - [ ] Rename support
+      - [ ] Overwrite support
+  - [X] Define communication protocol with YAML
+  - [ ] Additional features
+    - [ ] Auto reconnect
+    - [ ] Multiple servers (?)
+- [ ] UI
+  - [ ] Elements
+    -  [ ] Dialogs
+      - [ ] Settings dialog
+      - [ ] Status dialog
+      - [X] Keyboard shortcuts dialog
+      - [X] About dialog
+      - [ ] Alert dialogs (?)
+    - [ ] Main window
+      - [X] Sidebar
+      - [ ] Main view
+      - [ ] Progress bar
+      - [ ] Animation control buttons
+      - [X] Header bar
+      - [ ] Error toasts
+- [ ] YAML
+  - [ ] Serialization
+    - [ ] Adwaita- & Gtk widgets
+    - [ ] YAML packets
+      - [ ] Request packets
+        - [X] Status request
+        - [X] Manu request
+      - [ ] Reply sackets
+        - [X] Status reply
+        - [ ] Menu reply
+      - [X] Error packets
+  - [ ] Deserialization
+    - [ ] Adwaita- & Gtk widgets
+    - [ ] YAML packets
+      - [ ] Request packets
+        - [X] Status request
+        - [X] Menu request
+      - [ ] Reply sackets
+        - [X] Status reply
+        - [ ] Menu reply
+      - [X] Error packets
+- [ ] Documentation
+  - [ ] Add Javadoc to all classes and functions
+  - [ ] Add tons of comments to the code
+  - [ ] Create examples (?)
+- [ ] I18N
+  - [ ] Languages
+    - [ ] English
+    - [ ] German
+    - [ ] Italian
+    - [ ] French (?)
+    - [ ] Spanish (?)
+    - [ ] Chinese (?)
+- [ ] Flathub Release
+  - [ ] Update metadata
+    - [ ] Description
+    - [ ] Screenshots
+    - [ ] Icon
+    - [ ] Version
+    - [ ] Patch notes
+  - [ ] Update dependencies
+- [ ] Logging
+  - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
+  - [ ] Create log areas
+  - [ ] add a lot of log messages
+- [ ] Settings
+  - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation) 
+  - [ ] Implement all necessary settings
+- [ ] Other
+  - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 

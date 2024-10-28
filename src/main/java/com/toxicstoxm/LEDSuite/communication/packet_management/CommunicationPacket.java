@@ -4,7 +4,9 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
+import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +37,7 @@ public abstract class CommunicationPacket implements Packet {
     protected YamlConfiguration saveYAML() {
         YamlConfiguration yaml = new YamlConfiguration();
         yaml.set(Constants.Communication.YAML.Keys.General.PACKET_TYPE, getType());
-        yaml.set(Constants.Communication.YAML.Keys.General.SUB_TYPE, getSubType());
+        if (getSubType() != null && !getSubType().isBlank()) yaml.set(Constants.Communication.YAML.Keys.General.SUB_TYPE, getSubType());
         return yaml;
     }
 
@@ -49,11 +51,11 @@ public abstract class CommunicationPacket implements Packet {
         return null;
     }
 
-    protected boolean checkIfKeyExists(String key, YamlConfiguration yaml) {
-        return yaml.contains(key);
+    protected boolean checkIfKeyExists(String key, @NotNull ConfigurationSection yaml) {
+        return YamlTools.checkIfKeyExists(key, yaml);
     }
 
-    protected void ensureKeyExists(String key, YamlConfiguration yaml) {
-        if (!yaml.contains(key)) throw new PacketManager.DeserializationException("Deserialization failed! Required value " + key + " is missing!");
+    protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) {
+        YamlTools.ensureKeyExists(key, yaml);
     }
 }

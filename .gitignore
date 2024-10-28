@@ -50,3 +50,5 @@ bin/
 /ledsuite-main-window.ui
 /src/main/resources/upload-page.cmb
 /src/main/resources/ui/AnimationMenu.cmb
+/src/main/resources/ui/SettingsDialog.cmb
+/src/main/resources/ui/StatusDialog.cmb

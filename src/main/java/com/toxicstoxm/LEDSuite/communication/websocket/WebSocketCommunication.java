@@ -1,16 +1,17 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.status.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.*;
+import org.jetbrains.annotations.NotNull;
 
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
 
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
 
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
@@ -20,23 +21,23 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, @NotNull Session session) {
         LEDSuiteApplication.getLogger().info("Received message from session ID " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
 
         // deserialize the incoming packet
-        CommunicationPacket incomingPacket = LEDSuiteApplication.getPacketManager().deserialize(CommunicationPacket.class, message);
+        CommunicationPacket incomingPacket = LEDSuiteApplication.getPacketManager().deserialize(message);
 
         // handle the incoming packet using the packet received handler
         LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(incomingPacket);
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
     }
 
     @OnError
-    public void onError(Session session, Throwable throwable) {
+    public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         LEDSuiteApplication.getLogger().error("Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(), new LEDSuiteLogAreas.NETWORK());
     }
 }

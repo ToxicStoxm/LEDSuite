@@ -17,16 +17,17 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.REPLY;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REPLY;
     }
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.ReplyTypes.UPLOAD_FILE_COLLISION_REPLY;
+        return Constants.Communication.YAML.Values.Reply.Types.UPLOAD_FILE_COLLISION_REPLY;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+        UploadFileCollisionReplyPacket packet = UploadFileCollisionReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -34,17 +35,17 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.FileCollisionReply.CURRENT_NAME, yaml);
-        currentName = yaml.getString(Constants.Communication.YAML.Keys.FileCollisionReply.CURRENT_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.CURRENT_NAME, yaml);
+        packet.currentName = yaml.getString(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.CURRENT_NAME);
 
-        return this;
+        return packet;
     }
 
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.FileCollisionReply.CURRENT_NAME, currentName);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.CURRENT_NAME, currentName);
 
         return yaml.saveToString();
     }

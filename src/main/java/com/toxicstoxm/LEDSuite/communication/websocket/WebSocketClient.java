@@ -27,6 +27,8 @@ public class WebSocketClient {
         run(clientEndpoint, path);
     }
 
+    private Session currentSession;
+
     /**
      * Creates a new websocket client in an async thread and connects it to the specified server address.
      * @param clientEndpoint The client endpoint implementation with lifecycle methods
@@ -43,7 +45,8 @@ public class WebSocketClient {
                         clientEndpoint,
                         path
                 )) {
-                    session.setMaxIdleTimeout(Long.MAX_VALUE);
+                    currentSession = session;
+                    //session.setMaxIdleTimeout(Long.MAX_VALUE);
                     while (!cancelled) {
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
                         LEDSuiteApplication.getLogger().verbose("Sending: \n[\n" + toSend + "]", new LEDSuiteLogAreas.COMMUNICATION());
@@ -53,6 +56,8 @@ public class WebSocketClient {
                     }
                 } catch (DeploymentException | IOException | InterruptedException e) {
                      LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
+                } finally {
+                    currentSession = null;
                 }
             }
         }.runTaskAsynchronously();
@@ -74,6 +79,10 @@ public class WebSocketClient {
      */
     public boolean enqueueMessage(String message) {
         return sendQueue.offer(message);
+    }
+
+    public boolean isConnected() {
+        return currentSession != null && currentSession.isOpen();
     }
 
 }

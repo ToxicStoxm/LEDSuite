@@ -15,26 +15,26 @@ public class MenuReplyPacket extends CommunicationPacket {
 
     private String menuYAML;
 
-
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.REPLY;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REPLY;
     }
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.ReplyTypes.MENU;
+        return Constants.Communication.YAML.Values.Reply.Types.MENU;
     }
 
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
-        yaml.set(Constants.Communication.YAML.Keys.MenuReply.MENU, menuYAML);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, menuYAML);
         return yaml.saveToString();
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+        MenuReplyPacket packet = MenuReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -42,8 +42,13 @@ public class MenuReplyPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.MenuReply.MENU, yaml);
-        menuYAML = yaml.getString(Constants.Communication.YAML.Keys.MenuReply.MENU);
-        return this;
+        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, yaml);
+        packet.menuYAML = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
+        return packet;
+    }
+
+    @Override
+    public void handlePacket() {
+
     }
 }

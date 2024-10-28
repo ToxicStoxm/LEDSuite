@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
@@ -11,9 +11,11 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class PlayRequestPacket extends CommunicationPacket {
+public class FileUploadRequestPacket extends CommunicationPacket {
 
     private String requestFile;
+    private int packetCount;
+    private String uploadSessionId;
 
     @Override
     public String getType() {
@@ -22,12 +24,12 @@ public class PlayRequestPacket extends CommunicationPacket {
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.Request.Types.PLAY;
+        return Constants.Communication.YAML.Values.Request.Types.FILE_UPLOAD;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
-        PlayRequestPacket packet = PlayRequestPacket.builder().build();
+        FileUploadRequestPacket packet = FileUploadRequestPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -38,6 +40,12 @@ public class PlayRequestPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE, yaml);
         packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE);
 
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT, yaml);
+        packet.packetCount = yaml.getInt(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT);
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, yaml);
+        packet.uploadSessionId = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
+
         return packet;
     }
 
@@ -46,6 +54,8 @@ public class PlayRequestPacket extends CommunicationPacket {
         YamlConfiguration yaml = saveYAML();
 
         yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT, packetCount);
+        yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, uploadSessionId);
 
         return yaml.saveToString();
     }

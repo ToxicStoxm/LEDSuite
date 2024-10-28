@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.status;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 
 import com.toxicstoxm.LEDSuite.Constants;
@@ -14,16 +14,16 @@ public class StatusRequestPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.STATUS;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REQUEST;
     }
 
     @Override
     public String getSubType() {
-        return "";
+        return Constants.Communication.YAML.Values.Request.Types.STATUS;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
-        return this;
+        return StatusRequestPacket.builder().build();
     }
 }

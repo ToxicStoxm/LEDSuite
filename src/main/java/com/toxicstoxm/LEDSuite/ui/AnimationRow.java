@@ -33,7 +33,11 @@ public class AnimationRow extends ListBoxRow {
         return gtype;
     }
 
-    private static final HashMap<String, AnimationRow> animationRowNames = new HashMap<>();
+    private static final HashMap<String, AnimationRow> rows = new HashMap<>();
+
+    public static AnimationRow getAnimationRow(String rowID) {
+        return rows.get(rowID);
+    }
 
     @Getter
     private String rowID = "";
@@ -76,15 +80,8 @@ public class AnimationRow extends ListBoxRow {
         row.setIconName(iconName);
         row.setAnimationLabel(label);
 
-        String animationRowIdentifier = label.toLowerCase();
-
-        AnimationRow otherRow = animationRowNames.get(animationRowIdentifier);
-
-        if (otherRow != null) {
-            otherRow.setTooltipText(getRowID(otherRow.rowID));
-            row.setTooltipText(getRowID(rowID));
-        }
-        else animationRowNames.putIfAbsent(animationRowIdentifier, row);
+        row.setTooltipText(rowID);
+        rows.putIfAbsent(rowID, row);
         return row;
     }
 
@@ -105,9 +102,4 @@ public class AnimationRow extends ListBoxRow {
         });
         app.addAction(simpleAction);
     }
-
-    private static String getRowID(String rowID) {
-        return "crc32: '" + rowID + "'";
-    }
-
 }

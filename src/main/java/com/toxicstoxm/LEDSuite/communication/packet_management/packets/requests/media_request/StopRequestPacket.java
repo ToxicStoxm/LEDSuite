@@ -17,17 +17,18 @@ public class StopRequestPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.REQUEST;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REQUEST;
     }
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.RequestTypes.STOP;
+        return Constants.Communication.YAML.Values.Request.Types.STOP;
 
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+        StopRequestPacket packet = StopRequestPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -35,17 +36,17 @@ public class StopRequestPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FILE, yaml);
-        requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.FILE);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE, yaml);
+        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE);
 
-        return this;
+        return packet;
     }
 
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.FILE, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE, requestFile);
 
         return yaml.saveToString();
     }

@@ -52,7 +52,7 @@ public interface Packet {
     String serialize();
 
     /**
-     *
+     * Tries to handle itself using various API endpoints.
      */
     default void handlePacket() {
         LEDSuiteApplication.getLogger().warn("Implementation for handling packet type '" + getIdentifier() + "' wasn't found!", new LEDSuiteLogAreas.COMMUNICATION());

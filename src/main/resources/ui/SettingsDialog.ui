@@ -1,23 +1,78 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.1 -->
 <interface>
-    <requires lib="gio" version="2.44"/>
-    <requires lib="gtk" version="4.14"/>
-    <requires lib="libadwaita" version="1.6"/>
-    <template class="SettingsDialog" parent="AdwPreferencesDialog">
-        <property name="search-enabled">True</property>
+  <!-- interface-name SettingsDialog.ui -->
+  <requires lib="gio" version="2.44"/>
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="SettingsDialog" parent="AdwPreferencesDialog">
+    <property name="search-enabled">True</property>
+    <child>
+      <object class="AdwPreferencesPage">
         <child>
-            <object class="AdwPreferencesPage">
-                <child>
-                    <object class="AdwPreferencesGroup">
-                        <property name="title">General</property>
-                        <child>
-                            <object class="AdwSwitchRow">
-                                <property name="title">Work</property>
-                            </object>
-                        </child>
-                    </object>
-                </child>
-            </object>
+          <object class="AdwPreferencesGroup" id="settings_local_group">
+            <property name="title">Local</property>
+            <child>
+              <object class="AdwEntryRow" id="settings_server_address">
+                <property name="input-purpose">url</property>
+                <property name="text">N/A</property>
+                <property name="title">Server Address</property>
+                <property name="tooltip-text" translatable="yes">The URL used to connect to the server.
+Example: wss://www.example.com:443/LEDSuite/
+Format: protcol://domain:port/folder/</property>
+              </object>
+            </child>
+          </object>
         </child>
-    </template>
+        <child>
+          <object class="AdwPreferencesGroup" id="settings_server_group">
+            <property name="title">Server</property>
+            <child>
+              <object class="AdwSpinRow" id="settings_brightness">
+                <property name="adjustment">
+                  <object class="GtkAdjustment">
+                    <property name="page-increment">10.0</property>
+                    <property name="step-increment">1.0</property>
+                    <property name="upper">100.0</property>
+                  </object>
+                </property>
+                <property name="climb-rate">2.0</property>
+                <property name="numeric">True</property>
+                <property name="title">Brightness</property>
+                <property name="update-policy">if-valid</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="settings_color_mode">
+                <property name="model">
+                  <object class="GtkStringList" id="settings_supported_color_modes">
+                    <property name="strings">N/A</property>
+                  </object>
+                </property>
+                <property name="title">Color Mode</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup" id="settings_apply_group">
+            <child>
+              <object class="AdwClamp">
+                <property name="child">
+                  <object class="GtkButton" id="settings_apply_button">
+                    <property name="action-name">app.settings_apply</property>
+                    <property name="css-classes">suggested-action
+pill</property>
+                    <property name="label">Apply</property>
+                  </object>
+                </property>
+                <property name="maximum-size">120</property>
+                <property name="tightening-threshold">120</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
 </interface>

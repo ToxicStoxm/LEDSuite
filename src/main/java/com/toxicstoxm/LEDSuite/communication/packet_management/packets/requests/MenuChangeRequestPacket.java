@@ -20,16 +20,17 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
 
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.REQUEST;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REQUEST;
     }
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.RequestTypes.MENU_CHANGE;
+        return Constants.Communication.YAML.Values.Request.Types.MENU_CHANGE;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+        MenuChangeRequestPacket packet = MenuChangeRequestPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -37,21 +38,21 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_PATH, yaml);
-        objectPath = yaml.getString(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_PATH);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH, yaml);
+        packet.objectPath = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_VALUE, yaml);
-        objectValue = yaml.getString(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_VALUE);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, yaml);
+        packet.objectValue = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
 
-        return this;
+        return packet;
     }
 
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_PATH, objectPath);
-        yaml.set(Constants.Communication.YAML.Keys.MenuChangeRequest.OBJECT_VALUE, objectValue);
+        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH, objectPath);
+        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, objectValue);
 
         return yaml.saveToString();
     }

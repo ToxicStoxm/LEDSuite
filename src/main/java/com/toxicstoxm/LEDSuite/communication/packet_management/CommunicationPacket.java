@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.LEDSuite.yaml.YamlTools;
+import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;

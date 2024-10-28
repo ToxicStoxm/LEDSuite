@@ -13,20 +13,21 @@ import lombok.Getter;
 @Getter
 public class UploadSuccessReplyPacket extends CommunicationPacket {
 
-    private String requestFile;
+    private String fileName;
 
     @Override
     public String getType() {
-        return Constants.Communication.YAML.Values.PacketTypes.REPLY;
+        return Constants.Communication.YAML.Values.General.PacketTypes.REPLY;
     }
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.ReplyTypes.UPLOAD_SUCCESS;
+        return Constants.Communication.YAML.Values.Reply.Types.UPLOAD_SUCCESS;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+        UploadSuccessReplyPacket packet = UploadSuccessReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
@@ -34,17 +35,17 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
             throw new PacketManager.DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FILE, yaml);
-        requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.FILE);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME, yaml);
+        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME);
 
-        return this;
+        return packet;
     }
 
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.FILE, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME, fileName);
 
         return yaml.saveToString();
     }

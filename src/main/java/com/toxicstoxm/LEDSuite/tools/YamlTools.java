@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.yaml;
+package com.toxicstoxm.LEDSuite.tools;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;

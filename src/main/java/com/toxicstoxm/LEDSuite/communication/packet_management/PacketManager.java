@@ -5,10 +5,16 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Wrapper class for managing serialization and deserialization of network packets.
@@ -38,6 +44,52 @@ public class PacketManager {
      */
     public boolean registerPacket(Packet packet) {
         return registeredPackets.putIfAbsent(packet.getIdentifier(), packet) == null;
+    }
+
+    /**
+     * Automatically registers classes annotated with {@link AutoRegisterPacket} as packets. <br>
+     * Annotated classes are required to implement the {@link Packet} interface.
+     */
+    public void autoRegisterPackets(@NotNull String classPath) {
+        Set<Class<?>> annotatedClasses = new HashSet<>();
+
+        // Scan the specified package for classes with @AutoRegisterPacket annotation
+        try (ScanResult scanResult = new ClassGraph()
+                .enableClassInfo()
+                .enableAnnotationInfo()
+                .acceptPackages(classPath)
+                .scan()) {
+
+            scanResult.getClassesWithAnnotation(AutoRegisterPacket.class.getName())
+                    .forEach(classInfo -> {
+                        try {
+                            Class<?> loadedClass = classInfo.loadClass();
+                            if (Packet.class.isAssignableFrom(loadedClass)) {
+                                annotatedClasses.add(classInfo.loadClass());
+                            } else LEDSuiteApplication.getLogger().error("Failed to load class: " + classInfo.getName() + ". Class doesn't implement packet interface!", new LEDSuiteLogAreas.COMMUNICATION());
+                        } catch (Exception e) {
+                            LEDSuiteApplication.getLogger().error("Failed to load class: " + classInfo.getName(), new LEDSuiteLogAreas.COMMUNICATION());
+                            LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
+                            throw new RuntimeException(e);
+                        }
+                    });
+        }
+
+        for (Class<?> clazz : annotatedClasses) {
+            try {
+                // Use reflection to bypass access check
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true); // Enable access to non-public constructors
+                Packet packet = (Packet) constructor.newInstance();
+                this.registerPacket(packet);
+                LEDSuiteApplication.getLogger().info("Registered packet: " + packet.getIdentifier());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                LEDSuiteApplication.getLogger().error("Failed to auto-register packet: " + clazz.getName(), new LEDSuiteLogAreas.COMMUNICATION());
+                LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     /**

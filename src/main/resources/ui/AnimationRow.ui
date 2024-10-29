@@ -4,7 +4,7 @@
   <template class="AnimationRow" parent="GtkListBoxRow">
     <property name="child">
       <object class="GtkBox" id="animation_box">
-        <property name="halign">center</property>
+        <property name="halign">start</property>
         <property name="spacing">5</property>
         <child>
           <object class="GtkImage" id="animation_icon"/>

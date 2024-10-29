@@ -2,13 +2,11 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.LidState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
@@ -17,7 +15,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -44,9 +41,12 @@ import java.io.StringWriter;
 import java.lang.foreign.MemorySegment;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
+import java.util.UUID;
 
-import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.*;
+import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.EnableSettingsLogging;
+import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.WebsocketURI;
 
 /**
  * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital elements like: <br>
@@ -226,66 +226,6 @@ public class LEDSuiteApplication extends Application {
     }
 
     /**
-     * Registers all supported network packets in {@link PacketManager}.
-     * @see PacketManager
-     * @see Packet
-     */
-    private void registerPackets() {
-
-        // request packets
-
-        var statusRequestPacket = StatusRequestPacket.builder().build();
-        packetManager.registerPacket(statusRequestPacket);
-
-        var errorPacket = ErrorPacket.builder().build();
-        packetManager.registerPacket(errorPacket);
-
-        var menuRequestPacket = MenuRequestPacket.builder().build();
-        packetManager.registerPacket(menuRequestPacket);
-
-        var playRequestPacket = PlayRequestPacket.builder().build();
-        packetManager.registerPacket(playRequestPacket);
-
-        var pauseRequestPacket = PauseRequestPacket.builder().build();
-        packetManager.registerPacket(pauseRequestPacket);
-
-        var stopRequestPacket = StopRequestPacket.builder().build();
-        packetManager.registerPacket(stopRequestPacket);
-
-        var fileUploadRequestPacket = FileUploadRequestPacket.builder().build();
-        packetManager.registerPacket(fileUploadRequestPacket);
-
-        var menuChangeRequestPacket = MenuChangeRequestPacket.builder().build();
-        packetManager.registerPacket(menuChangeRequestPacket);
-
-        var renameRequestPacket = RenameRequestPacket.builder().build();
-        packetManager.registerPacket(renameRequestPacket);
-
-        var settingsRequestPacket = SettingsRequestPacket.builder().build();
-        packetManager.registerPacket(settingsRequestPacket);
-
-        var settingsChangeRequestPacket = SettingsChangeRequestPacket.builder().build();
-        packetManager.registerPacket(settingsChangeRequestPacket);
-
-        // reply packets
-
-        var statusReplyPacket = StatusReplyPacket.builder().build();
-        packetManager.registerPacket(statusReplyPacket);
-
-        var uploadFileCollisionReplyPacket = UploadFileCollisionReplyPacket.builder().build();
-        packetManager.registerPacket(uploadFileCollisionReplyPacket);
-
-        var uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder().build();
-        packetManager.registerPacket(uploadSuccessReplyPacket);
-
-        var menuReplyPacket = MenuReplyPacket.builder().build();
-        packetManager.registerPacket(menuReplyPacket);
-
-        var settingsReplyPacket = SettingsReplyPacket.builder().build();
-        packetManager.registerPacket(settingsReplyPacket);
-    }
-
-    /**
      * Tests all registered communication packets.
      * @see PacketManager
      * @see CommunicationPacket
@@ -402,13 +342,13 @@ public class LEDSuiteApplication extends Application {
             logger.debug("\nTesting error packets:", new LEDSuiteLogAreas.COMMUNICATION());
 
             logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            ErrorPacket errorPacket = ErrorPacket.builder()
+            ServerErrorPacket serverErrorPacket = ServerErrorPacket.builder()
                     .code(1)
-                    .source(Constants.Communication.YAML.Values.Error.Sources.PARSING_ERROR)
+                    .source(Constants.Communication.YAML.Values.Error.ServerError.Sources.PARSING_ERROR)
                     .name("Failed to parse YAML!")
                     .severity(5)
                     .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(errorPacket.serialize()));
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(serverErrorPacket.serialize()));
 
             logger.info("All packet tests passed!", new LEDSuiteLogAreas.COMMUNICATION());
 

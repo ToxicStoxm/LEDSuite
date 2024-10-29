@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.LidState;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
@@ -341,7 +342,7 @@ public class LEDSuiteApplication extends Application {
             // error packets
             logger.debug("\nTesting error packets:", new LEDSuiteLogAreas.COMMUNICATION());
 
-            logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            logger.debug("\nTesting server error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             ServerErrorPacket serverErrorPacket = ServerErrorPacket.builder()
                     .code(1)
                     .source(Constants.Communication.YAML.Values.Error.ServerError.Sources.PARSING_ERROR)
@@ -349,6 +350,13 @@ public class LEDSuiteApplication extends Application {
                     .severity(5)
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(serverErrorPacket.serialize()));
+
+            logger.debug("\nTesting menu error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            MenuErrorPacket menuErrorPacket = MenuErrorPacket.builder()
+                    .fileName("Test-Animation")
+                    .message("Failed to parse YAML!")
+                    .build();
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuErrorPacket.serialize()));
 
             logger.info("All packet tests passed!", new LEDSuiteLogAreas.COMMUNICATION());
 

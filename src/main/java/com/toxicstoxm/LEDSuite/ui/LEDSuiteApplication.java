@@ -189,7 +189,7 @@ public class LEDSuiteApplication extends Application {
 
         packetManager = new PacketManager(CommunicationPacket.class);
         packetReceivedHandler = new PacketReceivedHandler();
-        registerPackets();
+        packetManager.autoRegisterPackets("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
     }
 
     /**

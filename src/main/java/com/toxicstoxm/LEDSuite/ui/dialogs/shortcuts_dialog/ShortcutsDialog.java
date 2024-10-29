@@ -1,7 +1,7 @@
 /*package com.toxicstoxm.LEDSuite.ui;
 
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.Types;
+import io.github.jwharm.javagi.gtk.types.WidgetTypes;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.ApplicationWindow;
@@ -12,7 +12,7 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "LEDShortcutsDialog", ui = "/com/toxicstoxm/LEDSuite/ShortcutsDialog.ui")
 public class ShortcutsDialog extends ShortcutsWindow {
 
-    private static final Type gtype = Types.register(ShortcutsDialog.class);
+    private static final Type gtype = WidgetTypes.register(ShortcutsDialog.class);
 
     public ShortcutsDialog(MemorySegment address) {
         super(address);

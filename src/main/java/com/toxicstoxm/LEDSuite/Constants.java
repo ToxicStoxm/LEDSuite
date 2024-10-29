@@ -59,10 +59,17 @@ public class Constants {
                 }
 
                 public static final class Error {
-                    public static final String SOURCE = "error_source";
-                    public static final String CODE = "error_code";
-                    public static final String NAME = "error_name";
-                    public static final String SEVERITY = "error_severity";
+                    public static final class ServerError {
+                        public static final String SOURCE = "error_source";
+                        public static final String CODE = "error_code";
+                        public static final String NAME = "error_name";
+                        public static final String SEVERITY = "error_severity";
+                    }
+
+                    public static final class MenuError {
+                        public static final String FILE_NAME = "file_name";
+                        public static final String MESSAGE = "message";
+                    }
                 }
 
                 public static final class Request {
@@ -157,12 +164,21 @@ public class Constants {
                 }
 
                 public static final class Error {
-                    public static final class Sources {
-                        public static final String POWER = "power";
-                        public static final String INVALID_FILE = "invalid_file";
-                        public static final String PARSING_ERROR = "parsing_error";
-                        public static final String OTHER = "other";
+                    public static class Types {
+                        public static final String SERVER = "server";
+                        public static final String MENU = "menu";
                     }
+
+                    public static final class ServerError {
+                        public static final class Sources {
+                            public static final String POWER = "power";
+                            public static final String INVALID_FILE = "invalid_file";
+                            public static final String PARSING_ERROR = "parsing_error";
+                            public static final String OTHER = "other";
+                        }
+                    }
+
+                    public static final class MenuError {}
 
                     public static final String UNKNOWN_ERROR = "Unknown error";
                 }
@@ -194,7 +210,7 @@ public class Constants {
                     }
 
                     public static final class MenuReply {
-                        public static final class Types {
+                        public static final class WidgetTypes {
                             public static final String GROUP = "group";
                             public static final String BUTTON_ROW = "button_row";
                             public static final String BUTTON = "button";
@@ -204,7 +220,11 @@ public class Constants {
                             public static final String SWITCH_ROW = "switch_row";
                             public static final String SPIN_ROW = "spin_row";
                             public static final String EXPANDER_ROW = "expander_row";
-                            public static final String DROPDOWN_ROW = "dropdown_row";
+                        }
+
+                        public static final class General {
+                            public static final String LABEL = "label";
+                            public static final String TEXT = "text";
                         }
                     }
 

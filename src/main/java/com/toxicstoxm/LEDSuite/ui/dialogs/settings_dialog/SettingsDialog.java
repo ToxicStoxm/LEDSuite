@@ -28,6 +28,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Template class for the settings / preferences dialog.
+ * <br>Template file: {@code SettingsDialog.ui}
+ * @since 1.0.0
+ */
 @GtkTemplate(name = "SettingsDialog", ui = "/com/toxicstoxm/LEDSuite/SettingsDialog.ui")
 public class SettingsDialog extends PreferencesDialog {
 

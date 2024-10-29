@@ -7,6 +7,12 @@ import com.toxicstoxm.YAJSI.api.settings.YAJSISetting;
 import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
 import lombok.Getter;
 
+/**
+ * YAJSI settings bundle for LEDSuite.
+ * @since 1.0.0
+ * @see YAJSISetting
+ * @see SettingsBundle
+ */
 public class LEDSuiteSettingsBundle implements SettingsBundle {
 
     @YAMLSetting(path = "LEDSuite.Debugging.Enable-Settings-Logging")

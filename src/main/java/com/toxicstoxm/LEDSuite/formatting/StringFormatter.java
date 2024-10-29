@@ -6,6 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+/**
+ * Wrapper class for helpful string formatting methods.
+ * Like extracting a file name from a path or formating date / time.
+ * @since 1.0.0
+ */
 public final class StringFormatter {
 
     private static final String defaultDateTimeFormat = "dd:MM:jj hh:mm:ss";

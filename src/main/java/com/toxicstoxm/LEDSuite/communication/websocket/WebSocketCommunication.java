@@ -7,6 +7,10 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Communication endpoint used for exchanging general information with the server and receiving potential errors.
+ * @since 1.0.0
+ */
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
 

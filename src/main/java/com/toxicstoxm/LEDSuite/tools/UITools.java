@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+/**
+ * Wrapper class for useful UI related methods.
+ * Like graying out unavailable setting rows.
+ * @since 1.0.0
+ */
 public class UITools {
 
     public static void markUnavailable(@NotNull ActionRow row) {

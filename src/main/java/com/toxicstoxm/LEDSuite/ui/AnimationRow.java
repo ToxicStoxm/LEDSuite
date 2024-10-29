@@ -20,6 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.foreign.MemorySegment;
 import java.util.HashMap;
 
+/**
+ * Template class for storing a single animation.
+ * This row is later displayed in the sidebar.
+ * <br>Template file: {@code AnimationRow.ui}
+ * @since 1.0.0
+ */
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
 

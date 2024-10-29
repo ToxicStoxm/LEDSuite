@@ -7,7 +7,7 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  * The `LEDSuiteRunnable` class is an abstract class that provides a base implementation
  * for tasks that can be scheduled and managed within the LEDSuite task scheduler.
  *
- * <p>This class implements `Runnable` and provides various methods to schedule the task
+ * <p>This class implements are `Runnable` and provides various methods to schedule the task
  * with different execution modes, including immediate, delayed, and periodic execution.
  *
  * @since 1.0.0

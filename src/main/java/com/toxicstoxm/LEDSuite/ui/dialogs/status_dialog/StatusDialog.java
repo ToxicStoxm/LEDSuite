@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * StatusReply dialog template class with update functions.
+ * <br>Template file: {@code StatusDialog.ui}
  * @since 1.0.0
  */
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")

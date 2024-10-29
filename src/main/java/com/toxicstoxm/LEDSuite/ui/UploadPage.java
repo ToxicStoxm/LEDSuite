@@ -22,6 +22,7 @@ import java.lang.foreign.MemorySegment;
 /**
  * Adw dialog for uploading files to the server. It includes a file picker, upload statistics and a toggle for automatically starting the file after the upload finished.
  * <br>Template file: {@code UploadPage.ui}
+ * @since 1.0.0
  */
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage {

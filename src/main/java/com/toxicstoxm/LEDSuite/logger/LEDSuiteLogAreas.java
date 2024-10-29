@@ -6,6 +6,12 @@ import com.toxicstoxm.YAJL.areas.YAJLLogArea;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * YAJL log area bundle for LEDSuite.
+ * @since 1.0.0
+ * @see YAJLLogArea
+ * @see LogAreaBundle
+ */
 public class LEDSuiteLogAreas implements LogAreaBundle {
 
     public static class GENERAL extends YAJLLogArea {

@@ -1,6 +1,7 @@
 
 ## Error
-- ErrorPacket
+- ServerErrorPacket
+- MenuErrorPacket
 
 ## Reply
 - Upload Reply

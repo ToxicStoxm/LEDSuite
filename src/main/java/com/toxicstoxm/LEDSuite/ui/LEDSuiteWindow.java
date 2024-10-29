@@ -1,8 +1,15 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.RenameRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
@@ -247,6 +254,34 @@ public class LEDSuiteWindow extends ApplicationWindow {
         }));
         animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow2", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
+
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    WebSocketClient client = LEDSuiteApplication.getWebSocketCommunication();
+
+                    client.enqueueMessage(
+                            PlayRequestPacket.builder().requestFile("test-animation").build().serialize()
+                    );
+
+                    client.enqueueMessage(
+                            PauseRequestPacket.builder().requestFile("test-animation").build().serialize()
+                    );
+
+                    client.enqueueMessage(
+                            StopRequestPacket.builder().requestFile("test-animation").build().serialize()
+                    );
+
+                    client.enqueueMessage(
+                            FileUploadRequestPacket.builder().uploadSessionId(String.valueOf(UUID.randomUUID())).requestFile("test-animation").build().serialize()
+                    );
+
+                    client.enqueueMessage(
+                            RenameRequestPacket.builder().newName("new-name").requestFile("old-name").build().serialize()
+                    );
+                }
+            }.runTaskAsynchronously();
+
             LEDSuiteApplication.getLogger().info("TestRow2");
         }));
         super.present();

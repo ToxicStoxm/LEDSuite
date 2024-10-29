@@ -23,7 +23,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @Setter
-public class ErrorPacket extends CommunicationPacket {
+public class ServerErrorPacket extends CommunicationPacket {
 
    private String source;        // guaranteed
    private int code;             // guaranteed
@@ -37,12 +37,12 @@ public class ErrorPacket extends CommunicationPacket {
 
     @Override
     public String getSubType() {
-        return "";
+        return Constants.Communication.YAML.Values.Error.;
     }
 
     @Override
     public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
-        ErrorPacket packet = ErrorPacket.builder().build();
+        ServerErrorPacket packet = ServerErrorPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);

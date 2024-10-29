@@ -1,16 +1,29 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * Request for uploading a file (new animation) with the specified name.
+ * @since 1.0.0
+ * @see UploadSuccessReplyPacket
+ * @see UploadFileCollisionReplyPacket
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
+@Setter
 public class FileUploadRequestPacket extends CommunicationPacket {
 
     private String requestFile;

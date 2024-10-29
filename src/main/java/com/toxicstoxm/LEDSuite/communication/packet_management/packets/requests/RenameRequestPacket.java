@@ -1,16 +1,25 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * Request for renaming the specified file to the specified name.
+ * @since 1.0.0
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
+@Setter
 public class RenameRequestPacket extends CommunicationPacket {
 
     private String requestFile;

@@ -1,16 +1,27 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * A file was successfully uploaded to the server.
+ * @since 1.0.0
+ * @see FileUploadRequestPacket
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
+@Setter
 public class UploadSuccessReplyPacket extends CommunicationPacket {
 
     private String fileName;

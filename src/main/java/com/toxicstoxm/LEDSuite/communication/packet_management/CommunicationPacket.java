@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * Default implementation for a {@link Packet}
  * @since 1.0.0
  */
+@NoArgsConstructor
 public abstract class CommunicationPacket implements Packet {
 
     @Override

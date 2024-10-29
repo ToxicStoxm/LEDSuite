@@ -1,16 +1,28 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * An already existing animation on the server has the same name as the file that is being uploaded currently.
+ * The client should ask the user if the file should be renamed or overwritten and then notify the server of the users decision.
+ * @since 1.0.0
+ * @see FileUploadRequestPacket
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
+@Setter
 public class UploadFileCollisionReplyPacket extends CommunicationPacket {
 
     private String currentName;

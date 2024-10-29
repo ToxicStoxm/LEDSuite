@@ -1,17 +1,25 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * Request for changing a setting in an animation menu.
+ * Used to notify the server if the user changes a setting in some animation menu.
+ * @since 1.0.0
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
 @Setter
 public class MenuChangeRequestPacket extends CommunicationPacket {
 

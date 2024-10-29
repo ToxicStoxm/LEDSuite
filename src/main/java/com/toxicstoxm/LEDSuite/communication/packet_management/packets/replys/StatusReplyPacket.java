@@ -1,24 +1,36 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.LidState;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * Current status of server.
+ * Used to update values of status dialog.
+ * @since 1.0.0
+ * @see StatusRequestPacket
+ */
+@AllArgsConstructor
+@AutoRegisterPacket
 @Builder
 @Getter
+@NoArgsConstructor
+@Setter
 public class StatusReplyPacket extends CommunicationPacket {
 
     public record InteractiveAnimation(String id, String label, String iconName, boolean pauseable) {}

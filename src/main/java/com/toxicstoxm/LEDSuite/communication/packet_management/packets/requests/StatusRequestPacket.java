@@ -2,14 +2,23 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests
 
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
-import lombok.Builder;
-import lombok.Getter;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
+import lombok.*;
 
+/**
+ * <strong>Meaning:</strong><br>
+ * Request for getting the current server status.
+ * @since 1.0.0
+ * @see StatusReplyPacket
+ */
+@AutoRegisterPacket
 @Builder
 @Getter
+@Setter
 public class StatusRequestPacket extends CommunicationPacket {
 
     @Override

@@ -52,3 +52,4 @@ bin/
 /src/main/resources/ui/AnimationMenu.cmb
 /src/main/resources/ui/SettingsDialog.cmb
 /src/main/resources/ui/StatusDialog.cmb
+/src/main/resources/ui/AnimationRow.cmb

@@ -1,10 +1,10 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -24,6 +24,7 @@ public class MenuErrorPacket extends CommunicationPacket {
 
     private String fileName;    // guaranteed
     private String message;     // guaranteed
+    private Code code;       // guaranteed
 
     @Override
     public String getType() {
@@ -36,13 +37,13 @@ public class MenuErrorPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         MenuErrorPacket packet = MenuErrorPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, yaml);
@@ -50,6 +51,13 @@ public class MenuErrorPacket extends CommunicationPacket {
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, yaml);
         message = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE);
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.CODE, yaml);
+        try {
+            code = Code.fromValue(yaml.getInt(Constants.Communication.YAML.Keys.Error.MenuError.CODE));
+        } catch (IllegalArgumentException e) {
+            throw new DeserializationException("Invalid error code!", e);
+        }
 
         return packet;
     }
@@ -64,6 +72,10 @@ public class MenuErrorPacket extends CommunicationPacket {
 
         if (message != null) {
             yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, message);
+        }
+
+        if (code != null) {
+            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.CODE, code.ordinal());
         }
 
         return yaml.saveToString();

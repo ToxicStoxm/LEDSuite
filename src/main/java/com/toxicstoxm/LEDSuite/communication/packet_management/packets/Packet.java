@@ -1,7 +1,8 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets;
 
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.Serializable;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
+import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.communication.packet_management.Serializable;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
@@ -9,7 +10,11 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  *
  * @since 1.0.0
  */
-public interface Packet extends Serializable {
+public interface Packet extends Serializable, AutoRegistrableItem {
+
+    default String getItemType() {
+        return getIdentifier();
+    }
 
     /**
      * The packets general type. E.g. {@code request} , {@code reply}, {@code error}, ...
@@ -58,6 +63,6 @@ public interface Packet extends Serializable {
      */
     default void handlePacket() {
         LEDSuiteApplication.getLogger().warn("Implementation for handling packet type '" + getIdentifier() + "' wasn't found!", new LEDSuiteLogAreas.COMMUNICATION());
-        LEDSuiteApplication.getLogger().debug("Using default implementation to display packet:\n " + serialize());
+        LEDSuiteApplication.getLogger().debug("Using default implementation to display packet:\n " + serialize(), new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

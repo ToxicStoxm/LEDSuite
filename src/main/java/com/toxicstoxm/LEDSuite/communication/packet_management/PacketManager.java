@@ -1,116 +1,39 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
+import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Wrapper class for managing serialization and deserialization of network packets.
- * @see #registerPacket(Packet)
  * @see #serialize(Packet)
  * @see #deserialize(Class, String)
  * @since 1.0.0
  */
-public class PacketManager {
+public class PacketManager extends Registrable<Packet> {
 
-    Class<? extends Packet> defaultPacket;
+    private final String packetClassPath;
 
-    public PacketManager(Class<? extends Packet> defaultPacket) {
-        this.defaultPacket = defaultPacket;
-
+    public PacketManager(String packetClassPath) {
+        this.packetClassPath = packetClassPath;
     }
 
-    private final HashMap<String, Packet> registeredPackets = new HashMap<>();
-
-    /**
-     * Registers the specified packet interface under the specified name. After a packet is registered it can be serialized and deserialized using the {@link #serialize(Packet)} and {@link #deserialize(Class, String)} methods.<br>
-     * If another packet is already registered under the specified packet name. This method will fail and return {@code false}.
-     * @param packet the packet interface with serialization and deserialization methods to register
-     * @return {@code true} if the packet was successfully registered, otherwise {@code false}
-     * @see #unregisterPacket(String)
-     * @see #clearPackets()
-     */
-    public boolean registerPacket(Packet packet) {
-        return registeredPackets.putIfAbsent(packet.getIdentifier(), packet) == null;
-    }
-
-    /**
-     * Automatically registers classes annotated with {@link AutoRegisterPacket} as packets. <br>
-     * Annotated classes are required to implement the {@link Packet} interface.
-     */
-    public void autoRegisterPackets(@NotNull String classPath) {
-        Set<Class<?>> annotatedClasses = new HashSet<>();
-
-        // Scan the specified package for classes with @AutoRegisterPacket annotation
-        try (ScanResult scanResult = new ClassGraph()
-                .enableClassInfo()
-                .enableAnnotationInfo()
-                .acceptPackages(classPath)
-                .scan()) {
-
-            scanResult.getClassesWithAnnotation(AutoRegisterPacket.class.getName())
-                    .forEach(classInfo -> {
-                        try {
-                            Class<?> loadedClass = classInfo.loadClass();
-                            if (Packet.class.isAssignableFrom(loadedClass)) {
-                                annotatedClasses.add(classInfo.loadClass());
-                            } else LEDSuiteApplication.getLogger().error("Failed to load class: " + classInfo.getName() + ". Class doesn't implement packet interface!", new LEDSuiteLogAreas.COMMUNICATION());
-                        } catch (Exception e) {
-                            LEDSuiteApplication.getLogger().error("Failed to load class: " + classInfo.getName(), new LEDSuiteLogAreas.COMMUNICATION());
-                            LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
-                            throw new RuntimeException(e);
-                        }
-                    });
-        }
-
-        for (Class<?> clazz : annotatedClasses) {
-            try {
-                // Use reflection to bypass access check
-                Constructor<?> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true); // Enable access to non-public constructors
-                Packet packet = (Packet) constructor.newInstance();
-                this.registerPacket(packet);
-                LEDSuiteApplication.getLogger().info("Registered packet: " + packet.getIdentifier());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                LEDSuiteApplication.getLogger().error("Failed to auto-register packet: " + clazz.getName(), new LEDSuiteLogAreas.COMMUNICATION());
-                LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
-                throw new RuntimeException(e);
-            }
-        }
-
-    }
-
-    /**
-     * Unregisters the packet registered under the specified packet name.
-     * @param packet_type the packet type (name) to unregister
-     * @return {@code true} if the specified packet was previously registered and was successfully unregistered, otherwise {@code false}
-     * @see #registerPacket(Packet)
-     * @see #clearPackets()
-     */
-    public boolean unregisterPacket(String packet_type) {
-        return registeredPackets.remove(packet_type) != null;
-    }
-
-    /**
-     * Clears all registered packets.
-     * @see #registerPacket(Packet)
-     * @see #unregisterPacket(String)
-     */
-    public void clearPackets() {
-        registeredPackets.clear();
+    @Override
+    protected AutoRegisterModule<Packet> autoRegisterModule() {
+        return AutoRegisterModule.<Packet>builder()
+                .moduleType(Packet.class)
+                .module(AutoRegisterModules.PACKETS)
+                .classPath(packetClassPath)
+                .build();
     }
 
     /**
@@ -123,7 +46,7 @@ public class PacketManager {
         String packetIdentifier = packet.getIdentifier();
 
         // Validate if the packet type exists in the registered packets
-        if (!registeredPackets.containsKey(packetIdentifier)) {
+        if (!isRegistered((packetIdentifier))) {
             LEDSuiteApplication.getLogger().info("Error: Packet type not registered: " + packetIdentifier, new LEDSuiteLogAreas.YAML());
             return null;
         }
@@ -159,13 +82,13 @@ public class PacketManager {
     public <T extends Packet> T deserialize(@NotNull Class<T> clazz, @NotNull String yamlString) throws DeserializationException {
         String packetIdentifier = extractPacketIdentifier(yamlString);
 
-        if (!registeredPackets.containsKey(packetIdentifier)) {
+        if (!isRegistered(packetIdentifier)) {
             throw new DeserializationException("Invalid packet type: '" + packetIdentifier + "'!");
         }
 
         // Retrieve the packet type and perform the deserialization
         try {
-            Packet packetInstance = registeredPackets.get(packetIdentifier).deserialize(yamlString);
+            Packet packetInstance = get(packetIdentifier).deserialize(yamlString);
             if (!clazz.isInstance(packetInstance)) {
                 throw new ClassCastException("Deserialized object is not of the expected type: " + clazz.getName());
             }

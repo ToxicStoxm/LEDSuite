@@ -49,7 +49,9 @@ public class WebSocketClient {
                     //session.setMaxIdleTimeout(Long.MAX_VALUE);
                     while (!cancelled) {
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
-                        LEDSuiteApplication.getLogger().verbose("Sending: \n[\n" + toSend + "]", new LEDSuiteLogAreas.COMMUNICATION());
+                        // LEDSuiteApplication.getLogger().verbose("----------------------< OUT >----------------------", new LEDSuiteLogAreas.COMMUNICATION());
+                        // LEDSuiteApplication.getLogger().verbose(toSend, new LEDSuiteLogAreas.COMMUNICATION());
+                        // LEDSuiteApplication.getLogger().verbose("---------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
                         session.getAsyncRemote().sendText(
                                 toSend
                         );

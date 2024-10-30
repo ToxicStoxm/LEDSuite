@@ -1,9 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.RenameRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsChangeRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
@@ -159,6 +156,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     /**
      * Clears the main window content box and display the specified object instead.
+     * Must be sync with UI thread!
      * @param newChild the new object to display
      * @see #clearMainContent()
      */
@@ -169,11 +167,15 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     /**
      * Clears the main window content box.
+     * Must be sync with UI thread!
      * @see #changeMainContent(Widget)
      */
     public void clearMainContent() {
         Widget child = contentBox.getFirstChild();
-        if (child != null) contentBox.remove(child);
+        while (child != null) {
+            contentBox.remove(child);
+            child = contentBox.getFirstChild();
+        }
     }
 
     @GtkChild(name = "animation_list")
@@ -278,6 +280,9 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
                     client.enqueueMessage(
                             RenameRequestPacket.builder().newName("new-name").requestFile("old-name").build().serialize()
+                    );
+                    client.enqueueMessage(
+                            MenuChangeRequestPacket.builder().objectId(String.valueOf(UUID.randomUUID())).objectValue("sdhfjsdhfs").fileName("Test-Animation").build().serialize()
                     );
                 }
             }.runTaskAsynchronously();

@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import lombok.*;
 
 /**
@@ -10,7 +11,7 @@ import lombok.*;
  * @since 1.0.0
  */
 @AllArgsConstructor
-@AutoRegisterPacket
+@AutoRegister(module = AutoRegisterModules.PACKETS)
 @Builder
 @Getter
 @NoArgsConstructor

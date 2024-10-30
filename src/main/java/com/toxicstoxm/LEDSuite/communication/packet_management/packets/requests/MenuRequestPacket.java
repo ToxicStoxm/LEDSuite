@@ -1,10 +1,11 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
+import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -17,7 +18,7 @@ import lombok.*;
  * @see MenuReplyPacket
  */
 @AllArgsConstructor
-@AutoRegisterPacket
+@AutoRegister(module = AutoRegisterModules.PACKETS)
 @Builder
 @Getter
 @NoArgsConstructor

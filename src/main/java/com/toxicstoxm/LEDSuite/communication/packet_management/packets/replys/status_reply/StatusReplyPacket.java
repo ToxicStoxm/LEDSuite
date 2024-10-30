@@ -1,10 +1,11 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
+import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -25,7 +26,7 @@ import java.util.List;
  * @see StatusRequestPacket
  */
 @AllArgsConstructor
-@AutoRegisterPacket
+@AutoRegister(module = AutoRegisterModules.PACKETS)
 @Builder
 @Getter
 @NoArgsConstructor

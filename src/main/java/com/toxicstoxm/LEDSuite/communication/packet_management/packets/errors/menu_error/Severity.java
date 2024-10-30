@@ -2,23 +2,24 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.m
 
 import org.jetbrains.annotations.NotNull;
 
-public enum Code {
-
-    PARSE_ERROR(0),
-    KEY_MISSING(1),
-    ILLEGAL_WIDGET_CONTENT(2),
-    ILLEGAL_WIDGET_PROPERTY(3);
+public enum Severity {
+    UNDEFINED(0),
+    MILD(1),
+    MEDIUM(2),
+    SEVERE(3),
+    FATAL(4);
 
     final int value;
 
-    Code(int value) {
+    Severity(int value) {
         this.value = value;
     }
 
-    static @NotNull Code fromValue(int value) {
-        for (Code code : Code.values()) {
-            if (code.value == value) return code;
+    static @NotNull Severity fromValue(int value) {
+        for (Severity severity : Severity.values()) {
+            if (severity.value == value) return severity;
         }
         throw new IllegalArgumentException("Couldn't find enum element for value '" + value + "'!");
     }
+
 }

@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -25,7 +26,7 @@ public abstract class CommunicationPacket implements Packet {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         LEDSuiteApplication.getLogger().warn("Deserialization implementation missing for:\n" + yamlString, new LEDSuiteLogAreas.YAML());
         return null;
     }

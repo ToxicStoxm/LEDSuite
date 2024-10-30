@@ -1,0 +1,81 @@
+packet_type: reply
+type: menu	# required
+file_name: #unique aniamtion identifier
+content: # optional
+	f1456bd9-1e69-492c-baf7-679d27917190:
+		label: "MyGroup" # optional
+		tooltip: ""
+		properties:		 # optional
+		content:			 # required
+			540f23eb-291a-4ffe-98e8-647003e25d24:
+				type: button
+				label: "MyButton"
+				icon-name: ""
+				tooltip: ""
+				properties:
+					css-styles: 
+						- "suggested-action"
+						- "pill"
+			175f4ab5-bd6e-4de9-a62d-743796e0c006:
+				type: button_row
+				label: "MyButtonRow"
+				text: ""
+				tooltip: ""
+				properties:
+			
+			1ba00b2d-3a31-4e74-87f2-a5eaf8a58ed6:
+				type: property_row
+				label: "MyPropertyRow"
+				text: "MyPropertyValue"
+				properties:
+				
+			90c2aa7e-1b98-48b5-95bd-639ce906a795:
+				type: spin_row
+				label: "MySpinRow"
+				text: ""
+				value: 1
+				digits: 2
+				minimum: 0
+				maximum: 100
+				increment: 1
+				climb_rate: 2
+				page_increment: 10
+				wrap: true
+				snap: true
+				
+			94408097-b5a1-4b58-8419-1c694897dbf6:
+				type: entry_row
+				label: "MyEntryRow"
+				value: "test"
+				editable: true
+				apply_button: true
+				attribute_list_string: ""
+				
+			f31f434d-525a-4dae-8717-a58231b55f93:
+				type: switch_row
+				label: "MySwitchRow"
+				text: "MySubtitle"
+				value: true
+			
+			08471b25-de4c-42ea-9232-943a2a9e79a7:
+				type: combo_row
+				label: "MyComboRow"
+				text : "MySubtitle"
+				value: "RGB"
+				enable_search: true
+				content:
+					- "foo"
+					- "hello"
+					- "bar"
+					
+			b6ec76a0-2c0f-47d9-a90c-85fad8aba13a:
+				type: expander_row
+				label: "MyExpanderRow"
+				text: "MySubtitle"
+				with_switch: true
+				enable_expansion: true
+				expanded: false
+				content:
+					# widgets
+				
+				

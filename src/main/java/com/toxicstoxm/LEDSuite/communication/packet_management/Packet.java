@@ -1,5 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
+import com.toxicstoxm.LEDSuite.communication.Serializable;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
@@ -7,7 +9,7 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  *
  * @since 1.0.0
  */
-public interface Packet {
+public interface Packet extends Serializable {
 
     /**
      * The packets general type. E.g. {@code request} , {@code reply}, {@code error}, ...
@@ -39,10 +41,10 @@ public interface Packet {
      * Attempts to deserialize a given YAML string.
      * @param yamlString YAML string to deserialize
      * @return the deserialized packet
-     * @throws PacketManager.DeserializationException if deserialization fails, because invalid YAML or missing values
+     * @throws DeserializationException if deserialization fails, because invalid YAML or missing values
      * @see #serialize()
      */
-    Packet deserialize(String yamlString) throws PacketManager.DeserializationException;
+    Packet deserialize(String yamlString) throws DeserializationException;
 
     /**
      * Attempts to serialize this packet.

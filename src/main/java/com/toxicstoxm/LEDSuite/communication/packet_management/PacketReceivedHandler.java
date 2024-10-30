@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class PacketReceivedHandler {
 
     public void handleIncomingPacket(@NotNull CommunicationPacket packet) {
-        LEDSuiteApplication.getLogger().info("Handling communication packet " + packet.getIdentifier() + "!", new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().debug("Handling communication packet " + packet.getIdentifier() + "!", new LEDSuiteLogAreas.COMMUNICATION());
         packet.handlePacket();
     }
 }

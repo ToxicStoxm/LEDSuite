@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 
 /**
  * Possible file states.

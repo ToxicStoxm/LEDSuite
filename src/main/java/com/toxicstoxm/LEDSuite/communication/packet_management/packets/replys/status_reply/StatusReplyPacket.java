@@ -1,12 +1,10 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.FileState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.LidState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -56,20 +54,20 @@ public class StatusReplyPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         StatusReplyPacket packet = StatusReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE, yaml);
         try {
             packet.fileState = FileState.valueOf(yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE));
         } catch (IllegalArgumentException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
         if (!packet.fileState.equals(FileState.idle)) packet.selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE);
@@ -94,7 +92,7 @@ public class StatusReplyPacket extends CommunicationPacket {
             ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS, yaml);
             ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS);
 
-            if (animationsSection == null) throw new PacketManager.DeserializationException("Deserialization failed! ", new NullPointerException(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " wasn't found!"));
+            if (animationsSection == null) throw new DeserializationException("Deserialization failed! ", new NullPointerException(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " wasn't found!"));
             for (String key : animationsSection.getKeys(false)) {
 
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, yaml);
@@ -144,8 +142,6 @@ public class StatusReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
 
-        LEDSuiteApplication.getLogger().info(this.toString(), new LEDSuiteLogAreas.COMMUNICATION());
-
         var statusUpdater = LEDSuiteApplication.getWindow().getStatusDialogUpdateCallback();
 
         if (statusUpdater != null) {
@@ -159,7 +155,7 @@ public class StatusReplyPacket extends CommunicationPacket {
                             .currentFile(fileState.equals(FileState.idle) ? null : selectedFile)
                             .build()
             );
-            LEDSuiteApplication.getLogger().info("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
-        } else LEDSuiteApplication.getLogger().info("Couldn't update status because no status updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
+            LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
+        } else LEDSuiteApplication.getLogger().debug("Couldn't update status because no status updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

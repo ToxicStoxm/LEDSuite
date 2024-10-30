@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
@@ -20,13 +21,16 @@ import org.gnome.gobject.GObject;
 import org.gnome.gtk.Button;
 import org.gnome.gtk.Gtk;
 import org.gnome.gtk.StringList;
+import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.foreign.MemorySegment;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Template class for the settings / preferences dialog.
@@ -94,24 +98,31 @@ public class SettingsDialog extends PreferencesDialog {
         }
     }
 
-    private void setColorMode(Integer colorMode) {
-        if (colorMode == null) {
-            this.colorMode.setSelected(Gtk.INVALID_LIST_POSITION);
-        } else  {
-            this.colorMode.setSelected(colorMode);
-        }
+    private void setColorMode(Integer selectedColorMode) {
+        colorMode.setSelected(
+                Objects.requireNonNullElse(
+                        selectedColorMode,
+                        Gtk.INVALID_LIST_POSITION
+                )
+        );
     }
 
-    private void setSupportedColorModes(Collection<String> supportedColorModes) {
+    private void setSupportedColorModes(Collection<String> supportedColorModes, Integer selectedColorMode) {
         if (supportedColorModes == null) {
             UITools.markUnavailableWithoutSubtitle(this.colorMode);
             setColorMode(null);
-        } else {
+        } else if (supportedColorModes.size() < 2) {
+            UITools.markUnavailableWithoutSubtitle(this.colorMode);
+            setColorMode(1);
+        }
+        else {
             this.supportedColorModes = StringList.builder()
                     .setStrings(supportedColorModes.toArray(new String[]{}))
                     .build();
             UITools.markAvailable(this.colorMode);
+            setColorMode(selectedColorMode);
         }
+
     }
 
     private void initialize() {
@@ -131,9 +142,8 @@ public class SettingsDialog extends PreferencesDialog {
 
     private void update(@NotNull SettingsUpdate settingsUpdate) {
         GLib.idleAddOnce(() -> {
-            setSupportedColorModes(settingsUpdate.supportedColorModes());
+            setSupportedColorModes(settingsUpdate.supportedColorModes(), settingsUpdate.selectedColorMode());
             setBrightness(settingsUpdate.brightness());
-            setColorMode(settingsUpdate.selectedColorMode());
             WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
             if (webSocketClient != null && webSocketClient.isConnected()) {
                 System.out.println("shit");
@@ -171,4 +181,11 @@ public class SettingsDialog extends PreferencesDialog {
         }.runTaskLaterAsynchronously(500);
     }
 
+    @Override
+    public void present(@Nullable Widget parent) {
+        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                SettingsRequestPacket.builder().build().serialize()
+        );
+        super.present(parent);
+    }
 }

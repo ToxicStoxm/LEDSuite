@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication;
+package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 /**
  * Classes that implement this support serialization and deserialization.

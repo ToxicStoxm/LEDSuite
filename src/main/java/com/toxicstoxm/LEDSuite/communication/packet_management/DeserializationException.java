@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication;
+package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 /**
  * {@code DeserializationException} is an unchecked exception and is used to express an error during deserialization of a communication packet.

@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
-import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;

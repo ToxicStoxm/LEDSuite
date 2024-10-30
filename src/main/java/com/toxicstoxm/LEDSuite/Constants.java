@@ -69,6 +69,7 @@ public class Constants {
                     public static final class MenuError {
                         public static final String FILE_NAME = "filename";
                         public static final String MESSAGE = "message";
+                        public static final String SEVERITY = "severity";
                         public static final String CODE = "code";
                     }
                 }
@@ -85,7 +86,8 @@ public class Constants {
                     }
 
                     public static final class MenuChangeRequest{
-                        public static final String OBJECT_PATH = "object_path";
+                        public static final String FILE_NAME = "filename";
+                        public static final String OBJECT_ID = "object_id";
                         public static final String OBJECT_VALUE = "object_value";
                     }
 
@@ -127,7 +129,7 @@ public class Constants {
                     }
 
                     public static final class UploadFileCollisionReply {
-                        public static final String CURRENT_NAME = "current_name";
+                        public static final String FILE_NAME = "filename";
                     }
 
                     public static final class UploadSuccessReply {

@@ -1,10 +1,11 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
+import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -16,15 +17,16 @@ import lombok.*;
  * @since 1.0.0
  */
 @AllArgsConstructor
-@AutoRegisterPacket
+@AutoRegister(module = AutoRegisterModules.PACKETS)
 @Builder
 @Getter
 @NoArgsConstructor
 @Setter
 public class MenuChangeRequestPacket extends CommunicationPacket {
 
-    private String objectPath;
+    private String objectId;
     private String objectValue;
+    private String fileName;
 
     @Override
     public String getType() {
@@ -46,11 +48,14 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
             throw new DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH, yaml);
-        packet.objectPath = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID, yaml);
+        packet.objectId = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, yaml);
         packet.objectValue = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
+
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME, yaml);
+        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME);
 
         return packet;
     }
@@ -59,8 +64,9 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_PATH, objectPath);
+        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID, objectId);
         yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, objectValue);
+        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME, fileName);
 
         return yaml.saveToString();
     }

@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
@@ -199,23 +200,6 @@ public class PacketManager {
         if (!(subType == null || subType.isBlank())) packetIdentifier = packetIdentifier + "." + subType;
 
         return packetIdentifier;
-    }
-
-    /**
-     * {@code DeserializationException} is an unchecked exception and is used to express an error during deserialization of a communication packet.
-     */
-    public static class DeserializationException extends RuntimeException {
-        public DeserializationException(Throwable cause) {
-            super(cause);
-        }
-
-        public DeserializationException(String message) {
-            super(message);
-        }
-
-        public DeserializationException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 
 }

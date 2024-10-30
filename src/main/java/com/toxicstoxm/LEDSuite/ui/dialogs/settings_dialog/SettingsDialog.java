@@ -81,9 +81,6 @@ public class SettingsDialog extends PreferencesDialog {
     @GtkChild(name = "settings_color_mode")
     public ComboRow colorMode;
 
-    @GtkChild(name = "settings_supported_color_modes")
-    public StringList supportedColorModes;
-
     @GtkChild(name = "settings_apply_button")
     public Button applyButton;
 
@@ -111,15 +108,17 @@ public class SettingsDialog extends PreferencesDialog {
         if (supportedColorModes == null) {
             UITools.markUnavailableWithoutSubtitle(this.colorMode);
             setColorMode(null);
-        } else if (supportedColorModes.size() < 2) {
+        } else if (supportedColorModes.size() == 1) {
             UITools.markUnavailableWithoutSubtitle(this.colorMode);
-            setColorMode(1);
-        }
-        else {
-            this.supportedColorModes = StringList.builder()
-                    .setStrings(supportedColorModes.toArray(new String[]{}))
-                    .build();
+            setColorMode(0);
+        } else {
+            String[] supported = supportedColorModes.toArray(new String[]{});
             UITools.markAvailable(this.colorMode);
+            colorMode.setModel(
+                    StringList.builder()
+                            .setStrings(supported)
+                            .build()
+            );
             setColorMode(selectedColorMode);
         }
 
@@ -146,7 +145,6 @@ public class SettingsDialog extends PreferencesDialog {
             setBrightness(settingsUpdate.brightness());
             WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
             if (webSocketClient != null && webSocketClient.isConnected()) {
-                System.out.println("shit");
                 serverGroup.setOpacity(Constants.UI.DEFAULT_OPACITY);
             } else serverGroup.setOpacity(Constants.UI.REDUCED_OPACITY);
         });
@@ -154,7 +152,7 @@ public class SettingsDialog extends PreferencesDialog {
 
     @Contract(" -> new")
     private @NotNull SettingsData getData() {
-        String temp = supportedColorModes.getString(colorMode.getSelected());
+        String temp = ((StringList) colorMode.getModel()).getString(colorMode.getSelected());
         return new SettingsData(
                 (int) brightness.getValue(),
                 temp == null || temp.equals(Constants.UI.NOT_AVAILABLE_VALUE) ? null : temp

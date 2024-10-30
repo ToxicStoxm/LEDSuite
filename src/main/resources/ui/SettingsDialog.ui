@@ -44,11 +44,6 @@ Format: protcol://domain:port/folder/</property>
             </child>
             <child>
               <object class="AdwComboRow" id="settings_color_mode">
-                <property name="model">
-                  <object class="GtkStringList" id="settings_supported_color_modes">
-                    <property name="strings">N/A</property>
-                  </object>
-                </property>
                 <property name="title">Color Mode</property>
               </object>
             </child>

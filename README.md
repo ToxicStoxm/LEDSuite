@@ -17,9 +17,9 @@
     - [X] Exchange packets
   - [ ] Handle IP and Port changes
   - [ ] Communication handling
-    - [ ] Request handling
+    - [X] Request handling
     - [ ] Response handling
-    - [ ] Error handling
+    - [X] Error handling
   - [ ] File sending
     - [ ] Loading file
     - [ ] Sending file data to server
@@ -36,8 +36,8 @@
 - [ ] UI
   - [ ] Elements
     -  [ ] Dialogs
-      - [ ] Settings dialog
-      - [ ] Status dialog
+      - [X] Settings dialog
+      - [X] Status dialog
       - [X] Keyboard shortcuts dialog
       - [X] About dialog
       - [ ] Alert dialogs (?)
@@ -70,7 +70,9 @@
         - [ ] Menu reply
       - [X] Error packets
 - [ ] Documentation
-  - [ ] Add Javadoc to all classes and functions
+  - [] Add Javadoc
+    - [X] Classes
+    - [ ] Functions
   - [ ] Add tons of comments to the code
   - [ ] Create examples (?)
 - [ ] I18N

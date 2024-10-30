@@ -67,14 +67,15 @@ public class Constants {
                     }
 
                     public static final class MenuError {
-                        public static final String FILE_NAME = "file_name";
+                        public static final String FILE_NAME = "filename";
                         public static final String MESSAGE = "message";
+                        public static final String CODE = "code";
                     }
                 }
 
                 public static final class Request {
                     public static final class General {
-                        public static final String FILE = "request_file";
+                        public static final String FILE_NAME = "filename";
                     }
 
                     public static final class StatusRequest {}

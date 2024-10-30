@@ -1,11 +1,12 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
@@ -190,9 +191,9 @@ public class LEDSuiteApplication extends Application {
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
-        packetManager = new PacketManager(CommunicationPacket.class);
+        packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
         packetReceivedHandler = new PacketReceivedHandler();
-        packetManager.autoRegisterPackets("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
+        packetManager.autoRegister();
     }
 
     /**
@@ -280,8 +281,9 @@ public class LEDSuiteApplication extends Application {
 
             logger.debug("\nTesting menu change request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             MenuChangeRequestPacket menuChangeRequestPacket = MenuChangeRequestPacket.builder()
-                    .objectPath("Test-Object")
+                    .objectId("Test-Object")
                     .objectValue("6942")
+                    .fileName("Test-Animation")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuChangeRequestPacket.serialize()));
 
@@ -356,7 +358,8 @@ public class LEDSuiteApplication extends Application {
             logger.debug("\nTesting menu error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             MenuErrorPacket menuErrorPacket = MenuErrorPacket.builder()
                     .fileName("Test-Animation")
-                    .code(Code.FATAL)
+                    .severity(Severity.FATAL)
+                    .code(Code.PARSE_ERROR)
                     .message("Failed to parse YAML!")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuErrorPacket.serialize()));

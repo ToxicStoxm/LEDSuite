@@ -23,17 +23,17 @@ public class WebSocketFileTransfer extends WebSocketClientEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, @NotNull Session session) {
         super.onMessage(message, session);
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(@NotNull Session session) {
         super.onClose(session);
     }
 
     @OnError
-    public void onError(Session session, Throwable throwable) {
+    public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
     }
 }

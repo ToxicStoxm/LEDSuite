@@ -1,15 +1,17 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.FileState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums.LidState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.MenuErrorPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
@@ -354,13 +356,14 @@ public class LEDSuiteApplication extends Application {
             logger.debug("\nTesting menu error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             MenuErrorPacket menuErrorPacket = MenuErrorPacket.builder()
                     .fileName("Test-Animation")
+                    .code(Code.FATAL)
                     .message("Failed to parse YAML!")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuErrorPacket.serialize()));
 
             logger.info("All packet tests passed!", new LEDSuiteLogAreas.COMMUNICATION());
 
-        } catch (PacketManager.DeserializationException e) {
+        } catch (DeserializationException e) {
             logger.warn("Tests for communication packets failed!\n", new LEDSuiteLogAreas.COMMUNICATION());
             logger.stacktrace("Stacktrace: \n", new LEDSuiteLogAreas.COMMUNICATION());
             StringWriter sw = new StringWriter();

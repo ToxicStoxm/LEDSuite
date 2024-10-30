@@ -1,10 +1,10 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -65,13 +65,13 @@ public class SettingsReplyPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         SettingsReplyPacket packet = SettingsReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS, yaml)) {

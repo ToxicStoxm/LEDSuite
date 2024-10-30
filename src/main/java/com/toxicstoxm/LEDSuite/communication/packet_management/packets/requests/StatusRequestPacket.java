@@ -2,12 +2,14 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests
 
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.StatusReplyPacket;
-import lombok.*;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -32,7 +34,7 @@ public class StatusRequestPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         return StatusRequestPacket.builder().build();
     }
 }

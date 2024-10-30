@@ -1,10 +1,10 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
@@ -41,13 +41,13 @@ public class ServerErrorPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         ServerErrorPacket packet = ServerErrorPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.NAME, yaml);

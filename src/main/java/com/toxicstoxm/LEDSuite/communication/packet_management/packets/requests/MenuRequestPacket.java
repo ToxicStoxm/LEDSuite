@@ -1,10 +1,10 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.AutoRegisterPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -37,17 +37,17 @@ public class MenuRequestPacket extends CommunicationPacket {
     }
 
     @Override
-    public Packet deserialize(String yamlString) throws PacketManager.DeserializationException {
+    public Packet deserialize(String yamlString) throws DeserializationException {
         MenuRequestPacket packet = MenuRequestPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new PacketManager.DeserializationException(e);
+            throw new DeserializationException(e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE, yaml);
-        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
+        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
 
         return packet;
     }
@@ -56,7 +56,7 @@ public class MenuRequestPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
 
         return yaml.saveToString();
     }

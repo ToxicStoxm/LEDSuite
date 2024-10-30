@@ -19,7 +19,8 @@ module com.toxicstoxm.LEDSuite {
     exports com.toxicstoxm.LEDSuite.communication.packet_management;
     exports com.toxicstoxm.LEDSuite.time;
     exports com.toxicstoxm.LEDSuite.ui.animation_menu to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;
-    exports com.toxicstoxm.LEDSuite.communication.packet_management.packets.enums;
     exports com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;
+    exports com.toxicstoxm.LEDSuite.communication;
+    exports com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 }

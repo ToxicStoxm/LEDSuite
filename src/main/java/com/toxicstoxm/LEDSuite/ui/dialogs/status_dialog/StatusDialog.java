@@ -6,7 +6,7 @@ import com.toxicstoxm.LEDSuite.tools.UITools;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.Types;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.Dialog;
@@ -26,7 +26,7 @@ import java.util.List;
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
 public class StatusDialog extends Dialog {
 
-    private static final Type gtype = Types.register(StatusDialog.class);
+    private static final Type gtype = TemplateTypes.register(StatusDialog.class);
 
     @Getter
     private UpdateCallback<StatusUpdate> updater;

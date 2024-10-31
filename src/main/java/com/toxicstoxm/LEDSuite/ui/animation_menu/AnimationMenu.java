@@ -2,13 +2,11 @@ package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.Types;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.PreferencesGroup;
-import org.gnome.adw.PreferencesPage;
-import org.gnome.adw.StatusPage;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Box;
@@ -42,7 +40,7 @@ public class AnimationMenu extends Box {
     @GtkChild(name = "animation_menu_label")
     public Label animationLabel;
 
-    private static final Type gtype = Types.register(AnimationMenu.class);
+    private static final Type gtype = TemplateTypes.register(AnimationMenu.class);
 
     public AnimationMenu(MemorySegment address) {
         super(address);
@@ -52,8 +50,10 @@ public class AnimationMenu extends Box {
         return gtype;
     }
 
-    public static AnimationMenu create() {
-        return GObject.newInstance(getType());
+    public static AnimationMenu create(String fileName) {
+        AnimationMenu menu = GObject.newInstance(getType());
+        menu.setMenuID(fileName);
+        return menu;
     }
 
     public AnimationMenu init() {

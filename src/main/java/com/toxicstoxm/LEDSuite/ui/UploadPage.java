@@ -7,6 +7,7 @@ import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import io.github.jwharm.javagi.gtk.types.Types;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.ApplicationWindow;
@@ -27,7 +28,7 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage {
 
-    private static final Type gtype = Types.register(UploadPage.class);
+    private static final Type gtype = TemplateTypes.register(UploadPage.class);
 
     public UploadPage(MemorySegment address) {
         super(address);

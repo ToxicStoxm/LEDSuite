@@ -6,7 +6,7 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.Types;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.Type;
@@ -29,7 +29,7 @@ import java.util.HashMap;
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
 
-    private static final Type gtype = Types.register(AnimationRow.class);
+    private static final Type gtype = TemplateTypes.register(AnimationRow.class);
 
     public AnimationRow(MemorySegment address) {
         super(address);

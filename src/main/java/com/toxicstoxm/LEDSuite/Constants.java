@@ -47,6 +47,20 @@ public class Constants {
         public static final String NOT_AVAILABLE_VALUE = "N/A";
         public static final Double DEFAULT_OPACITY = 1.0;
         public static final Double REDUCED_OPACITY = 0.5;
+        public static final class SettingsDialog {
+            public static final String[] DISCONNECTED_CSS = new String[]{"error"};
+            public static final String[] CONNECTED_CSS = new String[]{"success"};
+            public static final String CONNECTED = "Connected";
+            public static final String CONNECTED_TOOLTIP = "Click to disconnect";
+            public static final String DISCONNECTED = "Disconnected";
+            public static final String DISCONNECTED_TOOLTIP = "Click to connect";
+            public static final String CONNECTING = "Connecting";
+            public static final String DISCONNECTING = "Disconnecting";
+            public static final String[] CHANGING_CSS = new String[]{"warning"};
+            public static final long MINIMUM_DELAY = 500;
+            public static final long CONNECTION_TIMEOUT = 10000;
+
+        }
     }
 
     public static final class Communication {

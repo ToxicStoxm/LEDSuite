@@ -1,8 +1,10 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.*;
 import org.glassfish.tyrus.client.ClientManager;
@@ -10,6 +12,7 @@ import org.glassfish.tyrus.client.ClientManager;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -23,8 +26,30 @@ public class WebSocketClient {
 
     private boolean cancelled = false;
 
+    private final LEDSuiteTask statusTask;
+    private final LEDSuiteTask scannerTask;
+
     public WebSocketClient(Class<?> clientEndpoint, URI path) {
         run(clientEndpoint, path);
+        statusTask = new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                if (cancelled) this.cancel();
+                enqueueMessage(
+                        StatusRequestPacket.builder().build().serialize()
+                );
+            }
+        }.runTaskTimerAsynchronously(1000, 1000);
+        scannerTask = new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    if (cancelled) this.cancel();
+                    enqueueMessage(scanner.nextLine().replace("\\n", "\n"));
+                }
+            }
+        }.runTaskAsynchronously();
     }
 
     private Session currentSession;

@@ -31,7 +31,7 @@ import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
-import io.github.jwharm.javagi.gtk.types.Types;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
@@ -59,7 +59,7 @@ import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.WebsocketU
  */
 public class LEDSuiteApplication extends Application {
 
-    private static final Type gtype = Types.register(LEDSuiteApplication.class);
+    private static final Type gtype = TemplateTypes.register(LEDSuiteApplication.class);
 
     public static Type getType() {
         return gtype;
@@ -107,7 +107,7 @@ public class LEDSuiteApplication extends Application {
     }
 
     /**
-     * Creates and registers necessary UI actions. Creates and starts the logger, settings manager and task scheduler.
+     * Creates and registers necessary UI actions. Creates and starts the logger, settings manager, and task scheduler.
      */
     @InstanceInit
     public void init() {
@@ -199,34 +199,31 @@ public class LEDSuiteApplication extends Application {
     /**
      * Creates a new websocket client instance and connects it with the websocket server.
      */
-    private void startCommunicationSocket() {
+    public static boolean startCommunicationSocket() {
         URI serverAddress;
         try {
             serverAddress = new URI(WebsocketURI.getInstance().get());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            return false;
         }
 
         webSocketCommunication = new WebSocketClient(WebSocketCommunication.class, serverAddress);
 
-        new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                Scanner scanner = new Scanner(System.in);
-                while (true) {
-                    webSocketCommunication.enqueueMessage(scanner.nextLine().replace("\\n", "\n"));
-                }
-            }
-        }.runTaskAsynchronously();
+        long start = System.currentTimeMillis();
+        long timeElapsed;
+        boolean minDelayReached;
 
-        new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                webSocketCommunication.enqueueMessage(
-                        StatusRequestPacket.builder().build().serialize()
-                );
-            }
-        }.runTaskTimerAsynchronously(1000, 1000);
+        do {
+            timeElapsed = System.currentTimeMillis() - start;
+            minDelayReached = !(timeElapsed < Constants.UI.SettingsDialog.MINIMUM_DELAY);
+
+            if (webSocketCommunication.isConnected() && minDelayReached) return true;
+
+        } while (!minDelayReached || (!webSocketCommunication.isConnected() && timeElapsed > Constants.UI.SettingsDialog.CONNECTION_TIMEOUT));
+
+        LEDSuiteApplication.getLogger().info("Network connection timed out >10s!", new LEDSuiteLogAreas.NETWORK());
+        return false;
+
     }
 
     /**

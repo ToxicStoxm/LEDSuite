@@ -26,6 +26,30 @@ Format: protcol://domain:port/folder/</property>
         </child>
         <child>
           <object class="AdwPreferencesGroup" id="settings_server_group">
+            <property name="header-suffix">
+              <object class="GtkButton" id="settings_server_group_suffix">
+                <property name="child">
+                  <object class="GtkBox" id="settings_server_group_suffix_box">
+                    <child>
+                      <object class="GtkLabel" id="settings_server_group_suffix_label">
+                        <property name="css-classes">error</property>
+                        <property name="label">Disconnected</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkRevealer" id="settings_server_group_suffix_spinner_revealer">
+                        <property name="child">
+                          <object class="AdwSpinner" id="settings_server_group_suffix_spinner"/>
+                        </property>
+                        <property name="transition-type">slide-left</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="tooltip-text" translatable="yes">Click to connect</property>
+                <signal name="clicked" handler="settings_server_connectivity_button_cb"/>
+              </object>
+            </property>
             <property name="title">Server</property>
             <child>
               <object class="AdwSpinRow" id="settings_brightness">
@@ -44,6 +68,11 @@ Format: protcol://domain:port/folder/</property>
             </child>
             <child>
               <object class="AdwComboRow" id="settings_color_mode">
+                <property name="model">
+                  <object class="GtkStringList" id="settings_supported_color_modes">
+                    <property name="strings">N/A</property>
+                  </object>
+                </property>
                 <property name="title">Color Mode</property>
               </object>
             </child>

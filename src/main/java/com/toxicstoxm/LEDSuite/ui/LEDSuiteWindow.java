@@ -19,6 +19,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
+import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import io.github.jwharm.javagi.gtk.types.Types;
 import lombok.Getter;
 import org.gnome.adw.AboutDialog;
@@ -40,7 +41,7 @@ import java.util.UUID;
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow {
 
-    private static final Type gtype = Types.register(LEDSuiteWindow.class);
+    private static final Type gtype = TemplateTypes.register(LEDSuiteWindow.class);
 
     public LEDSuiteWindow(MemorySegment address) {
         super(address);
@@ -138,7 +139,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             .serialize()
             );
             LEDSuiteApplication.getLogger().info("Applied settings and send changes to server!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        } else LEDSuiteApplication.getLogger().info("Couldn't apply settings because no settings data provider callback was found!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+        } else LEDSuiteApplication.getLogger().warn("Couldn't apply settings because no settings data provider callback was found!", new LEDSuiteLogAreas.USER_INTERACTIONS());
     }
 
     public void settingsDialogApplyFail() {
@@ -233,7 +234,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
         animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "test", String.valueOf(UUID.randomUUID()), () -> {
             clearMainContent();
-            changeMainContent(AnimationMenu.create().init());
+            changeMainContent(AnimationMenu.create("lol").init());
             LEDSuiteApplication.getLogger().info("test");
         }));
         animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow", String.valueOf(UUID.randomUUID()), () -> {

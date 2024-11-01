@@ -45,8 +45,6 @@ public class Constants {
 
     public static class UI {
         public static final String NOT_AVAILABLE_VALUE = "N/A";
-        public static final Double DEFAULT_OPACITY = 1.0;
-        public static final Double REDUCED_OPACITY = 0.5;
         public static final class SettingsDialog {
             public static final String[] DISCONNECTED_CSS = new String[]{"error"};
             public static final String[] CONNECTED_CSS = new String[]{"success"};

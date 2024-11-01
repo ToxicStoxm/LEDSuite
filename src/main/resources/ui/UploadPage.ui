@@ -81,9 +81,12 @@ suggested-action</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkSpinner" id="upload_button_spinner">
-                            <property name="spinning">True</property>
-                            <property name="visible">False</property>
+                          <object class="GtkRevealer" id="upload_button_spinner_revealer">
+                            <property name="child">
+                              <object class="AdwSpinner" id="upload_button_spinner"/>
+                            </property>
+                            <property name="transition-type">slide-left</property>
+                            <property name="reveal-child">False</property>
                           </object>
                         </child>
                       </object>

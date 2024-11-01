@@ -8,11 +8,9 @@ import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import io.github.jwharm.javagi.gtk.types.Types;
-import org.gnome.adw.ActionRow;
 import org.gnome.adw.ApplicationWindow;
-import org.gnome.adw.PreferencesPage;
-import org.gnome.adw.SwitchRow;
+import org.gnome.adw.Spinner;
+import org.gnome.adw.*;
 import org.gnome.gio.File;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
@@ -96,13 +94,16 @@ public class UploadPage extends PreferencesPage {
     @GtkChild(name = "upload_button_spinner")
     public Spinner uploadButtonSpinner;
 
+    @GtkChild(name = "upload_button_spinner_revealer")
+    public Revealer uploadButtonSpinnerRevealer;
+
     private boolean loading = false;
 
     @GtkCallback(name = "upload_button_cb")
     public void uploadButtonClickedCb() {
         if (loading) return;
         loading = true;
-        uploadButtonSpinner.setVisible(true);
+        uploadButtonSpinnerRevealer.setRevealChild(true);
         uploadButton.setCssClasses(new String[]{"pill", loading ? "Regular" : "suggested-action"});
         LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
 
@@ -110,7 +111,7 @@ public class UploadPage extends PreferencesPage {
             @Override
             public void run() {
                 loading = false;
-                uploadButtonSpinner.setVisible(false);
+                uploadButtonSpinnerRevealer.setRevealChild(false);
                 uploadButton.setCssClasses(new String[]{"pill", loading ? "Regular" : "suggested-action"});
                 LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
             }

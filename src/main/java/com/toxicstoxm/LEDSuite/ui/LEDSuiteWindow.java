@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
@@ -11,16 +12,13 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
-import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
+import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import io.github.jwharm.javagi.gtk.types.Types;
 import lombok.Getter;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
@@ -29,9 +27,10 @@ import org.gnome.adw.OverlaySplitView;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Main application window class. Holds and manages all UI related elements.
@@ -89,53 +88,62 @@ public class LEDSuiteWindow extends ApplicationWindow {
     }
 
     @Getter
-    private UpdateCallback<StatusUpdate> statusDialogUpdateCallback;
+    private StatusDialogEndpoint statusDialog;
 
     /**
      * Displays the status dialog if it isn't already open.
      */
     public void displayStatusDialog() {
-        if (statusDialogUpdateCallback == null) {
+        if (statusDialog == null) {
             var statusDialog = StatusDialog.create();
-            statusDialogUpdateCallback = statusDialog.getUpdater();
-            statusDialog.onClosed(() -> statusDialogUpdateCallback = null);
+            this.statusDialog = statusDialog.getStatusDialogEndpoint();
+            statusDialog.onClosed(() -> this.statusDialog = null);
             statusDialog.present(this);
             LEDSuiteApplication.getLogger().info("Opened new status dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         } else LEDSuiteApplication.getLogger().info("Couldn't open status dialog because it is already open!", new LEDSuiteLogAreas.USER_INTERACTIONS());
     }
 
     @Getter
-    private UpdateCallback<SettingsUpdate> settingsDialogUpdateCallback;
-
-    @Getter
-    private ProviderCallback<SettingsData> settingsDataProviderCallback;
-
-    private Action settingsDialogApplyFail;
+    private SettingsDialogEndpoint settingsDialog;
 
     /**
      * Displays the preference dialog if it isn't already open.
      */
     public void displayPreferencesDialog() {
-        if (settingsDialogUpdateCallback == null) {
+        if (settingsDialog == null) {
             var settingsDialog = SettingsDialog.create();
-            settingsDialogUpdateCallback = settingsDialog.getUpdater();
-            settingsDataProviderCallback = settingsDialog.getProvider();
-            settingsDialogApplyFail = settingsDialog.getApplyFail();
-            settingsDialog.onClosed(() -> {
-                settingsDialogUpdateCallback = null;
-                settingsDataProviderCallback = null;
-                settingsDialogApplyFail = null;
-            });
+            this.settingsDialog = new SettingsDialogEndpoint() {
+                @Override
+                public ConnectivityStatus connectivityManager() {
+                    return settingsDialog.getConnectivityStatus();
+                }
+
+                @Override
+                public ProviderCallback<SettingsData> settingsManager() {
+                    return settingsDialog.getProvider();
+                }
+
+                @Override
+                public UpdateCallback<SettingsUpdate> updater() {
+                    return settingsDialog.getUpdater();
+                }
+
+                @Override
+                public Action applyButtonCooldown() {
+                    return settingsDialog.getApplyButtonCooldownTrigger();
+                }
+            };
+            settingsDialog.onClosed(() -> this.settingsDialog = null);
             settingsDialog.present(this);
             LEDSuiteApplication.getLogger().info("Opened new settings dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         } else LEDSuiteApplication.getLogger().info("Couldn't open settings dialog because it is already open!", new LEDSuiteLogAreas.USER_INTERACTIONS());
     }
 
     public void settingsDialogApply() {
-        if (settingsDataProviderCallback != null) {
+        if (settingsDialog != null) {
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     SettingsChangeRequestPacket
-                            .fromSettingsData(settingsDataProviderCallback.getData())
+                            .fromSettingsData(settingsDialog.settingsManager().getData())
                             .serialize()
             );
             LEDSuiteApplication.getLogger().info("Applied settings and send changes to server!", new LEDSuiteLogAreas.USER_INTERACTIONS());
@@ -143,8 +151,8 @@ public class LEDSuiteWindow extends ApplicationWindow {
     }
 
     public void settingsDialogApplyFail() {
-        if (settingsDialogApplyFail != null) {
-            settingsDialogApplyFail.run();
+        if (settingsDialog != null) {
+            settingsDialog.applyButtonCooldown().run();
             LEDSuiteApplication.getLogger().info("Settings dialog apply failed, on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         } else LEDSuiteApplication.getLogger().info("Couldn't fail settings dialog apply, apply fail callback missing!", new LEDSuiteLogAreas.USER_INTERACTIONS());
     }
@@ -182,6 +190,11 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "animation_list")
     public ListBox animationList;
 
+    private final HashMap<String, AnimationRow> animations = new HashMap<>();
+
+    @Getter
+    private String selectedAnimation;
+
     @GtkChild(name = "file_management_list")
     public ListBox fileManagementList;
 
@@ -195,101 +208,226 @@ public class LEDSuiteWindow extends ApplicationWindow {
         animationList.setSelectionMode(SelectionMode.BROWSE);
     }
 
-    @Override
-    public void present() {
-        animationList.append(AnimationRow.create(getApplication(), "emoji-food-symbolic", "Test", String.valueOf(UUID.randomUUID()), () -> {
-            clearMainContent();
+    /**
+     * Updates the available animation list in the sidebar of the application.
+     * @param updatedAnimations new available animation list to display
+     */
+    public void updateAnimations(@NotNull Collection<StatusReplyPacket.InteractiveAnimation> updatedAnimations) {
+        HashMap<String, AnimationRow> newAnimationRows = new HashMap<>();
 
-            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                    StatusRequestPacket.builder().build().serialize()
+        LEDSuiteApplication.getLogger().verbose("Updating available animations. Count: " + updatedAnimations.size(), new LEDSuiteLogAreas.UI());
+
+        // Construct animation rows for all new animations and store them in a temporary map
+        for (StatusReplyPacket.InteractiveAnimation updatedAnimation : updatedAnimations) {
+            var animationRow = AnimationRow.create(
+                    AnimationRowData.builder()
+                            .app(getApplication())
+                            .iconName(updatedAnimation.iconName())
+                            .label(updatedAnimation.label())
+                            .animationID(updatedAnimation.id())
+                            .action(() -> {
+                                LEDSuiteApplication.getLogger().verbose("Requesting menu for animation '" + updatedAnimation.id() + "'", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                                        MenuRequestPacket.builder().requestFile(updatedAnimation.id()).build().serialize()
+                                );
+                            })
+                            .cooldown(500L)
+                            .build()
             );
 
-            LEDSuiteApplication.getLogger().info("Test");
-        }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow", String.valueOf(UUID.randomUUID()), () -> {
-            clearMainContent();
+            newAnimationRows.put(updatedAnimation.id(), animationRow);
+        }
 
-            /*new LEDSuiteRunnable() {
-                @Override
-                public void run() {
-                    LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                            StatusReplyPacket.builder()
-                                    .fileState(Math.random() > 0.77 ? Math.random() > 0.5 ? FileState.idle : FileState.playing : FileState.paused)
-                                    .selectedFile("Test-Animation-" + Math.round(Math.random()))
-                                    .currentDraw(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
-                                    .voltage(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
-                                    .lidState(Math.random() > 0.5 ? null : Math.random() > 0.5 ? LidState.open : LidState.closed)
-                                    .animations(List.of(
-                                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation1", "some-gnome-label", true),
-                                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation2", "some-gnome-label", false),
-                                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation3", "some-gnome-label", true)
-                                    ))
-                                    .build()
-                    );
+        List<String> removedAnimations = new ArrayList<>(animations.keySet());
+
+        // Loop through all new or updated animations.
+        // If an animation with the same key already exists in the current list, it is re-added to update its values,
+        // except if that animation row is currently selected.
+        // Then just the label and icon name is updated to prevent
+        // the user from being kicked out of that animation's menu.
+        // If no animation with the same name already exists, it's simply added to the list.
+        for (Map.Entry<String, AnimationRow> entry : newAnimationRows.entrySet()) {
+            String newAnimation = entry.getKey();
+            AnimationRow newAnimationRow = entry.getValue();
+
+            removedAnimations.remove(newAnimation);
+
+            if (animations.containsKey(newAnimation)) {
+                LEDSuiteApplication.getLogger().verbose("Updated animation: " + entry.getKey(), new LEDSuiteLogAreas.UI());
+                if (selectedAnimation.equals(newAnimation)) {
+                    ListBoxRow selectedRow = animationList.getSelectedRow();
+                    if (selectedRow instanceof AnimationRow animationRow) {
+                        animationRow.setAnimationLabel(newAnimationRow.animationRowLabel.getLabel());
+                        animationRow.setIconName(newAnimationRow.animationIcon.getIconName());
+                    } else LEDSuiteApplication.getLogger().warn("Wasn't able to update selected animation!", new LEDSuiteLogAreas.UI());
+                    continue;
                 }
-            }.runTaskTimerAsynchronously(1000, 500);*/
 
-            LEDSuiteApplication.getLogger().info("TestRow");
-        }));
+                animationList.remove(animations.remove(entry.getKey()));
+            } else LEDSuiteApplication.getLogger().verbose("Added animation: " + entry.getKey(), new LEDSuiteLogAreas.UI());
 
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "test", String.valueOf(UUID.randomUUID()), () -> {
-            clearMainContent();
-            changeMainContent(AnimationMenu.create("lol").init());
-            LEDSuiteApplication.getLogger().info("test");
-        }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow", String.valueOf(UUID.randomUUID()), () -> {
-            clearMainContent();
+            animations.put(entry.getKey(), entry.getValue());
+            animationList.append(entry.getValue());
+        }
 
-            /*new LEDSuiteRunnable() {
-                @Override
-                public void run() {
-                    LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                            SettingsReplyPacket.builder()
-                                    .brightness((int) Math.round(Math.random() * Math.random() * Math.pow(10000, Math.random()) % 100))
-                                    .selectedColorMode(Math.random() > 0.77 ? Math.random() > 0.5 ? "RGB" : "RGBW" : null)
-                                    .availableColorModes(/*Math.random() > 0.77 ? Math.random() > 0.5 ? List.of("RGB", "RGBW") : List.of("RGB") : null*//* List.of("RGB", "RGBW"))
-                                    .build()
-                    );
-                }
-            }.runTaskTimerAsynchronously(1000, 1000);*/
+        // The remaining animations are simply removed from the animation row list.
+        // Except if a row is selected, then it is first deselected and the upload page is selected by default.
+        for (String removedAnimation : removedAnimations) {
+            if (removedAnimation.equals(selectedAnimation)) {
+                animationList.unselectRow(animations.get(removedAnimation));
+                uploadPageSelect();
+            }
+            animationList.remove(animations.remove(removedAnimation));
+            LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
+        }
+    }
 
-            LEDSuiteApplication.getLogger().info("TestRow");
-        }));
-        animationList.append(AnimationRow.create(getApplication(), "media-optical-cd-audio-symbolic", "TestRow2", String.valueOf(UUID.randomUUID()), () -> {
-            clearMainContent();
+    @Override
+    public void present() {
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("emoji-food-symbolic")
+                        .label("Test")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
 
-            new LEDSuiteRunnable() {
-                @Override
-                public void run() {
-                    WebSocketClient client = LEDSuiteApplication.getWebSocketCommunication();
+                            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                                    StatusRequestPacket.builder().build().serialize()
+                            );
 
-                    client.enqueueMessage(
-                            PlayRequestPacket.builder().requestFile("test-animation").build().serialize()
-                    );
+                            LEDSuiteApplication.getLogger().info("Test");
+                        })
+                        .build()
+        ));
 
-                    client.enqueueMessage(
-                            PauseRequestPacket.builder().requestFile("test-animation").build().serialize()
-                    );
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("media-optical-cd-audio-symbolic")
+                        .label("TestRow")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
 
-                    client.enqueueMessage(
-                            StopRequestPacket.builder().requestFile("test-animation").build().serialize()
-                    );
+                    /*new LEDSuiteRunnable() {
+                        @Override
+                        public void run() {
+                            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
+                                    StatusReplyPacket.builder()
+                                            .fileState(Math.random() > 0.77 ? Math.random() > 0.5 ? FileState.idle : FileState.playing : FileState.paused)
+                                            .selectedFile("Test-Animation-" + Math.round(Math.random()))
+                                            .currentDraw(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
+                                            .voltage(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
+                                            .lidState(Math.random() > 0.5 ? null : Math.random() > 0.5 ? LidState.open : LidState.closed)
+                                            .animations(List.of(
+                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation1", "some-gnome-label", true),
+                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation2", "some-gnome-label", false),
+                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation3", "some-gnome-label", true)
+                                            ))
+                                            .build()
+                            );
+                        }
+                    }.runTaskTimerAsynchronously(1000, 500);*/
 
-                    client.enqueueMessage(
-                            FileUploadRequestPacket.builder().uploadSessionId(String.valueOf(UUID.randomUUID())).requestFile("test-animation").build().serialize()
-                    );
+                            LEDSuiteApplication.getLogger().info("TestRow");
+                        })
+                        .build()
+        ));
 
-                    client.enqueueMessage(
-                            RenameRequestPacket.builder().newName("new-name").requestFile("old-name").build().serialize()
-                    );
-                    client.enqueueMessage(
-                            MenuChangeRequestPacket.builder().objectId(String.valueOf(UUID.randomUUID())).objectValue("sdhfjsdhfs").fileName("Test-Animation").build().serialize()
-                    );
-                }
-            }.runTaskAsynchronously();
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("media-optical-cd-audio-symbolic")
+                        .label("test")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
+                            changeMainContent(AnimationMenu.create("lol").init());
+                            LEDSuiteApplication.getLogger().info("test");
+                        })
+                        .build()
+        ));
 
-            LEDSuiteApplication.getLogger().info("TestRow2");
-        }));
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("media-optical-cd-audio-symbolic")
+                        .label("TestRow")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
+
+                    /*new LEDSuiteRunnable() {
+                        @Override
+                        public void run() {
+                            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
+                                    SettingsReplyPacket.builder()
+                                            .brightness((int) Math.round(Math.random() * Math.random() * Math.pow(10000, Math.random()) % 100))
+                                            .selectedColorMode(Math.random() > 0.77 ? Math.random() > 0.5 ? "RGB" : "RGBW" : null)
+                                            .availableColorModes(List.of("RGB", "RGBW"))
+                                            .build()
+                            );
+                        }
+                    }.runTaskTimerAsynchronously(1000, 1000);*/
+
+                            LEDSuiteApplication.getLogger().info("TestRow");
+                        })
+                        .build()
+        ));
+
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("media-optical-cd-audio-symbolic")
+                        .label("TestRow2")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
+
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    WebSocketClient client = LEDSuiteApplication.getWebSocketCommunication();
+
+                                    client.enqueueMessage(
+                                            PlayRequestPacket.builder().requestFile("test-animation").build().serialize()
+                                    );
+
+                                    client.enqueueMessage(
+                                            PauseRequestPacket.builder().requestFile("test-animation").build().serialize()
+                                    );
+
+                                    client.enqueueMessage(
+                                            StopRequestPacket.builder().requestFile("test-animation").build().serialize()
+                                    );
+
+                                    client.enqueueMessage(
+                                            FileUploadRequestPacket.builder().uploadSessionId(String.valueOf(UUID.randomUUID())).requestFile("test-animation").build().serialize()
+                                    );
+
+                                    client.enqueueMessage(
+                                            RenameRequestPacket.builder().newName("new-name").requestFile("old-name").build().serialize()
+                                    );
+                                    client.enqueueMessage(
+                                            MenuChangeRequestPacket.builder().objectId(String.valueOf(UUID.randomUUID())).objectValue("sdhfjsdhfs").fileName("Test-Animation").build().serialize()
+                                    );
+                                }
+                            }.runTaskAsynchronously();
+
+                            LEDSuiteApplication.getLogger().info("TestRow2");
+                        })
+                        .build()
+        ));
+
+        updateAnimations(Collections.singleton(new StatusReplyPacket.InteractiveAnimation(
+                String.valueOf(UUID.randomUUID()),
+                "test-animation",
+                "media-optical-cd-audio-symbolic",
+                false
+        )));
+
         super.present();
     }
 }

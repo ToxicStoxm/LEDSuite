@@ -14,14 +14,19 @@ import org.jetbrains.annotations.NotNull;
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
 
+    public static boolean wasConnected = false;
+
     @OnOpen
     public void onOpen(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+
+        if (!wasConnected) wasConnected = true;
 
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StatusRequestPacket.builder().build().serialize()
         );
 
+        LEDSuiteApplication.getWindow().animationList.setSensitive(true);
     }
 
     @OnMessage
@@ -40,6 +45,15 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     @OnClose
     public void onClose(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+
+        var settingsDialog = LEDSuiteApplication.getWindow().getSettingsDialog();
+
+        if (settingsDialog != null) {
+            settingsDialog.connectivityManager().disconnected();
+        }
+
+        LEDSuiteApplication.getWindow().animationList.setSensitive(false);
+        LEDSuiteApplication.getWindow().uploadPageSelect();
     }
 
     @OnError

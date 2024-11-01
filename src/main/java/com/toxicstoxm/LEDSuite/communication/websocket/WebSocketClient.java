@@ -4,15 +4,12 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import jakarta.websocket.*;
+import jakarta.websocket.Session;
+import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -26,12 +23,9 @@ public class WebSocketClient {
 
     private boolean cancelled = false;
 
-    private final LEDSuiteTask statusTask;
-    private final LEDSuiteTask scannerTask;
-
     public WebSocketClient(Class<?> clientEndpoint, URI path) {
         run(clientEndpoint, path);
-        statusTask = new LEDSuiteRunnable() {
+        new LEDSuiteRunnable() {
             @Override
             public void run() {
                 if (cancelled) this.cancel();
@@ -40,19 +34,10 @@ public class WebSocketClient {
                 );
             }
         }.runTaskTimerAsynchronously(1000, 1000);
-        scannerTask = new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                Scanner scanner = new Scanner(System.in);
-                while (true) {
-                    if (cancelled) this.cancel();
-                    enqueueMessage(scanner.nextLine().replace("\\n", "\n"));
-                }
-            }
-        }.runTaskAsynchronously();
     }
 
-    private Session currentSession;
+    @Getter
+    private boolean connected = false;
 
     /**
      * Creates a new websocket client in an async thread and connects it to the specified server address.
@@ -70,7 +55,7 @@ public class WebSocketClient {
                         clientEndpoint,
                         path
                 )) {
-                    currentSession = session;
+                    connected = true;
                     //session.setMaxIdleTimeout(Long.MAX_VALUE);
                     while (!cancelled) {
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
@@ -81,10 +66,10 @@ public class WebSocketClient {
                                 toSend
                         );
                     }
-                } catch (DeploymentException | IOException | InterruptedException e) {
+                } catch (Exception e) {
                      LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
                 } finally {
-                    currentSession = null;
+                    connected = false;
                 }
             }
         }.runTaskAsynchronously();
@@ -107,9 +92,4 @@ public class WebSocketClient {
     public boolean enqueueMessage(String message) {
         return sendQueue.offer(message);
     }
-
-    public boolean isConnected() {
-        return currentSession != null && currentSession.isOpen();
-    }
-
 }

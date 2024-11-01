@@ -26,7 +26,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
                 StatusRequestPacket.builder().build().serialize()
         );
 
-        LEDSuiteApplication.getWindow().animationList.setSensitive(true);
+        LEDSuiteApplication.getWindow().setServerConnected(true);
     }
 
     @OnMessage
@@ -52,8 +52,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
             settingsDialog.connectivityManager().disconnected();
         }
 
-        LEDSuiteApplication.getWindow().animationList.setSensitive(false);
-        LEDSuiteApplication.getWindow().uploadPageSelect();
+        LEDSuiteApplication.getWindow().setServerConnected(false);
     }
 
     @OnError

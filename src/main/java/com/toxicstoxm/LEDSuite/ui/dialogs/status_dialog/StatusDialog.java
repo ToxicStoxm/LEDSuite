@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 
+import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
-import com.toxicstoxm.LEDSuite.tools.UITools;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -15,6 +15,7 @@ import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ public class StatusDialog extends Dialog {
      */
     private void setVoltage(Double voltage) {
         if (voltage == null) {
-            UITools.markUnavailable(this.voltage);
+            markUnavailable(this.voltage);
         } else {
             markAvailableWithValue(this.voltage, voltage + "V");
         }
@@ -79,7 +80,7 @@ public class StatusDialog extends Dialog {
      */
     private void setCurrentDraw(Double currentDraw) {
         if (currentDraw == null) {
-            UITools.markUnavailable(this.currentDraw);
+            markUnavailable(this.currentDraw);
 
         } else {
             this.markAvailableWithValue(this.currentDraw, currentDraw + "A");
@@ -92,7 +93,7 @@ public class StatusDialog extends Dialog {
      */
     private void setFileState(FileState fileState) {
         if (fileState == null) {
-            UITools.markUnavailable(this.currentState);
+            markUnavailable(this.currentState);
         } else {
             this.markAvailableWithValue(this.currentState, fileState.name());
         }
@@ -104,7 +105,7 @@ public class StatusDialog extends Dialog {
      */
     private void setCurrentFile(String currentFile) {
         if (currentFile == null) {
-            UITools.markUnavailable(this.currentFile);
+            markUnavailable(this.currentFile);
         } else {
             markAvailableWithValue(this.currentFile, currentFile);
         }
@@ -116,18 +117,18 @@ public class StatusDialog extends Dialog {
      */
     private void setLidState(LidState lidState) {
         if (lidState == null) {
-            UITools.markUnavailable(this.lidState);
+            markUnavailable(this.lidState);
         } else {
             markAvailableWithValue(this.lidState, lidState.name());
         }
     }
 
     /**
-     * Marks all rows as unavailable using {@link UITools#markUnavailable(ActionRow)}
+     * Marks all rows as unavailable using {@link #markUnavailable(ActionRow)}
      * @see #markAvailableWithValue(ActionRow, String)
      */
     private void markAllUnavailable() {
-        UITools.markAllUnavailable(
+       markAllUnavailable(
                 List.of(
                         lidState,
                         currentDraw,
@@ -138,6 +139,17 @@ public class StatusDialog extends Dialog {
         );
     }
 
+    public static void markAllUnavailable(@NotNull Collection<ActionRow> rows) {
+        for (ActionRow row : rows) {
+            markUnavailable(row);
+        }
+    }
+
+    public static void markUnavailable(@NotNull ActionRow row) {
+        row.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+        row.setSensitive(false);
+    }
+
     /**
      * Marks the specified row as available by resetting its opacity and changing its value to the specified new value.
      * @param row the row to mark as available
@@ -146,7 +158,7 @@ public class StatusDialog extends Dialog {
      */
     private void markAvailableWithValue(@NotNull ActionRow row, String value) {
         row.setSubtitle(value);
-        UITools.markAvailable(row);
+        row.setSensitive(true);
     }
 
     /**

@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
@@ -143,11 +143,11 @@ public class StatusReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
 
-        var statusUpdater = LEDSuiteApplication.getWindow().getStatusDialogUpdateCallback();
+        var statusDialogEndpoint = LEDSuiteApplication.getWindow().getStatusDialog();
 
-        if (statusUpdater != null) {
+        if (statusDialogEndpoint != null) {
 
-            statusUpdater.update(
+            statusDialogEndpoint.updater().update(
                     StatusUpdate.builder()
                             .fileState(fileState)
                             .lidState(lidState)
@@ -157,6 +157,14 @@ public class StatusReplyPacket extends CommunicationPacket {
                             .build()
             );
             LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
+
+            if (animationsAvailable || animations == null) {
+                animations = new ArrayList<>();
+            }
+
         } else LEDSuiteApplication.getLogger().debug("Couldn't update status because no status updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
+
+        LEDSuiteApplication.getWindow().updateAnimations(animations);
+
     }
 }

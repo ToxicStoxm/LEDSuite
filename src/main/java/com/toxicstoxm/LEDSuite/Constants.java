@@ -58,6 +58,7 @@ public class Constants {
             public static final String DISCONNECTING = "Disconnecting";
             public static final String[] CHANGING_CSS = new String[]{"warning"};
             public static final long MINIMUM_DELAY = 500;
+            public static final long RETRY_DELAY = 3000;
             public static final long CONNECTION_TIMEOUT = 10000;
 
         }
@@ -113,9 +114,12 @@ public class Constants {
 
                     public static final class SettingsRequest {}
 
+                    public static final class SettingsResetRequest {}
+
                     public static final class SettingsChangeRequest {
                         public static final String BRIGHTNESS = "brightness";
                         public static final String SELECTED_COLOR_MODE = "selected_color_mode";
+                        public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
                     }
                 }
 
@@ -140,6 +144,7 @@ public class Constants {
                         public static final String BRIGHTNESS = "brightness";
                         public static final String SELECTED_COLOR_MODE = "selected_color_mode";
                         public static final String AVAILABLE_COLOR_MODES = "available_color_modes";
+                        public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
                     }
 
                     public static final class UploadFileCollisionReply {
@@ -213,6 +218,7 @@ public class Constants {
                         public static final String SETTINGS_CHANGE = "settings_change";
                         public static final String STATUS = "status";
                         public static final String SETTINGS = "settings";
+                        public static final String SETTINGS_RESET = "settings_reset";
                     }
                 }
 

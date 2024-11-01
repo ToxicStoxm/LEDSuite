@@ -9,8 +9,9 @@ import java.util.Collection;
  * @param brightness LED brightness
  * @param selectedColorMode currently selected color mode. Example RGB
  * @param supportedColorModes list of supported color modes
+ * @param restorePreviousState if the server should restore it's previous state after a reboot
  * @since 1.0.0
  */
 @Builder
-public record SettingsUpdate(Integer brightness, Integer selectedColorMode, Collection<String> supportedColorModes) {
+public record SettingsUpdate(Integer brightness, Integer selectedColorMode, Collection<String> supportedColorModes, Boolean restorePreviousState) {
 }

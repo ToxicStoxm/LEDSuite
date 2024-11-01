@@ -76,6 +76,11 @@ Format: protcol://domain:port/folder/</property>
                 <property name="title">Color Mode</property>
               </object>
             </child>
+            <child>
+              <object class="AdwSwitchRow" id="settings_restore_previous_state">
+                <property name="title" translatable="yes">Restore previous state on boot</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

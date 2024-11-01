@@ -3,32 +3,30 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.Action;
+import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import io.github.jwharm.javagi.gobject.types.Types;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
-import org.gnome.adw.*;
 import org.gnome.adw.Spinner;
-import org.gnome.gio.ListModel;
+import org.gnome.adw.*;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
-import org.gnome.gtk.Box;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.lang.foreign.MemorySegment;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,13 +50,37 @@ public class SettingsDialog extends PreferencesDialog {
     private ProviderCallback<SettingsData> provider;
 
     @Getter
-    private Action applyFail;
+    private Action ApplyButtonCooldownTrigger;
+
+    @Getter
+    private ConnectivityStatus connectivityStatus;
 
     public SettingsDialog(MemorySegment address) {
         super(address);
         updater = this::update;
         provider = this::getData;
-        applyFail = this::applyFail;
+        ApplyButtonCooldownTrigger = this::applyButtonCooldown;
+        connectivityStatus = new ConnectivityStatus() {
+            @Override
+            public void connected() {
+                GLib.idleAddOnce(() -> setServerStateConnected());
+            }
+
+            @Override
+            public void disconnected() {
+                GLib.idleAddOnce(() -> setServerStateDisconnected());
+            }
+
+            @Override
+            public void disconnecting() {
+                GLib.idleAddOnce(() -> setSeverStateDisconnecting());
+            }
+
+            @Override
+            public void connecting() {
+                GLib.idleAddOnce(() -> setServerStateConnecting());
+            }
+        };
     }
 
     public static Type getType() {
@@ -84,6 +106,9 @@ public class SettingsDialog extends PreferencesDialog {
     @GtkChild(name = "settings_color_mode")
     public ComboRow colorMode;
 
+    @GtkChild(name = "settings_restore_previous_state")
+    public SwitchRow restorePreviousState;
+
     @GtkChild(name = "settings_apply_button")
     public Button applyButton;
 
@@ -101,7 +126,6 @@ public class SettingsDialog extends PreferencesDialog {
 
     @GtkChild(name = "settings_server_group_suffix_spinner_revealer")
     public Revealer serverConnectivityButtonSpinnerRevealer;
-
 
     private void setBrightness(Integer brightness) {
         if (brightness == null) {
@@ -141,65 +165,116 @@ public class SettingsDialog extends PreferencesDialog {
 
     }
 
-    private void initialize() {
-        markServerSettingsUnavailable();
-        serverAddress.setText(LEDSuiteSettingsBundle.WebsocketURI.getInstance().get());
-        serverAddress.setSensitive(false);
-        updateServerState();
+    private void setRestorePreviousState(Boolean restorePreviousState) {
+        if (restorePreviousState == null) {
+            this.restorePreviousState.setSensitive(false);
+        } else {
+            this.restorePreviousState.setSensitive(true);
+            this.restorePreviousState.setActive(restorePreviousState);
+        }
     }
 
-    private void markServerSettingsUnavailable() {
-        this.colorMode.setSensitive(false);
-        brightness.setSensitive(false);
-        applyButton.setSensitive(false);
+    private void initialize() {
+        CooldownManger.addAction("serverConnectivityButtonCb", () -> {
+            if (isServerConnected()) {
+                connectivityStatus.disconnecting();
+                triggerDisconnect();
+            } else {
+                connectivityStatus.connecting();
+                triggerConnect();
+            }
+        }, 500, true);
+
+        markServerSettingsUnavailable();
+        serverAddress.setText(LEDSuiteSettingsBundle.WebsocketURI.getInstance().get());
+        serverAddress.setShowApplyButton(true);
+        serverAddress.onApply(() -> LEDSuiteSettingsBundle.WebsocketURI.getInstance().set(serverAddress.getText()));
+        serverAddress.setSensitive(false);
+
+        updateServerState();
     }
 
     private void update(@NotNull SettingsUpdate settingsUpdate) {
         GLib.idleAddOnce(() -> {
             setSupportedColorModes(settingsUpdate.supportedColorModes(), settingsUpdate.selectedColorMode());
             setBrightness(settingsUpdate.brightness());
+            setRestorePreviousState(settingsUpdate.restorePreviousState());
+
             updateServerState();
         });
     }
 
+    private void updateServerState() {
+        if (!serverConnectivityButton.isSensitive()) return;
+        if (isServerConnected()) {
+            connectivityStatus.connected();
+        } else {
+            connectivityStatus.disconnected();
+        }
+    }
+
     private void setServerStateConnected() {
-        setServerStateFixedState();
+        serverStateNormal();
+
         applyButton.setSensitive(true);
+
         setServerGroupSuffixStyle(Constants.UI.SettingsDialog.CONNECTED_CSS);
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.CONNECTED);
         serverConnectivityButton.setTooltipText(Constants.UI.SettingsDialog.CONNECTED_TOOLTIP);
+
+        markServerSettingsAvailable();
     }
 
     private void setServerStateDisconnected() {
-        setServerStateFixedState();
+        serverStateNormal();
+
+        serverAddress.setSensitive(true);
         setServerGroupSuffixStyle(Constants.UI.SettingsDialog.DISCONNECTED_CSS);
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.DISCONNECTED);
         serverConnectivityButton.setTooltipText(Constants.UI.SettingsDialog.DISCONNECTED_TOOLTIP);
+
+        markServerSettingsUnavailable();
+    }
+
+    private void serverStateNormal() {
+        serverConnectivityButton.setSensitive(true);
+        serverConnectivityButtonBox.setSpacing(0);
+        serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
+    }
+
+    private void markServerSettingsUnavailable() {
+        changeServerSettingsAvailability(false);
+    }
+
+    private void markServerSettingsAvailable() {
+       changeServerSettingsAvailability(true);
+    }
+
+    private void changeServerSettingsAvailability(boolean available) {
+        colorMode.setSensitive(available);
+        brightness.setSensitive(available);
+        applyButton.setSensitive(available);
+        restorePreviousState.setSensitive(available);
     }
 
     private void setServerStateConnecting() {
-        setServerStateChanging();
+        serverStateChanging();
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.CONNECTING);
     }
 
     private void setSeverStateDisconnecting() {
-        setServerStateChanging();
+        serverStateChanging();
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.DISCONNECTING);
     }
 
-    private void setServerStateChanging() {
+    private void serverStateChanging() {
         markServerSettingsUnavailable();
         serverConnectivityButton.setSensitive(false);
         serverConnectivityButton.setTooltipText(null);
         serverConnectivityButtonBox.setSpacing(8);
         serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
         setServerGroupSuffixStyle(Constants.UI.SettingsDialog.CHANGING_CSS);
-    }
-
-    private void setServerStateFixedState() {
-        serverConnectivityButton.setSensitive(true);
-        serverConnectivityButtonBox.setSpacing(0);
-        serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
+        serverAddress.setSensitive(false);
     }
 
     private void setServerGroupSuffixStyle(String[] css) {
@@ -211,21 +286,18 @@ public class SettingsDialog extends PreferencesDialog {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
-                if (webSocketClient == null || !webSocketClient.isConnected()) {
-                    GLib.idleAddOnce(() -> {
-                        LEDSuiteApplication.getLogger().info("Skipping disconnect attempt because communication websocket is already disconnected!", new LEDSuiteLogAreas.NETWORK());
-                        setServerStateDisconnected();
-                    });
-                } else {
-                    webSocketClient.shutdown();
+
+                if (isServerConnected()) {
+
                     try {
                         Thread.sleep(Constants.UI.SettingsDialog.MINIMUM_DELAY);
                     } catch (InterruptedException e) {
                         LEDSuiteApplication.getLogger().warn("Minimum delay sleeper was interrupted!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-                    } finally {
-                        GLib.idleAddOnce(() -> setServerStateDisconnected());
                     }
+
+                    LEDSuiteApplication.getWebSocketCommunication().shutdown();
+                } else {
+                    LEDSuiteApplication.getLogger().info("Skipping disconnect attempt because communication websocket is already disconnected!", new LEDSuiteLogAreas.NETWORK());
                 }
             }
         }.runTaskLaterAsynchronously(100);
@@ -235,20 +307,17 @@ public class SettingsDialog extends PreferencesDialog {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
-                if (webSocketClient == null || !webSocketClient.isConnected()) {
+                if (!isServerConnected()) {
                     if (LEDSuiteApplication.startCommunicationSocket()) {
-                        GLib.idleAddOnce(() -> setServerStateConnected());
+                        connectivityStatus.connected();
                         requestSettings();
                     } else {
-                        GLib.idleAddOnce(() -> setServerStateDisconnected());
+                        connectivityStatus.disconnected();
                     }
                 } else {
-                    GLib.idleAddOnce(() -> {
-                        LEDSuiteApplication.getLogger().info("Skipping connect attempt because communication websocket is already connected!", new LEDSuiteLogAreas.NETWORK());
-                        setServerStateConnected();
-                        requestSettings();
-                    });
+                    LEDSuiteApplication.getLogger().info("Skipping connect attempt because communication websocket is already connected!", new LEDSuiteLogAreas.NETWORK());
+                    connectivityStatus.connected();
+                    requestSettings();
                 }
             }
         }.runTaskLaterAsynchronously(100);
@@ -257,22 +326,8 @@ public class SettingsDialog extends PreferencesDialog {
 
     @GtkCallback(name = "settings_server_connectivity_button_cb")
     public void serverConnectivityButtonCb() {
-        if (serverConnectivityButtonLabel.getLabel().equals(Constants.UI.SettingsDialog.CONNECTED)) {
-            setSeverStateDisconnecting();
-            triggerDisconnect();
-        } else {
-            setServerStateConnecting();
-            triggerConnect();
-        }
-    }
-
-    private void updateServerState() {
-        if (!serverConnectivityButton.isSensitive()) return;
-        WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
-        if (webSocketClient != null && webSocketClient.isConnected()) {
-            setServerStateConnected();
-        } else {
-            setServerStateDisconnected();
+        if (!CooldownManger.call("serverConnectivityButtonCb")) {
+            LEDSuiteApplication.getLogger().verbose("Connectivity button on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         }
     }
 
@@ -281,11 +336,12 @@ public class SettingsDialog extends PreferencesDialog {
         String temp = ((StringList<?>) colorMode.getModel()).getString(colorMode.getSelected());
         return new SettingsData(
                 (int) brightness.getValue(),
-                temp == null || temp.equals(Constants.UI.NOT_AVAILABLE_VALUE) ? null : temp
+                temp == null || temp.equals(Constants.UI.NOT_AVAILABLE_VALUE) ? null : temp,
+                restorePreviousState.getActive()
         );
     }
 
-    private void applyFail() {
+    private void applyButtonCooldown() {
         String[] defaultCSS = applyButton.getCssClasses();
         List<String> cssFail = new java.util.ArrayList<>(Arrays.stream(defaultCSS).toList());
         cssFail.remove("suggested-action");
@@ -315,7 +371,33 @@ public class SettingsDialog extends PreferencesDialog {
 
     @Override
     public void present(@Nullable Widget parent) {
-        requestSettings();
+        if (isServerConnected()) requestSettings();
+
+        updateServerState();
+
+        if (!WebSocketCommunication.wasConnected) {
+            connectivityStatus.connecting();
+            long start = System.currentTimeMillis();
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    if (isServerConnected()) {
+                        connectivityStatus.connected();
+                        cancel();
+                    }
+                    if (System.currentTimeMillis() - start > Constants.UI.SettingsDialog.CONNECTION_TIMEOUT) {
+                        connectivityStatus.disconnected();
+                        cancel();
+                    }
+                }
+            }.runTaskTimerAsynchronously(0, 10);
+        }
+
         super.present(parent);
+    }
+
+    private boolean isServerConnected() {
+        WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
+        return webSocketClient != null && webSocketClient.isConnected();
     }
 }

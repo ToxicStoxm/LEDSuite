@@ -1,15 +1,14 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -34,6 +33,7 @@ public class SettingsReplyPacket extends CommunicationPacket {
 
     private Integer brightness;
     private String selectedColorMode;
+    private Boolean restorePreviousState;
     private Collection<String> availableColorModes;
 
     @Override
@@ -56,6 +56,10 @@ public class SettingsReplyPacket extends CommunicationPacket {
 
         if (selectedColorMode != null) {
             yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE, selectedColorMode);
+        }
+
+        if (restorePreviousState != null) {
+            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
         }
 
         if (availableColorModes != null && !availableColorModes.isEmpty()) {
@@ -87,19 +91,24 @@ public class SettingsReplyPacket extends CommunicationPacket {
             packet.availableColorModes = yaml.getStringList(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES);
         }
 
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, yaml)) {
+            packet.restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT);
+        }
+
         return packet;
     }
 
     @Override
     public void handlePacket() {
 
-        UpdateCallback<SettingsUpdate> settingsUpdateUpdateCallback = LEDSuiteApplication.getWindow().getSettingsDialogUpdateCallback();
-        if (settingsUpdateUpdateCallback != null) {
-            settingsUpdateUpdateCallback.update(
+        var settingsDialog = LEDSuiteApplication.getWindow().getSettingsDialog();
+        if (settingsDialog != null) {
+            settingsDialog.updater().update(
                     SettingsUpdate.builder()
                             .brightness(brightness)
                             .selectedColorMode(availableColorModes != null ? availableColorModes.stream().toList().indexOf(selectedColorMode) : Gtk.ACCESSIBLE_VALUE_UNDEFINED)
                             .supportedColorModes(availableColorModes)
+                            .restorePreviousState(restorePreviousState)
                             .build()
             );
             LEDSuiteApplication.getLogger().info("Updated settings using provided settings updater!", new LEDSuiteLogAreas.COMMUNICATION());

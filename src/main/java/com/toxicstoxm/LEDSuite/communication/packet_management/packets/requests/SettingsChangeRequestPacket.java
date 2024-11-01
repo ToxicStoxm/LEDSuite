@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
@@ -27,6 +27,7 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
 
     private Integer brightness;
     private String selectedColorMode;
+    private Boolean restorePreviousState;
 
     @Override
     public String getType() {
@@ -42,6 +43,7 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
         return SettingsChangeRequestPacket.builder()
                 .brightness(settingsData.brightness())
                 .selectedColorMode(settingsData.selectedColorMode())
+                .restorePreviousState(settingsData.restorePreviousState())
                 .build();
     }
 
@@ -63,6 +65,10 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
             packet.selectedColorMode = yaml.getString(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE);
         }
 
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT, yaml)) {
+            packet.restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT);
+        }
+
         return packet;
     }
 
@@ -76,6 +82,10 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
 
         if (selectedColorMode != null && !selectedColorMode.isBlank()) {
             yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE, selectedColorMode);
+        }
+
+        if (restorePreviousState != null) {
+            yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
         }
 
         return yaml.saveToString();

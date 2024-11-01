@@ -3,7 +3,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.tools.UITools;
-import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -29,11 +28,11 @@ public class StatusDialog extends Dialog {
     private static final Type gtype = TemplateTypes.register(StatusDialog.class);
 
     @Getter
-    private UpdateCallback<StatusUpdate> updater;
+    private StatusDialogEndpoint statusDialogEndpoint;
 
     public StatusDialog(MemorySegment address) {
         super(address);
-        updater = this::update;
+        statusDialogEndpoint = () -> StatusDialog.this::update;
     }
 
     public static Type getType() {

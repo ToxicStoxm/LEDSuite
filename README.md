@@ -5,21 +5,21 @@
  - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
  - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
- - V2 is already under development check out the [dev](https://github.com/ToxicStoxm/LEDSuite/tree/dev) branch for further details
+ - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
 
 ## ToDo 
-###### (?) -> planned but not final
+###### (?) → planned but not final
 - [ ] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
     - [X] Connect to server endpoints
       - [X] Connect to multiple endpoints concurrently 
     - [X] Exchange packets
-  - [ ] Handle IP and Port changes
+  - [X] Handle IP and Port changes
   - [ ] Communication handling
-    - [ ] Request handling
+    - [X] Request handling
     - [ ] Response handling
-    - [ ] Error handling
+    - [X] Error handling
   - [ ] File sending
     - [ ] Loading file
     - [ ] Sending file data to server
@@ -35,47 +35,48 @@
     - [ ] Multiple servers (?)
 - [ ] UI
   - [ ] Elements
-    -  [ ] Dialogs
-      - [ ] Settings dialog
-      - [ ] Status dialog
+    -  [X] Dialogs
+      - [X] Settings dialog
+      - [X] Status dialog
       - [X] Keyboard shortcuts dialog
       - [X] About dialog
-      - [ ] Alert dialogs (?)
     - [ ] Main window
       - [X] Sidebar
       - [ ] Main view
       - [ ] Progress bar
       - [ ] Animation control buttons
       - [X] Header bar
-      - [ ] Error toasts
+      - [ ] Alert dialogs
 - [ ] YAML
   - [ ] Serialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
-      - [ ] Request packets
+      - [X] Request packets
         - [X] Status request
-        - [X] Manu request
-      - [ ] Reply sackets
+        - [X] Menu request
+      - [ ] Reply packets
         - [X] Status reply
         - [ ] Menu reply
       - [X] Error packets
   - [ ] Deserialization
     - [ ] Adwaita- & Gtk widgets
     - [ ] YAML packets
-      - [ ] Request packets
+      - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply sackets
+      - [ ] Reply packets
         - [X] Status reply
         - [ ] Menu reply
       - [X] Error packets
 - [ ] Documentation
-  - [ ] Add Javadoc to all classes and functions
+  - [] Add Javadoc
+    - [X] Classes
+    - [ ] Functions
   - [ ] Add tons of comments to the code
   - [ ] Create examples (?)
 - [ ] I18N
   - [ ] Languages
-    - [ ] English
+    - [X] English
     - [ ] German
     - [ ] Italian
     - [ ] French (?)

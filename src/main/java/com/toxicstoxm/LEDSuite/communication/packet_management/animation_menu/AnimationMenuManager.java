@@ -43,6 +43,13 @@ public class AnimationMenuManager extends Registrable<Widget> {
     }
 
 
+    /**
+     * Attempts to deserialize the given menu YAML string and construct a new animation menu object from it.
+     * @param menuYAML the YAML string to deserialize
+     * @return the new animation menu
+     * @throws DeserializationException if something goes wrong while deserializing. E.g.: missing keys, invalid YAML or invalid values
+     * @see #deserializeAnimationMenuGroup(String, ConfigurationSection)
+     */
     public AnimationMenu deserializeAnimationMenu(String menuYAML) throws DeserializationException {
         // Try to load YAML string into a YAML object
         YamlConfiguration yaml = new YamlConfiguration();
@@ -87,6 +94,14 @@ public class AnimationMenuManager extends Registrable<Widget> {
     }
 
 
+    /**
+     * Attempts to deserialize the specified menu group YAML section and constructs a new {@link PreferencesGroup}.
+     * @param menuGroupKey the animation menu group id (used by the server for identifying individual menu widgets)
+     * @param menuGroupSection the YAML config section to deserialize
+     * @return the new {@link PreferencesGroup} object
+     * @throws DeserializationException if something goes wrong while deserializing. E.g.: missing keys, invalid YAML or invalid values
+     * @see #deserializeAnimationMenu(String)
+     */
     private PreferencesGroup deserializeAnimationMenuGroup(@NotNull String menuGroupKey, @NotNull ConfigurationSection menuGroupSection) throws DeserializationException {
 
         if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, menuGroupSection)) {

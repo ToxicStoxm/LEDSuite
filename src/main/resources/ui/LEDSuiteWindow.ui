@@ -26,6 +26,7 @@
                     <property name="height-request">0</property>
                     <property name="title-widget">
                       <object class="GtkLabel">
+                        <property name="css-classes">heading</property>
                         <property name="label">LEDSuite</property>
                       </object>
                     </property>
@@ -88,6 +89,12 @@
                       <object class="GtkSeparator"/>
                     </child>
                     <child>
+                      <object class="GtkLabel" id="sidebar_animation_group_title">
+                        <property name="css-classes">heading</property>
+                        <property name="label">Animations</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkListBox" id="animation_list">
                         <property name="css-classes">navigation-sidebar</property>
                         <property name="selection-mode">browse</property>
@@ -99,6 +106,7 @@
                   <object class="AdwHeaderBar">
                     <property name="title-widget">
                       <object class="GtkLabel">
+                        <property name="css-classes">heading</property>
                         <property name="label">File Management</property>
                       </object>
                     </property>

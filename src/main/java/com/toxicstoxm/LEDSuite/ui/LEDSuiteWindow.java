@@ -201,11 +201,20 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "file_management_upload_files_page")
     public ListBoxRow fileManagementUploadFilesPage;
 
+    @GtkChild(name = "sidebar_animation_group_title")
+    public Label animationGroupTitle;
+
     public void uploadPageSelect() {
         LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         changeMainContent(com.toxicstoxm.LEDSuite.ui.UploadPage.create(this));
         animationList.setSelectionMode(SelectionMode.NONE);
         animationList.setSelectionMode(SelectionMode.BROWSE);
+    }
+
+    public void setServerConnected(boolean serverConnected) {
+        if (!serverConnected) LEDSuiteApplication.getWindow().uploadPageSelect();
+        animationList.setSensitive(serverConnected);
+        animationGroupTitle.setSensitive(serverConnected);
     }
 
     /**

@@ -8,14 +8,14 @@
  - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
 
 ## ToDo 
-###### (?) -> planned but not final
+###### (?) → planned but not final
 - [ ] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
     - [X] Connect to server endpoints
       - [X] Connect to multiple endpoints concurrently 
     - [X] Exchange packets
-  - [ ] Handle IP and Port changes
+  - [X] Handle IP and Port changes
   - [ ] Communication handling
     - [X] Request handling
     - [ ] Response handling
@@ -35,19 +35,18 @@
     - [ ] Multiple servers (?)
 - [ ] UI
   - [ ] Elements
-    -  [ ] Dialogs
+    -  [X] Dialogs
       - [X] Settings dialog
       - [X] Status dialog
       - [X] Keyboard shortcuts dialog
       - [X] About dialog
-      - [ ] Alert dialogs (?)
     - [ ] Main window
       - [X] Sidebar
       - [ ] Main view
       - [ ] Progress bar
       - [ ] Animation control buttons
       - [X] Header bar
-      - [ ] Error toasts
+      - [ ] Alert dialogs
 - [ ] YAML
   - [ ] Serialization
     - [ ] Adwaita- & Gtk widgets
@@ -65,7 +64,7 @@
       - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply sackets
+      - [ ] Reply packets
         - [X] Status reply
         - [ ] Menu reply
       - [X] Error packets
@@ -77,7 +76,7 @@
   - [ ] Create examples (?)
 - [ ] I18N
   - [ ] Languages
-    - [ ] English
+    - [X] English
     - [ ] German
     - [ ] Italian
     - [ ] French (?)

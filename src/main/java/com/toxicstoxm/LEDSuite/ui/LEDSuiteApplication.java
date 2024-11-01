@@ -46,7 +46,6 @@ import java.lang.foreign.MemorySegment;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.UUID;
 
 import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.EnableSettingsLogging;
@@ -202,28 +201,54 @@ public class LEDSuiteApplication extends Application {
     public static boolean startCommunicationSocket() {
         URI serverAddress;
         try {
-            serverAddress = new URI(WebsocketURI.getInstance().get());
-        } catch (URISyntaxException e) {
+            String baseAddress = WebsocketURI.getInstance().get();
+            if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
+            baseAddress = baseAddress + "communication";
+            serverAddress = new URI(baseAddress);
+        } catch (NullPointerException | URISyntaxException e) {
             return false;
         }
 
+        long start = System.currentTimeMillis();
+        long timeElapsed = System.currentTimeMillis() - start;
+        boolean minDelayReached = false;
+        boolean retry = false;
+
+        if (webSocketCommunication != null) webSocketCommunication.shutdown();
+
         webSocketCommunication = new WebSocketClient(WebSocketCommunication.class, serverAddress);
 
-        long start = System.currentTimeMillis();
-        long timeElapsed;
-        boolean minDelayReached;
+        while (timeElapsed < Constants.UI.SettingsDialog.CONNECTION_TIMEOUT) {
 
-        do {
+            if (minDelayReached) {
+                if (webSocketCommunication.isConnected()) {
+                    return true;
+                } else if (retry) {
+                    webSocketCommunication.shutdown();
+                    webSocketCommunication = new WebSocketClient(WebSocketCommunication.class, serverAddress);
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        return false;
+                    }
+                }
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                return false;
+            }
+
             timeElapsed = System.currentTimeMillis() - start;
-            minDelayReached = !(timeElapsed < Constants.UI.SettingsDialog.MINIMUM_DELAY);
+            minDelayReached = timeElapsed > Constants.UI.SettingsDialog.MINIMUM_DELAY;
+            retry = timeElapsed > Constants.UI.SettingsDialog.RETRY_DELAY;
+        }
+        if (webSocketCommunication.isConnected()) return true;
 
-            if (webSocketCommunication.isConnected() && minDelayReached) return true;
-
-        } while (!minDelayReached || (!webSocketCommunication.isConnected() && timeElapsed > Constants.UI.SettingsDialog.CONNECTION_TIMEOUT));
-
-        LEDSuiteApplication.getLogger().info("Network connection timed out >10s!", new LEDSuiteLogAreas.NETWORK());
+        LEDSuiteApplication.getLogger().info("Network connection timed out!", new LEDSuiteLogAreas.NETWORK());
         return false;
-
     }
 
     /**
@@ -395,7 +420,12 @@ public class LEDSuiteApplication extends Application {
         win.present();
 
         testPackets();
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                startCommunicationSocket();
+            }
+        }.runTaskAsynchronously();
 
-        startCommunicationSocket();
     }
 }

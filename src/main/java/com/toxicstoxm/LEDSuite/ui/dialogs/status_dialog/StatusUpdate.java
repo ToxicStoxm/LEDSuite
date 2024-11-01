@@ -14,5 +14,4 @@ import lombok.Builder;
  * @since 1.0.0
  */
 @Builder
-public record StatusUpdate(FileState fileState, String currentFile, LidState lidState, Double voltage, Double currentDraw) {
-}
+public record StatusUpdate(FileState fileState, String currentFile, LidState lidState, Double voltage, Double currentDraw) {}

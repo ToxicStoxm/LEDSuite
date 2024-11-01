@@ -2,16 +2,16 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
@@ -326,6 +326,10 @@ public class LEDSuiteApplication extends Application {
                     .selectedColorMode("RGB")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsChangeRequestPacket.serialize()));
+
+            logger.debug("\nTesting settings reset request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
+            SettingsResetRequestPacket settingsResetRequestPacket = SettingsResetRequestPacket.builder().build();
+            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsResetRequestPacket.serialize()));
 
             // reply packets
             logger.debug("\nTesting reply packets:", new LEDSuiteLogAreas.COMMUNICATION());

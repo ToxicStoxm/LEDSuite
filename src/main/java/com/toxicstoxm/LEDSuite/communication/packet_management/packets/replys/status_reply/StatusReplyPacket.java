@@ -36,11 +36,11 @@ public class StatusReplyPacket extends CommunicationPacket {
     public record InteractiveAnimation(String id, String label, String iconName, boolean pauseable) {}
 
     private FileState fileState;                        // guaranteed
-    private String selectedFile;
-    private Double currentDraw;                    // not guaranteed
-    private Double voltage;
-    private LidState lidState;                           // not guaranteed
-    private List<InteractiveAnimation> animations;     // only available
+    private String selectedFile;                        // not guaranteed
+    private Double currentDraw;                         // not guaranteed
+    private Double voltage;                             // not guaranteed
+    private LidState lidState;                          // not guaranteed
+    private List<InteractiveAnimation> animations;      // only if available
     private boolean animationsAvailable;
 
 

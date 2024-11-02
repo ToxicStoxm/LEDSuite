@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
+import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.AnimationMenuManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
@@ -95,6 +96,9 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static PacketReceivedHandler packetReceivedHandler;
 
+    @Getter
+    private static AnimationMenuManager animationMenuManager;
+
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
      * @return the newly created LEDSuiteApplication instance
@@ -159,6 +163,8 @@ public class LEDSuiteApplication extends Application {
 
         this.onShutdown(this::exit);
 
+
+
         configMgr = YAJSISettingsManager.builder()
                 .buildWithConfigFile(
                         new YAJSISettingsManager.ConfigFile(
@@ -189,6 +195,9 @@ public class LEDSuiteApplication extends Application {
 
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
+
+        animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets");
+        animationMenuManager.autoRegister();
 
         packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
         packetReceivedHandler = new PacketReceivedHandler();
@@ -342,9 +351,9 @@ public class LEDSuiteApplication extends Application {
                     .voltage(5.0)
                     .lidState(LidState.open)
                     .animations(List.of(
-                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation1", "some-gnome-label", true),
-                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation2", "some-gnome-label", false),
-                            new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation3", "some-gnome-label", true)
+                            new StatusReplyPacket.Animation("1", "Test-Animation1", "some-gnome-label", true),
+                            new StatusReplyPacket.Animation("1", "Test-Animation2", "some-gnome-label", false),
+                            new StatusReplyPacket.Animation("1", "Test-Animation3", "some-gnome-label", true)
                     ))
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusReplyPacket.serialize()));

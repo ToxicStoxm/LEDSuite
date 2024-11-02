@@ -13,7 +13,7 @@ public enum WidgetType {
     SPIN_ROW,
     EXPANDER_ROW;
 
-    @NotNull String getName() {
+    public @NotNull String getName() {
         return this.name().toLowerCase();
     }
 

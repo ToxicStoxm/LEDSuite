@@ -58,19 +58,19 @@
                         <property name="css-classes">background</property>
                         <property name="title">Power</property>
                         <child>
-                          <object class="AdwActionRow" id="status_current">
-                            <property name="css-classes">property</property>
-                            <property name="subtitle">N/A</property>
-                            <property name="subtitle-selectable">True</property>
-                            <property name="title">Current Draw</property>
-                          </object>
-                        </child>
-                        <child>
                           <object class="AdwActionRow" id="status_voltage">
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
                             <property name="title">Voltage</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="status_current">
+                            <property name="css-classes">property</property>
+                            <property name="subtitle">N/A</property>
+                            <property name="subtitle-selectable">True</property>
+                            <property name="title">Current Draw</property>
                           </object>
                         </child>
                       </object>

@@ -1,5 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -15,15 +18,18 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
+import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
+import lombok.Setter;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.OverlaySplitView;
+import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
@@ -187,12 +193,25 @@ public class LEDSuiteWindow extends ApplicationWindow {
         }
     }
 
+    /**
+     * Displays the provided animation menu if the corresponding animation (by id) is currently selected.
+     * @param menu the menu to display
+     */
+    public void displayAnimationManu(@NotNull AnimationMenu menu) {
+        String animationID = menu.getMenuID();
+        if (Objects.equals(animationID, selectedAnimation)) {
+            changeMainContent(menu.init((AnimationRow) animationList.getSelectedRow()));
+            LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+        } else LEDSuiteApplication.getLogger().debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+    }
+
     @GtkChild(name = "animation_list")
     public ListBox animationList;
 
     private final HashMap<String, AnimationRow> animations = new HashMap<>();
 
     @Getter
+    @Setter
     private String selectedAnimation;
 
     @GtkChild(name = "file_management_list")
@@ -221,13 +240,13 @@ public class LEDSuiteWindow extends ApplicationWindow {
      * Updates the available animation list in the sidebar of the application.
      * @param updatedAnimations new available animation list to display
      */
-    public void updateAnimations(@NotNull Collection<StatusReplyPacket.InteractiveAnimation> updatedAnimations) {
+    public void updateAnimations(@NotNull Collection<StatusReplyPacket.Animation> updatedAnimations) {
         HashMap<String, AnimationRow> newAnimationRows = new HashMap<>();
 
         LEDSuiteApplication.getLogger().verbose("Updating available animations. Count: " + updatedAnimations.size(), new LEDSuiteLogAreas.UI());
 
         // Construct animation rows for all new animations and store them in a temporary map
-        for (StatusReplyPacket.InteractiveAnimation updatedAnimation : updatedAnimations) {
+        for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
             var animationRow = AnimationRow.create(
                     AnimationRowData.builder()
                             .app(getApplication())
@@ -297,7 +316,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 AnimationRowData.builder()
                         .app(getApplication())
                         .iconName("emoji-food-symbolic")
-                        .label("Test")
+                        .label("Test status request")
                         .animationID(String.valueOf(UUID.randomUUID()))
                         .action(() -> {
                             clearMainContent();
@@ -305,42 +324,55 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                                     StatusRequestPacket.builder().build().serialize()
                             );
-
-                            LEDSuiteApplication.getLogger().info("Test");
                         })
                         .build()
         ));
+
+        String testID = String.valueOf(UUID.randomUUID());
 
         animationList.append(AnimationRow.create(
                 AnimationRowData.builder()
                         .app(getApplication())
                         .iconName("media-optical-cd-audio-symbolic")
-                        .label("TestRow")
-                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .label("Test menu reply!")
+                        .animationID(testID)
                         .action(() -> {
                             clearMainContent();
 
-                    /*new LEDSuiteRunnable() {
-                        @Override
-                        public void run() {
-                            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                                    StatusReplyPacket.builder()
-                                            .fileState(Math.random() > 0.77 ? Math.random() > 0.5 ? FileState.idle : FileState.playing : FileState.paused)
-                                            .selectedFile("Test-Animation-" + Math.round(Math.random()))
-                                            .currentDraw(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
-                                            .voltage(Math.random() > 0.5 ? null : (double) (Math.round(Math.random() * Math.random() * 1000)) / 1000)
-                                            .lidState(Math.random() > 0.5 ? null : Math.random() > 0.5 ? LidState.open : LidState.closed)
-                                            .animations(List.of(
-                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation1", "some-gnome-label", true),
-                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation2", "some-gnome-label", false),
-                                                    new StatusReplyPacket.InteractiveAnimation("1", "Test-Animation3", "some-gnome-label", true)
-                                            ))
-                                            .build()
-                            );
-                        }
-                    }.runTaskTimerAsynchronously(1000, 500);*/
+                            YamlConfiguration yaml = new YamlConfiguration();
+                            yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, testID);
 
-                            LEDSuiteApplication.getLogger().info("TestRow");
+                            for (int i = 0; i < 10; i++) {
+                                String randomID = String.valueOf(UUID.randomUUID());
+                                String prefix = Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + randomID + ".";
+                                yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "group-" + i);
+                                yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, "group-" + i);
+
+                                String widgetPrefix = prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID() + ".";
+
+                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.PROPERTY_ROW.getName());
+                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "TestProperty-" + i);
+                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "TestPropertyValue-" + i);
+
+                                YamlConfiguration propertyYAML = new YamlConfiguration();
+
+                                propertyYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.PROPERTY_ROW.getName());
+                                propertyYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Special-" + i);
+                                propertyYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "SpecialValue-" + i);
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), propertyYAML.getValues(true));
+                            }
+
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    GLib.idleAddOnce(() -> {
+                                    LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
+                                            MenuReplyPacket.builder().menuYAML(yaml.saveToString()).build()
+                                    );
+                                    });
+                                }
+                            }.runTaskLaterAsynchronously(50);
                         })
                         .build()
         ));
@@ -349,48 +381,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 AnimationRowData.builder()
                         .app(getApplication())
                         .iconName("media-optical-cd-audio-symbolic")
-                        .label("test")
-                        .animationID(String.valueOf(UUID.randomUUID()))
-                        .action(() -> {
-                            clearMainContent();
-                            changeMainContent(AnimationMenu.create("lol").init());
-                            LEDSuiteApplication.getLogger().info("test");
-                        })
-                        .build()
-        ));
-
-        animationList.append(AnimationRow.create(
-                AnimationRowData.builder()
-                        .app(getApplication())
-                        .iconName("media-optical-cd-audio-symbolic")
-                        .label("TestRow")
-                        .animationID(String.valueOf(UUID.randomUUID()))
-                        .action(() -> {
-                            clearMainContent();
-
-                    /*new LEDSuiteRunnable() {
-                        @Override
-                        public void run() {
-                            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                                    SettingsReplyPacket.builder()
-                                            .brightness((int) Math.round(Math.random() * Math.random() * Math.pow(10000, Math.random()) % 100))
-                                            .selectedColorMode(Math.random() > 0.77 ? Math.random() > 0.5 ? "RGB" : "RGBW" : null)
-                                            .availableColorModes(List.of("RGB", "RGBW"))
-                                            .build()
-                            );
-                        }
-                    }.runTaskTimerAsynchronously(1000, 1000);*/
-
-                            LEDSuiteApplication.getLogger().info("TestRow");
-                        })
-                        .build()
-        ));
-
-        animationList.append(AnimationRow.create(
-                AnimationRowData.builder()
-                        .app(getApplication())
-                        .iconName("media-optical-cd-audio-symbolic")
-                        .label("TestRow2")
+                        .label("Test media requests!")
                         .animationID(String.valueOf(UUID.randomUUID()))
                         .action(() -> {
                             clearMainContent();
@@ -430,7 +421,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                         .build()
         ));
 
-        updateAnimations(Collections.singleton(new StatusReplyPacket.InteractiveAnimation(
+        updateAnimations(Collections.singleton(new StatusReplyPacket.Animation(
                 String.valueOf(UUID.randomUUID()),
                 "test-animation",
                 "media-optical-cd-audio-symbolic",

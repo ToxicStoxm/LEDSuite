@@ -1,17 +1,18 @@
 package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
+import com.toxicstoxm.LEDSuite.ui.AnimationRow;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
-import org.gnome.adw.ActionRow;
-import org.gnome.adw.PreferencesGroup;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Image;
+import org.gnome.gtk.ImageType;
 import org.gnome.gtk.Label;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
 
@@ -50,20 +51,17 @@ public class AnimationMenu extends Box {
         return gtype;
     }
 
-    public static AnimationMenu create(String fileName) {
+    public static @NotNull AnimationMenu create(String fileName) {
         AnimationMenu menu = GObject.newInstance(getType());
         menu.setMenuID(fileName);
         return menu;
     }
 
-    public AnimationMenu init() {
-        var pref = PreferencesGroup.builder().setTitle("Hello World").build();
-        for (int i = 0; i < 20; i++) {
-            pref.add(ActionRow.builder().setCssClasses(new String[]{"property"}).setTitle("Hello").setSubtitleSelectable(true).setSubtitle("World").build());
-        }
-        animationLabel.setLabel("Test");
-        animationMenuImage.setFromIconName("media-optical-cd-audio-symbolic");
-        animationMenuContent.append(pref);
+    public AnimationMenu init(@NotNull AnimationRow row) {
+        animationLabel.setLabel(row.animationRowLabel.getLabel());
+        var storageType = row.animationIcon.getStorageType();
+        if (storageType.equals(ImageType.EMPTY) || storageType.equals(ImageType.PAINTABLE)) animationMenuImage.setFromPaintable(row.animationIcon.getPaintable());
+        else animationMenuImage.setFromIconName(row.animationIcon.getIconName());
         return this;
     }
 

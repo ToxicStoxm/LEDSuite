@@ -4,14 +4,13 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Default implementation for a {@link Packet}
@@ -47,11 +46,6 @@ public abstract class CommunicationPacket implements Packet {
     @Override
     public String toString() {
         return StringFormatter.getClassName(getClass()) + "(Type = " + getIdentifier() + ")" + " --> " + "\n[\n" + serialize() + "]";
-    }
-
-    protected <T> @Nullable T convert(@NotNull Class<T > clazz, CommunicationPacket packet) {
-        if (clazz.isInstance(packet)) return clazz.cast(packet);
-        return null;
     }
 
     protected boolean checkIfKeyExists(String key, @NotNull ConfigurationSection yaml) {

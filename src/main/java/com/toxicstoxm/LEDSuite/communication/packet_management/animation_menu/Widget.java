@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Serializable;
 
-public interface Widget extends Serializable, AutoRegistrableItem {
+public interface Widget extends Serializable<DeserializableWidget, org.gnome.gtk.Widget>, AutoRegistrableItem {
 
     @Override
     default String getItemType() {
@@ -14,8 +14,8 @@ public interface Widget extends Serializable, AutoRegistrableItem {
     String getType();
 
     @Override
-    String serialize();
+    DeserializableWidget serialize();
 
     @Override
-    Serializable deserialize(String string) throws DeserializationException;
+    org.gnome.gtk.Widget deserialize(DeserializableWidget deserializableWidget) throws DeserializationException;
 }

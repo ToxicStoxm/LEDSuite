@@ -10,7 +10,7 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  *
  * @since 1.0.0
  */
-public interface Packet extends Serializable, AutoRegistrableItem {
+public interface Packet extends Serializable<String, Packet>, AutoRegistrableItem {
 
     default String getItemType() {
         return getIdentifier();

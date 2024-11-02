@@ -75,6 +75,7 @@ public class AnimationRow extends ListBoxRow {
                 LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + animationID + ") is on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
             } else {
                 window.fileManagementList.unselectAll();
+                window.setSelectedAnimation(animationID);
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                         MenuRequestPacket.builder()
                                 .requestFile(animationID)

@@ -33,14 +33,14 @@ import java.util.List;
 @Setter
 public class StatusReplyPacket extends CommunicationPacket {
 
-    public record InteractiveAnimation(String id, String label, String iconName, boolean pauseable) {}
+    public record Animation(String id, String label, String iconName, boolean pauseable) {}
 
     private FileState fileState;                        // guaranteed
     private String selectedFile;                        // not guaranteed
     private Double currentDraw;                         // not guaranteed
     private Double voltage;                             // not guaranteed
     private LidState lidState;                          // not guaranteed
-    private List<InteractiveAnimation> animations;      // only if available
+    private List<Animation> animations;      // only if available
     private boolean animationsAvailable;
 
 
@@ -100,7 +100,7 @@ public class StatusReplyPacket extends CommunicationPacket {
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, yaml);
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, yaml);
 
-                packet.animations.add(new InteractiveAnimation(
+                packet.animations.add(new Animation(
                         key,
                         animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL),
                         animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON),
@@ -126,7 +126,7 @@ public class StatusReplyPacket extends CommunicationPacket {
         // Save the list of animations
         if (animationsAvailable && animations != null && !animations.isEmpty()) {
             for (int i = 0; i < animations.size(); i++) {
-                InteractiveAnimation animation = animations.get(i);
+                Animation animation = animations.get(i);
                 String baseKey = Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + "." + i;
 
                 yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animation.label);

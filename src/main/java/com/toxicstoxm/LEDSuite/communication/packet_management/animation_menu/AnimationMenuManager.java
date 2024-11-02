@@ -17,20 +17,12 @@ import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import org.gnome.adw.PreferencesGroup;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-
 public class AnimationMenuManager extends Registrable<Widget> {
 
-    private final String classPath;
+    private final String widgetClassPath;
 
-    private final HashMap<String, Widget> registeredWidgets = new HashMap<>();
-
-    public AnimationMenuManager(String classPath) {
-        this.classPath = classPath;
-    }
-
-    public boolean registerWidget(Widget widget) {
-        return registeredWidgets.putIfAbsent(widget.getType(), widget) == null;
+    public AnimationMenuManager(String widgetClassPath) {
+        this.widgetClassPath = widgetClassPath;
     }
 
     @Override
@@ -38,7 +30,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         return AutoRegisterModule.<Widget>builder()
                 .moduleType(Widget.class)
                 .module(AutoRegisterModules.WIDGETS)
-                .classPath(classPath)
+                .classPath(widgetClassPath)
                 .build();
     }
 
@@ -85,7 +77,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (menuGroupSection == null) throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!");
 
             try {
-                animationMenu.append(deserializeAnimationMenuGroup(menuGroupKey, menuGroupSection));
+                animationMenu.animationMenuContent.append(deserializeAnimationMenuGroup(menuGroupKey, menuGroupSection));
             } catch (DeserializationException e) {
                 throw new DeserializationException("Failed to deserialize animation menu group '" + menuGroupKey + "'!", e);
             }
@@ -116,11 +108,40 @@ public class AnimationMenuManager extends Registrable<Widget> {
             menuGroup.setTitle(menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL));
         }
 
-        //if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.))
+        if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, menuGroupSection)) {
+            menuGroup.setTooltipText(menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP));
+        }
 
-        // TODO deserialize group content
+        // TODO properties
 
+        if (!YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, menuGroupSection)) throw new DeserializationException("Group content section is missing!");
 
+        ConfigurationSection menuGroupContentSection = menuGroupSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
+        if (menuGroupContentSection == null) throw new DeserializationException("Group content section is empty!");
+
+        for (String widgetKey : menuGroupContentSection.getKeys(false)) {
+            ConfigurationSection widgetSection = menuGroupContentSection.getConfigurationSection(widgetKey);
+            if (widgetSection == null) throw new DeserializationException("Widget section for widget '" + widgetKey + "' was null!");
+
+            if (!YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, widgetSection)) throw new DeserializationException("Widget type for widget '" + widgetKey + "' missing!");
+
+            String widgetType = widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
+
+            if (!isRegistered(widgetType)) throw new DeserializationException("Invalid / Unknown widget type '" + widgetType + "' for widget '" + widgetKey +"'!");
+
+            try {
+                menuGroup.add(
+                        get(widgetType).deserialize(
+                                DeserializableWidget.builder()
+                                        .widgetSection(widgetSection)
+                                        .widgetKey(widgetKey)
+                                        .build()
+                        )
+                );
+            } catch (DeserializationException e) {
+                throw new DeserializationException("Failed to deserialize widget '" + widgetKey + "' with type '" + widgetType + "'!", e);
+            }
+        }
         return menuGroup;
     }
 

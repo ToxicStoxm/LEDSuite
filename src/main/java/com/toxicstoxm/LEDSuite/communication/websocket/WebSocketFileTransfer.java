@@ -1,5 +1,8 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +13,16 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @ClientEndpoint
-public abstract class WebSocketFileTransfer extends WebSocketClientEndpoint implements ProgressUpdater {
+public class WebSocketFileTransfer extends WebSocketClientEndpoint implements ProgressUpdater {
+
+    private final UpdateCallback<String> onConnectCb;
+    private final UpdateCallback<ProgressUpdate> onProgress;
+
+    public WebSocketFileTransfer(UpdateCallback<String> onConnect, UpdateCallback<ProgressUpdate> onProgress) {
+        this.onConnectCb = onConnect;
+        this.onProgress = onProgress;
+
+    }
 
     @Override
     boolean binaryOnly() {
@@ -20,8 +32,10 @@ public abstract class WebSocketFileTransfer extends WebSocketClientEndpoint impl
     @OnOpen
     public void onOpen(@NotNull Session session) {
         super.onOpen(session);
+
+        String sessionID = session.getId();
+
         try {
-            String sessionID = session.getId();
             session.getBasicRemote().sendText(sessionID);
             onConnect(sessionID);
         } catch (IOException e) {
@@ -36,11 +50,21 @@ public abstract class WebSocketFileTransfer extends WebSocketClientEndpoint impl
 
     @OnClose
     public void onClose(@NotNull Session session) {
-        super.onClose(session);
+        LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
     }
 
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
+    }
+
+    @Override
+    public void onConnect(String sessionID) {
+        onConnectCb.update(sessionID);
+    }
+
+    @Override
+    public void update(ProgressUpdate newValues) {
+        onProgress.update(newValues);
     }
 }

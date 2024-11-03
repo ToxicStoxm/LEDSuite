@@ -59,7 +59,6 @@ public class WebSocketClient {
                         path
                 )) {
                     connected = true;
-                    //session.setMaxIdleTimeout(Long.MAX_VALUE);
                     while (!cancelled && session.isOpen()) {
                         if (clientEndpoint.binaryOnly()) {
                             BinaryPacket binaryPacket = sendQueueBinary.poll(Long.MAX_VALUE, TimeUnit.DAYS);
@@ -84,22 +83,19 @@ public class WebSocketClient {
                             }
 
                             if (isLast) {
-                                LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId());
+                                LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
                                 shutdown();
                             }
 
                             continue;
                         }
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
-                        // LEDSuiteApplication.getLogger().verbose("----------------------< OUT >----------------------", new LEDSuiteLogAreas.COMMUNICATION());
-                        // LEDSuiteApplication.getLogger().verbose(toSend, new LEDSuiteLogAreas.COMMUNICATION());
-                        // LEDSuiteApplication.getLogger().verbose("---------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
-                        session.getAsyncRemote().sendText(
+                        session.getBasicRemote().sendText(
                                 toSend
                         );
                     }
                 } catch (Exception e) {
-                     LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
+                    LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
                 } finally {
                     connected = false;
                 }

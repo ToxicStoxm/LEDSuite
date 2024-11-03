@@ -1,8 +1,10 @@
 package com.toxicstoxm.LEDSuite.formatting;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -43,5 +45,43 @@ public final class StringFormatter {
 
     public static @NotNull String formatDateTime() {
         return formatDateTime(defaultDateTimeFormat);
+    }
+
+    public static @NotNull String formatDuration(long millis) {
+        Duration duration = Duration.ofMillis(millis);
+
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        StringBuilder formatted = new StringBuilder();
+
+        // Only append non-zero units
+        if (hours > 0) {
+            formatted.append(hours).append("h ");
+        }
+        if (minutes > 0) {
+            formatted.append(minutes).append("min ");
+        }
+        if (seconds > 0 || formatted.isEmpty()) { // Include seconds even if zero if no other units
+            formatted.append(seconds).append("s");
+        }
+
+        return formatted.toString().trim(); // Remove trailing space if any
+    }
+
+    @Contract(pure = true)
+    public static @NotNull String formatSpeed(long bytesPerSecond) {
+        final String[] units = {"Bps", "KBps", "MBps", "GBps", "TBps"};
+        int unitIndex = 0;
+        double speed = bytesPerSecond;
+
+        // Keep dividing by 1024 to move to the next unit
+        while (speed >= 1024 && unitIndex < units.length - 1) {
+            speed /= 1024;
+            unitIndex++;
+        }
+
+        return String.format("%.2f %s", speed, units[unitIndex]);
     }
 }

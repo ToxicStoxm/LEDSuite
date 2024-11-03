@@ -1,4 +1,6 @@
 LEDSuite:
+  UI:
+    FilePicker-Initial-Folder: ""
   Network:
     Websocket-URI: "wss://www.yourWebsocket.com/yourWebsocketEndpoint/"
   Debugging:

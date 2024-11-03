@@ -38,4 +38,16 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
             instance = this;
         }
     }
+
+    @YAMLSetting(path = "LEDSuite.UI.FilePicker-Initial-Folder")
+    public static class FilePickerInitialFolder extends YAJSISetting<String> {
+
+        @Getter
+        private static FilePickerInitialFolder instance;
+
+        public FilePickerInitialFolder(Setting<Object> setting) {
+            super(setting, String.class);
+            instance = this;
+        }
+    }
 }

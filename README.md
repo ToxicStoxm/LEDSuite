@@ -68,7 +68,7 @@
         - [ ] Menu reply
       - [X] Error packets
 - [ ] Documentation
-  - [] Add Javadoc
+  - [ ] Add Javadoc
     - [X] Classes
     - [ ] Functions
   - [ ] Add tons of comments to the code

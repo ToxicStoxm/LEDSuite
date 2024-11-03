@@ -21,17 +21,16 @@
     - [ ] Response handling
     - [X] Error handling
   - [ ] File sending
-    - [ ] Loading file
-    - [ ] Sending file data to server
-    - [ ] Sending metadata to server
-    - [ ] Calculating upload statistics
+    - [X] Loading file
+    - [X] Sending file data to server
+    - [X] Sending metadata to server
+    - [X] Calculating upload statistics
     - [ ] Error handling
     - [ ] Handle duplicate names
       - [ ] Rename support
       - [ ] Overwrite support
   - [X] Define communication protocol with YAML
   - [ ] Additional features
-    - [ ] Auto reconnect
     - [ ] Multiple servers (?)
 - [ ] UI
   - [ ] Elements
@@ -42,8 +41,8 @@
       - [X] About dialog
     - [ ] Main window
       - [X] Sidebar
-      - [ ] Main view
-      - [ ] Progress bar
+      - [X] Main view
+      - [X] Progress bar
       - [ ] Animation control buttons
       - [X] Header bar
       - [ ] Alert dialogs

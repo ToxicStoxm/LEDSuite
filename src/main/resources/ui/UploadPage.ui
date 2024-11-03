@@ -40,17 +40,17 @@
           </object>
         </child>
         <child>
-          <object class="AdwExpanderRow">
+          <object class="AdwExpanderRow" id="upload_statistics">
             <property name="title">Upload Statistics</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwActionRow" id="upload_speed">
                 <property name="css-classes">property</property>
                 <property name="subtitle">N/A</property>
                 <property name="title">Speed</property>
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwActionRow" id="upload_eta">
                 <property name="css-classes">property</property>
                 <property name="subtitle">N/A</property>
                 <property name="title">ETA</property>

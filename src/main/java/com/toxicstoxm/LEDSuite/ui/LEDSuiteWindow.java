@@ -223,9 +223,24 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "sidebar_animation_group_title")
     public Label animationGroupTitle;
 
+    @Getter
+    private UploadPageEndpoint uploadPageEndpoint;
+
     public void uploadPageSelect() {
         LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        changeMainContent(com.toxicstoxm.LEDSuite.ui.UploadPage.create(this));
+        UploadPage uploadPage = UploadPage.create(this);
+        uploadPageEndpoint = new UploadPageEndpoint() {
+            @Override
+            public UpdateCallback<Boolean> connectivityUpdater() {
+                return uploadPage.getConnectivityUpdater();
+            }
+
+            @Override
+            public UpdateCallback<UploadStatistics> uploadStatisticsUpdater() {
+                return uploadPage.getUploadStatisticsUpdater();
+            }
+        };
+        changeMainContent(uploadPage);
         animationList.setSelectionMode(SelectionMode.NONE);
         animationList.setSelectionMode(SelectionMode.BROWSE);
     }
@@ -234,6 +249,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
         if (!serverConnected) LEDSuiteApplication.getWindow().uploadPageSelect();
         animationList.setSensitive(serverConnected);
         animationGroupTitle.setSensitive(serverConnected);
+        if (uploadPageEndpoint != null) uploadPageEndpoint.connectivityUpdater().update(serverConnected);
     }
 
     /**
@@ -308,6 +324,40 @@ public class LEDSuiteWindow extends ApplicationWindow {
             animationList.remove(animations.remove(removedAnimation));
             LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
         }
+    }
+
+    @GtkChild(name = "upload_progress_bar_revealer")
+    public Revealer uploadProgressBarRevealer;
+
+    @GtkChild(name = "upload_progress_bar")
+    public ProgressBar uploadProgressBar;
+
+    public void setUploadProgress(double fraction) {
+        GLib.idleAddOnce(() -> {
+            if (!uploadProgressBarRevealer.getChildRevealed()) {
+                resetUploadProgress();
+                uploadProgressBarRevealer.setRevealChild(true);
+            }
+            uploadProgressBar.setFraction(fraction);
+        });
+    }
+
+    public void uploadFinished() {
+        uploadProgressBar.setFraction(1.0);
+
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                GLib.idleAddOnce(() -> {
+                    uploadProgressBarRevealer.setRevealChild(false);
+                });
+            }
+        }.runTaskLaterAsynchronously(1000);
+
+    }
+
+    public void resetUploadProgress() {
+        uploadProgressBar.setFraction(0.0);
     }
 
     @Override
@@ -415,8 +465,33 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                     );
                                 }
                             }.runTaskAsynchronously();
+                        })
+                        .build()
+        ));
 
-                            LEDSuiteApplication.getLogger().info("TestRow2");
+        animationList.append(AnimationRow.create(
+                AnimationRowData.builder()
+                        .app(getApplication())
+                        .iconName("media-optical-cd-audio-symbolic")
+                        .label("Test progress bar requests!")
+                        .animationID(String.valueOf(UUID.randomUUID()))
+                        .action(() -> {
+                            clearMainContent();
+
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    for (int i = 0; i < 1000; i++) {
+                                        setUploadProgress((double) i / 1000);
+                                        try {
+                                            Thread.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                    uploadFinished();
+                                }
+                            }.runTaskAsynchronously();
                         })
                         .build()
         ));

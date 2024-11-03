@@ -28,7 +28,7 @@ dependencies {
     annotationProcessor 'org.jetbrains:annotations:24.1.0'
 
     implementation 'com.toxicstoxm.YAJSI:YAJSI:1.6.4'
-    implementation 'com.toxicstoxm.YAJL:YAJL:1.4.2'
+    implementation 'com.toxicstoxm.YAJL:YAJL:1.4.3'
 
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'

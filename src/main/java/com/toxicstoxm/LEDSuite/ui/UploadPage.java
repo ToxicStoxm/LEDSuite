@@ -103,7 +103,7 @@ public class UploadPage extends PreferencesPage {
                 if (selectedFile != null) {
                     String parentPath = selectedFile.getParent().getPath();
                     if (!Objects.equals(parentPath, System.getProperty("user.home")) && new java.io.File(parentPath).exists()) {
-                        LEDSuiteApplication.getLogger().info("Changed initial folder for file picker to: " + parentPath);
+                        LEDSuiteApplication.getLogger().info("Changed initial folder for file picker to: " + parentPath, new LEDSuiteLogAreas.UI());
                         LEDSuiteSettingsBundle.FilePickerInitialFolder.getInstance().set(parentPath);
                     }
                     this.selectedFile = selectedFile.getPath();
@@ -129,7 +129,7 @@ public class UploadPage extends PreferencesPage {
     private boolean loading = false;
 
     public void setServerConnected(boolean serverConnected) {
-        uploadButton.setSensitive(serverConnected);
+        GLib.idleAddOnce(() -> uploadButton.setSensitive(serverConnected));
     }
 
     @GtkChild(name = "upload_statistics")
@@ -141,21 +141,26 @@ public class UploadPage extends PreferencesPage {
     @GtkChild(name = "upload_eta")
     public ActionRow uploadEta;
 
-    public void setUploadStatistics(@NotNull UploadStatistics uploadStatistics) {
-        long eta = uploadStatistics.millisecondsRemaining();
-        long speed = uploadStatistics.bytesPerSecond();
+    public void setUploadStatistics(@NotNull UploadStatistics newUploadStats) {
+        long eta = newUploadStats.millisecondsRemaining();
+        long speed = newUploadStats.bytesPerSecond();
 
-        if (!this.uploadStatistics.getExpanded()) this.uploadStatistics.setExpanded(true);
+        if (!this.uploadStatistics.getExpanded()) {
+            GLib.idleAddOnce(() -> uploadStatistics.setExpanded(true));
+        }
 
-        uploadEta.setSubtitle(StringFormatter.formatDuration(eta));
-        uploadSpeed.setSubtitle(StringFormatter.formatSpeed(speed));
-
+        GLib.idleAddOnce(() -> {
+            uploadEta.setSubtitle(StringFormatter.formatDuration(eta));
+            uploadSpeed.setSubtitle(StringFormatter.formatSpeed(speed));
+        });
     }
 
     public void resetUploadStatistics() {
-        uploadStatistics.setExpanded(false);
-        uploadSpeed.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
-        uploadEta.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+        GLib.idleAddOnce(() -> {
+            uploadStatistics.setExpanded(false);
+            uploadSpeed.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+            uploadEta.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+        });
     }
 
     @GtkCallback(name = "upload_button_cb")
@@ -165,11 +170,12 @@ public class UploadPage extends PreferencesPage {
         uploadButton.setSensitive(false);
         uploadButtonSpinnerRevealer.setRevealChild(true);
         uploadButton.setCssClasses(new String[]{"pill", "regular"});
-        LEDSuiteApplication.getLogger().info("Upload button clicked! loading = " + loading);
+        LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
 
         UpdateCallback<Boolean> uploadFinishTask = successfully -> {
 
             GLib.idleAddOnce(() -> {
+                uploadButton.setSensitive(true);
                 uploadButtonSpinnerRevealer.setRevealChild(false);
                 uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
                 resetUploadStatistics();
@@ -179,8 +185,7 @@ public class UploadPage extends PreferencesPage {
                 @Override
                 public void run() {
                     GLib.idleAddOnce(() -> {
-                        uploadButton.setCssClasses(new String[]{"pill", "regular"});
-                        uploadButton.setSensitive(true);
+                        uploadButton.setCssClasses(new String[]{"pill", "suggested-action"});
                         loading = false;
                     });
                 }

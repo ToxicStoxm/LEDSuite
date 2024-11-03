@@ -171,26 +171,26 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     /**
      * Clears the main window content box and display the specified object instead.
-     * Must be sync with UI thread!
      * @param newChild the new object to display
      * @see #clearMainContent()
      */
     public void changeMainContent(Widget newChild) {
         clearMainContent();
-        contentBox.append(newChild);
+        GLib.idleAddOnce(() -> contentBox.append(newChild));
     }
 
     /**
      * Clears the main window content box.
-     * Must be sync with UI thread!
      * @see #changeMainContent(Widget)
      */
     public void clearMainContent() {
-        Widget child = contentBox.getFirstChild();
-        while (child != null) {
-            contentBox.remove(child);
-            child = contentBox.getFirstChild();
-        }
+        GLib.idleAddOnce(() -> {
+            Widget child = contentBox.getFirstChild();
+            while (child != null) {
+                contentBox.remove(child);
+                child = contentBox.getFirstChild();
+            }
+        });
     }
 
     /**
@@ -241,15 +241,19 @@ public class LEDSuiteWindow extends ApplicationWindow {
             }
         };
         changeMainContent(uploadPage);
-        animationList.setSelectionMode(SelectionMode.NONE);
-        animationList.setSelectionMode(SelectionMode.BROWSE);
+        GLib.idleAddOnce(() -> {
+            animationList.setSelectionMode(SelectionMode.NONE);
+            animationList.setSelectionMode(SelectionMode.BROWSE);
+        });
     }
 
     public void setServerConnected(boolean serverConnected) {
         if (!serverConnected) LEDSuiteApplication.getWindow().uploadPageSelect();
-        animationList.setSensitive(serverConnected);
-        animationGroupTitle.setSensitive(serverConnected);
-        if (uploadPageEndpoint != null) uploadPageEndpoint.connectivityUpdater().update(serverConnected);
+        GLib.idleAddOnce(() -> {
+            animationList.setSensitive(serverConnected);
+            animationGroupTitle.setSensitive(serverConnected);
+            if (uploadPageEndpoint != null) uploadPageEndpoint.connectivityUpdater().update(serverConnected);
+        });
     }
 
     /**
@@ -343,14 +347,12 @@ public class LEDSuiteWindow extends ApplicationWindow {
     }
 
     public void uploadFinished() {
-        uploadProgressBar.setFraction(1.0);
+        GLib.idleAddOnce(() -> uploadProgressBar.setFraction(1.0));
 
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                GLib.idleAddOnce(() -> {
-                    uploadProgressBarRevealer.setRevealChild(false);
-                });
+                GLib.idleAddOnce(() -> uploadProgressBarRevealer.setRevealChild(false));
             }
         }.runTaskLaterAsynchronously(1000);
 

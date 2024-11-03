@@ -3,7 +3,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
-import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
@@ -375,7 +374,7 @@ public class SettingsDialog extends PreferencesDialog {
 
         updateServerState();
 
-        if (!WebSocketCommunication.wasConnected) {
+        if (LEDSuiteApplication.isInitialConnect()) {
             connectivityStatus.connecting();
             long start = System.currentTimeMillis();
             new LEDSuiteRunnable() {

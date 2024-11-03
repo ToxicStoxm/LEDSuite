@@ -6,6 +6,7 @@ import com.toxicstoxm.YAJSI.api.settings.SettingsBundle;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISetting;
 import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * YAJSI settings bundle for LEDSuite.
@@ -47,6 +48,18 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
 
         public FilePickerInitialFolder(Setting<Object> setting) {
             super(setting, String.class);
+            instance = this;
+        }
+    }
+
+    @YAMLSetting(path = "LEDSuite.Network.Packet-Size-Bytes")
+    public static class PacketSize extends YAJSISetting<Integer> {
+
+        @Getter
+        private static PacketSize instance;
+
+        public PacketSize(@NotNull Setting<Object> setting) {
+            super(setting, Integer.class);
             instance = this;
         }
     }

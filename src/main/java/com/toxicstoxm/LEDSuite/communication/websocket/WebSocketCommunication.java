@@ -14,13 +14,14 @@ import org.jetbrains.annotations.NotNull;
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
 
-    public static boolean wasConnected = false;
+    @Override
+    boolean binaryOnly() {
+        return false;
+    }
 
     @OnOpen
     public void onOpen(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
-
-        if (!wasConnected) wasConnected = true;
 
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StatusRequestPacket.builder().build().serialize()

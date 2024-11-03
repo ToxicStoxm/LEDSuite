@@ -2,7 +2,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import jakarta.websocket.*;
+import jakarta.websocket.Session;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 public abstract class WebSocketClientEndpoint {
+
+    abstract boolean binaryOnly();
 
     public void onOpen(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());

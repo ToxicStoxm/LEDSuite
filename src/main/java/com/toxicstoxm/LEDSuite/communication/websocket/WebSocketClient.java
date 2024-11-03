@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +22,11 @@ public class WebSocketClient {
 
     private final LinkedBlockingDeque<String> sendQueue = new LinkedBlockingDeque<>();
 
+    private final LinkedBlockingDeque<BinaryPacket> sendQueueBinary = new LinkedBlockingDeque<>();
+
     private boolean cancelled = false;
 
-    public WebSocketClient(Class<?> clientEndpoint, URI path) {
+    public WebSocketClient(WebSocketClientEndpoint clientEndpoint, URI path) {
         run(clientEndpoint, path);
         new LEDSuiteRunnable() {
             @Override
@@ -44,7 +47,7 @@ public class WebSocketClient {
      * @param clientEndpoint The client endpoint implementation with lifecycle methods
      * @param path The server address to connect to
      */
-    private void run(Class<?> clientEndpoint, URI path) {
+    private void run(WebSocketClientEndpoint clientEndpoint, URI path) {
         LEDSuiteApplication.getLogger().info("Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path, new LEDSuiteLogAreas.NETWORK());
         new LEDSuiteRunnable() {
             @Override
@@ -57,7 +60,36 @@ public class WebSocketClient {
                 )) {
                     connected = true;
                     //session.setMaxIdleTimeout(Long.MAX_VALUE);
-                    while (!cancelled) {
+                    while (!cancelled && session.isOpen()) {
+                        if (clientEndpoint.binaryOnly()) {
+                            BinaryPacket binaryPacket = sendQueueBinary.poll(Long.MAX_VALUE, TimeUnit.DAYS);
+                            if (binaryPacket == null) throw new IllegalArgumentException("Binary packet can't be null!");
+
+                            ByteBuffer data = binaryPacket.data();
+                            boolean isLast = binaryPacket.isLast();
+                            long start = System.currentTimeMillis();
+
+                            session.getBasicRemote().sendBinary(data, isLast);
+
+                            long timeElapsed = System.currentTimeMillis() - start;
+
+                            if (clientEndpoint instanceof WebSocketFileTransfer fileTransfer) {
+                                fileTransfer.update(
+                                        ProgressUpdate.builder()
+                                                .data(data)
+                                                .lastPacket(isLast)
+                                                .timeElapsed(timeElapsed)
+                                                .build()
+                                );
+                            }
+
+                            if (isLast) {
+                                LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId());
+                                shutdown();
+                            }
+
+                            continue;
+                        }
                         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
                         // LEDSuiteApplication.getLogger().verbose("----------------------< OUT >----------------------", new LEDSuiteLogAreas.COMMUNICATION());
                         // LEDSuiteApplication.getLogger().verbose(toSend, new LEDSuiteLogAreas.COMMUNICATION());
@@ -91,5 +123,15 @@ public class WebSocketClient {
      */
     public boolean enqueueMessage(String message) {
         return sendQueue.offer(message);
+    }
+
+    /**
+     * Adds the specified {@link BinaryPacket} to the sending queue.<br>
+     * WARNING: This does not guarantee that this {@link BinaryPacket} will be sent.
+     * @param binaryPacket the {@link BinaryPacket} to should be sent to the server
+     * @return {@code true} if the {@link BinaryPacket} was successfully added to the sending queue, otherwise {@code false}.
+     */
+    public boolean enqueueBinaryMessage(BinaryPacket binaryPacket) {
+        return sendQueueBinary.offer(binaryPacket);
     }
 }

@@ -1,25 +1,32 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 /**
  * File transfer / upload endpoint. Used for uploading files to the server.
  * @since 1.0.0
  */
 @ClientEndpoint
-public class WebSocketFileTransfer extends WebSocketClientEndpoint {
+public abstract class WebSocketFileTransfer extends WebSocketClientEndpoint implements ProgressUpdater {
+
+    @Override
+    boolean binaryOnly() {
+        return true;
+    }
 
     @OnOpen
     public void onOpen(@NotNull Session session) {
-
-        // TODO send over file transfer endpoint, not communication endpoint
-        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                session.getId()
-        );
-
         super.onOpen(session);
+        try {
+            String sessionID = session.getId();
+            session.getBasicRemote().sendText(sessionID);
+            onConnect(sessionID);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @OnMessage

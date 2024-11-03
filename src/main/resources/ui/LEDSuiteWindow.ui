@@ -119,10 +119,13 @@
           </object>
         </property>
         <child type="bottom">
-          <object class="GtkRevealer">
-            <child type="bottom">
-              <object class="GtkProgressBar"/>
-            </child>
+          <object class="GtkRevealer" id="upload_progress_bar_revealer">
+            <property name="child">
+              <object class="GtkProgressBar" id="upload_progress_bar">
+                <property name="ellipsize">end</property>
+              </object>
+            </property>
+            <property name="transition-type">slide-up</property>
           </object>
         </child>
       </object>

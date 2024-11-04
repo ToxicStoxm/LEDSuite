@@ -17,12 +17,15 @@ public class WebSocketFileTransfer extends WebSocketClientEndpoint implements Pr
 
     private final UpdateCallback<String> onConnectCb;
     private final UpdateCallback<ProgressUpdate> onProgress;
+    private final IsReadyCallback readyCallback;
 
-    public WebSocketFileTransfer(UpdateCallback<String> onConnect, UpdateCallback<ProgressUpdate> onProgress) {
+    public WebSocketFileTransfer(UpdateCallback<String> onConnect, UpdateCallback<ProgressUpdate> onProgress, IsReadyCallback isReadyCallback) {
         this.onConnectCb = onConnect;
         this.onProgress = onProgress;
-
+        this.readyCallback = isReadyCallback;
     }
+
+    boolean ready() {return readyCallback.isReady();}
 
     @Override
     boolean binaryOnly() {

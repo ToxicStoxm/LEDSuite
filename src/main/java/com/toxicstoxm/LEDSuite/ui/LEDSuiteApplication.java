@@ -505,6 +505,7 @@ public class LEDSuiteApplication extends Application {
                                     FileUploadRequestPacket.builder()
                                             .uploadSessionId(sessionID)
                                             .requestFile(animationName)
+                                            .checksum(checksum)
                                             .build().serialize()
                             );
                             isReady.set(true);

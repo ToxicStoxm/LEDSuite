@@ -96,6 +96,9 @@ public class WebSocketClient {
                     }
                 } catch (Exception e) {
                     LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
+                    for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+                        LEDSuiteApplication.getLogger().stacktrace(String.valueOf(stackTraceElement), new LEDSuiteLogAreas.COMMUNICATION());
+                    }
                 } finally {
                     connected = false;
                 }

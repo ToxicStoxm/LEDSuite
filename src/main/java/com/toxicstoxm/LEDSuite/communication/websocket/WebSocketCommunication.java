@@ -32,7 +32,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
 
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
-        LEDSuiteApplication.getLogger().verbose("----------------------< IN >----------------------" + "\n [Session] " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().verbose("----------------------< IN >----------------------" + "\n[Session] " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
         LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
         LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
 
@@ -59,5 +59,8 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         LEDSuiteApplication.getLogger().error("Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(), new LEDSuiteLogAreas.NETWORK());
+        for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
+            LEDSuiteApplication.getLogger().stacktrace(String.valueOf(stackTraceElement), new LEDSuiteLogAreas.NETWORK());
+        }
     }
 }

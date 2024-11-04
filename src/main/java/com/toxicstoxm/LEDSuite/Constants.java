@@ -107,6 +107,7 @@ public class Constants {
                     public static final class FileUploadRequest {
                         public static final String PACKET_COUNT = "packet_count";
                         public static final String UPLOAD_SESSION_ID = "upload_session_id";
+                        public static final String CHECKSUM = "checksum";
 
                     }
 
@@ -150,7 +151,7 @@ public class Constants {
                     }
 
                     public static final class UploadSuccessReply {
-                        public static final String FILE_NAME = "file";
+                        public static final String FILE_NAME = "filename";
                     }
 
                     public static final class MenuReply {

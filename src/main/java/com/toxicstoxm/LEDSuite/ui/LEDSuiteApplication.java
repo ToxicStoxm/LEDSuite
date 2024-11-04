@@ -321,7 +321,6 @@ public class LEDSuiteApplication extends Application {
             logger.debug("\nTesting file upload request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             FileUploadRequestPacket fileUploadRequestPacket = FileUploadRequestPacket.builder()
                     .requestFile("Test-Animation")
-                    .packetCount(512)
                     .uploadSessionId(String.valueOf(UUID.randomUUID()))
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(fileUploadRequestPacket.serialize()));
@@ -490,6 +489,7 @@ public class LEDSuiteApplication extends Application {
         AtomicLong speedMeasurementCount = new AtomicLong(0);
         AtomicBoolean finished = new AtomicBoolean(false);
         AtomicLong lastUploadStatisticsUpdate = new AtomicLong(System.currentTimeMillis());
+        AtomicBoolean isReady = new AtomicBoolean(false);
 
         WebSocketClient uploadEndpoint = new WebSocketClient(new WebSocketFileTransfer(
                 sessionID -> {
@@ -498,12 +498,18 @@ public class LEDSuiteApplication extends Application {
                     logger.info(" > Upload session ID: " + sessionID, new LEDSuiteLogAreas.NETWORK());
                     logger.info(" > Filename: " + animationName, new LEDSuiteLogAreas.NETWORK());
                     logger.info(" > Checksum: " + checksum, new LEDSuiteLogAreas.NETWORK());
-                    webSocketCommunication.enqueueMessage(
-                            FileUploadRequestPacket.builder()
-                                    .uploadSessionId(sessionID)
-                                    .requestFile(animationName)
-                                    .build().serialize()
-                    );
+                    new LEDSuiteRunnable() {
+                        @Override
+                        public void run() {
+                            webSocketCommunication.enqueueMessage(
+                                    FileUploadRequestPacket.builder()
+                                            .uploadSessionId(sessionID)
+                                            .requestFile(animationName)
+                                            .build().serialize()
+                            );
+                            isReady.set(true);
+                        }
+                    }.runTaskLaterAsynchronously(100);
                 },
                 progressUpdate -> {
                     int transferredBytes = progressUpdate.data().array().length;
@@ -553,7 +559,8 @@ public class LEDSuiteApplication extends Application {
 
                         finished.set(true);
                     }
-                }
+                },
+                isReady::get
 
         ), uploadEndpointPath);
 

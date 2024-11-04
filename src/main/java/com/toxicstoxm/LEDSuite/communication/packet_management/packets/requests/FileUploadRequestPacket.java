@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
@@ -28,7 +28,6 @@ import lombok.*;
 public class FileUploadRequestPacket extends CommunicationPacket {
 
     private String requestFile;
-    private int packetCount;
     private String uploadSessionId;
 
     @Override
@@ -54,9 +53,6 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
         packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT, yaml);
-        packet.packetCount = yaml.getInt(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT);
-
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, yaml);
         packet.uploadSessionId = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
 
@@ -68,7 +64,6 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         YamlConfiguration yaml = saveYAML();
 
         yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
-        yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.PACKET_COUNT, packetCount);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, uploadSessionId);
 
         return yaml.saveToString();

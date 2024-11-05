@@ -7,11 +7,12 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.AnimationMenuWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import org.gnome.adw.ActionRow;
+import org.gnome.glib.Type;
+import org.jetbrains.annotations.NotNull;
 
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
-public class PropertyRowWidget extends AnimationMenuWidget {
+public class PropertyRowWidget extends AnimationMenuWidget<ActionRow> {
 
     @Override
     public String getType() {
@@ -19,11 +20,15 @@ public class PropertyRowWidget extends AnimationMenuWidget {
     }
 
     @Override
-    public org.gnome.gtk.Widget deserialize(DeserializableWidget deserializableWidget) throws DeserializationException {
+    public Type getWidgetType() {
+        return ActionRow.getType();
+    }
+
+    @Override
+    public ActionRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
-        ActionRow widget = ActionRow.builder().setTooltipText(toolTip).build();
+
         widget.setCssClasses(new String[]{"property"});
-        ConfigurationSection widgetSection = deserializableWidget.widgetSection();
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, widgetSection)) {
             widget.setTitle(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL));

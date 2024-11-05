@@ -107,7 +107,7 @@ public class Constants {
                     public static final class FileUploadRequest {
                         public static final String PACKET_COUNT = "packet_count";
                         public static final String UPLOAD_SESSION_ID = "upload_session_id";
-                        public static final String CHECKSUM = "checksum";
+                        public static final String SHA256 = "sha256";
 
                     }
 
@@ -169,8 +169,15 @@ public class Constants {
                             }
                         }
 
-                        public static final class Property {
-                            public static final String TEXT = "text";
+                        public static final class EntryRow {
+                            public static final String EDITABLE = "editable";
+                            public static final String APPLY_BUTTON = "apply_button";
+                            public static final String ATTRIBUTE_STRING = "attribute_string";
+                        }
+
+                        public static final class ButtonRow {
+                            public static final String START_ICON_NAME = "start_icon_name";
+                            public static final String END_ICON_NAME = "end_icon_name";
                         }
                     }
                 }
@@ -197,6 +204,12 @@ public class Constants {
                             public static final String INVALID_FILE = "invalid_file";
                             public static final String PARSING_ERROR = "parsing_error";
                             public static final String OTHER = "other";
+                            public static final String UPLOAD_ERROR = "upload_error";
+                            public static final String NOT_IMPLEMENTED_ERROR = "not_implemented_error";
+                            public static final String SERIALIZATION_ERROR = "serialization_error";
+                            public static final String HANDLING_ERROR = "handling_error";
+                            public static final String SENDING_ERROR = "sending_error";
+                            public static final String RECEIVING_ERROR = "receiving_error";
                         }
                     }
 

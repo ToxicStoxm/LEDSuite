@@ -321,6 +321,7 @@ public class LEDSuiteApplication extends Application {
             logger.debug("\nTesting file upload request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             FileUploadRequestPacket fileUploadRequestPacket = FileUploadRequestPacket.builder()
                     .requestFile("Test-Animation")
+                    .sha256(String.valueOf(UUID.randomUUID()))
                     .uploadSessionId(String.valueOf(UUID.randomUUID()))
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(fileUploadRequestPacket.serialize()));
@@ -486,7 +487,7 @@ public class LEDSuiteApplication extends Application {
         String animationName = StringFormatter.getFileNameFromPath(filePath);
         var uploadStatisticsUpdater = window.getUploadPageEndpoint().uploadStatisticsUpdater();
         AtomicLong speedAverage = new AtomicLong(-1);
-        AtomicLong speedMeasurementCount = new AtomicLong(0);
+        AtomicLong speedMeasurementCount = new AtomicLong(1);
         AtomicBoolean finished = new AtomicBoolean(false);
         AtomicLong lastUploadStatisticsUpdate = new AtomicLong(System.currentTimeMillis());
         AtomicBoolean isReady = new AtomicBoolean(false);
@@ -505,7 +506,7 @@ public class LEDSuiteApplication extends Application {
                                     FileUploadRequestPacket.builder()
                                             .uploadSessionId(sessionID)
                                             .requestFile(animationName)
-                                            .checksum(checksum)
+                                            .sha256(checksum)
                                             .build().serialize()
                             );
                             isReady.set(true);

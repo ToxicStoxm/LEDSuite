@@ -77,7 +77,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (menuGroupSection == null) throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!");
 
             try {
-                animationMenu.animationMenuContent.append(deserializeAnimationMenuGroup(menuGroupKey, menuGroupSection));
+                animationMenu.animationMenuContent.append(deserializeAnimationMenuGroup(animationMenu.getMenuID(), menuGroupKey, menuGroupSection));
             } catch (DeserializationException e) {
                 throw new DeserializationException("Failed to deserialize animation menu group '" + menuGroupKey + "'!", e);
             }
@@ -94,7 +94,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
      * @throws DeserializationException if something goes wrong while deserializing. E.g.: missing keys, invalid YAML or invalid values
      * @see #deserializeAnimationMenu(String)
      */
-    private PreferencesGroup deserializeAnimationMenuGroup(@NotNull String menuGroupKey, @NotNull ConfigurationSection menuGroupSection) throws DeserializationException {
+    private PreferencesGroup deserializeAnimationMenuGroup(@NotNull String animationName, @NotNull String menuGroupKey, @NotNull ConfigurationSection menuGroupSection) throws DeserializationException {
 
         if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, menuGroupSection)) {
             String widgetType = menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
@@ -133,6 +133,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
                 menuGroup.add(
                         get(widgetType).deserialize(
                                 DeserializableWidget.builder()
+                                        .animationName(animationName)
                                         .widgetSection(widgetSection)
                                         .widgetKey(widgetKey)
                                         .build()

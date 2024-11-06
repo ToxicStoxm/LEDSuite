@@ -238,6 +238,8 @@ public class LEDSuiteApplication extends Application {
         boolean minDelayReached = false;
         boolean retry = false;
 
+        window.setServerConnected(false);
+
         if (webSocketCommunication != null) webSocketCommunication.shutdown();
 
         webSocketCommunication = new WebSocketClient(new WebSocketCommunication(), serverAddress);

@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
@@ -58,7 +59,8 @@ public class UploadPage extends PreferencesPage {
         uploadPage.parent = parent;
         uploadPage.connectivityUpdater = uploadPage::setServerConnected;
         uploadPage.uploadStatisticsUpdater = uploadPage::setUploadStatistics;
-        uploadPage.connectivityUpdater.update(LEDSuiteApplication.getWebSocketCommunication().isConnected() && !uploadPage.loading);
+        WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
+        uploadPage.connectivityUpdater.update(webSocketClient != null && webSocketClient.isConnected() && !uploadPage.loading);
         return uploadPage;
     }
 

@@ -7,6 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates.AnimationMenuRowWidget;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import org.gnome.adw.EntryRow;
 import org.gnome.glib.Type;
 import org.gnome.pango.AttrList;
@@ -23,6 +24,10 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
     public Type getWidgetType() {
         return EntryRow.getType();
     }
+
+    private long cooldown = 0;
+    private long lastUpdate;
+    private boolean onCooldown = false;
 
     @Override
     public EntryRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
@@ -47,9 +52,38 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
         if (widget.getShowApplyButton()) {
             widget.onApply(() -> sendMenuChangeRequest(widget.getText()));
         } else {
-            widget.onChanged(() -> sendMenuChangeRequest(widget.getText()));
-        }
+            if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.UPDATE_COOLDOWN, widgetSection)) {
+                cooldown = widgetSection.getLong(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN);
+                lastUpdate = System.currentTimeMillis() - cooldown - 1;
+                widget.onChanged(() -> {
+                    long timeSinceLastUpdate = System.currentTimeMillis() - lastUpdate;
 
+                    if (!onCooldown) {
+                        if (timeSinceLastUpdate > cooldown) {
+                            lastUpdate = System.currentTimeMillis();
+                            sendMenuChangeRequest(String.valueOf(widget.getText()));
+                        } else {
+                            onCooldown = true;
+                            String lastKnownValue = widget.getText();
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    lastUpdate = System.currentTimeMillis();
+                                    if (widget != null) {
+                                        sendMenuChangeRequest(String.valueOf(widget.getText()));
+                                    } else {
+                                        sendMenuChangeRequest(String.valueOf(lastKnownValue));
+                                    }
+                                    onCooldown = false;
+                                }
+                            }.runTaskLaterAsynchronously(cooldown);
+                        }
+                    }
+                });
+            } else {
+                widget.onChanged(() -> sendMenuChangeRequest(String.valueOf(widget.getText())));
+            }
+        }
         return widget;
     }
 }

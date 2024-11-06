@@ -1,18 +1,17 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets;
+package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.row_widgets;
 
-import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.AnimationMenuWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
+import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
 import org.gnome.adw.ActionRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;
 
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
-public class PropertyRowWidget extends AnimationMenuWidget<ActionRow> {
+public class PropertyRowWidget extends AnimationMenuActionRowWidget<ActionRow> {
 
     @Override
     public String getType() {
@@ -29,14 +28,6 @@ public class PropertyRowWidget extends AnimationMenuWidget<ActionRow> {
         super.deserialize(deserializableWidget);
 
         widget.setCssClasses(new String[]{"property"});
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, widgetSection)) {
-            widget.setTitle(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL));
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, widgetSection)) {
-            widget.setSubtitle(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE));
-        }
 
         return widget;
     }

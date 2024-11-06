@@ -1,7 +1,8 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu;
+package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;

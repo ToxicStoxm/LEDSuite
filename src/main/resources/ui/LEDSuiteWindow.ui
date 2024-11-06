@@ -100,6 +100,15 @@
                         <property name="selection-mode">browse</property>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkRevealer" id="animation_list_spinner_revealer">
+                        <property name="child">
+                          <object class="AdwSpinner"/>
+                        </property>
+                        <property name="reveal-child">True</property>
+                        <property name="transition-type">crossfade</property>
+                      </object>
+                    </child>
                   </object>
                 </property>
                 <child type="top">

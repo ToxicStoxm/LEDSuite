@@ -223,6 +223,9 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "sidebar_animation_group_title")
     public Label animationGroupTitle;
 
+    @GtkChild(name = "animation_list_spinner_revealer")
+    public Revealer animationListSpinnerRevealer;
+
     @Getter
     private UploadPageEndpoint uploadPageEndpoint;
 
@@ -247,11 +250,16 @@ public class LEDSuiteWindow extends ApplicationWindow {
         });
     }
 
+    public void showAnimationListSpinner(boolean show) {
+        animationListSpinnerRevealer.setRevealChild(show);
+    }
+
     public void setServerConnected(boolean serverConnected) {
         if (!serverConnected) LEDSuiteApplication.getWindow().uploadPageSelect();
         GLib.idleAddOnce(() -> {
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
+            if (!serverConnected) showAnimationListSpinner(false);
             if (uploadPageEndpoint != null) uploadPageEndpoint.connectivityUpdater().update(serverConnected);
         });
     }

@@ -41,6 +41,7 @@ import lombok.Getter;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
+import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
@@ -237,8 +238,10 @@ public class LEDSuiteApplication extends Application {
         long timeElapsed = System.currentTimeMillis() - start;
         boolean minDelayReached = false;
         boolean retry = false;
+        Boolean result = null;
 
         window.setServerConnected(false);
+        GLib.idleAddOnce(() -> window.showAnimationListSpinner(true));
 
         if (webSocketCommunication != null) webSocketCommunication.shutdown();
 
@@ -248,7 +251,8 @@ public class LEDSuiteApplication extends Application {
 
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
-                    return true;
+                    result = true;
+                    break;
                 } else if (retry) {
                     webSocketCommunication.shutdown();
                     webSocketCommunication = new WebSocketClient(new WebSocketCommunication(), serverAddress);
@@ -256,7 +260,8 @@ public class LEDSuiteApplication extends Application {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        return false;
+                        result = false;
+                        break;
                     }
                 }
             }
@@ -264,15 +269,22 @@ public class LEDSuiteApplication extends Application {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                return false;
+                result = false;
+                break;
             }
 
             timeElapsed = System.currentTimeMillis() - start;
             minDelayReached = timeElapsed > Constants.UI.SettingsDialog.MINIMUM_DELAY;
             retry = timeElapsed > Constants.UI.SettingsDialog.RETRY_DELAY;
         }
+
+        GLib.idleAddOnce(() -> window.showAnimationListSpinner(false));
+
+        if (result != null) {
+            return result;
+        }
+
         if (initialConnect) initialConnect = false;
-        if (webSocketCommunication.isConnected()) return true;
 
         LEDSuiteApplication.getLogger().info("Network connection timed out!", new LEDSuiteLogAreas.NETWORK());
         return false;

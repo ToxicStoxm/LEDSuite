@@ -179,6 +179,19 @@ public class Constants {
                             public static final String START_ICON_NAME = "start_icon_name";
                             public static final String END_ICON_NAME = "end_icon_name";
                         }
+
+                        public static final class SpinRow {
+                            public static final String VALUE = "value";
+                            public static final String DIGITS = "digits";
+                            public static final String MINIMUM = "minimum";
+                            public static final String MAXIMUM = "maximum";
+                            public static final String INCREMENT = "increment";
+                            public static final String CLIMB_RATE = "climb_rate";
+                            public static final String PAGE_INCREMENT = "page_increment";
+                            public static final String WRAP = "wrap";
+                            public static final String SNAP = "snap";
+                            public static final String UPDATE_COOLDOWN = "update_cooldown";
+                        }
                     }
                 }
             }

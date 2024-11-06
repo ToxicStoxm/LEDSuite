@@ -439,6 +439,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE, 2);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP, true);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP, true);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN, 1000);
 
                                 yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), spinYAML.getValues(true));
                             }

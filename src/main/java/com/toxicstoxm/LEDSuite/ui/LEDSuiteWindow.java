@@ -408,12 +408,6 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "group-" + i);
                                 yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, "group-" + i);
 
-                                String widgetPrefix = prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID() + ".";
-
-                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.PROPERTY_ROW.getName());
-                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "TestProperty-" + i);
-                                yaml.set(widgetPrefix + Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "TestPropertyValue-" + i);
-
                                 YamlConfiguration propertyYAML = new YamlConfiguration();
 
                                 propertyYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.PROPERTY_ROW.getName());
@@ -421,7 +415,35 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 propertyYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "SpecialValue-" + i);
 
                                 yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), propertyYAML.getValues(true));
+
+                                YamlConfiguration entryYAML = new YamlConfiguration();
+
+                                entryYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.ENTRY_ROW.getName());
+                                entryYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Entry-" + i);
+                                entryYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "Placeholder");
+                                entryYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON, false);
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), entryYAML.getValues(true));
+
+                                YamlConfiguration spinYAML = new YamlConfiguration();
+
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.SPIN_ROW.getName());
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Spin-" + i);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "Subtitle");
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.VALUE, 100.99);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM, 0);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM, 500);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS, 2);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.INCREMENT, 1);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.PAGE_INCREMENT, 10);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE, 2);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP, true);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP, true);
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), spinYAML.getValues(true));
                             }
+
+                            System.out.println(yaml.saveToString());
 
                             new LEDSuiteRunnable() {
                                 @Override

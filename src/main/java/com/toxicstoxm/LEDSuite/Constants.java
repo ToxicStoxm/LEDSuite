@@ -173,6 +173,7 @@ public class Constants {
                             public static final String EDITABLE = "editable";
                             public static final String APPLY_BUTTON = "apply_button";
                             public static final String ATTRIBUTE_STRING = "attribute_string";
+                            public static final String UPDATE_COOLDOWN = "update_cooldown";
                         }
 
                         public static final class ButtonRow {

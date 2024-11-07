@@ -430,7 +430,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.SPIN_ROW.getName());
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Spin-" + i);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "Subtitle");
-                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.VALUE, 100.99);
+                                spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, 100.99);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM, 0);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM, 500);
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS, 2);
@@ -442,9 +442,36 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 spinYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN, 1000);
 
                                 yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), spinYAML.getValues(true));
-                            }
 
-                            System.out.println(yaml.saveToString());
+                                YamlConfiguration buttonRow = new YamlConfiguration();
+
+                                buttonRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.BUTTON_ROW.getName());
+                                buttonRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Button-" + i);
+                                buttonRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME, "battery-level-0-symbolic");
+                                buttonRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.END_ICON_NAME, "firefox-symbolic");
+
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), buttonRow.getValues(true));
+
+                                YamlConfiguration comboRow = new YamlConfiguration();
+
+                                comboRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.COMBO_ROW.getName());
+                                comboRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "ComboRow-" + i);
+                                comboRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, List.of("Test", "Test1", "Test2"));
+                                comboRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, "Test1");
+                                comboRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ComboRow.ENABLE_SEARCH, true);
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), comboRow.getValues(true));
+
+                                YamlConfiguration switchRow = new YamlConfiguration();
+
+                                switchRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.SWITCH_ROW.getName());
+                                switchRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "SwitchRow-" + i);
+                                switchRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, true);
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), switchRow.getValues(true));
+
+                            }
 
                             new LEDSuiteRunnable() {
                                 @Override

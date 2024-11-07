@@ -197,6 +197,12 @@ public class Constants {
                         public static final class ComboRow {
                             public static final String ENABLE_SEARCH = "enable_search";
                         }
+
+                        public static final class ExpanderRow {
+                            public static final String WITH_SWITCH = "with_switch";
+                            public static final String ENABLE_EXPANSION = "enable_expansion";
+                            public static final String EXPANDED = "expanded";
+                        }
                     }
                 }
             }

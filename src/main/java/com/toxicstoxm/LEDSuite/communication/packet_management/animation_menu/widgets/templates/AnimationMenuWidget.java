@@ -13,6 +13,7 @@ import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.Getter;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
+import org.gnome.gtk.StateFlags;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
 
@@ -93,11 +94,25 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
         return widget;
     }
 
+    protected boolean checkIfKeyExists(String key) {
+        return YamlTools.checkIfKeyExists(key, widgetSection);
+    }
+
+    protected void ensureKeyExists(String key) {
+        YamlTools.ensureKeyExists(key, widgetSection);
+    }
+
     protected boolean checkIfKeyExists(String key, @NotNull ConfigurationSection yaml) {
         return YamlTools.checkIfKeyExists(key, yaml);
     }
 
     protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) {
         YamlTools.ensureKeyExists(key, yaml);
+    }
+
+    protected void onChanged(ChangedCallback changedCallback) {
+        widget.onStateFlagsChanged(flags -> {
+           if (flags.contains(StateFlags.ACTIVE)) changedCallback.onChanged();
+        });
     }
 }

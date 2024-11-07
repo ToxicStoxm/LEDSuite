@@ -28,6 +28,7 @@ public class PropertyRowWidget extends AnimationMenuActionRowWidget<ActionRow> {
         super.deserialize(deserializableWidget);
 
         widget.setCssClasses(new String[]{"property"});
+        widget.setSubtitleSelectable(true);
 
         return widget;
     }

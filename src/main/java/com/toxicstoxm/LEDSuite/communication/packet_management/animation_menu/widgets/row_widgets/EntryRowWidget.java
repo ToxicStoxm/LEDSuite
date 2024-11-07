@@ -33,26 +33,26 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
     public EntryRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)) {
             widget.setText(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE));
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON)) {
             widget.setShowApplyButton(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON));
         } else widget.setShowApplyButton(true);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE)) {
             widget.setEditable(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE));
         } else widget.setEditable(true);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING)) {
             widget.setAttributes(AttrList.fromString(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING)));
         }
 
         if (widget.getShowApplyButton()) {
             widget.onApply(() -> sendMenuChangeRequest(widget.getText()));
         } else {
-            if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.UPDATE_COOLDOWN, widgetSection)) {
+            if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.UPDATE_COOLDOWN)) {
                 cooldown = widgetSection.getLong(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN);
                 lastUpdate = System.currentTimeMillis() - cooldown - 1;
                 widget.onChanged(() -> {

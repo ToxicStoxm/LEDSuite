@@ -161,6 +161,7 @@ public class Constants {
                         public static final String SUBTITLE = "subtitle";
                         public static final String FILENAME = "filename";
                         public static final String TYPE = "type";
+                        public static final String VALUE = "value";
 
                         public static final class Groups {
                             public static final String SUFFIX = "suffix";
@@ -182,7 +183,6 @@ public class Constants {
                         }
 
                         public static final class SpinRow {
-                            public static final String VALUE = "value";
                             public static final String DIGITS = "digits";
                             public static final String MINIMUM = "minimum";
                             public static final String MAXIMUM = "maximum";
@@ -192,6 +192,10 @@ public class Constants {
                             public static final String WRAP = "wrap";
                             public static final String SNAP = "snap";
                             public static final String UPDATE_COOLDOWN = "update_cooldown";
+                        }
+
+                        public static final class ComboRow {
+                            public static final String ENABLE_SEARCH = "enable_search";
                         }
                     }
                 }

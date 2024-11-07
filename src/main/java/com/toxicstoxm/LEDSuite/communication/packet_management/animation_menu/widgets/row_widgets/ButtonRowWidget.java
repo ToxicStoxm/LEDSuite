@@ -25,7 +25,7 @@ public class ButtonRowWidget extends AnimationMenuRowWidget<ButtonRow> {
 
     @Override
     public ButtonRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
-        ButtonRow widget = super.deserialize(deserializableWidget);
+        super.deserialize(deserializableWidget);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME)) {
             widget.setStartIconName(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME));

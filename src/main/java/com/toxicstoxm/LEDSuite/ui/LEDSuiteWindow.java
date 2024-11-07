@@ -471,7 +471,86 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
                                 yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), switchRow.getValues(true));
 
+                                YamlConfiguration expanderRow = new YamlConfiguration();
+
+                                expanderRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.EXPANDER_ROW.getName());
+                                expanderRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "ExpanderRow-" + i);
+                                expanderRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.EXPANDED, true);
+                                expanderRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.ENABLE_EXPANSION, true);
+                                expanderRow.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.WITH_SWITCH, true);
+
+                                YamlConfiguration expanderRowContent = new YamlConfiguration();
+
+                                YamlConfiguration propertyYAML1 = new YamlConfiguration();
+
+                                propertyYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.PROPERTY_ROW.getName());
+                                propertyYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Special-" + i);
+                                propertyYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "SpecialValue-" + i);
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), propertyYAML1.getValues(true));
+
+                                YamlConfiguration entryYAML1 = new YamlConfiguration();
+
+                                entryYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.ENTRY_ROW.getName());
+                                entryYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Entry-" + i);
+                                entryYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "Placeholder");
+                                entryYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON, false);
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), entryYAML1.getValues(true));
+
+                                YamlConfiguration spinYAML1 = new YamlConfiguration();
+
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.SPIN_ROW.getName());
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Spin-" + i);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, "Subtitle");
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, 100.99);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM, 0);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM, 500);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS, 2);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.INCREMENT, 1);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.PAGE_INCREMENT, 10);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE, 2);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP, true);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP, true);
+                                spinYAML1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN, 1000);
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), spinYAML1.getValues(true));
+
+                                YamlConfiguration buttonRow1 = new YamlConfiguration();
+
+                                buttonRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.BUTTON_ROW.getName());
+                                buttonRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Button-" + i);
+                                buttonRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME, "battery-level-0-symbolic");
+                                buttonRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.END_ICON_NAME, "firefox-symbolic");
+
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), buttonRow1.getValues(true));
+
+                                YamlConfiguration comboRow1 = new YamlConfiguration();
+
+                                comboRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.COMBO_ROW.getName());
+                                comboRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "ComboRow-" + i);
+                                comboRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, List.of("Test", "Test1", "Test2"));
+                                comboRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, "Test1");
+                                comboRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.ComboRow.ENABLE_SEARCH, true);
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), comboRow1.getValues(true));
+
+                                YamlConfiguration switchRow1 = new YamlConfiguration();
+
+                                switchRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.SWITCH_ROW.getName());
+                                switchRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "SwitchRow-" + i);
+                                switchRow1.set(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, true);
+
+                                expanderRowContent.createSection(String.valueOf(UUID.randomUUID()), switchRow1.getValues(true));
+
+                                expanderRow.createSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, expanderRowContent.getValues(true));
+
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), expanderRow.getValues(true));
+
                             }
+
+                            System.out.println(yaml.saveToString());
 
                             new LEDSuiteRunnable() {
                                 @Override

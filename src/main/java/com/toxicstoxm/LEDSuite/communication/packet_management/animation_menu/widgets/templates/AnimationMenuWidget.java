@@ -87,10 +87,6 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
 
         this.animationName = deserializableWidget.animationName();
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, widgetSection)) {
-            widget.setTooltipText(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP));
-        }
-
         return widget;
     }
 

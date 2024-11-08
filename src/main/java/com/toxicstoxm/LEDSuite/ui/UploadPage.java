@@ -54,12 +54,13 @@ public class UploadPage extends PreferencesPage {
 
     private String selectedFile;
 
-    public static UploadPage create(ApplicationWindow parent) {
+    public static @NotNull UploadPage create(ApplicationWindow parent) {
         UploadPage uploadPage = GObject.newInstance(getType());
         uploadPage.parent = parent;
         uploadPage.connectivityUpdater = uploadPage::setServerConnected;
         uploadPage.uploadStatisticsUpdater = uploadPage::setUploadStatistics;
         WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
+        uploadPage.setUploadButtonState(false);
         uploadPage.connectivityUpdater.update(webSocketClient != null && webSocketClient.isConnected() && !uploadPage.loading);
         return uploadPage;
     }
@@ -111,6 +112,7 @@ public class UploadPage extends PreferencesPage {
                     this.selectedFile = selectedFile.getPath();
                     LEDSuiteApplication.getLogger().info("Selected file: " + this.selectedFile, new LEDSuiteLogAreas.UI());
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
+                    uploadButton.setSensitive(true);
                 }
             } catch (GErrorException e) {
                 LEDSuiteApplication.getLogger().info("User canceled file picker! No file selected!", new LEDSuiteLogAreas.UI());
@@ -130,8 +132,12 @@ public class UploadPage extends PreferencesPage {
 
     private boolean loading = false;
 
+    public void setUploadButtonState(boolean state) {
+        uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals("N/A"));
+    }
+
     public void setServerConnected(boolean serverConnected) {
-        GLib.idleAddOnce(() -> uploadButton.setSensitive(serverConnected));
+        GLib.idleAddOnce(() -> setUploadButtonState(serverConnected));
     }
 
     @GtkChild(name = "upload_statistics")
@@ -167,9 +173,15 @@ public class UploadPage extends PreferencesPage {
 
     @GtkCallback(name = "upload_button_cb")
     public void uploadButtonClickedCb() {
+        if (filePickerRow.getSubtitle().isBlank() || filePickerRow.getSubtitle().equals("N/A")) {
+            setUploadButtonState(false);
+            return;
+        }
         if (loading) return;
         loading = true;
-        uploadButton.setSensitive(false);
+        filePickerRow.setSensitive(false);
+        startAnimationAfterUploadSwitch.setSensitive(false);
+        setUploadButtonState(false);
         uploadButtonSpinnerRevealer.setRevealChild(true);
         uploadButton.setCssClasses(new String[]{"pill", "regular"});
         LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
@@ -177,7 +189,9 @@ public class UploadPage extends PreferencesPage {
         UpdateCallback<Boolean> uploadFinishTask = successfully -> {
 
             GLib.idleAddOnce(() -> {
-                uploadButton.setSensitive(true);
+                setUploadButtonState(true);
+                filePickerRow.setSensitive(true);
+                startAnimationAfterUploadSwitch.setSensitive(true);
                 uploadButtonSpinnerRevealer.setRevealChild(false);
                 uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
                 resetUploadStatistics();

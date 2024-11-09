@@ -9,6 +9,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
+import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.Action;
@@ -174,7 +175,8 @@ public class LEDSuiteWindow extends ApplicationWindow {
      * @param newChild the new object to display
      * @see #clearMainContent()
      */
-    public void changeMainContent(Widget newChild) {
+    public void changeMainContent(@NotNull Widget newChild) {
+        LEDSuiteApplication.getLogger().info("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()), new LEDSuiteLogAreas.UI());
         clearMainContent();
         GLib.idleAddOnce(() -> contentBox.append(newChild));
     }
@@ -187,6 +189,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
         GLib.idleAddOnce(() -> {
             Widget child = contentBox.getFirstChild();
             while (child != null) {
+                LEDSuiteApplication.getLogger().info("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!", new LEDSuiteLogAreas.UI());
                 contentBox.remove(child);
                 child = contentBox.getFirstChild();
             }
@@ -548,9 +551,16 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
                                 yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), expanderRow.getValues(true));
 
-                            }
+                                YamlConfiguration button = new YamlConfiguration();
+                                button.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.BUTTON.getName());
+                                button.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Button-" + i);
+                                button.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, "This is a tooltip");
+                                button.set(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.BLOCK_AFTER_CLICKED, true);
+                                button.set(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.SPIN_ON_CLICKED, true);
 
-                            System.out.println(yaml.saveToString());
+                                yaml.createSection(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + UUID.randomUUID(), button.getValues(true));
+
+                            }
 
                             new LEDSuiteRunnable() {
                                 @Override

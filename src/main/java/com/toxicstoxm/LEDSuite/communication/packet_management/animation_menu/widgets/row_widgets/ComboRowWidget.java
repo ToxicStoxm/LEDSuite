@@ -31,12 +31,9 @@ public class ComboRowWidget extends AnimationMenuActionRowWidget<ComboRow> {
     public ComboRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ComboRow.ENABLE_SEARCH)) {
-            widget.setEnableSearch(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.ComboRow.ENABLE_SEARCH
-            ));
-        } else {
-            widget.setEnableSearch(true);
-        }
+        widget.setEnableSearch(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ComboRow.ENABLE_SEARCH, true)
+        );
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
         List<String> content = widgetSection.getStringList(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
@@ -47,11 +44,9 @@ public class ComboRowWidget extends AnimationMenuActionRowWidget<ComboRow> {
                 StringList.builder().setStrings(content.toArray(new String[]{})).build()
         );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE)) {
-            widget.setSelected(content.indexOf(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE)));
-        } else {
-            widget.setSelected(Gtk.INVALID_LIST_POSITION);
-        }
+        widget.setSelected(
+                getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, Gtk.INVALID_LIST_POSITION)
+        );
 
         onChanged(() -> sendMenuChangeRequest(String.valueOf(content.get(widget.getSelected()))));
 

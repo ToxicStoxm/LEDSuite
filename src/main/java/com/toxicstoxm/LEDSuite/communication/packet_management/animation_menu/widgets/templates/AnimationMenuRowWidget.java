@@ -18,11 +18,11 @@ public abstract class AnimationMenuRowWidget<T extends PreferencesRow> extends A
     public T deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP)) {
             widget.setTooltipText(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP));
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, widgetSection)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL)) {
             widget.setTitle(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL));
         }
 

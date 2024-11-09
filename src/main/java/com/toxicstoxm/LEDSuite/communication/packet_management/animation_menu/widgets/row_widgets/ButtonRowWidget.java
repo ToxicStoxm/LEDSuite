@@ -31,9 +31,8 @@ public class ButtonRowWidget extends AnimationMenuRowWidget<ButtonRow> {
             widget.setStartIconName(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME));
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.END_ICON_NAME)) {
-            widget.setEndIconName(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.END_ICON_NAME));
-        }
+        widget.setStartIconName(getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.START_ICON_NAME));
+        widget.setEndIconName(getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ButtonRow.END_ICON_NAME));
 
         widget.onActivated(this::sendMenuChangeRequestWithoutValue);
 

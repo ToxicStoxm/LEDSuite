@@ -30,21 +30,21 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
     public ExpanderRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)) {
-            widget.setSubtitle(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE));
-        }
+        widget.setSubtitle(
+                getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.WITH_SWITCH)) {
-            widget.setShowEnableSwitch(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.WITH_SWITCH));
-        }
+        widget.setShowEnableSwitch(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.WITH_SWITCH, true)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.ENABLE_EXPANSION)) {
-            widget.setEnableExpansion(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.ENABLE_EXPANSION));
-        }
+        widget.setEnableExpansion(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.ENABLE_EXPANSION, true)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.EXPANDED)) {
-            widget.setExpanded(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.EXPANDED));
-        }
+        widget.setExpanded(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.EXPANDED, false)
+        );
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
         ConfigurationSection contentSection = widgetSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);

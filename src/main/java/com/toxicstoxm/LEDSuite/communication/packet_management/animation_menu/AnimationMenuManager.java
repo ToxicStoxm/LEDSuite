@@ -40,7 +40,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
      * @param menuYAML the YAML string to deserialize
      * @return the new animation menu
      * @throws DeserializationException if something goes wrong while deserializing. E.g.: missing keys, invalid YAML or invalid values
-     * @see #deserializeAnimationMenuGroup(String, ConfigurationSection)
+     * @see #deserializeAnimationMenuGroup(String, String, ConfigurationSection) 
      */
     public AnimationMenu deserializeAnimationMenu(String menuYAML) throws DeserializationException {
         // Try to load YAML string into a YAML object
@@ -73,8 +73,10 @@ public class AnimationMenuManager extends Registrable<Widget> {
         // Loop through the content widgets and ensure they are groups, because all top level widgets need to be groups
         // If a type key exists check if it is a group
         for (String menuGroupKey : menuContentSection.getKeys(false)) {
+
             ConfigurationSection menuGroupSection = menuContentSection.getConfigurationSection(menuGroupKey);
-            if (menuGroupSection == null) throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!");
+            if (menuGroupSection == null)
+                throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!");
 
             try {
                 animationMenu.animationMenuContent.append(deserializeAnimationMenuGroup(animationMenu.getMenuID(), menuGroupKey, menuGroupSection));
@@ -82,6 +84,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
                 throw new DeserializationException("Failed to deserialize animation menu group '" + menuGroupKey + "'!", e);
             }
         }
+
         return animationMenu;
     }
 

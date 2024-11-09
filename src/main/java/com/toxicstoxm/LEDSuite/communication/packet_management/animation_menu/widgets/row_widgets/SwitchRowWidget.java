@@ -27,9 +27,9 @@ public class SwitchRowWidget extends AnimationMenuActionRowWidget<SwitchRow> {
     public SwitchRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE)) {
-            widget.setActive(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE));
-        }
+        widget.setActive(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, false)
+        );
 
         onChanged(() -> sendMenuChangeRequest(String.valueOf(widget.getActive())));
 

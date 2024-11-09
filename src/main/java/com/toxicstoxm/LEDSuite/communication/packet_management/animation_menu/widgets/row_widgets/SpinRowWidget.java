@@ -34,53 +34,47 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
     public SpinRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        var adjustment = Adjustment.builder()
-                .setStepIncrement(1)
-                .setLower(0)
-                .setUpper(100)
-                .setPageIncrement(10)
-                .setValue(0)
-                .build();
+        var adjustment = Adjustment.builder().build();
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE)) {
-            adjustment.setValue(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE));
-        }
+        adjustment.setValue(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, 0)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM)) {
-            adjustment.setLower(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM));
-        }
+        adjustment.setLower(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MINIMUM, 0)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM)) {
-            adjustment.setUpper(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM));
-        }
+        adjustment.setUpper(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.MAXIMUM, 100)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.INCREMENT)) {
-            adjustment.setStepIncrement(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.INCREMENT));
-        }
+        adjustment.setStepIncrement(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.INCREMENT, 1)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.PAGE_INCREMENT)) {
-            adjustment.setPageIncrement(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.PAGE_INCREMENT));
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP)) {
-            widget.setWrap(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP));
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP)) {
-            widget.setSnapToTicks(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP));
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE)) {
-            widget.setClimbRate(widgetSection.getDouble(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE));
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS)) {
-            widget.setDigits(widgetSection.getInt(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS));
-        }
-
-        widget.setUpdatePolicy(SpinButtonUpdatePolicy.IF_VALID);
+        adjustment.setPageIncrement(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.PAGE_INCREMENT, 10)
+        );
 
         widget.setAdjustment(adjustment);
+
+        widget.setWrap(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP, false)
+        );
+
+        widget.setSnapToTicks(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.SNAP, true)
+        );
+
+        widget.setClimbRate(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.CLIMB_RATE, 2)
+        );
+
+        widget.setDigits(
+                getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.DIGITS, 0)
+        );
+
+        widget.setUpdatePolicy(SpinButtonUpdatePolicy.IF_VALID);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN)) {
             cooldown = widgetSection.getLong(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.UPDATE_COOLDOWN);

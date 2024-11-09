@@ -33,21 +33,21 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
     public EntryRow deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         super.deserialize(deserializableWidget);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)) {
-            widget.setText(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE));
-        }
+        widget.setText(
+                getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON)) {
-            widget.setShowApplyButton(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON));
-        } else widget.setShowApplyButton(true);
+        widget.setShowApplyButton(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.APPLY_BUTTON, true)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE)) {
-            widget.setEditable(widgetSection.getBoolean(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE));
-        } else widget.setEditable(true);
+        widget.setEditable(
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.EDITABLE, true)
+        );
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING)) {
-            widget.setAttributes(AttrList.fromString(widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING)));
-        }
+        widget.setAttributes(
+                AttrList.fromString(Constants.Communication.YAML.Keys.Reply.MenuReply.EntryRow.ATTRIBUTE_STRING)
+        );
 
         if (widget.getShowApplyButton()) {
             widget.onApply(() -> sendMenuChangeRequest(widget.getText()));

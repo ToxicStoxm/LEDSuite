@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class SwitchRowWidget extends AnimationMenuActionRowWidget<SwitchRow> {
+
     @Override
     public String getType() {
         return WidgetType.SWITCH_ROW.getName();

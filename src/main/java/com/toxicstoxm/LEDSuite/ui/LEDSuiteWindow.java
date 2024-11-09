@@ -566,9 +566,9 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 @Override
                                 public void run() {
                                     GLib.idleAddOnce(() -> {
-                                    LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                                            MenuReplyPacket.builder().menuYAML(yaml.saveToString()).build()
-                                    );
+                                        LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
+                                                MenuReplyPacket.builder().menuYAML(yaml.saveToString()).build()
+                                        );
                                     });
                                 }
                             }.runTaskLaterAsynchronously(50);

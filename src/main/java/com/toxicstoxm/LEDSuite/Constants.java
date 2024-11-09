@@ -203,6 +203,13 @@ public class Constants {
                             public static final String ENABLE_EXPANSION = "enable_expansion";
                             public static final String EXPANDED = "expanded";
                         }
+
+                        public static final class Button {
+                            public static final String SPIN_ON_CLICKED = "spin_on_clicked";
+                            public static final String BLOCK_AFTER_CLICKED = "block_after_clicked";
+                            public static final String BLOCKING = "blocking";
+                            public static final String SPINNING = "spinning";
+                        }
                     }
                 }
             }

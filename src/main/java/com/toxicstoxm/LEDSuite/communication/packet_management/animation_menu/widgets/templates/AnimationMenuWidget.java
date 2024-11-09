@@ -111,4 +111,74 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
            if (flags.contains(StateFlags.ACTIVE)) changedCallback.onChanged();
         });
     }
+
+    protected String getStringIfAvailable(String key) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getString(key);
+        }
+        return "";
+    }
+
+    protected String getStringIfAvailable(String key, String defaultValue) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getString(key);
+        }
+        return defaultValue;
+    }
+
+    protected boolean getBooleanIfAvailable(String key) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getBoolean(key);
+        }
+        return false;
+    }
+
+    protected boolean getBooleanIfAvailable(String key, boolean defaultValue) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getBoolean(key);
+        }
+        return defaultValue;
+    }
+
+    protected int getIntIfAvailable(String key) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getInt(key);
+        }
+        return 0;
+    }
+
+    protected int getIntIfAvailable(String key, int defaultValue) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getInt(key);
+        }
+        return defaultValue;
+    }
+
+    protected double getDoubleIfAvailable(String key) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getDouble(key);
+        }
+        return 0;
+    }
+
+    protected double getDoubleIfAvailable(String key, double defaultValue) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getDouble(key);
+        }
+        return defaultValue;
+    }
+
+    protected long getLongIfAvailable(String key) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getLong(key);
+        }
+        return 0;
+    }
+
+    protected long getLongIfAvailable(String key, long defaultValue) {
+        if (checkIfKeyExists(key)) {
+            return widgetSection.getLong(key);
+        }
+        return defaultValue;
+    }
 }

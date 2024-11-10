@@ -18,6 +18,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -95,15 +96,18 @@ public class StatusReplyPacket extends CommunicationPacket {
 
             for (String key : animationsSection.getKeys(false)) {
 
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animationsSection);
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection);
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animationsSection);
+                String base = key + ".";
+
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animationsSection);
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection);
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME, animationsSection);
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animationsSection);
 
                 packet.animations.add(new Animation(
-                        key,
-                        animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL),
-                        animationsSection.getString(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON),
-                        animationsSection.getBoolean(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE)
+                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME),
+                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL),
+                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON),
+                        animationsSection.getBoolean(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE)
                 ));
             }
         } else packet.animationsAvailable = false;
@@ -124,13 +128,13 @@ public class StatusReplyPacket extends CommunicationPacket {
 
         // Save the list of animations
         if (animationsAvailable && animations != null && !animations.isEmpty()) {
-            for (int i = 0; i < animations.size(); i++) {
-                Animation animation = animations.get(i);
-                String baseKey = Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + "." + i;
+            for (Animation animation : animations) {
+                String baseKey = Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + "." + UUID.randomUUID() + ".";
 
-                yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animation.label);
-                yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animation.iconName);
-                yaml.set(baseKey + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animation.pauseable);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animation.label);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animation.iconName);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME, animation.id);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animation.pauseable);
             }
         }
 

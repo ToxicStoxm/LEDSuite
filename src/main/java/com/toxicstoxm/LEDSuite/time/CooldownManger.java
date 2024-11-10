@@ -13,9 +13,13 @@ import java.util.HashMap;
  */
 public class CooldownManger {
 
-    private record CooldownAction(Action action, long cooldown, long lastCall) {}
+    private record CooldownAction(Action action, long cooldown, long lastCall, String actionGroup) {}
+
+    private record CooldownActionGroup(long cooldown, long lastCall) {}
 
     private static final HashMap<String, CooldownAction> actions = new HashMap<>();
+
+    private static final HashMap<String, CooldownActionGroup> actionGroups = new HashMap<>();
 
     /**
      * Adds a new action. The action can now be called using {@link #call(String)} and the specified action name.
@@ -27,6 +31,11 @@ public class CooldownManger {
     public static void addAction(@NotNull String name, @NotNull Action action, long cooldown) {
         addAction(name, action, cooldown, false);
     }
+
+    public static void addAction(@NotNull String name, @NotNull Action action, long cooldown, String actionGroupName) {
+        addAction(name, action, cooldown, false, actionGroupName);
+    }
+
     /**
      * Adds a new action. The action can now be called using {@link #call(String)} and the specified action name.
      * @param name the action name
@@ -36,9 +45,17 @@ public class CooldownManger {
      * @see #remove(String)
      */
     public static void addAction(@NotNull String name, @NotNull Action action, long cooldown, boolean force) {
-        CooldownAction cooldownAction = new CooldownAction(action, cooldown, System.currentTimeMillis());
+        addAction(name, action, cooldown, force, null);
+    }
+
+    public static void addAction(@NotNull String name, @NotNull Action action, long cooldown, boolean force, String actionGroupName) {
+        CooldownAction cooldownAction = new CooldownAction(action, cooldown, System.currentTimeMillis(), actionGroupName);
         if (!force) actions.putIfAbsent(name, cooldownAction);
         else actions.put(name, cooldownAction);
+    }
+
+    public static void createActionGroup(@NotNull String groupName, long cooldown) {
+        actionGroups.put(groupName, new CooldownActionGroup(cooldown, System.currentTimeMillis()));
     }
 
     /**
@@ -51,14 +68,35 @@ public class CooldownManger {
         if (name == null || !actions.containsKey(name)) return false;
         CooldownAction cooldownAction = actions.remove(name);
 
-        long timeElapsed = System.currentTimeMillis() - cooldownAction.lastCall;
-        if (timeElapsed >= cooldownAction.cooldown) {
-            cooldownAction.action.run();
-            actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis()));
-            return true;
+        if (cooldownAction.actionGroup == null) {
+            long timeElapsed = System.currentTimeMillis() - cooldownAction.lastCall;
+            if (timeElapsed >= cooldownAction.cooldown) {
+                cooldownAction.action.run();
+                actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis(), null));
+                return true;
+            } else {
+                actions.put(name, cooldownAction);
+                return false;
+            }
         } else {
-            actions.put(name, cooldownAction);
-            return false;
+            CooldownActionGroup actionGroup = actionGroups.remove(cooldownAction.actionGroup);
+
+            if (actionGroup == null) {
+                actions.put(name, cooldownAction);
+                return false;
+            }
+
+            long timeElapsed = System.currentTimeMillis() - actionGroup.lastCall;
+            if (timeElapsed >= actionGroup.cooldown) {
+                cooldownAction.action.run();
+                actions.put(name, cooldownAction);
+                actionGroups.put(cooldownAction.actionGroup, new CooldownActionGroup(actionGroup.cooldown, System.currentTimeMillis()));
+                return true;
+            } else {
+                actions.put(name, cooldownAction);
+                actionGroups.put(cooldownAction.actionGroup, actionGroup);
+                return false;
+            }
         }
     }
 

@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.MenuReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.MenuReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -204,6 +204,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
         String animationID = menu.getMenuID();
         if (Objects.equals(animationID, selectedAnimation)) {
             changeMainContent(menu.init((AnimationRow) animationList.getSelectedRow()));
+            setAnimationControlButtonsVisible(true);
             LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
         } else LEDSuiteApplication.getLogger().debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
     }
@@ -229,6 +230,9 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @GtkChild(name = "animation_list_spinner_revealer")
     public Revealer animationListSpinnerRevealer;
 
+    @GtkChild(name = "main_view_overlay")
+    public Overlay mainViewOverlay;
+
     @Getter
     private UploadPageEndpoint uploadPageEndpoint;
 
@@ -246,6 +250,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 return uploadPage.getUploadStatisticsUpdater();
             }
         };
+        setAnimationControlButtonsVisible(false);
         changeMainContent(uploadPage);
         GLib.idleAddOnce(() -> {
             animationList.setSelectionMode(SelectionMode.NONE);
@@ -373,8 +378,81 @@ public class LEDSuiteWindow extends ApplicationWindow {
         uploadProgressBar.setFraction(0.0);
     }
 
+    @GtkChild(name = "animation_control_buttons_revealer")
+    public Revealer animationControlButtonsRevealer;
+
+    @GtkChild(name = "play_pause_button")
+    public Button playButton;
+
+    private boolean playing = false;
+
+    @GtkCallback(name = "play_pause_button_cb")
+    public void playButtonClicked() {
+        if (playing) {
+            GLib.idleAddOnce(() -> {
+                playButton.setIconName("media-playback-start");
+                stopButtonRevealer.setRevealChild(true);
+                playing = true;
+            });
+            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                    PauseRequestPacket.builder()
+                            .requestFile(getSelectedAnimation())
+                            .build().serialize()
+            );
+        } else {
+            GLib.idleAddOnce(() -> {
+                playButton.setIconName("media-playback-pause");
+                stopButtonRevealer.setRevealChild(true);
+                playing = false;
+            });
+            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                    PlayRequestPacket.builder()
+                            .requestFile(getSelectedAnimation())
+                            .build().serialize()
+            );
+        }
+    }
+
+    @GtkChild(name = "stop_button_revealer")
+    public Revealer stopButtonRevealer;
+
+    @GtkCallback(name = "stop_button_cb")
+    public void stopButtonClicked() {
+        resetAnimationControlButtons(false);
+        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                StopRequestPacket.builder()
+                        .requestFile(getSelectedAnimation())
+                        .build().serialize()
+        );
+    }
+
+    public void setAnimationControlButtonsVisible(boolean visible) {
+        if (visible) {
+            resetAnimationControlButtons(false);
+            GLib.idleAddOnce(() -> animationControlButtonsRevealer.setRevealChild(true));
+        } else {
+            resetAnimationControlButtons(true);
+        }
+    }
+
+    public void resetAnimationControlButtons(boolean hide) {
+        GLib.idleAddOnce(() -> {
+            if (hide) animationControlButtonsRevealer.setRevealChild(false);
+            stopButtonRevealer.setRevealChild(false);
+            playButton.setIconName("media-playback-start");
+            playing = false;
+        });
+    }
+
     @Override
     public void present() {
+
+        tests();
+
+        super.present();
+    }
+
+    private void tests() {
         animationList.append(AnimationRow.create(
                 AnimationRowData.builder()
                         .app(getApplication())
@@ -410,6 +488,14 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                 String prefix = Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT + "." + randomID + ".";
                                 yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "group-" + i);
                                 yaml.set(prefix + Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, "group-" + i);
+
+                                YamlConfiguration suffixYAML = new YamlConfiguration();
+
+                                suffixYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, WidgetType.BUTTON.getName());
+                                suffixYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.LABEL, "Header-Suffix-" + i);
+                                suffixYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.BLOCK_AFTER_CLICKED, true);
+                                suffixYAML.set(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.SPIN_ON_CLICKED, true);
+
 
                                 YamlConfiguration propertyYAML = new YamlConfiguration();
 
@@ -651,8 +737,6 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 "media-optical-cd-audio-symbolic",
                 false
         )));
-
-        super.present();
     }
 }
 

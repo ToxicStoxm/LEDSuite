@@ -2,6 +2,10 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.m
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * WidgetType for {@link Widget} derivatives.
+ * @since 1.0.0
+ */
 public enum WidgetType {
     GROUP,
     BUTTON_ROW,

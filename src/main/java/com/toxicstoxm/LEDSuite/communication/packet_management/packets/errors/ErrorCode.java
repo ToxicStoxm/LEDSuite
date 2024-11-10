@@ -1,9 +1,15 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.server_error.ServerErrorPacket;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error codes for {@link ServerErrorPacket} and {@link MenuErrorPacket}.
+ * @since 1.0.0
+ */
 @Getter
 public enum ErrorCode {
     Undefined(0),

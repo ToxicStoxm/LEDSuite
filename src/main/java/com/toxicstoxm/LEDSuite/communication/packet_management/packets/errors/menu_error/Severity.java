@@ -2,6 +2,10 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.m
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Severity levels for {@link MenuErrorPacket}.
+ * @since 1.0.0
+ */
 public enum Severity {
     UNDEFINED(0),
     MILD(1),

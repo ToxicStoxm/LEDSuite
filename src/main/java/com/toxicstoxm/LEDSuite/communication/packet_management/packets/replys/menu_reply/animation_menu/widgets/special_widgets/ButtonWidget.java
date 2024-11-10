@@ -14,6 +14,9 @@ import org.gnome.glib.Type;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @since 1.0.0
+ */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class ButtonWidget extends AnimationMenuWidget<Clamp> {
     @Override

@@ -11,6 +11,9 @@ import org.gnome.adw.SwitchRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @since 1.0.0
+ */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class SwitchRowWidget extends AnimationMenuActionRowWidget<SwitchRow> {
 

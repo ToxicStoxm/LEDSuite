@@ -8,6 +8,11 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 
+/**
+ * Wrapper class for request packets related to animation control.
+ * E.g.: {@link PlayRequestPacket}, {@link PauseRequestPacket}
+ * @since 1.0.0
+ */
 public abstract class MediaRequestPacket extends CommunicationPacket {
     public abstract void setRequestFile(String requestFile);
     public abstract String getRequestFile();

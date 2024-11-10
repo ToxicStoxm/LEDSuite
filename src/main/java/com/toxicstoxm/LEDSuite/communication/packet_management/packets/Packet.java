@@ -1,13 +1,16 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets;
 
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
+import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Serializable;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 /**
- *
+ * Derivatives of this class are used to communicate with the server.
+ * Derivatives of this class are auto-registrable.
+ * For more information see {@link Registrable}.
  * @since 1.0.0
  */
 public interface Packet extends Serializable<String, Packet>, AutoRegistrableItem {

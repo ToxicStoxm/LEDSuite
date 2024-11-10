@@ -14,6 +14,9 @@ import org.gnome.gtk.Adjustment;
 import org.gnome.gtk.SpinButtonUpdatePolicy;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @since 1.0.0
+ */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
     @Override

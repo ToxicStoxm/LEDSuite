@@ -10,6 +10,9 @@ import org.gnome.adw.ActionRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @since 1.0.0
+ */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class PropertyRowWidget extends AnimationMenuActionRowWidget<ActionRow> {
 

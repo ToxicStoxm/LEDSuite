@@ -16,6 +16,11 @@ import org.jetbrains.annotations.NotNull;
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.checkIfKeyExists;
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.ensureKeyExists;
 
+/**
+ * Wrapper class for deserializing an animation menu by using registered {@link Widget}-deserializer classes.
+ * @since 1.0.0
+ * @see #deserializeAnimationMenu(String)
+ */
 public class AnimationMenuManager extends Registrable<Widget> {
 
     private final String widgetClassPath;

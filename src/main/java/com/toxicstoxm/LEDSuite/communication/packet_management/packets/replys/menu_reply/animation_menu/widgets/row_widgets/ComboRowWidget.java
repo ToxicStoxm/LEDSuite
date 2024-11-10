@@ -16,6 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * @since 1.0.0
+ */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class ComboRowWidget extends AnimationMenuActionRowWidget<ComboRow> {
     @Override

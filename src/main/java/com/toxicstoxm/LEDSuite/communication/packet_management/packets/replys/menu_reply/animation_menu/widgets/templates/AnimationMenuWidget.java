@@ -18,6 +18,11 @@ import org.gnome.gtk.StateFlags;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Wrapper class for animation menu widgets.
+ * This class includes some useful methods for the child classes.
+ * @since 1.0.0
+ */
 @Getter
 public abstract class AnimationMenuWidget<T extends Widget> implements com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.Widget {
 

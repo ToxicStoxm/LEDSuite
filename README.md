@@ -16,22 +16,23 @@
       - [X] Connect to multiple endpoints concurrently 
     - [X] Exchange packets
   - [X] Handle IP and Port changes
-  - [ ] Communication handling
+  - [X] Communication handling
     - [X] Request handling
-    - [ ] Response handling
+    - [X] Response handling
     - [X] Error handling
   - [ ] File sending
     - [X] Loading file
     - [X] Sending file data to server
     - [X] Sending metadata to server
     - [X] Calculating upload statistics
-    - [ ] Error handling
+    - [X] Error handling
     - [ ] Handle duplicate names
       - [ ] Rename support
       - [ ] Overwrite support
   - [X] Define communication protocol with YAML
-  - [ ] Additional features
-    - [ ] Multiple servers (?)
+  - [ ] Additional features (?)
+    - [ ] Multiple servers
+    - [ ] Authentication / Accounts
 - [ ] UI
   - [ ] Elements
     -  [X] Dialogs
@@ -43,32 +44,32 @@
       - [X] Sidebar
       - [X] Main view
       - [X] Progress bar
-      - [ ] Animation control buttons
+      - [X] Animation control buttons
       - [X] Header bar
       - [ ] Alert dialogs
-- [ ] YAML
-  - [ ] Serialization
-    - [ ] Adwaita- & Gtk widgets
-    - [ ] YAML packets
+- [X] YAML
+  - [X] Serialization
+    - [X] Adwaita- & Gtk widgets
+    - [X] YAML packets
       - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply packets
+      - [X] Reply packets
         - [X] Status reply
-        - [ ] Menu reply
+        - [X] Menu reply
       - [X] Error packets
-  - [ ] Deserialization
-    - [ ] Adwaita- & Gtk widgets
-    - [ ] YAML packets
+  - [X] Deserialization
+    - [X] Adwaita- & Gtk widgets
+    - [X] YAML packets
       - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply packets
+      - [X] Reply packets
         - [X] Status reply
-        - [ ] Menu reply
+        - [X] Menu reply
       - [X] Error packets
 - [ ] Documentation
-  - [] Add Javadoc
+  - [ ] Add Javadoc
     - [X] Classes
     - [ ] Functions
   - [ ] Add tons of comments to the code

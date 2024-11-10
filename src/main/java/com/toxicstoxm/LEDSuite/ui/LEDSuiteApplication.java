@@ -4,13 +4,13 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.AnimationMenuManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ServerErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.server_error.ServerErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.AnimationMenuManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
@@ -218,7 +218,10 @@ public class LEDSuiteApplication extends Application {
     }
 
     @Getter
-    private static boolean initialConnect = false;
+    private static boolean connecting = false;
+
+    @Getter
+    private static long connectionAttempt = -1;
 
     /**
      * Creates a new websocket client instance and connects it with the websocket server.
@@ -233,6 +236,9 @@ public class LEDSuiteApplication extends Application {
         } catch (NullPointerException | URISyntaxException e) {
             return false;
         }
+
+        connecting = true;
+        connectionAttempt = System.currentTimeMillis();
 
         long start = System.currentTimeMillis();
         long timeElapsed = System.currentTimeMillis() - start;
@@ -279,14 +285,14 @@ public class LEDSuiteApplication extends Application {
         }
 
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(false));
+        connecting = false;
 
         if (result != null) {
             return result;
         }
 
-        if (initialConnect) initialConnect = false;
-
         LEDSuiteApplication.getLogger().info("Network connection timed out!", new LEDSuiteLogAreas.NETWORK());
+
         return false;
     }
 
@@ -413,7 +419,7 @@ public class LEDSuiteApplication extends Application {
 
             logger.debug("\nTesting server error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             ServerErrorPacket serverErrorPacket = ServerErrorPacket.builder()
-                    .code(1)
+                    .code(ErrorCode.ChecksumOfFileIsInvalid)
                     .source(Constants.Communication.YAML.Values.Error.ServerError.Sources.PARSING_ERROR)
                     .name("Failed to parse YAML!")
                     .severity(5)
@@ -424,7 +430,7 @@ public class LEDSuiteApplication extends Application {
             MenuErrorPacket menuErrorPacket = MenuErrorPacket.builder()
                     .fileName("Test-Animation")
                     .severity(Severity.FATAL)
-                    .code(Code.PARSE_ERROR)
+                    .code(ErrorCode.GroupSectionEmptyOrMissing)
                     .message("Failed to parse YAML!")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuErrorPacket.serialize()));
@@ -481,7 +487,7 @@ public class LEDSuiteApplication extends Application {
         logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
 
         String checksum;
-        byte[] data = null;
+        byte[] data;
         try {
             data = Files.readAllBytes(Path.of(fileToUpload.getAbsolutePath()));
             byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);

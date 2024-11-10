@@ -1,11 +1,12 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.server_error;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
@@ -27,7 +28,7 @@ import lombok.*;
 public class ServerErrorPacket extends CommunicationPacket {
 
    private String source;        // guaranteed
-   private int code;             // guaranteed
+   private ErrorCode code;       // guaranteed
    private String name;          // guaranteed
    private int severity;         // guaranteed
 
@@ -55,7 +56,7 @@ public class ServerErrorPacket extends CommunicationPacket {
         packet.name = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.NAME);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.CODE, yaml);
-        packet.code = yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.CODE);
+        packet.code = ErrorCode.fromInt(yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.CODE));
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, yaml);
         packet.severity = yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY);
@@ -71,7 +72,7 @@ public class ServerErrorPacket extends CommunicationPacket {
         YamlConfiguration yaml = saveYAML();
 
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.NAME, name);
-        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.CODE, code);
+        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.CODE, code.getCode());
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, severity);
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE, source);
 

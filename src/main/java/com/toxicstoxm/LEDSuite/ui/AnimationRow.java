@@ -16,7 +16,6 @@ import org.gnome.gtk.Image;
 import org.gnome.gtk.Label;
 import org.gnome.gtk.ListBoxRow;
 import org.jetbrains.annotations.NotNull;
-
 import java.lang.foreign.MemorySegment;
 
 /**
@@ -84,11 +83,6 @@ public class AnimationRow extends ListBoxRow {
                     window.fileManagementList.unselectAll();
                     window.setSelectedAnimation(animationID);
                 });
-                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                        MenuRequestPacket.builder()
-                                .requestFile(animationID)
-                                .build().serialize()
-                );
             }
         });
         app.addAction(simpleAction);

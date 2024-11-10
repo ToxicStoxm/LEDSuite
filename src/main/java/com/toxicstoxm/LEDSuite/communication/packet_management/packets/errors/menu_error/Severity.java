@@ -19,7 +19,7 @@ public enum Severity {
         for (Severity severity : Severity.values()) {
             if (severity.value == value) return severity;
         }
-        throw new IllegalArgumentException("Couldn't find enum element for value '" + value + "'!");
+        return UNDEFINED;
     }
 
 }

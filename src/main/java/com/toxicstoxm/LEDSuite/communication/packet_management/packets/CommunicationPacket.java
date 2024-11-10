@@ -52,7 +52,7 @@ public abstract class CommunicationPacket implements Packet {
         return YamlTools.checkIfKeyExists(key, yaml);
     }
 
-    protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) {
+    protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) throws DeserializationException {
         YamlTools.ensureKeyExists(key, yaml);
     }
 }

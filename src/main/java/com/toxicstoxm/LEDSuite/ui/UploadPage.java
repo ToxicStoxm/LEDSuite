@@ -61,6 +61,7 @@ public class UploadPage extends PreferencesPage {
         uploadPage.uploadStatisticsUpdater = uploadPage::setUploadStatistics;
         WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
         uploadPage.setUploadButtonState(false);
+        uploadPage.uploadStatistics.setSensitive(false);
         uploadPage.connectivityUpdater.update(webSocketClient != null && webSocketClient.isConnected() && !uploadPage.loading);
         return uploadPage;
     }
@@ -157,7 +158,10 @@ public class UploadPage extends PreferencesPage {
         long speed = newUploadStats.bytesPerSecond();
 
         if (!this.uploadStatistics.getExpanded()) {
-            GLib.idleAddOnce(() -> uploadStatistics.setExpanded(true));
+            GLib.idleAddOnce(() -> {
+                uploadStatistics.setExpanded(true);
+                uploadStatistics.setSensitive(true);
+            });
         }
 
         GLib.idleAddOnce(() -> {
@@ -169,6 +173,7 @@ public class UploadPage extends PreferencesPage {
     public void resetUploadStatistics() {
         GLib.idleAddOnce(() -> {
             uploadStatistics.setExpanded(false);
+            uploadStatistics.setSensitive(false);
             uploadSpeed.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
             uploadEta.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
         });

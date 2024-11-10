@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -61,14 +62,14 @@ public class StatusReplyPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE, yaml);
         try {
             packet.fileState = FileState.valueOf(yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE));
         } catch (IllegalArgumentException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.InvalidFileState);
         }
 
         if (!packet.fileState.equals(FileState.idle)) packet.selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE);
@@ -89,11 +90,9 @@ public class StatusReplyPacket extends CommunicationPacket {
         packet.animations = new ArrayList<>();
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS, yaml)) {
-
-            ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS, yaml);
             ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS);
+            if (animationsSection == null) throw new DeserializationException("Deserialization failed! Failed to deserialize " + Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " section!", ErrorCode.StatusUpdateInvalidAnimationsSection);
 
-            if (animationsSection == null) throw new DeserializationException("Deserialization failed! ", new NullPointerException(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " wasn't found!"));
             for (String key : animationsSection.getKeys(false)) {
 
                 ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, yaml);
@@ -119,9 +118,9 @@ public class StatusReplyPacket extends CommunicationPacket {
         // Set the object's state into the YAML structure using the same keys as in deserializing
         yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE, fileState.name());
         if (!fileState.equals(FileState.idle)) yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE, selectedFile);
-        if (currentDraw != null) yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW, currentDraw);
-        if (voltage != null) yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE, voltage);
-        if (lidState != null) yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE, lidState.asBool());
+        yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW, currentDraw);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE, voltage);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE, lidState.asBool());
 
         // Save the list of animations
         if (animationsAvailable && animations != null && !animations.isEmpty()) {

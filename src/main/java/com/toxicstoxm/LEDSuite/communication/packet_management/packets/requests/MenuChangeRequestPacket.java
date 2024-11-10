@@ -1,11 +1,12 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -45,7 +46,7 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID, yaml);

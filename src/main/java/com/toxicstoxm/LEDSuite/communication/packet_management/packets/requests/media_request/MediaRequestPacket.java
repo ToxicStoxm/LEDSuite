@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 
@@ -25,7 +26,7 @@ public abstract class MediaRequestPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);

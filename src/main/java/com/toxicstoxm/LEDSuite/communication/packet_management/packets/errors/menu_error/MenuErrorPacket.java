@@ -1,11 +1,12 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -26,7 +27,7 @@ public class MenuErrorPacket extends CommunicationPacket {
     private String fileName;    // not guaranteed
     private String message;     // guaranteed
     private Severity severity;  // guaranteed
-    private Code code;          // guaranteed
+    private ErrorCode code;     // guaranteed
 
     @Override
     public String getType() {
@@ -49,25 +50,17 @@ public class MenuErrorPacket extends CommunicationPacket {
         }
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, yaml)) {
-            fileName = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME);
+            packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, yaml);
-        message = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE);
+        packet.message = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY, yaml);
-        try {
-            severity = Severity.fromValue(yaml.getInt(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY));
-        } catch (IllegalArgumentException e) {
-            throw new DeserializationException("Invalid error severity '" + severity + "'!", e);
-        }
+        packet.severity = Severity.fromValue(yaml.getInt(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY));
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.CODE, yaml);
-        try {
-            code = Code.fromValue(yaml.getInt(Constants.Communication.YAML.Keys.Error.MenuError.CODE));
-        } catch (IllegalArgumentException e) {
-            throw new DeserializationException("Invalid error code '" + code + "'!", e);
-        }
+        packet.code = ErrorCode.fromInt(yaml.getInt(Constants.Communication.YAML.Keys.Error.MenuError.CODE));
 
         return packet;
     }
@@ -76,21 +69,10 @@ public class MenuErrorPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        if (fileName != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, fileName);
-        }
-
-        if (message != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, message);
-        }
-
-        if (severity != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY, severity.value);
-        }
-
-        if (code != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.CODE, code.value);
-        }
+        yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, fileName);
+        yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, message);
+        if (severity != null) yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY, severity.value);
+        yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.CODE, code.getCode());
 
         return yaml.saveToString();
     }

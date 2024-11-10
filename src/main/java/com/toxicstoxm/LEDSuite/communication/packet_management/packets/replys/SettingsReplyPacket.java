@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -47,36 +48,13 @@ public class SettingsReplyPacket extends CommunicationPacket {
     }
 
     @Override
-    public String serialize() {
-        YamlConfiguration yaml = saveYAML();
-
-        if (brightness != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS, brightness);
-        }
-
-        if (selectedColorMode != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE, selectedColorMode);
-        }
-
-        if (restorePreviousState != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
-        }
-
-        if (availableColorModes != null && !availableColorModes.isEmpty()) {
-            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES, availableColorModes);
-        }
-
-        return yaml.saveToString();
-    }
-
-    @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         SettingsReplyPacket packet = SettingsReplyPacket.builder().build();
         YamlConfiguration yaml;
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
         }
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS, yaml)) {
@@ -96,6 +74,21 @@ public class SettingsReplyPacket extends CommunicationPacket {
         }
 
         return packet;
+    }
+
+    @Override
+    public String serialize() {
+        YamlConfiguration yaml = saveYAML();
+
+        yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS, brightness);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE, selectedColorMode);
+        yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
+
+        if (!availableColorModes.isEmpty()) {
+            yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES, availableColorModes);
+        }
+
+        return yaml.saveToString();
     }
 
     @Override

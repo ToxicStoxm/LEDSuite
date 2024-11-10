@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -54,7 +55,7 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
         }
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, yaml)) {
@@ -76,17 +77,13 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        if (brightness != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, brightness);
-        }
+        yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, brightness);
 
-        if (selectedColorMode != null && !selectedColorMode.isBlank()) {
+        if (!selectedColorMode.isBlank()) {
             yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE, selectedColorMode);
         }
 
-        if (restorePreviousState != null) {
-            yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
-        }
+        yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
 
         return yaml.saveToString();
     }

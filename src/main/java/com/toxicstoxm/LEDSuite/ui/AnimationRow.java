@@ -8,6 +8,7 @@ import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.gio.SimpleAction;
+import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Application;
@@ -55,7 +56,7 @@ public class AnimationRow extends ListBoxRow {
     }
 
     public static @NotNull AnimationRow create(@NotNull AnimationRowData animationRowData) {
-        CooldownManger.addAction(animationRowData.animationID(), animationRowData.action(), animationRowData.cooldown() != null ? animationRowData.cooldown() : 0);
+        CooldownManger.addAction(animationRowData.animationID(), animationRowData.action(), animationRowData.cooldown() != null ? animationRowData.cooldown() : 0, null);
         createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
 
         AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + animationRowData.animationID());
@@ -67,6 +68,11 @@ public class AnimationRow extends ListBoxRow {
         return row;
     }
 
+    public void update(String label, String iconName) {
+        animationRowLabel.setLabel(label);
+        animationIcon.setFromIconName(iconName);
+    }
+
     private static void createAction(@NotNull Application app, String animationID, String animationLabel) {
         LEDSuiteWindow window = (LEDSuiteWindow) app.getActiveWindow();
         var simpleAction = new SimpleAction(String.valueOf(animationID), null);
@@ -74,8 +80,10 @@ public class AnimationRow extends ListBoxRow {
             if (!CooldownManger.call(String.valueOf(animationID))) {
                 LEDSuiteApplication.getLogger().info("The animation row " + animationLabel + " (" + animationID + ") is on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
             } else {
-                window.fileManagementList.unselectAll();
-                window.setSelectedAnimation(animationID);
+                GLib.idleAddOnce(() -> {
+                    window.fileManagementList.unselectAll();
+                    window.setSelectedAnimation(animationID);
+                });
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                         MenuRequestPacket.builder()
                                 .requestFile(animationID)

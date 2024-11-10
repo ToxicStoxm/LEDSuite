@@ -199,7 +199,8 @@ public class LEDSuiteWindow extends ApplicationWindow {
     public void displayAnimationManu(@NotNull AnimationMenu menu) {
         String animationID = menu.getMenuID();
         if (Objects.equals(animationID, selectedAnimation)) {
-            changeMainContent(menu.init((AnimationRow) animationList.getSelectedRow()));
+            AnimationMenu animationMenu = menu.init((AnimationRow) animationList.getSelectedRow());
+            changeMainContent(animationMenu);
             setAnimationControlButtonsVisible(true);
             LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
         } else LEDSuiteApplication.getLogger().debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
@@ -273,13 +274,33 @@ public class LEDSuiteWindow extends ApplicationWindow {
      * @param updatedAnimations new available animation list to display
      */
     public void updateAnimations(@NotNull Collection<StatusReplyPacket.Animation> updatedAnimations) {
-        HashMap<String, AnimationRow> newAnimationRows = new HashMap<>();
-
         LEDSuiteApplication.getLogger().verbose("Updating available animations. Count: " + updatedAnimations.size(), new LEDSuiteLogAreas.UI());
+
+        List<String> removedAnimations = new ArrayList<>(animations.keySet());
 
         // Construct animation rows for all new animations and store them in a temporary map
         for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
-            var animationRow = AnimationRow.create(
+            String newAnimationName = updatedAnimation.id();
+
+            removedAnimations.remove(newAnimationName);
+
+            if (animations.containsKey(newAnimationName)) {
+                Widget selectedRow = animationList.getSelectedRow();
+                if (selectedRow != null) {
+                    if (selectedRow instanceof AnimationRow animationRow) {
+                        GLib.idleAddOnce(() -> animationRow.update(updatedAnimation.label(), updatedAnimation.iconName()));
+                        animations.put(newAnimationName, animationRow);
+                        LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                    } else {
+                        LEDSuiteApplication.getLogger().warn("Wasn't able to update animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                    }
+                    continue;
+                } else {
+                    GLib.idleAddOnce(() -> animationList.remove(animations.remove(newAnimationName)));
+                }
+            }
+
+            var newAnimationRow = AnimationRow.create(
                     AnimationRowData.builder()
                             .app(getApplication())
                             .iconName(updatedAnimation.iconName())
@@ -294,50 +315,20 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             .cooldown(500L)
                             .build()
             );
-
-            newAnimationRows.put(updatedAnimation.id(), animationRow);
-        }
-
-        List<String> removedAnimations = new ArrayList<>(animations.keySet());
-
-        // Loop through all new or updated animations.
-        // If an animation with the same key already exists in the current list, it is re-added to update its values,
-        // except if that animation row is currently selected.
-        // Then just the label and icon name is updated to prevent
-        // the user from being kicked out of that animation's menu.
-        // If no animation with the same name already exists, it's simply added to the list.
-        for (Map.Entry<String, AnimationRow> entry : newAnimationRows.entrySet()) {
-            String newAnimation = entry.getKey();
-            AnimationRow newAnimationRow = entry.getValue();
-
-            removedAnimations.remove(newAnimation);
-
-            if (animations.containsKey(newAnimation)) {
-                LEDSuiteApplication.getLogger().verbose("Updated animation: " + entry.getKey(), new LEDSuiteLogAreas.UI());
-                if (Objects.equals(selectedAnimation, newAnimation)) {
-                    ListBoxRow selectedRow = animationList.getSelectedRow();
-                    if (selectedRow instanceof AnimationRow animationRow) {
-                        animationRow.setAnimationLabel(newAnimationRow.animationRowLabel.getLabel());
-                        animationRow.setIconName(newAnimationRow.animationIcon.getIconName());
-                    } else LEDSuiteApplication.getLogger().warn("Wasn't able to update selected animation!", new LEDSuiteLogAreas.UI());
-                    continue;
-                }
-
-                animationList.remove(animations.remove(entry.getKey()));
-            } else LEDSuiteApplication.getLogger().verbose("Added animation: " + entry.getKey(), new LEDSuiteLogAreas.UI());
-
-            animations.put(entry.getKey(), entry.getValue());
-            animationList.append(entry.getValue());
+            animations.put(newAnimationName, newAnimationRow);
+            GLib.idleAddOnce(() -> animationList.append(newAnimationRow));
+            LEDSuiteApplication.getLogger().verbose("Added animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
         }
 
         // The remaining animations are simply removed from the animation row list.
         // Except if a row is selected, then it is first deselected and the upload page is selected by default.
         for (String removedAnimation : removedAnimations) {
-            if (removedAnimation.equals(selectedAnimation)) {
-                animationList.unselectRow(animations.get(removedAnimation));
+            if (Objects.equals(removedAnimation, selectedAnimation)) {
+                GLib.idleAddOnce(() -> animationList.unselectRow(animations.get(removedAnimation)));
                 uploadPageSelect();
             }
-            animationList.remove(animations.remove(removedAnimation));
+            GLib.idleAddOnce(() -> removeAction(removedAnimation));
+            GLib.idleAddOnce(() -> animationList.remove(animations.remove(removedAnimation)));
             LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
         }
     }
@@ -443,7 +434,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
     @Override
     public void present() {
 
-        tests();
+        //tests();
 
         super.present();
     }

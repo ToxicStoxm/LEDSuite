@@ -41,6 +41,6 @@ public class YamlTools {
      * @throws DeserializationException if the given key does not exist in the given config section
      */
     public static void ensureKeyExists(String key, @NotNull ConfigurationSection yaml, ErrorCode errorCode) throws DeserializationException {
-        if (!yaml.contains(key)) throw new DeserializationException("Deserialization failed! Required value " + key + " is missing!", errorCode);
+        if (!yaml.contains(key)) throw new DeserializationException("Deserialization failed! Required value for key '" + key + "' is missing!", errorCode);
     }
 }

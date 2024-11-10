@@ -1,7 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.YAJSI.api.logging.Logger;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@code DeserializationException} is an unchecked exception and is used to express an error during deserialization of a communication packet.
@@ -51,8 +53,17 @@ public class DeserializationException extends RuntimeException {
     protected DeserializationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
     protected DeserializationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, ErrorCode errorCode) {
         super(message, cause, enableSuppression, writableStackTrace);
         this.errorCode = errorCode;
+    }
+
+    public void printStackTrace(@NotNull Logger s) {
+        s.log("Error message: " + getMessage());
+        s.log("Error code: " + getErrorCode().name() + "(" + getErrorCode().getCode() + ")");
+        for (StackTraceElement e : getStackTrace()) {
+            s.log(e.toString());
+        }
     }
 }

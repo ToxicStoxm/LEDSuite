@@ -65,11 +65,18 @@ public class MenuReplyPacket extends CommunicationPacket {
         return packet;
     }
 
+    private static boolean lock = false;
+
     @Override
     public void handlePacket() {
+        if (lock) {
+            LEDSuiteApplication.getLogger().warn("Voiding menu reply because other one is currently being handled!", new LEDSuiteLogAreas.COMMUNICATION());
+            return;
+        }
+        lock = true;
 
         long start = System.currentTimeMillis();
-        LEDSuiteApplication.getWindow().animationList.setSensitive(false);
+        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().animationList.setSensitive(false));
 
         LEDSuiteApplication.getWindow().changeMainContent(
                 Clamp.builder()
@@ -131,7 +138,8 @@ public class MenuReplyPacket extends CommunicationPacket {
                                     .build().serialize()
                     );
                 }
-                LEDSuiteApplication.getWindow().animationList.setSensitive(true);
+                GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().animationList.setSensitive(true));
+                lock = false;
             }
         }.runTaskAsynchronously();
     }

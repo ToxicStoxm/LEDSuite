@@ -14,11 +14,13 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 import org.gnome.adw.Clamp;
 import org.gnome.adw.Spinner;
+import org.gnome.glib.GLib;
 import org.gnome.gtk.Align;
 
 /**
@@ -57,15 +59,8 @@ public class MenuReplyPacket extends CommunicationPacket {
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         MenuReplyPacket packet = MenuReplyPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
-        }
 
-        //ensureKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, yaml);
-        packet.menuYAML = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
+        packet.menuYAML = yamlString;
         return packet;
     }
 
@@ -97,11 +92,13 @@ public class MenuReplyPacket extends CommunicationPacket {
 
                 if (animationMenuManager != null) {
                     try {
-                        LEDSuiteApplication.getWindow().displayAnimationManu(animationMenuManager.deserializeAnimationMenu(menuYAML));
+                        AnimationMenu menu = animationMenuManager.deserializeAnimationMenu(menuYAML);
+                        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationManu(menu));
                     } catch (DeserializationException e) {
                         LEDSuiteApplication.getLogger().warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
                         errorCode = e.getErrorCode();
                         errorMessage = e.getMessage();
+                        e.printStackTrace(message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
                     }
                 } else {
                     LEDSuiteApplication.getLogger().warn("Couldn't handle menu reply packet because animation menu manager is not available!", new LEDSuiteLogAreas.COMMUNICATION());

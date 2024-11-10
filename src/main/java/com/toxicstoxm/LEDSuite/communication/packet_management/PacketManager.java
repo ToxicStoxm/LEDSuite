@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
-import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -95,8 +95,8 @@ public class PacketManager extends Registrable<Packet> {
             return clazz.cast(packetInstance);
         } catch (ClassCastException e) {
             throw new DeserializationException("Couldn't create " + clazz.getName() + " from the provided YAML string!", e);
-        } catch (Exception e) {
-            throw new DeserializationException("Deserialization for " + clazz.getName() + " failed!", e);
+        } catch (DeserializationException e) {
+            throw new DeserializationException("Deserialization for " + clazz.getName() + " failed! " + e.getMessage(), e);
         }
     }
 

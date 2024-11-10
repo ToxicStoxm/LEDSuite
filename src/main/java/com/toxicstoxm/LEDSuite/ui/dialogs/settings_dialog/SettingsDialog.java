@@ -374,9 +374,9 @@ public class SettingsDialog extends PreferencesDialog {
 
         updateServerState();
 
-        if (LEDSuiteApplication.isInitialConnect()) {
+        if (LEDSuiteApplication.isConnecting()) {
             connectivityStatus.connecting();
-            long start = System.currentTimeMillis();
+            long start = LEDSuiteApplication.getConnectionAttempt();
             new LEDSuiteRunnable() {
                 @Override
                 public void run() {

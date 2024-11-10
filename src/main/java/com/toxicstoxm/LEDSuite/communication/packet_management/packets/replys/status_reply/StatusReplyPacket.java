@@ -41,7 +41,7 @@ public class StatusReplyPacket extends CommunicationPacket {
     private Double currentDraw;                         // not guaranteed
     private Double voltage;                             // not guaranteed
     private LidState lidState;                          // not guaranteed
-    private List<Animation> animations;      // only if available
+    private List<Animation> animations;                 // only if available
     private boolean animationsAvailable;
 
 
@@ -95,9 +95,9 @@ public class StatusReplyPacket extends CommunicationPacket {
 
             for (String key : animationsSection.getKeys(false)) {
 
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, yaml);
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, yaml);
-                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, yaml);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animationsSection);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection);
+                ensureKeyExists(key + "." + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animationsSection);
 
                 packet.animations.add(new Animation(
                         key,

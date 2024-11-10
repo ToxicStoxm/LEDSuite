@@ -1,8 +1,5 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.MenuReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -19,7 +16,6 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -318,7 +314,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
             if (animations.containsKey(newAnimation)) {
                 LEDSuiteApplication.getLogger().verbose("Updated animation: " + entry.getKey(), new LEDSuiteLogAreas.UI());
-                if (selectedAnimation.equals(newAnimation)) {
+                if (Objects.equals(selectedAnimation, newAnimation)) {
                     ListBoxRow selectedRow = animationList.getSelectedRow();
                     if (selectedRow instanceof AnimationRow animationRow) {
                         animationRow.setAnimationLabel(newAnimationRow.animationRowLabel.getLabel());
@@ -387,12 +383,12 @@ public class LEDSuiteWindow extends ApplicationWindow {
     private boolean playing = false;
 
     @GtkCallback(name = "play_pause_button_cb")
-    public void playButtonClicked() {
+    public void playPauseButtonClicked() {
         if (playing) {
             GLib.idleAddOnce(() -> {
                 playButton.setIconName("media-playback-start");
                 stopButtonRevealer.setRevealChild(true);
-                playing = true;
+                playing = false;
             });
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PauseRequestPacket.builder()
@@ -400,10 +396,10 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             .build().serialize()
             );
         } else {
+            playing = true;
             GLib.idleAddOnce(() -> {
                 playButton.setIconName("media-playback-pause");
                 stopButtonRevealer.setRevealChild(true);
-                playing = false;
             });
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PlayRequestPacket.builder()
@@ -436,11 +432,11 @@ public class LEDSuiteWindow extends ApplicationWindow {
     }
 
     public void resetAnimationControlButtons(boolean hide) {
+        playing = false;
         GLib.idleAddOnce(() -> {
             if (hide) animationControlButtonsRevealer.setRevealChild(false);
             stopButtonRevealer.setRevealChild(false);
             playButton.setIconName("media-playback-start");
-            playing = false;
         });
     }
 
@@ -480,6 +476,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                         .action(() -> {
                             clearMainContent();
 
+                            /*
                             YamlConfiguration yaml = new YamlConfiguration();
                             yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, testID);
 
@@ -658,6 +655,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                                     });
                                 }
                             }.runTaskLaterAsynchronously(50);
+                             */
                         })
                         .build()
         ));

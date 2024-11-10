@@ -112,7 +112,10 @@ public class UploadPage extends PreferencesPage {
                     this.selectedFile = selectedFile.getPath();
                     LEDSuiteApplication.getLogger().info("Selected file: " + this.selectedFile, new LEDSuiteLogAreas.UI());
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
-                    uploadButton.setSensitive(true);
+                    WebSocketClient communication = LEDSuiteApplication.getWebSocketCommunication();
+                    if (communication != null && communication.isConnected()) {
+                        uploadButton.setSensitive(true);
+                    }
                 }
             } catch (GErrorException e) {
                 LEDSuiteApplication.getLogger().info("User canceled file picker! No file selected!", new LEDSuiteLogAreas.UI());

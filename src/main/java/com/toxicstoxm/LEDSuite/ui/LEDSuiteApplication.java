@@ -176,8 +176,6 @@ public class LEDSuiteApplication extends Application {
 
         this.onShutdown(this::exit);
 
-
-
         configMgr = YAJSISettingsManager.builder()
                 .buildWithConfigFile(
                         new YAJSISettingsManager.ConfigFile(

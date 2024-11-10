@@ -12,6 +12,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
@@ -118,6 +119,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                         }
                     } catch (InvalidConfigurationException ex) {
                         LEDSuiteApplication.getLogger().warn("Failed to get file name for error reporting menu deserialization failure!", new LEDSuiteLogAreas.COMMUNICATION());
+                        ExceptionTools.printStackTrace(ex, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
                     }
 
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

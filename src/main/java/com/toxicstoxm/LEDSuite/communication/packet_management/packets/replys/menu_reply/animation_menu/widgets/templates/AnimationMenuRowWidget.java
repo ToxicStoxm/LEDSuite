@@ -1,8 +1,8 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import org.gnome.adw.PreferencesRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;

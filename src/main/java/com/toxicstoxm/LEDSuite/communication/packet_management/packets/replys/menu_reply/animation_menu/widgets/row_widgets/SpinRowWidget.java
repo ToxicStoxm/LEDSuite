@@ -1,12 +1,12 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.row_widgets;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.row_widgets;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import org.gnome.adw.SpinRow;
 import org.gnome.glib.Type;

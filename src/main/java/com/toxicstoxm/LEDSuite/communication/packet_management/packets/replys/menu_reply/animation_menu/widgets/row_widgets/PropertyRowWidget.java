@@ -1,11 +1,11 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.row_widgets;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.row_widgets;
 
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.WidgetType;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
 import org.gnome.adw.ActionRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;

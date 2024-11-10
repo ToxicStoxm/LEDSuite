@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu;
 
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;

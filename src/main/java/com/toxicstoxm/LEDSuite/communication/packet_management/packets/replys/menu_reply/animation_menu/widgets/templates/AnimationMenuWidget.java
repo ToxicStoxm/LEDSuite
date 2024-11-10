@@ -1,8 +1,9 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets.templates;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
-import com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.DeserializableWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -18,7 +19,7 @@ import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public abstract class AnimationMenuWidget<T extends Widget> implements com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.Widget {
+public abstract class AnimationMenuWidget<T extends Widget> implements com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.Widget {
 
     protected String widgetID;
 
@@ -51,22 +52,30 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     }
 
     protected void sendMenuChangeRequest(String objectValue) {
-        getChangeCallback().enqueueMessage(
-                MenuChangeRequestPacket.builder()
-                        .fileName(getAnimationName())
-                        .objectId(getWidgetID())
-                        .objectValue(objectValue)
-                        .build().serialize()
-        );
+        try {
+            getChangeCallback().enqueueMessage(
+                    MenuChangeRequestPacket.builder()
+                            .fileName(getAnimationName())
+                            .objectId(getWidgetID())
+                            .objectValue(objectValue)
+                            .build().serialize()
+            );
+        } catch (NullPointerException e) {
+            LEDSuiteApplication.getLogger().warn(e.getMessage());
+        }
     }
 
     protected void sendMenuChangeRequestWithoutValue() {
-        getChangeCallback().enqueueMessage(
-                MenuChangeRequestPacket.builder()
-                        .fileName(getAnimationName())
-                        .objectId(getWidgetID())
-                        .build().serialize()
-        );
+        try {
+            getChangeCallback().enqueueMessage(
+                    MenuChangeRequestPacket.builder()
+                            .fileName(getAnimationName())
+                            .objectId(getWidgetID())
+                            .build().serialize()
+            );
+        } catch (NullPointerException e) {
+            LEDSuiteApplication.getLogger().warn(e.getMessage());
+        }
     }
 
     protected WebSocketClient getChangeCallback() {
@@ -81,7 +90,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     public T deserialize(@NotNull DeserializableWidget deserializableWidget) throws DeserializationException {
         this.widgetID = deserializableWidget.widgetKey();
         widgetSection = deserializableWidget.widgetSection();
-        if (widgetSection == null || deserializableWidget.animationName() == null) throw new DeserializationException("Widget section for widget '" + getWidgetID() + "' is null or invalid!");
+        if (widgetSection == null || deserializableWidget.animationName() == null) throw new DeserializationException("Widget section for widget '" + getWidgetID() + "' is null or invalid!", ErrorCode.WidgetSectionEmptyOrMissing);
 
         widget = GObject.newInstance(getWidgetType());
 

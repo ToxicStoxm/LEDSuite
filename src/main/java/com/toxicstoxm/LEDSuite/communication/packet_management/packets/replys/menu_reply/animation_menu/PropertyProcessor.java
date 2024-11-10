@@ -1,0 +1,5 @@
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu;
+
+public interface PropertyProcessor {
+
+}

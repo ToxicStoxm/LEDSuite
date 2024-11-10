@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu;
 
 import org.jetbrains.annotations.NotNull;
 

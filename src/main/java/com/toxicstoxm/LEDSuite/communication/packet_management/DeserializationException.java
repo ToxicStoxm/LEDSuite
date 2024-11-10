@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.YAJSI.api.logging.Logger;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -59,11 +60,8 @@ public class DeserializationException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    public void printStackTrace(@NotNull Logger s) {
-        s.log("Error message: " + getMessage());
-        s.log("Error code: " + getErrorCode().name() + "(" + getErrorCode().getCode() + ")");
-        for (StackTraceElement e : getStackTrace()) {
-            s.log(e.toString());
-        }
+    public void printStackTrace(@NotNull Logger logger) {
+        logger.log("Error code: " + getErrorCode().name() + "(" + getErrorCode().getCode() + ")");
+        ExceptionTools.printStackTrace(this, logger);
     }
 }

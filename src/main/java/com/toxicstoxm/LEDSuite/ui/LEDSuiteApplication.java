@@ -209,7 +209,7 @@ public class LEDSuiteApplication extends Application {
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
-        animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.animation_menu.widgets");
+        animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets");
         animationMenuManager.autoRegister();
 
         packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");

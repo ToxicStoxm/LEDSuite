@@ -70,7 +70,7 @@ public class ButtonWidget extends AnimationMenuWidget<Clamp> {
         );
 
         buttonWidget.setSensitive(
-                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.BLOCKING, true)
+                !getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.Button.BLOCKING, false)
         );
 
         Clamp buttonClamp = Clamp.builder()

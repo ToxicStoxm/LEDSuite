@@ -25,4 +25,5 @@ module com.toxicstoxm.LEDSuite {
     exports com.toxicstoxm.LEDSuite.auto_registration;
     exports com.toxicstoxm.LEDSuite.auto_registration.modules;
     exports com.toxicstoxm.LEDSuite.communication.packet_management.packets;
+    exports com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
 }

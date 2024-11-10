@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys;
+package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
@@ -6,7 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Code;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
@@ -89,37 +89,49 @@ public class MenuReplyPacket extends CommunicationPacket {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
+
+                ErrorCode errorCode = null;
+                String errorMessage = null;
+
                 var animationMenuManager = LEDSuiteApplication.getAnimationMenuManager();
+
                 if (animationMenuManager != null) {
                     try {
                         LEDSuiteApplication.getWindow().displayAnimationManu(animationMenuManager.deserializeAnimationMenu(menuYAML));
                     } catch (DeserializationException e) {
                         LEDSuiteApplication.getLogger().warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
-                        e.printStackTrace();
-
-                        String fileName = null;
-
-                        try {
-                            YamlConfiguration yaml = new YamlConfiguration();
-                            yaml.loadFromString(menuYAML);
-                            if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, yaml)) {
-                                fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
-                            }
-                        } catch (InvalidConfigurationException ex) {
-                            LEDSuiteApplication.getLogger().warn("Failed to get file name for error reporting menu deserialization failure!", new LEDSuiteLogAreas.COMMUNICATION());
-                        }
-
-                        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                                MenuErrorPacket.builder()
-                                        .code(Code.PARSE_ERROR)
-                                        .fileName(fileName)
-                                        .severity(Severity.FATAL)
-                                        .message(e.getMessage())
-                                        .build().serialize()
-                        );
+                        errorCode = e.getErrorCode();
+                        errorMessage = e.getMessage();
                     }
-                } else LEDSuiteApplication.getLogger().warn("Couldn't handle menu reply packet because animation menu manager is not available!", new LEDSuiteLogAreas.COMMUNICATION());
-                LEDSuiteApplication.getLogger().info("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!", new LEDSuiteLogAreas.YAML());
+                } else {
+                    LEDSuiteApplication.getLogger().warn("Couldn't handle menu reply packet because animation menu manager is not available!", new LEDSuiteLogAreas.COMMUNICATION());
+                    errorCode = ErrorCode.GenericClientError;
+                }
+
+                if (errorCode == null) {
+                    LEDSuiteApplication.getLogger().info("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!", new LEDSuiteLogAreas.YAML());
+                } else {
+                    String fileName = null;
+
+                    try {
+                        YamlConfiguration yaml = new YamlConfiguration();
+                        yaml.loadFromString(menuYAML);
+                        if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, yaml)) {
+                            fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
+                        }
+                    } catch (InvalidConfigurationException ex) {
+                        LEDSuiteApplication.getLogger().warn("Failed to get file name for error reporting menu deserialization failure!", new LEDSuiteLogAreas.COMMUNICATION());
+                    }
+
+                    LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                            MenuErrorPacket.builder()
+                                    .code(errorCode)
+                                    .fileName(fileName)
+                                    .severity(Severity.SEVERE)
+                                    .message(errorMessage)
+                                    .build().serialize()
+                    );
+                }
                 LEDSuiteApplication.getWindow().animationList.setSensitive(true);
             }
         }.runTaskAsynchronously();

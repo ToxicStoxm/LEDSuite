@@ -135,6 +135,7 @@ public class Constants {
                         public static final class AnimationList {
                             public static final String ICON = "icon";
                             public static final String LABEL = "label";
+                            public static final String FILE_NAME = "filename";
                             public static final String PAUSEABLE = "pause_able";
                         }
                     }

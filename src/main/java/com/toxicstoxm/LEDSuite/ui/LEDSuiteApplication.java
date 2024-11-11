@@ -176,6 +176,17 @@ public class LEDSuiteApplication extends Application {
 
         this.onShutdown(this::exit);
 
+        var test = new SimpleAction("test", null);
+        test.onActivate(_ -> {
+            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
+                    UploadFileCollisionReplyPacket.builder()
+                            .currentName("Test-Name")
+                            .build()
+            );
+        });
+        addAction(test);
+        setAccelsForAction("app.test", new String[]{"<Alt>t"});
+
         configMgr = YAJSISettingsManager.builder()
                 .buildWithConfigFile(
                         new YAJSISettingsManager.ConfigFile(

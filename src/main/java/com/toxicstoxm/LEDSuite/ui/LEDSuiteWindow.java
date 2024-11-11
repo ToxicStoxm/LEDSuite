@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -13,6 +14,7 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.FileCollisionDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
@@ -23,9 +25,10 @@ import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.adw.AboutDialog;
+import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
-import org.gnome.adw.OverlaySplitView;
+import org.gnome.adw.*;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
@@ -407,6 +410,24 @@ public class LEDSuiteWindow extends ApplicationWindow {
         );
     }
 
+    public void setAnimationControlButtonsState(@NotNull FileState state) {
+        if (selectedAnimation != null) {
+            switch (state) {
+                case playing -> {
+                    playing = true;
+                    stopButtonRevealer.setRevealChild(true);
+                    playButton.setIconName("media-playback-pause");
+                }
+                case paused -> {
+                    playing = false;
+                    stopButtonRevealer.setRevealChild(true);
+                    playButton.setIconName("media-playback-start");
+                }
+                case idle -> resetAnimationControlButtons(false);
+            }
+        }
+    }
+
     public void setAnimationControlButtonsVisible(boolean visible) {
         if (visible) {
             resetAnimationControlButtons(false);
@@ -423,6 +444,13 @@ public class LEDSuiteWindow extends ApplicationWindow {
             stopButtonRevealer.setRevealChild(false);
             playButton.setIconName("media-playback-start");
         });
+    }
+
+    public void displayFileCollisionDialog(AlertDialog.ResponseCallback cb, String body) {
+        var fileCollisionDialog = FileCollisionDialog.create();
+        fileCollisionDialog.onResponse(cb);
+        fileCollisionDialog.setBody(body);
+        GLib.idleAddOnce(() -> fileCollisionDialog.present(this));
     }
 
     @Override

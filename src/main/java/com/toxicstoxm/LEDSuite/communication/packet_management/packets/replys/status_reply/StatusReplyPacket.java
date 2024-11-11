@@ -168,6 +168,7 @@ public class StatusReplyPacket extends CommunicationPacket {
         } else LEDSuiteApplication.getLogger().debug("Couldn't update status because no status updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
 
         LEDSuiteApplication.getWindow().updateAnimations(animations);
+        LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState);
 
     }
 }

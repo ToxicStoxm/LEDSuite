@@ -306,12 +306,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             .iconName(updatedAnimation.iconName())
                             .label(updatedAnimation.label())
                             .animationID(updatedAnimation.id())
-                            .action(() -> {
-                                LEDSuiteApplication.getLogger().verbose("Requesting menu for animation '" + updatedAnimation.id() + "'", new LEDSuiteLogAreas.USER_INTERACTIONS());
-                                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                                        MenuRequestPacket.builder().requestFile(updatedAnimation.id()).build().serialize()
-                                );
-                            })
+                            .action(() -> {})
                             .cooldown(500L)
                             .build()
             );

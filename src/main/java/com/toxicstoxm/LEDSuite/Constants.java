@@ -264,6 +264,11 @@ public class Constants {
                         public static final String STATUS = "status";
                         public static final String SETTINGS = "settings";
                         public static final String SETTINGS_RESET = "settings_reset";
+                        public static final String ANIMATION_DELETE = "animation_delete";
+                        public static final String AUTHENTICATE = "authenticate";
+                        public static final String PASSWORD_CHANGE = "password_change";
+                        public static final String CREATE_ACCOUNT = "create_account";
+                        public static final String DELETE_ACCOUNT = "delete_account";
                     }
                 }
 

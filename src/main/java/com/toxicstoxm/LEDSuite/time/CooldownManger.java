@@ -1,5 +1,7 @@
 package com.toxicstoxm.LEDSuite.time;
 
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -71,7 +73,11 @@ public class CooldownManger {
         if (cooldownAction.actionGroup == null) {
             long timeElapsed = System.currentTimeMillis() - cooldownAction.lastCall;
             if (timeElapsed >= cooldownAction.cooldown) {
-                cooldownAction.action.run();
+                if (cooldownAction.action != null) {
+                    cooldownAction.action.run();
+                } else {
+                    LEDSuiteApplication.getLogger().debug("Action for '" + name + "' was null!", new LEDSuiteLogAreas.GENERAL());
+                }
                 actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis(), null));
                 return true;
             } else {
@@ -79,7 +85,8 @@ public class CooldownManger {
                 return false;
             }
         } else {
-            CooldownActionGroup actionGroup = actionGroups.remove(cooldownAction.actionGroup);
+            String cooldownActionGroupName = cooldownAction.actionGroup;
+            CooldownActionGroup actionGroup = actionGroups.remove(cooldownActionGroupName);
 
             if (actionGroup == null) {
                 actions.put(name, cooldownAction);
@@ -88,13 +95,17 @@ public class CooldownManger {
 
             long timeElapsed = System.currentTimeMillis() - actionGroup.lastCall;
             if (timeElapsed >= actionGroup.cooldown) {
-                cooldownAction.action.run();
+                if (cooldownAction.action != null) {
+                    cooldownAction.action.run();
+                } else {
+                    LEDSuiteApplication.getLogger().debug("Action (Group = " + cooldownActionGroupName + ") for '" + name + "' was null!", new LEDSuiteLogAreas.GENERAL());
+                }
                 actions.put(name, cooldownAction);
-                actionGroups.put(cooldownAction.actionGroup, new CooldownActionGroup(actionGroup.cooldown, System.currentTimeMillis()));
+                actionGroups.put(cooldownActionGroupName, new CooldownActionGroup(actionGroup.cooldown, System.currentTimeMillis()));
                 return true;
             } else {
                 actions.put(name, cooldownAction);
-                actionGroups.put(cooldownAction.actionGroup, actionGroup);
+                actionGroups.put(cooldownActionGroupName, actionGroup);
                 return false;
             }
         }

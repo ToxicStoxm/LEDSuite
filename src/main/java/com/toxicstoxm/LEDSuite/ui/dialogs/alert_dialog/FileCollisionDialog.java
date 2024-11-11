@@ -1,7 +1,5 @@
-package com.toxicstoxm.LEDSuite.ui.dialogs;
+package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog;
 
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
@@ -27,8 +25,16 @@ public class FileCollisionDialog extends AlertDialog {
         return GObject.newInstance(getType());
     }
 
-    @GtkCallback(name = "file_collision_response_cb")
-    public void onResponse(String response) {
-        LEDSuiteApplication.getLogger().info(response);
+    private ResponseCallback responseCallback;
+
+    public void onResponse(ResponseCallback responseCallback) {
+        this.responseCallback = responseCallback;
+    }
+
+    @Override
+    protected void response(String response) {
+        if (responseCallback != null) {
+            responseCallback.run(response);
+        }
     }
 }

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface>
+  <!-- interface-name FileCollisionDialog.ui -->
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="OverwriteConfirmationDialog" parent="AdwAlertDialog">
+    <property name="body">Are you sure you want to overwrite the existing animation?</property>
+    <property name="default-response">cancel</property>
+    <property name="close-response">cancel</property>
+    <property name="heading">Confirm overwrite</property>
+    <!-- Custom template fragments -->
+    <responses>
+      <response id="overwrite" translatable="yes" appearance="destructive">_Overwrite</response>
+      <response id="cancel" translatable="yes">_Cancel</response>
+    </responses>
+  </template>
+</interface>

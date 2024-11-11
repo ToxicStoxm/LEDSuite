@@ -4,12 +4,11 @@
   <!-- interface-name FileCollisionDialog.ui -->
   <requires lib="gtk" version="4.14"/>
   <requires lib="libadwaita" version="1.6"/>
-  <template class="FileColissionDialog" parent="AdwAlertDialog">
-    <property name="body">File Name collission</property>
+  <template class="FileCollisionDialog" parent="AdwAlertDialog">
+    <property name="body">File Name collision</property>
     <property name="close-response">cancel</property>
     <property name="default-response">rename</property>
     <property name="heading">Upload Completed</property>
-    <signal name="response" handler="file_collision_response_cb"/>
     <!-- Custom template fragments -->
     <responses>
       <response id="rename" translatable="yes" appearance="suggested">_Rename</response>

@@ -1,37 +1,38 @@
 # LEDSuite
 [![Java CI with Gradle](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/gradle.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/gradle.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
 
- - Front-End for any LED-Matrix with the matching backend
- - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
+- Front-End for any LED-Matrix with the matching backend
+- Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
- - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
- - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
+- Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
+- V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
 
-## ToDo 
+## ToDo
 ###### (?) → planned but not final
 - [ ] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
     - [X] Connect to server endpoints
-      - [X] Connect to multiple endpoints concurrently 
+      - [X] Connect to multiple endpoints concurrently
     - [X] Exchange packets
   - [X] Handle IP and Port changes
-  - [ ] Communication handling
+  - [X] Communication handling
     - [X] Request handling
-    - [ ] Response handling
+    - [X] Response handling
     - [X] Error handling
   - [ ] File sending
     - [X] Loading file
     - [X] Sending file data to server
     - [X] Sending metadata to server
     - [X] Calculating upload statistics
-    - [ ] Error handling
+    - [X] Error handling
     - [ ] Handle duplicate names
       - [ ] Rename support
-      - [ ] Overwrite support
+      - [X] Overwrite support
   - [X] Define communication protocol with YAML
-  - [ ] Additional features
-    - [ ] Multiple servers (?)
+  - [ ] Additional features (?)
+    - [ ] Multiple servers
+    - [ ] Authentication / Accounts
 - [ ] UI
   - [ ] Elements
     -  [X] Dialogs
@@ -43,32 +44,32 @@
       - [X] Sidebar
       - [X] Main view
       - [X] Progress bar
-      - [ ] Animation control buttons
+      - [X] Animation control buttons
       - [X] Header bar
       - [ ] Alert dialogs
-- [ ] YAML
-  - [ ] Serialization
-    - [ ] Adwaita- & Gtk widgets
-    - [ ] YAML packets
+- [X] YAML
+  - [X] Serialization
+    - [X] Adwaita- & Gtk widgets
+    - [X] YAML packets
       - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply packets
+      - [X] Reply packets
         - [X] Status reply
-        - [ ] Menu reply
+        - [X] Menu reply
       - [X] Error packets
-  - [ ] Deserialization
-    - [ ] Adwaita- & Gtk widgets
-    - [ ] YAML packets
+  - [X] Deserialization
+    - [X] Adwaita- & Gtk widgets
+    - [X] YAML packets
       - [X] Request packets
         - [X] Status request
         - [X] Menu request
-      - [ ] Reply packets
+      - [X] Reply packets
         - [X] Status reply
-        - [ ] Menu reply
+        - [X] Menu reply
       - [X] Error packets
 - [ ] Documentation
-  - [] Add Javadoc
+  - [ ] Add Javadoc
     - [X] Classes
     - [ ] Functions
   - [ ] Add tons of comments to the code
@@ -94,7 +95,7 @@
   - [ ] Create log areas
   - [ ] add a lot of log messages
 - [ ] Settings
-  - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation) 
+  - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
   - [ ] Implement all necessary settings
 - [ ] Other
   - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 

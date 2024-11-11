@@ -83,6 +83,12 @@ public class AnimationRow extends ListBoxRow {
                     window.fileManagementList.unselectAll();
                     window.setSelectedAnimation(animationID);
                 });
+
+                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                        MenuRequestPacket.builder()
+                                .requestFile(animationID)
+                                .build().serialize()
+                );
             }
         });
         app.addAction(simpleAction);

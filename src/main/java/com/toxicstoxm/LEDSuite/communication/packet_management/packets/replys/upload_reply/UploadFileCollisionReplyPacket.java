@@ -8,9 +8,15 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.RenameRequestPacket;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
+import org.gnome.glib.GLib;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -62,5 +68,51 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME, currentName);
 
         return yaml.saveToString();
+    }
+
+    @Override
+    public void handlePacket() {
+        LEDSuiteApplication.getLogger().info("File name collision occurred. Displaying options.", new LEDSuiteLogAreas.COMMUNICATION());
+
+        LEDSuiteApplication.getWindow().displayFileCollisionDialog(response -> {
+            LEDSuiteApplication.getLogger().info("File collision dialog response result: " + response, new LEDSuiteLogAreas.UI_CONSTRUCTION());
+
+            switch (response) {
+                case "cancel" -> {
+                    LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                            RenameRequestPacket.builder()
+                                    .requestFile(currentName)
+                                    .newName("")
+                                    .build().serialize());
+                }
+                case "rename" -> {
+                    LEDSuiteApplication.getLogger().info("Rename selected.", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                }
+                case "overwrite" -> {
+                    var confirmationDialog = OverwriteConfirmationDialog.create();
+
+                    confirmationDialog.onResponse(confirmationResponse -> {
+                        if (confirmationResponse.equals("cancel")) {
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    GLib.idleAddOnce(() -> handlePacket());
+                                }
+                            }.runTaskLaterAsynchronously(100);
+
+                        } else if (confirmationResponse.equals("yes")) {
+                            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                                    RenameRequestPacket.builder()
+                                            .requestFile(currentName)
+                                            .newName(currentName)
+                                            .build().serialize());
+                        }
+                    });
+
+                    confirmationDialog.present(LEDSuiteApplication.getWindow());
+                }
+            }
+
+        }, "Animation with name '" + currentName + "' already exists.");
     }
 }

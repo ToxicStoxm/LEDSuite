@@ -84,6 +84,7 @@ public class AnimationRow extends ListBoxRow {
                     window.setSelectedAnimation(animationID);
                 });
 
+                LEDSuiteApplication.getLogger().verbose("Requesting menu for animation '" + animationID + "'", new LEDSuiteLogAreas.USER_INTERACTIONS());
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                         MenuRequestPacket.builder()
                                 .requestFile(animationID)

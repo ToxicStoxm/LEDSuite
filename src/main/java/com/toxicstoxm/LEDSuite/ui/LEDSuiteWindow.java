@@ -306,7 +306,6 @@ public class LEDSuiteWindow extends ApplicationWindow {
                             .iconName(updatedAnimation.iconName())
                             .label(updatedAnimation.label())
                             .animationID(updatedAnimation.id())
-                            .action(() -> {})
                             .cooldown(500L)
                             .build()
             );

@@ -13,7 +13,6 @@
           <object class="AdwEntryRow" id="filename_row">
             <property name="text">filename</property>
             <property name="title">Filename</property>
-            <signal name="changed" handler="filename_row_changed_cb"/>
           </object>
         </child>
       </object>

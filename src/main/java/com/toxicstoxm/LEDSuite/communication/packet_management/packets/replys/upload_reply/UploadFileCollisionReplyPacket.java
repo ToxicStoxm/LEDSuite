@@ -136,7 +136,7 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
                         }
                     });
 
-                    confirmationDialog.present(LEDSuiteApplication.getWindow());
+                    GLib.idleAddOnce(() -> confirmationDialog.present(LEDSuiteApplication.getWindow()));
                 }
             }
 

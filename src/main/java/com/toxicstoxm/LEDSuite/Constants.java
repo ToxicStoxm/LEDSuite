@@ -108,6 +108,7 @@ public class Constants {
                         public static final String PACKET_COUNT = "packet_count";
                         public static final String UPLOAD_SESSION_ID = "upload_session_id";
                         public static final String SHA256 = "sha256";
+                        public static final String FORCE_OVERWRITE = "force_overwrite";
 
                     }
 
@@ -147,8 +148,9 @@ public class Constants {
                         public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
                     }
 
-                    public static final class UploadFileCollisionReply {
+                    public static final class UploadReply {
                         public static final String FILE_NAME = "filename";
+                        public static final String UPLOAD_PERMITTED = "upload_permitted";
                     }
 
                     public static final class UploadSuccessReply {
@@ -277,8 +279,9 @@ public class Constants {
                     public static final class Types {
                         public static final String STATUS = "status";
                         public static final String MENU = "menu";
+                        public static final String UPLOAD = "upload";
                         public static final String UPLOAD_SUCCESS = "upload_success";
-                        public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
+                        //public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
                         public static final String SETTINGS = "settings";
                     }
 

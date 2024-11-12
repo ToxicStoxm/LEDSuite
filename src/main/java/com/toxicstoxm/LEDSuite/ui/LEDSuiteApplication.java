@@ -14,7 +14,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -45,6 +45,7 @@ import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.foreign.MemorySegment;
@@ -57,6 +58,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -179,8 +181,9 @@ public class LEDSuiteApplication extends Application {
         var test = new SimpleAction("test", null);
         test.onActivate(_ -> {
             LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                    UploadFileCollisionReplyPacket.builder()
-                            .currentName("Test-Name")
+                    UploadReplyPacket.builder()
+                            .fileName("Test-Name")
+                            .uploadPermitted(false)
                             .build()
             );
         });
@@ -403,11 +406,13 @@ public class LEDSuiteApplication extends Application {
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusReplyPacket.serialize()));
 
+            /*
             logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             UploadFileCollisionReplyPacket uploadFileCollisionReplyPacket = UploadFileCollisionReplyPacket.builder()
                     .currentName("Test-Animation")
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(uploadFileCollisionReplyPacket.serialize()));
+            */
 
             logger.debug("\nTesting upload file success reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder()
@@ -456,6 +461,20 @@ public class LEDSuiteApplication extends Application {
 
     }
 
+    @lombok.Builder
+    public record UploadAction(String uploadID, UploadResponseAction action, String checksum) {}
+
+    @Getter
+    private static HashMap<String, UploadAction> pendingUploads = new HashMap<>();
+
+    public static void callPendingUpload(String name) {
+        UploadAction action = pendingUploads.get(name);
+
+        if (action != null) {
+            action.action().result(name);
+        }
+    }
+
     /**
      * Tries to upload the file
      * located at the specified file path to the server using {@link WebSocketClient} with {@link WebSocketFileTransfer}.
@@ -464,7 +483,6 @@ public class LEDSuiteApplication extends Application {
      * @param uploadFinishCallback the function to call after the upload finished
      */
     public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
-
         if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
             logger.warn("Cancelled file upload because communication websocket is not connected!", new LEDSuiteLogAreas.NETWORK());
             uploadFinishCallback.update(false);
@@ -507,13 +525,53 @@ public class LEDSuiteApplication extends Application {
             return;
         }
 
+        String uploadID = String.valueOf(UUID.randomUUID());
+        String fileName = StringFormatter.getFileNameFromPath(filePath);
+
+        webSocketCommunication.enqueueMessage(
+                FileUploadRequestPacket.builder()
+                        .uploadSessionId(uploadID)
+                        .requestFile(fileName)
+                        .sha256(checksum)
+                        .build().serialize()
+        );
+
+        pendingUploads.put(fileName,
+                UploadAction.builder()
+                        .action(animationName -> {
+                            if (animationName == null) {
+                                LEDSuiteApplication.getLogger().info("File upload cancelled!", new LEDSuiteLogAreas.COMMUNICATION());
+                                pendingUploads.remove(fileName);
+                                return;
+                            }
+
+                            uploadFile(uploadEndpointPath, fileToUpload, success -> {
+                                if (success) {
+                                    LEDSuiteApplication.getLogger().info("File upload completed!", new LEDSuiteLogAreas.COMMUNICATION());
+                                }
+                                uploadFinishCallback.update(success);
+                            }, checksum, uploadID);
+                        })
+                        .uploadID(uploadID)
+                        .checksum(checksum)
+                        .build()
+               );
+    }
+
+    /**
+     * Tries to upload the file
+     * located at the specified file path to the server using {@link WebSocketClient} with {@link WebSocketFileTransfer}.
+     * @param uploadFinishCallback the function to call after the upload finished
+     */
+    private static void uploadFile(URI uploadEndpointPath, @NotNull File fileToUpload, UpdateCallback<Boolean> uploadFinishCallback, String checksum, String uploadID) {
+
         final long fileSize = fileToUpload.length();
         final int packet_size = LEDSuiteSettingsBundle.PacketSize.getInstance().get();
         final long startTime = System.currentTimeMillis();
 
         AtomicLong transferredSize = new AtomicLong(0);
 
-        String animationName = StringFormatter.getFileNameFromPath(filePath);
+        String animationName = StringFormatter.getFileNameFromPath(fileToUpload.getAbsolutePath());
         var uploadStatisticsUpdater = window.getUploadPageEndpoint().uploadStatisticsUpdater();
         AtomicLong speedAverage = new AtomicLong(-1);
         AtomicLong speedMeasurementCount = new AtomicLong(1);
@@ -528,19 +586,7 @@ public class LEDSuiteApplication extends Application {
                     logger.info(" > Upload session ID: " + sessionID, new LEDSuiteLogAreas.NETWORK());
                     logger.info(" > Filename: " + animationName, new LEDSuiteLogAreas.NETWORK());
                     logger.info(" > Checksum: " + checksum, new LEDSuiteLogAreas.NETWORK());
-                    new LEDSuiteRunnable() {
-                        @Override
-                        public void run() {
-                            webSocketCommunication.enqueueMessage(
-                                    FileUploadRequestPacket.builder()
-                                            .uploadSessionId(sessionID)
-                                            .requestFile(animationName)
-                                            .sha256(checksum)
-                                            .build().serialize()
-                            );
-                            isReady.set(true);
-                        }
-                    }.runTaskLaterAsynchronously(100);
+                    isReady.set(true);
                 },
                 progressUpdate -> {
                     int transferredBytes = progressUpdate.data().array().length;
@@ -591,12 +637,13 @@ public class LEDSuiteApplication extends Application {
                         finished.set(true);
                     }
                 },
-                isReady::get
+                isReady::get,
+                uploadID
 
         ), uploadEndpointPath);
 
         logger.info("Splitting file into chunks:", new LEDSuiteLogAreas.NETWORK());
-        try (FileInputStream fis = new FileInputStream(filePath)) {
+        try (FileInputStream fis = new FileInputStream(fileToUpload.getAbsolutePath())) {
             byte[] buffer = new byte[packet_size];
             int bytesRead;
             boolean isLastChunk = false;
@@ -658,14 +705,6 @@ public class LEDSuiteApplication extends Application {
                 }
                 uploadFinishCallback.update(true);
                 window.uploadFinished();
-
-                if (startAnimationAfterUpload) {
-                    webSocketCommunication.enqueueMessage(
-                            PlayRequestPacket.builder()
-                                    .requestFile(animationName)
-                                    .build().serialize()
-                    );
-                }
             }
         }.runTaskAsynchronously();
     }

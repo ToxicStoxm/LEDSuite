@@ -18,11 +18,13 @@ public class WebSocketFileTransfer extends WebSocketClientEndpoint implements Pr
     private final UpdateCallback<String> onConnectCb;
     private final UpdateCallback<ProgressUpdate> onProgress;
     private final IsReadyCallback readyCallback;
+    private final String uploadID;
 
-    public WebSocketFileTransfer(UpdateCallback<String> onConnect, UpdateCallback<ProgressUpdate> onProgress, IsReadyCallback isReadyCallback) {
+    public WebSocketFileTransfer(UpdateCallback<String> onConnect, UpdateCallback<ProgressUpdate> onProgress, IsReadyCallback isReadyCallback, String uploadID) {
         this.onConnectCb = onConnect;
         this.onProgress = onProgress;
         this.readyCallback = isReadyCallback;
+        this.uploadID = uploadID;
     }
 
     boolean ready() {return readyCallback.isReady();}
@@ -36,11 +38,9 @@ public class WebSocketFileTransfer extends WebSocketClientEndpoint implements Pr
     public void onOpen(@NotNull Session session) {
         super.onOpen(session);
 
-        String sessionID = session.getId();
-
         try {
-            session.getBasicRemote().sendText(sessionID);
-            onConnect(sessionID);
+            session.getBasicRemote().sendText(uploadID);
+            onConnect(uploadID);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

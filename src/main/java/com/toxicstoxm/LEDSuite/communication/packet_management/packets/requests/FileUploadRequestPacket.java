@@ -7,7 +7,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -31,6 +30,7 @@ public class FileUploadRequestPacket extends CommunicationPacket {
     private String requestFile;
     private String uploadSessionId;
     private String sha256;
+    private Boolean forceOverwrite;
 
     @Override
     public String getType() {
@@ -61,6 +61,9 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256, yaml);
         packet.sha256 = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256);
 
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE, yaml);
+        packet.forceOverwrite = yaml.getBoolean(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE);
+
         return packet;
     }
 
@@ -71,6 +74,7 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, uploadSessionId);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256, sha256);
+        yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE, forceOverwrite != null && forceOverwrite);
 
         return yaml.saveToString();
     }

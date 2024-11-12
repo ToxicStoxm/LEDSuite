@@ -137,7 +137,7 @@ public class UploadPage extends PreferencesPage {
     private boolean loading = false;
 
     public void setUploadButtonState(boolean state) {
-        uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals("N/A"));
+        uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals("N/A") && state);
     }
 
     public void setServerConnected(boolean serverConnected) {

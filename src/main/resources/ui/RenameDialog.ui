@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface>
+  <!-- interface-name RenameDialog.ui -->
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="RenameDialog" parent="AdwAlertDialog">
+    <property name="close-response">cancel</property>
+    <property name="default-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup">
+        <child>
+          <object class="AdwEntryRow" id="filename_row">
+            <property name="text">filename</property>
+            <property name="title">Filename</property>
+            <signal name="changed" handler="filename_row_changed_cb"/>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="heading">Rename file</property>
+    <property name="prefer-wide-layout">True</property>
+    <!-- Custom template fragments -->
+    <responses>
+      <response id="rename" translatable="yes" appearance="suggested" enabled="false">_Rename</response>
+      <response id="cancel" translatable="yes">_Cancel</response>
+    </responses>
+  </template>
+</interface>

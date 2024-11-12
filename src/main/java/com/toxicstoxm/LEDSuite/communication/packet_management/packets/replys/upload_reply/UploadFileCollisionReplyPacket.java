@@ -13,6 +13,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -87,6 +88,32 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
                 }
                 case "rename" -> {
                     LEDSuiteApplication.getLogger().info("Rename selected.", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                    var renameDialog = RenameDialog.create(currentName);
+
+                    renameDialog.onResponse(renameResponse -> {
+                        String newName = renameDialog.getNewName();
+
+                        if (renameResponse.equals("cancel")) {
+                            new LEDSuiteRunnable() {
+                                @Override
+                                public void run() {
+                                    GLib.idleAddOnce(() -> handlePacket());
+                                }
+                            }.runTaskLaterAsynchronously(100);
+                        } else if (renameResponse.equals("rename")) {
+                            if (newName == null || newName.isBlank() || newName.equals(currentName)) throw new RuntimeException("New file name invalid '" + newName + "'!");
+
+                            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                                    RenameRequestPacket.builder()
+                                            .requestFile(currentName)
+                                            .newName(newName)
+                                            .build().serialize()
+                            );
+
+                        }
+                    });
+
+                    GLib.idleAddOnce(() -> renameDialog.present(LEDSuiteApplication.getWindow()));
                 }
                 case "overwrite" -> {
                     var confirmationDialog = OverwriteConfirmationDialog.create();

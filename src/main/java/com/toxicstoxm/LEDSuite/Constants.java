@@ -69,6 +69,8 @@ public class Constants {
                 public static final class General {
                     public static final String PACKET_TYPE = "packet_type";
                     public static final String SUB_TYPE = "subtype";
+                    public static final String FILE_NAME = "filename";
+
                 }
 
                 public static final class Error {
@@ -88,9 +90,6 @@ public class Constants {
                 }
 
                 public static final class Request {
-                    public static final class General {
-                        public static final String FILE_NAME = "filename";
-                    }
 
                     public static final class StatusRequest {}
 
@@ -99,7 +98,6 @@ public class Constants {
                     }
 
                     public static final class MenuChangeRequest{
-                        public static final String FILE_NAME = "filename";
                         public static final String OBJECT_ID = "object_id";
                         public static final String OBJECT_VALUE = "object_value";
                     }
@@ -135,7 +133,6 @@ public class Constants {
                         public static final class AnimationList {
                             public static final String ICON = "icon";
                             public static final String LABEL = "label";
-                            public static final String FILE_NAME = "filename";
                             public static final String PAUSEABLE = "pause_able";
                         }
                     }
@@ -148,11 +145,15 @@ public class Constants {
                     }
 
                     public static final class UploadFileCollisionReply {
-                        public static final String FILE_NAME = "filename";
+
                     }
 
                     public static final class UploadSuccessReply {
-                        public static final String FILE_NAME = "filename";
+
+                    }
+
+                    public static final class UploadReply {
+                        public static final String UPLOAD_PERMITTED = "upload_permitted";
                     }
 
                     public static final class MenuReply {
@@ -277,6 +278,7 @@ public class Constants {
                     public static final class Types {
                         public static final String STATUS = "status";
                         public static final String MENU = "menu";
+                        public static final String UPDATE = "update";
                         public static final String UPLOAD_SUCCESS = "upload_success";
                         public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
                         public static final String SETTINGS = "settings";

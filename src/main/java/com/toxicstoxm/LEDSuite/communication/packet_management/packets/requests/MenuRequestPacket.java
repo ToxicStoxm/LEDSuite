@@ -40,8 +40,8 @@ public class MenuRequestPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         MenuRequestPacket packet = MenuRequestPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
-        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         return packet;
     }
@@ -50,7 +50,7 @@ public class MenuRequestPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, requestFile);
 
         return yaml.saveToString();
     }

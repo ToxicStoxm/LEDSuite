@@ -39,8 +39,8 @@ public class RenameRequestPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         RenameRequestPacket packet = RenameRequestPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
-        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME);
         packet.newName = yaml.getString(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME);
@@ -52,7 +52,7 @@ public class RenameRequestPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, requestFile);
         yaml.set(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME, newName);
 
         return yaml.saveToString();

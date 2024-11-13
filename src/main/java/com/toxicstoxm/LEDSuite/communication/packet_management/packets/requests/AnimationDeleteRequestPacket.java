@@ -33,8 +33,8 @@ public class AnimationDeleteRequestPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         AnimationDeleteRequestPacket packet = AnimationDeleteRequestPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
-        fileName = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         return packet;
     }
@@ -43,7 +43,7 @@ public class AnimationDeleteRequestPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, fileName);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, fileName);
 
         return yaml.saveToString();
     }

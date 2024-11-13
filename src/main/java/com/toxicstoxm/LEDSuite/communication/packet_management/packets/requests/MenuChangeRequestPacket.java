@@ -47,8 +47,8 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
         packet.objectValue = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME);
-        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         return packet;
     }
@@ -59,7 +59,7 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
 
         yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID, objectId);
         yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, objectValue);
-        yaml.set(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME, fileName);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, fileName);
 
         return yaml.saveToString();
     }

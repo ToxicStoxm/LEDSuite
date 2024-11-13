@@ -42,8 +42,8 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         UploadSuccessReplyPacket packet = UploadSuccessReplyPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME);
-        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         return packet;
     }
@@ -52,7 +52,7 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME, fileName);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, fileName);
 
         return yaml.saveToString();
     }

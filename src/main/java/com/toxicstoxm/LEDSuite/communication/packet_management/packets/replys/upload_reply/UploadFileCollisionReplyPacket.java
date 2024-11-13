@@ -48,8 +48,8 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         UploadFileCollisionReplyPacket packet = UploadFileCollisionReplyPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME);
-        packet.currentName = yaml.getString(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.currentName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         return packet;
     }
@@ -58,7 +58,7 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME, currentName);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, currentName);
 
         return yaml.saveToString();
     }

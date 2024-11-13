@@ -44,8 +44,8 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         super.deserialize(yamlString);
         FileUploadRequestPacket packet = FileUploadRequestPacket.builder().build();
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
-        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
         packet.uploadSessionId = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
@@ -60,7 +60,7 @@ public class FileUploadRequestPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, requestFile);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, uploadSessionId);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256, sha256);
 

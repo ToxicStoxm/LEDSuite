@@ -26,8 +26,8 @@ public abstract class MediaRequestPacket extends CommunicationPacket {
     public Packet deserialize(String yamlString) throws DeserializationException {
         super.deserialize(yamlString);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
-        setRequestFile(yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME));
+        ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        setRequestFile(yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME));
 
         return this;
     }
@@ -36,7 +36,7 @@ public abstract class MediaRequestPacket extends CommunicationPacket {
     public String serialize() {
         super.serialize();
 
-        yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, getRequestFile());
+        yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, getRequestFile());
 
         return yaml.saveToString();
     }

@@ -93,11 +93,11 @@ public class StatusReplyPacket extends CommunicationPacket {
 
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animationsSection);
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection);
-                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME, animationsSection);
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.General.FILE_NAME, animationsSection);
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animationsSection);
 
                 packet.animations.add(new Animation(
-                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME),
+                        animationsSection.getString(base + Constants.Communication.YAML.Keys.General.FILE_NAME),
                         animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL),
                         animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON),
                         animationsSection.getBoolean(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE)
@@ -126,7 +126,7 @@ public class StatusReplyPacket extends CommunicationPacket {
 
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animation.label);
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animation.iconName);
-                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.FILE_NAME, animation.id);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.General.FILE_NAME, animation.id);
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animation.pauseable);
             }
         }

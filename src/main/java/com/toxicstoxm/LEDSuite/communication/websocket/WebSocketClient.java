@@ -4,11 +4,14 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import jakarta.websocket.Session;
 import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -26,8 +29,15 @@ public class WebSocketClient {
 
     private boolean cancelled = false;
 
+    @Getter
+    private boolean connected = false;
+
     public WebSocketClient(WebSocketClientEndpoint clientEndpoint, URI path) {
         run(clientEndpoint, path);
+        if (clientEndpoint instanceof WebSocketCommunication) startStatusRequestClockTask();
+    }
+
+    private void startStatusRequestClockTask() {
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -38,9 +48,6 @@ public class WebSocketClient {
             }
         }.runTaskTimerAsynchronously(1000, 1000);
     }
-
-    @Getter
-    private boolean connected = false;
 
     /**
      * Creates a new websocket client in an async thread and connects it to the specified server address.
@@ -60,56 +67,61 @@ public class WebSocketClient {
                 )) {
                     connected = true;
                     while (!cancelled && session.isOpen()) {
-                        if (clientEndpoint.binaryOnly()) {
-                            if (clientEndpoint instanceof WebSocketFileTransfer fileTransfer) {
-                                if (!fileTransfer.ready()) {
-                                    Thread.sleep(1);
-                                    continue;
-                                }
-                                BinaryPacket binaryPacket = sendQueueBinary.poll(Long.MAX_VALUE, TimeUnit.DAYS);
-                                if (binaryPacket == null)
-                                    throw new IllegalArgumentException("Binary packet can't be null!");
-
-                                ByteBuffer data = binaryPacket.data();
-                                boolean isLast = binaryPacket.isLast();
-                                long start = System.currentTimeMillis();
-
-                                session.getBasicRemote().sendBinary(data, isLast);
-
-                                long timeElapsed = System.currentTimeMillis() - start;
-
-
-                                fileTransfer.update(
-                                        ProgressUpdate.builder()
-                                                .data(data)
-                                                .lastPacket(isLast)
-                                                .timeElapsed(timeElapsed)
-                                                .build()
-                                );
-
-                                if (isLast) {
-                                    LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
-                                    shutdown();
-                                }
-                            }
-
+                        if (clientEndpoint.binaryMode()) {
+                            binaryEndpointHeartBeat(clientEndpoint, session);
                             continue;
                         }
-                        String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
-                        session.getBasicRemote().sendText(
-                                toSend
-                        );
+                        textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
                     LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
-                    for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-                        LEDSuiteApplication.getLogger().stacktrace(String.valueOf(stackTraceElement), new LEDSuiteLogAreas.COMMUNICATION());
-                    }
+                    ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
+
                 } finally {
                     connected = false;
                 }
             }
         }.runTaskAsynchronously();
+    }
+
+    private void textEndpointHeartBeat(@NotNull Session session) throws InterruptedException, IOException {
+        String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
+        session.getBasicRemote().sendText(
+                toSend
+        );
+    }
+
+    private void binaryEndpointHeartBeat(WebSocketClientEndpoint clientEndpoint, Session session) throws InterruptedException, IOException {
+        if (clientEndpoint instanceof WebSocketUpload fileTransfer) {
+            if (!fileTransfer.isReady()) {
+                Thread.sleep(1);
+                return;
+            }
+            BinaryPacket binaryPacket = sendQueueBinary.poll(Long.MAX_VALUE, TimeUnit.DAYS);
+            if (binaryPacket == null)
+                throw new IllegalArgumentException("Binary packet can't be null!");
+
+            ByteBuffer data = binaryPacket.data();
+            boolean isLast = binaryPacket.isLast();
+            long start = System.currentTimeMillis();
+
+            session.getBasicRemote().sendBinary(data, isLast);
+
+            long timeElapsed = System.currentTimeMillis() - start;
+
+            fileTransfer.update(
+                    ProgressUpdate.builder()
+                            .data(data)
+                            .lastPacket(isLast)
+                            .timeElapsed(timeElapsed)
+                            .build()
+            );
+
+            if (isLast) {
+                LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+                shutdown();
+            }
+        }
     }
 
     /**

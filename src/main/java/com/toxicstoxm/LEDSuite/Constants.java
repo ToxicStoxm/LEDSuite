@@ -70,7 +70,6 @@ public class Constants {
                     public static final String PACKET_TYPE = "packet_type";
                     public static final String SUB_TYPE = "subtype";
                     public static final String FILE_NAME = "filename";
-
                 }
 
                 public static final class Error {
@@ -103,10 +102,9 @@ public class Constants {
                     }
 
                     public static final class FileUploadRequest {
-                        public static final String PACKET_COUNT = "packet_count";
+                        public static final String FORCE_OVERWRITE = "force_overwrite";
                         public static final String UPLOAD_SESSION_ID = "upload_session_id";
                         public static final String SHA256 = "sha256";
-
                     }
 
                     public static final class SettingsRequest {}
@@ -118,11 +116,15 @@ public class Constants {
                         public static final String SELECTED_COLOR_MODE = "selected_color_mode";
                         public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
                     }
+
+                    public static final class AuthenticationRequest {
+                        public static final String USERNAME = "username";
+                        public static final String PASSWORD_HASH = "password_hash";
+                    }
                 }
 
                 public static final class Reply {
                     public static final class StatusReply {
-                        public static final String IS_FILE_LOADED = "file_is_loaded";
                         public static final String FILE_STATE = "file_state";
                         public static final String SELECTED_FILE = "file_selected";
                         public static final String CURRENT_DRAW = "current_draw";
@@ -278,9 +280,8 @@ public class Constants {
                     public static final class Types {
                         public static final String STATUS = "status";
                         public static final String MENU = "menu";
-                        public static final String UPDATE = "update";
+                        public static final String UPLOAD = "upload";
                         public static final String UPLOAD_SUCCESS = "upload_success";
-                        public static final String UPLOAD_FILE_COLLISION_REPLY = "upload_file_collision_reply";
                         public static final String SETTINGS = "settings";
                     }
 

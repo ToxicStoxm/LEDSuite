@@ -1,12 +1,15 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.Action;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import jakarta.websocket.*;
 import lombok.Builder;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @ClientEndpoint
@@ -35,7 +38,12 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
     @OnOpen
     public void onOpen(@NotNull Session session) {
 
-        session.getAsyncRemote().sendText(sessionID);
+        try {
+            session.getBasicRemote().sendText(sessionID);
+        } catch (IOException e) {
+            LEDSuiteApplication.getLogger().error("Failed to send sessionID to server, terminating file upload!", new LEDSuiteLogAreas.NETWORK());
+            throw new RuntimeException(e);
+        }
         connect();
 
         super.onOpen(session);

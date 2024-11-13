@@ -13,7 +13,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
-import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
@@ -121,7 +120,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                     try {
                         YamlConfiguration yaml = new YamlConfiguration();
                         yaml.loadFromString(menuYAML);
-                        if (YamlTools.checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, yaml)) {
+                        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, yaml)) {
                             fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
                         }
                     } catch (InvalidConfigurationException ex) {

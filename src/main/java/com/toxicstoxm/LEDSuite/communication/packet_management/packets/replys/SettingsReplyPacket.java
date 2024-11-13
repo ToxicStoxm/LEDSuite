@@ -6,13 +6,11 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 import org.gnome.gtk.Gtk;
 
@@ -49,27 +47,22 @@ public class SettingsReplyPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         SettingsReplyPacket packet = SettingsReplyPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS)) {
             packet.brightness = (Integer) yaml.get(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE)) {
             packet.selectedColorMode = yaml.getString(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES)) {
             packet.availableColorModes = yaml.getStringList(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT)) {
             packet.restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT);
         }
 

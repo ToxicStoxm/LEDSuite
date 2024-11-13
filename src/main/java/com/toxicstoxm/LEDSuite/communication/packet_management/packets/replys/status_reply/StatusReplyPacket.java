@@ -13,7 +13,6 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -58,15 +57,10 @@ public class StatusReplyPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         StatusReplyPacket packet = StatusReplyPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE);
         try {
             packet.fileState = FileState.valueOf(yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.FILE_STATE));
         } catch (IllegalArgumentException e) {
@@ -76,21 +70,21 @@ public class StatusReplyPacket extends CommunicationPacket {
         if (!packet.fileState.equals(FileState.idle)) packet.selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE);
         else packet.selectedFile = "";
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW)) {
             packet.currentDraw = yaml.getDouble(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE)) {
             packet.voltage = yaml.getDouble(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE)) {
             packet.lidState = LidState.fromBool(yaml.getBoolean(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE));
         }
 
         packet.animations = new ArrayList<>();
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS)) {
             ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS);
             if (animationsSection == null) throw new DeserializationException("Deserialization failed! Failed to deserialize " + Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " section!", ErrorCode.StatusUpdateInvalidAnimationsSection);
 

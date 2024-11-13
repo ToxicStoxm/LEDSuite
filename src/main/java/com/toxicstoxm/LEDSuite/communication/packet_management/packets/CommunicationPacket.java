@@ -2,10 +2,9 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -19,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 public abstract class CommunicationPacket implements Packet {
 
+    protected YamlConfiguration yaml;
+
     @Override
     public String serialize() {
         return saveYAML().saveToString();
@@ -26,8 +27,14 @@ public abstract class CommunicationPacket implements Packet {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
-        LEDSuiteApplication.getLogger().warn("Deserialization implementation missing for:\n" + yamlString, new LEDSuiteLogAreas.YAML());
-        return null;
+
+        try {
+            yaml = loadYAML(yamlString);
+        } catch (InvalidConfigurationException e) {
+            throw new DeserializationException("Failed to deserialize packet '" + StringFormatter.getClassName(getClass()) + "'!", ErrorCode.FailedToParseYAML);
+        }
+
+        return this;
     }
 
     protected YamlConfiguration loadYAML(String yamlString) throws InvalidConfigurationException {
@@ -48,8 +55,16 @@ public abstract class CommunicationPacket implements Packet {
         return StringFormatter.getClassName(getClass()) + "(Type = " + getIdentifier() + ")" + " --> " + "\n[\n" + serialize() + "]";
     }
 
+    protected boolean checkIfKeyExists(String key) {
+        return YamlTools.checkIfKeyExists(key, yaml);
+    }
+
     protected boolean checkIfKeyExists(String key, @NotNull ConfigurationSection yaml) {
         return YamlTools.checkIfKeyExists(key, yaml);
+    }
+
+    protected void ensureKeyExists(String key) throws DeserializationException {
+        YamlTools.ensureKeyExists(key, yaml);
     }
 
     protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) throws DeserializationException {

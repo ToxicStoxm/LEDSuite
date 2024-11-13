@@ -6,10 +6,8 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,23 +48,18 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         SettingsChangeRequestPacket packet = SettingsChangeRequestPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS)) {
             packet.brightness = (Integer) yaml.get(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE)) {
             packet.selectedColorMode = yaml.getString(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE);
         }
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT, yaml)) {
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT)) {
             packet.restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.RESTORE_PREVIOUS_STATE_ON_BOOT);
         }
 

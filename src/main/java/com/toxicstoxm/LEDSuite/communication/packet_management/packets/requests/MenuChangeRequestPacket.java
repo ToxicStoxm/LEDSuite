@@ -6,9 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 /**
@@ -41,21 +39,16 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         MenuChangeRequestPacket packet = MenuChangeRequestPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID);
         packet.objectId = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
         packet.objectValue = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME);
         packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.FILE_NAME);
 
         return packet;

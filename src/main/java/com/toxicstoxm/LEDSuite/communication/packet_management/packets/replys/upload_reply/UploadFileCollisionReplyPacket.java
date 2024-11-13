@@ -6,7 +6,6 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.RenameRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -15,7 +14,6 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 import org.gnome.glib.GLib;
 
@@ -48,15 +46,10 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         UploadFileCollisionReplyPacket packet = UploadFileCollisionReplyPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME);
         packet.currentName = yaml.getString(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME);
 
         return packet;

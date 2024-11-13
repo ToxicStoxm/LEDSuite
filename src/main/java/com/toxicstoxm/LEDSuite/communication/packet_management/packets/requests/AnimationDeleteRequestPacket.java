@@ -6,9 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 @AllArgsConstructor
@@ -33,15 +31,10 @@ public class AnimationDeleteRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         AnimationDeleteRequestPacket packet = AnimationDeleteRequestPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
         fileName = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
 
         return packet;

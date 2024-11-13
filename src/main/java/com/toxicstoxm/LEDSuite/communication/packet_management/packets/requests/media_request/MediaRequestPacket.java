@@ -4,9 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 
 /**
  * Wrapper class for request packets related to animation control.
@@ -27,14 +25,9 @@ public abstract class MediaRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
+        super.deserialize(yamlString);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
         setRequestFile(yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME));
 
         return this;

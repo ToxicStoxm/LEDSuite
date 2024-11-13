@@ -6,9 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 /**
@@ -39,18 +37,13 @@ public class RenameRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         RenameRequestPacket packet = RenameRequestPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
         packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME);
         packet.newName = yaml.getString(Constants.Communication.YAML.Keys.Request.RenameRequest.NEW_NAME);
 
         return packet;

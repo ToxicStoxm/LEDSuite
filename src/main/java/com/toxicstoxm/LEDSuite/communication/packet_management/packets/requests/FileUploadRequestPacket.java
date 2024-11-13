@@ -6,11 +6,9 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 /**
@@ -44,21 +42,16 @@ public class FileUploadRequestPacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
         FileUploadRequestPacket packet = FileUploadRequestPacket.builder().build();
-        YamlConfiguration yaml;
-        try {
-            yaml = loadYAML(yamlString);
-        } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e, ErrorCode.FailedToParseYAML);
-        }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
         packet.requestFile = yaml.getString(Constants.Communication.YAML.Keys.Request.General.FILE_NAME);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
         packet.uploadSessionId = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256, yaml);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256);
         packet.sha256 = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256);
 
         return packet;

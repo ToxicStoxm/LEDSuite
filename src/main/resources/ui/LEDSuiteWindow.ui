@@ -93,24 +93,34 @@
                               <object class="GtkSeparator"/>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="sidebar_animation_group_title">
-                                <property name="css-classes">heading</property>
-                                <property name="label">Animations</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkListBox" id="animation_list">
-                                <property name="css-classes">navigation-sidebar</property>
-                                <property name="selection-mode">browse</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkRevealer" id="animation_list_spinner_revealer">
+                              <object class="GtkScrolledWindow">
                                 <property name="child">
-                                  <object class="AdwSpinner"/>
+                                  <object class="GtkBox">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel" id="sidebar_animation_group_title">
+                                        <property name="css-classes">heading</property>
+                                        <property name="label">Animations</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkListBox" id="animation_list">
+                                        <property name="css-classes">navigation-sidebar</property>
+                                        <property name="selection-mode">browse</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkRevealer" id="animation_list_spinner_revealer">
+                                        <property name="child">
+                                          <object class="AdwSpinner"/>
+                                        </property>
+                                        <property name="reveal-child">True</property>
+                                        <property name="transition-type">crossfade</property>
+                                      </object>
+                                    </child>
+                                  </object>
                                 </property>
-                                <property name="reveal-child">True</property>
-                                <property name="transition-type">crossfade</property>
+                                <property name="vexpand">True</property>
                               </object>
                             </child>
                           </object>
@@ -299,4 +309,5 @@ circular</property>
       </object>
     </child>
   </object>
+  <object class="AdwLeafletPage"/>
 </interface>

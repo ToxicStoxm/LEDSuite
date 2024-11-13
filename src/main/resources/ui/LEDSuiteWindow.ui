@@ -93,16 +93,16 @@
                               <object class="GtkSeparator"/>
                             </child>
                             <child>
+                              <object class="GtkLabel" id="sidebar_animation_group_title">
+                                <property name="css-classes">heading</property>
+                                <property name="label">Animations</property>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkScrolledWindow">
                                 <property name="child">
                                   <object class="GtkBox">
                                     <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel" id="sidebar_animation_group_title">
-                                        <property name="css-classes">heading</property>
-                                        <property name="label">Animations</property>
-                                      </object>
-                                    </child>
                                     <child>
                                       <object class="GtkListBox" id="animation_list">
                                         <property name="css-classes">navigation-sidebar</property>

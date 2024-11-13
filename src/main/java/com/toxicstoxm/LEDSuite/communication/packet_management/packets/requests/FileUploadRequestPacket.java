@@ -6,7 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import lombok.*;
 
@@ -15,7 +15,7 @@ import lombok.*;
  * Request for uploading a file (new animation) with the specified name.
  * @since 1.0.0
  * @see UploadSuccessReplyPacket
- * @see UploadFileCollisionReplyPacket
+ * @see UploadReplyPacket
  */
 @AllArgsConstructor
 @AutoRegister(module = AutoRegisterModules.PACKETS)
@@ -28,6 +28,9 @@ public class FileUploadRequestPacket extends CommunicationPacket {
     private String requestFile;
     private String uploadSessionId;
     private String sha256;
+
+    @Builder.Default
+    private boolean forceOverwrite = false;
 
     @Override
     public String getType() {
@@ -53,6 +56,9 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256);
         packet.sha256 = yaml.getString(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256);
 
+        ensureKeyExists(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE);
+        packet.forceOverwrite = yaml.getBoolean(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE);
+
         return packet;
     }
 
@@ -63,6 +69,7 @@ public class FileUploadRequestPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.General.FILE_NAME, requestFile);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.UPLOAD_SESSION_ID, uploadSessionId);
         yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.SHA256, sha256);
+        yaml.set(Constants.Communication.YAML.Keys.Request.FileUploadRequest.FORCE_OVERWRITE, forceOverwrite);
 
         return yaml.saveToString();
     }

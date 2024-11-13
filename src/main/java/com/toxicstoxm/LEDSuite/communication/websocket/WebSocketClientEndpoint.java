@@ -12,7 +12,16 @@ import org.jetbrains.annotations.NotNull;
 @ClientEndpoint
 public abstract class WebSocketClientEndpoint {
 
-    abstract boolean binaryOnly();
+    /**
+     * Returns {@code ture} if this websocket endpoint communicates in binary only!. <br>
+     * Returns {@code false} for text only!
+     * @return {@code ture} for binary communication only, {@code false} for text communication only
+     */
+    abstract boolean binaryMode();
+
+    public boolean isReady() {
+        return true;
+    }
 
     @OnOpen
     public void onOpen(@NotNull Session session) {

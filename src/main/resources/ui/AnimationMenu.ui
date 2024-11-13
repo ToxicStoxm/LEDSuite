@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.92.1 -->
+<!-- Created with Cambalache 0.92.2 -->
 <interface>
+  <!-- interface-name AnimationMenu.ui -->
   <requires lib="gtk" version="4.14"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="AnimationMenu" parent="GtkBox">
@@ -35,6 +36,9 @@
                           <attribute end="-1" name="scale" value="1.5"/>
                         </attributes>
                       </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="animation_menu_subtitle"/>
                     </child>
                   </object>
                 </child>

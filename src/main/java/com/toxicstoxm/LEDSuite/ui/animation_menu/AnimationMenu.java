@@ -41,6 +41,9 @@ public class AnimationMenu extends Box {
     @GtkChild(name = "animation_menu_label")
     public Label animationLabel;
 
+    @GtkChild(name = "animation_menu_subtitle")
+    public Label animationSubtitle;
+
     private static final Type gtype = TemplateTypes.register(AnimationMenu.class);
 
     public AnimationMenu(MemorySegment address) {

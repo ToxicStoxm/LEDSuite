@@ -2,7 +2,10 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsChangeRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
@@ -299,7 +302,10 @@ public class LEDSuiteWindow extends ApplicationWindow {
                     }
                     continue;
                 } else {
-                    GLib.idleAddOnce(() -> animationList.remove(animations.remove(newAnimationName)));
+                    GLib.idleAddOnce(() -> {
+                        var widget = animations.remove(newAnimationName);
+                        if (widget.isAncestor(animationList)) animationList.remove(widget);
+                    });
                 }
             }
 
@@ -325,7 +331,10 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 uploadPageSelect();
             }
             GLib.idleAddOnce(() -> removeAction(removedAnimation));
-            GLib.idleAddOnce(() -> animationList.remove(animations.remove(removedAnimation)));
+            GLib.idleAddOnce(() -> {
+                var widget = animations.remove(removedAnimation);
+                if (widget.isAncestor(animationList)) animationList.remove(widget);
+            });
             LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
         }
     }
@@ -701,10 +710,6 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
                                     client.enqueueMessage(
                                             FileUploadRequestPacket.builder().uploadSessionId(String.valueOf(UUID.randomUUID())).requestFile("test-animation").build().serialize()
-                                    );
-
-                                    client.enqueueMessage(
-                                            RenameRequestPacket.builder().newName("new-name").requestFile("old-name").build().serialize()
                                     );
                                     client.enqueueMessage(
                                             MenuChangeRequestPacket.builder().objectId(String.valueOf(UUID.randomUUID())).objectValue("sdhfjsdhfs").fileName("Test-Animation").build().serialize()

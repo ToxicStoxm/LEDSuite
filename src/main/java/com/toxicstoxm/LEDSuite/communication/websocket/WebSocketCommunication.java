@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class WebSocketCommunication extends WebSocketClientEndpoint {
 
     @Override
-    boolean binaryOnly() {
+    boolean binaryMode() {
         return false;
     }
 

@@ -25,7 +25,7 @@ public class AnimationDeleteRequestPacket extends CommunicationPacket {
 
     @Override
     public String getSubType() {
-        return Constants.Communication.YAML.Values.Request.Types.SETTINGS_RESET;
+        return Constants.Communication.YAML.Values.Request.Types.ANIMATION_DELETE;
     }
 
     @Override

@@ -14,7 +14,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadFileCollisionReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
@@ -23,7 +22,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.websocket.BinaryPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
-import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketFileTransfer;
+import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketUpload;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
@@ -32,12 +31,17 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
+import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
+import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
+import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
@@ -45,6 +49,8 @@ import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.foreign.MemorySegment;
@@ -61,6 +67,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.EnableSettingsLogging;
 import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.WebsocketURI;
@@ -111,6 +118,9 @@ public class LEDSuiteApplication extends Application {
 
     @Getter
     private static AnimationMenuManager animationMenuManager;
+
+    @Getter
+    private static UploadManager uploadManager;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -176,17 +186,26 @@ public class LEDSuiteApplication extends Application {
 
         this.onShutdown(this::exit);
 
-        var test = new SimpleAction("test", null);
-        test.onActivate(_ -> {
-            LEDSuiteApplication.getPacketReceivedHandler().handleIncomingPacket(
-                    UploadFileCollisionReplyPacket.builder()
-                            .currentName("Test-Name")
-                            .build()
-            );
-        });
-        addAction(test);
-        setAccelsForAction("app.test", new String[]{"<Alt>t"});
+        // init settings manager
+        initYAJSI();
 
+        // init logger
+        initYAJL();
+
+        scheduler = new LEDSuiteScheduler();
+        tickingSystem = new TickingSystem();
+
+        animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets");
+        animationMenuManager.autoRegister();
+
+        packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
+        packetReceivedHandler = new PacketReceivedHandler();
+        packetManager.autoRegister();
+
+        uploadManager = new UploadManager();
+    }
+
+    private void initYAJSI() {
         configMgr = YAJSISettingsManager.builder()
                 .buildWithConfigFile(
                         new YAJSISettingsManager.ConfigFile(
@@ -195,7 +214,9 @@ public class LEDSuiteApplication extends Application {
                         ),
                         LEDSuiteSettingsBundle.class
                 );
+    }
 
+    private void initYAJL() {
         logger = YAJLLogger.builder()
                 // share settingsManager with the logger to use the same settings log implementation
                 .setSettingsManager(configMgr)
@@ -214,16 +235,6 @@ public class LEDSuiteApplication extends Application {
                                 new LEDSuiteLogAreas.YAML()
                         )
                 );
-
-        scheduler = new LEDSuiteScheduler();
-        tickingSystem = new TickingSystem();
-
-        animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets");
-        animationMenuManager.autoRegister();
-
-        packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
-        packetReceivedHandler = new PacketReceivedHandler();
-        packetManager.autoRegister();
     }
 
     @Getter
@@ -363,13 +374,6 @@ public class LEDSuiteApplication extends Application {
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuChangeRequestPacket.serialize()));
 
-            logger.debug("\nTesting rename request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            RenameRequestPacket renameRequestPacket = RenameRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .newName("Test-Animation-2")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(renameRequestPacket.serialize()));
-
             logger.debug("\nTesting settings request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             SettingsRequestPacket settingsRequestPacket = SettingsRequestPacket.builder().build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsRequestPacket.serialize()));
@@ -402,12 +406,6 @@ public class LEDSuiteApplication extends Application {
                     ))
                     .build();
             packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusReplyPacket.serialize()));
-
-            logger.debug("\nTesting upload file collision reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            UploadFileCollisionReplyPacket uploadFileCollisionReplyPacket = UploadFileCollisionReplyPacket.builder()
-                    .currentName("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(uploadFileCollisionReplyPacket.serialize()));
 
             logger.debug("\nTesting upload file success reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
             UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder()
@@ -456,56 +454,160 @@ public class LEDSuiteApplication extends Application {
 
     }
 
+    public static void triggerFileUpload2(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
+        try {
+            if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
+                window.uploadPageSelect();
+                throw new UploadAbortException(() -> logger.warn("Cancelling file upload because communication websocket is not connected!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            URI uploadEndpointPath;
+
+            try {
+                String baseAddress = WebsocketURI.getInstance().get();
+                if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
+                baseAddress = baseAddress + "upload";
+                uploadEndpointPath = new URI(baseAddress);
+            } catch (URISyntaxException e) {
+                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because file upload websocket endpoint is unreachable!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
+
+            File fileToUpload;
+
+            try {
+                fileToUpload = new File(filePath);
+            } catch (NullPointerException e) {
+                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            if (!fileToUpload.exists() || !fileToUpload.isFile()) {
+                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            String checksum;
+            byte[] data;
+            try {
+                data = Files.readAllBytes(Path.of(fileToUpload.getAbsolutePath()));
+                byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
+                checksum = new BigInteger(1, hash).toString(16);
+            } catch (IOException | NoSuchAlgorithmException e) {
+                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because file couldn't be loaded or checksum failed!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            String uploadSessionID = String.valueOf(UUID.randomUUID());
+            AtomicReference<String> fileName = new AtomicReference<>(StringFormatter.getFileNameFromPath(filePath));
+            if (uploadSessionID == null) {
+                throw new UploadAbortException(() -> logger.error("Cancelled file upload because upload session id was null! This should be reported!", new LEDSuiteLogAreas.NETWORK()));
+            }
+
+            uploadManager.setPending(fileName.get(), uploadPermitted -> {
+                if (uploadPermitted) {
+                    triggerFileUpload(fileToUpload, startAnimationAfterUpload, uploadFinishCallback, uploadSessionID, uploadEndpointPath, checksum);
+                } else {
+                    GLib.idleAddOnce(() -> {
+                        AlertDialog.ResponseCallback cb = getResponseCallback(fileName, uploadSessionID, checksum, result -> {
+                            if (result) uploadManager.removePending(fileName.get());
+                            GLib.idleAddOnce(() -> uploadFinishCallback.update(result));
+                        });
+
+                        window.displayFileCollisionDialog(cb,"Animation with name '" + fileName.get() + "' already exists.");
+                    });
+                }
+            });
+
+            webSocketCommunication.enqueueMessage(
+                    FileUploadRequestPacket.builder()
+                            .uploadSessionId(uploadSessionID)
+                            .requestFile(fileName.get())
+                            .sha256(checksum)
+                            .build().serialize()
+            );
+
+        } catch (UploadAbortException e) {
+            e.printErrorMessage();
+            uploadFinishCallback.update(false);
+        }
+    }
+
+    @Contract(pure = true)
+    private static AlertDialog.@NotNull ResponseCallback getResponseCallback(AtomicReference<String> fileName, String uploadSessionID, String checksum, UpdateCallback<Boolean> uploadFinishCallback) {
+        return response -> {
+            try {
+                logger.info("File collision dialog response result: " + response, new LEDSuiteLogAreas.UI_CONSTRUCTION());
+
+                switch (response) {
+                    case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!", new LEDSuiteLogAreas.USER_INTERACTIONS()));
+                    case "rename" -> {
+                        logger.info("Rename selected.", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                        var renameDialog = RenameDialog.create(fileName.get());
+
+                        renameDialog.onResponse(renameResponse -> GLib.idleAddOnce(() -> {
+                            String newName = renameDialog.getNewName();
+
+                            if (renameResponse.equals("cancel")) {
+                                window.displayFileCollisionDialog(getResponseCallback(fileName, uploadSessionID, checksum, uploadFinishCallback),"Animation with name '" + fileName.get() + "' already exists.");
+                            } else if (renameResponse.equals("rename")) {
+                                if (newName == null || newName.isBlank() || newName.equals(fileName.get()))
+                                    throw new RuntimeException("New file name invalid '" + newName + "'!");
+
+                                uploadManager.changePendingName(fileName.get(), newName);
+
+                                webSocketCommunication.enqueueMessage(
+                                        FileUploadRequestPacket.builder()
+                                                .uploadSessionId(uploadSessionID)
+                                                .requestFile(newName)
+                                                .sha256(checksum)
+                                                .build().serialize()
+                                );
+                            }
+                        }));
+
+                        GLib.idleAddOnce(() -> renameDialog.present(LEDSuiteApplication.getWindow()));
+                    }
+                    case "overwrite" -> {
+
+                        var confirmationDialog = OverwriteConfirmationDialog.create();
+
+                        confirmationDialog.onResponse(confirmationResponse -> GLib.idleAddOnce(() -> {
+                            if (confirmationResponse.equals("cancel")) {
+                                window.displayFileCollisionDialog(getResponseCallback(fileName, uploadSessionID, checksum, uploadFinishCallback),"Animation with name '" + fileName.get() + "' already exists.");
+                            } else if (confirmationResponse.equals("overwrite")) {
+                                webSocketCommunication.enqueueMessage(
+                                        FileUploadRequestPacket.builder()
+                                                .uploadSessionId(uploadSessionID)
+                                                .requestFile(fileName.get())
+                                                .sha256(checksum)
+                                                .forceOverwrite(true)
+                                                .build().serialize()
+                                );
+                            }
+                        }));
+
+                        GLib.idleAddOnce(() -> confirmationDialog.present(LEDSuiteApplication.getWindow()));
+                    }
+                }
+            } catch (UploadAbortException e) {
+                e.printErrorMessage();
+                uploadFinishCallback.update(false);
+            }
+        };
+    }
+
     /**
      * Tries to upload the file
-     * located at the specified file path to the server using {@link WebSocketClient} with {@link WebSocketFileTransfer}.
-     * @param filePath the file path to the file to send to the sever
+     * located at the specified file path to the server using {@link WebSocketClient} with {@link WebSocketUpload}.
+     * @param fileToUpload the file to send to the sever
+     * @param checksum the file checksum (sha256)
+     * @param uploadEndpointPath the websocket endpoint to send the file to
+     * @param uploadSessionID the session id to use for websocket communication
      * @param startAnimationAfterUpload if the uploaded file should be automatically started after the upload completed using {@link PlayRequestPacket}
      * @param uploadFinishCallback the function to call after the upload finished
      */
-    public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
+    public static void triggerFileUpload(@NotNull File fileToUpload, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback, String uploadSessionID, URI uploadEndpointPath, String checksum) {
 
-        if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
-            logger.warn("Cancelled file upload because communication websocket is not connected!", new LEDSuiteLogAreas.NETWORK());
-            uploadFinishCallback.update(false);
-            window.uploadPageSelect();
-            return;
-        }
-
-        File fileToUpload = new File(filePath);
-
-        if (!fileToUpload.exists() || !fileToUpload.isFile()) {
-            logger.warn("Cancelled file upload because selected file '" + fileToUpload + "' does not exist or isn't a file!", new LEDSuiteLogAreas.NETWORK());
-            uploadFinishCallback.update(false);
-            return;
-        }
-
-        URI uploadEndpointPath;
-
-        try {
-            String baseAddress = WebsocketURI.getInstance().get();
-            if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
-            baseAddress = baseAddress + "upload";
-            uploadEndpointPath = new URI(baseAddress);
-        } catch (URISyntaxException e) {
-            logger.warn("Cancelled file upload because file upload websocket endpoint is unreachable!", new LEDSuiteLogAreas.NETWORK());
-            uploadFinishCallback.update(false);
-            return;
-        }
-
-        logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
-
-        String checksum;
-        byte[] data;
-        try {
-            data = Files.readAllBytes(Path.of(fileToUpload.getAbsolutePath()));
-            byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
-            checksum = new BigInteger(1, hash).toString(16);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            logger.warn("Canceled file upload because file couldn't be loaded or checksum failed!", new LEDSuiteLogAreas.NETWORK());
-            uploadFinishCallback.update(false);
-            return;
-        }
+        String filePath = fileToUpload.getAbsolutePath();
 
         final long fileSize = fileToUpload.length();
         final int packet_size = LEDSuiteSettingsBundle.PacketSize.getInstance().get();
@@ -519,81 +621,69 @@ public class LEDSuiteApplication extends Application {
         AtomicLong speedMeasurementCount = new AtomicLong(1);
         AtomicBoolean finished = new AtomicBoolean(false);
         AtomicLong lastUploadStatisticsUpdate = new AtomicLong(System.currentTimeMillis());
-        AtomicBoolean isReady = new AtomicBoolean(false);
 
-        WebSocketClient uploadEndpoint = new WebSocketClient(new WebSocketFileTransfer(
-                sessionID -> {
-                    logger.info("Connected to upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
-                    logger.info("Metadata:", new LEDSuiteLogAreas.NETWORK());
-                    logger.info(" > Upload session ID: " + sessionID, new LEDSuiteLogAreas.NETWORK());
-                    logger.info(" > Filename: " + animationName, new LEDSuiteLogAreas.NETWORK());
-                    logger.info(" > Checksum: " + checksum, new LEDSuiteLogAreas.NETWORK());
-                    new LEDSuiteRunnable() {
-                        @Override
-                        public void run() {
-                            webSocketCommunication.enqueueMessage(
-                                    FileUploadRequestPacket.builder()
-                                            .uploadSessionId(sessionID)
-                                            .requestFile(animationName)
-                                            .sha256(checksum)
-                                            .build().serialize()
-                            );
-                            isReady.set(true);
-                        }
-                    }.runTaskLaterAsynchronously(100);
-                },
-                progressUpdate -> {
-                    int transferredBytes = progressUpdate.data().array().length;
-                    transferredSize.addAndGet(transferredBytes);
+        WebSocketClient uploadEndpoint = new WebSocketClient(
+                WebSocketUpload.builder()
+                        .ready(true)
+                        .sessionID(uploadSessionID)
+                        .connectionNotifyCallback(() -> {
+                            logger.info("Connected to upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
+                            logger.info("Metadata:", new LEDSuiteLogAreas.NETWORK());
+                            logger.info(" > Upload session ID: " + uploadSessionID, new LEDSuiteLogAreas.NETWORK());
+                            logger.info(" > Filename: " + animationName, new LEDSuiteLogAreas.NETWORK());
+                            logger.info(" > Checksum: " + checksum, new LEDSuiteLogAreas.NETWORK());
+                        })
+                        .progressUpdateUpdateCallback(progressUpdate -> {
+                            int transferredBytes = progressUpdate.data().array().length;
+                            transferredSize.addAndGet(transferredBytes);
 
-                    window.setUploadProgress((double) transferredSize.get() / fileSize);
+                            window.setUploadProgress((double) transferredSize.get() / fileSize);
 
-                    // Corrected calculation of bytes per second
-                    double bytesPerMillisecond = (double) transferredBytes / Math.max(progressUpdate.timeElapsed(), 1);
-                    double bytesPerSecond = bytesPerMillisecond * 1000;
+                            // Corrected calculation of bytes per second
+                            double bytesPerMillisecond = (double) transferredBytes / Math.max(progressUpdate.timeElapsed(), 1);
+                            double bytesPerSecond = bytesPerMillisecond * 1000;
 
-                    // Initialize and calculate weighted moving average for speed
-                    if (speedAverage.get() == -1) speedAverage.set(Math.round(bytesPerSecond));
-                    else {
-                        long newSpeedAverage = (speedAverage.get() * speedMeasurementCount.get() + Math.round(bytesPerSecond)) / (speedMeasurementCount.incrementAndGet());
-                        speedAverage.set(newSpeedAverage);
-                    }
+                            // Initialize and calculate weighted moving average for speed
+                            if (speedAverage.get() == -1) speedAverage.set(Math.round(bytesPerSecond));
+                            else {
+                                long newSpeedAverage = (speedAverage.get() * speedMeasurementCount.get() + Math.round(bytesPerSecond)) / (speedMeasurementCount.incrementAndGet());
+                                speedAverage.set(newSpeedAverage);
+                            }
 
-                    boolean isLastPacket = progressUpdate.lastPacket();
+                            boolean isLastPacket = progressUpdate.lastPacket();
 
-                    logger.debug("Sent packet to server. [ID: " + speedMeasurementCount.get() + "; Size: " + transferredBytes + "; Last-Packet: " + isLastPacket + "]", new LEDSuiteLogAreas.NETWORK());
+                            logger.debug("Sent packet to server. [ID: " + speedMeasurementCount.get() + "; Size: " + transferredBytes + "; Last-Packet: " + isLastPacket + "]", new LEDSuiteLogAreas.NETWORK());
 
-                    long now = System.currentTimeMillis();
-                    long timeSinceLastStatsUpdate = now - lastUploadStatisticsUpdate.get();
-                    if (timeSinceLastStatsUpdate > 1000) {
-                        long estimatedMillisecondsRemaining = (speedAverage.get() > 0)
-                                ? ((fileSize - transferredSize.get()) / speedAverage.get()) * 1000
-                                : Long.MAX_VALUE;  // Handle division by zero for safety
-                        uploadStatisticsUpdater.update(
-                                UploadStatistics.builder()
-                                        .bytesPerSecond(speedAverage.get())
-                                        .millisecondsRemaining(estimatedMillisecondsRemaining)
-                                        .build()
-                        );
-                        lastUploadStatisticsUpdate.set(now);
-                    }
+                            long now = System.currentTimeMillis();
+                            long timeSinceLastStatsUpdate = now - lastUploadStatisticsUpdate.get();
+                            if (timeSinceLastStatsUpdate > 1000) {
+                                long estimatedMillisecondsRemaining = (speedAverage.get() > 0)
+                                        ? ((fileSize - transferredSize.get()) / speedAverage.get()) * 1000
+                                        : Long.MAX_VALUE;  // Handle division by zero for safety
+                                uploadStatisticsUpdater.update(
+                                        UploadStatistics.builder()
+                                                .bytesPerSecond(speedAverage.get())
+                                                .millisecondsRemaining(estimatedMillisecondsRemaining)
+                                                .build()
+                                );
+                                lastUploadStatisticsUpdate.set(now);
+                            }
 
-                    if (isLastPacket) {
-                        long totalTimeElapsed = System.currentTimeMillis() - startTime;
+                            if (isLastPacket) {
+                                long totalTimeElapsed = System.currentTimeMillis() - startTime;
 
-                        logger.info("File upload finished:", new LEDSuiteLogAreas.NETWORK());
-                        logger.info(" > File: " + animationName, new LEDSuiteLogAreas.NETWORK());
-                        logger.info(" > Transferred Bytes: " + transferredSize.get(), new LEDSuiteLogAreas.NETWORK());
-                        logger.info(" > Transferred Packets (<=" + packet_size / 1024 + "KB): " + speedMeasurementCount.get(), new LEDSuiteLogAreas.NETWORK());
-                        logger.info(" > Average Speed: " + StringFormatter.formatSpeed(speedAverage.get()), new LEDSuiteLogAreas.NETWORK());
-                        logger.info(" > Total time elapsed: " + StringFormatter.formatDuration(totalTimeElapsed), new LEDSuiteLogAreas.NETWORK());
+                                logger.info("File upload finished:", new LEDSuiteLogAreas.NETWORK());
+                                logger.info(" > File: " + animationName, new LEDSuiteLogAreas.NETWORK());
+                                logger.info(" > Transferred Bytes: " + transferredSize.get(), new LEDSuiteLogAreas.NETWORK());
+                                logger.info(" > Transferred Packets (<=" + packet_size / 1024 + "KB): " + speedMeasurementCount.get(), new LEDSuiteLogAreas.NETWORK());
+                                logger.info(" > Average Speed: " + StringFormatter.formatSpeed(speedAverage.get()), new LEDSuiteLogAreas.NETWORK());
+                                logger.info(" > Total time elapsed: " + StringFormatter.formatDuration(totalTimeElapsed), new LEDSuiteLogAreas.NETWORK());
 
-                        finished.set(true);
-                    }
-                },
-                isReady::get
-
-        ), uploadEndpointPath);
+                                finished.set(true);
+                            }
+                        })
+                        .build(), uploadEndpointPath
+        );
 
         logger.info("Splitting file into chunks:", new LEDSuiteLogAreas.NETWORK());
         try (FileInputStream fis = new FileInputStream(filePath)) {

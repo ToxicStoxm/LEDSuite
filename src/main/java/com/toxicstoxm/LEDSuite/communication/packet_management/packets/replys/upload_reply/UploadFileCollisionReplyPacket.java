@@ -13,7 +13,6 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import lombok.*;
 import org.gnome.glib.GLib;
 
@@ -57,7 +56,7 @@ public class UploadFileCollisionReplyPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = saveYAML();
+        super.serialize();
 
         yaml.set(Constants.Communication.YAML.Keys.Reply.UploadFileCollisionReply.FILE_NAME, currentName);
 

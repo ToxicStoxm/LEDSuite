@@ -7,7 +7,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,7 +67,7 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = saveYAML();
+        super.serialize();
 
         yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, brightness);
 

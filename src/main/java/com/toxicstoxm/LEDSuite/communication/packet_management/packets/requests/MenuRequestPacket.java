@@ -7,7 +7,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.MenuReplyPacket;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import lombok.*;
 
 /**
@@ -49,7 +48,7 @@ public class MenuRequestPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = saveYAML();
+        super.serialize();
 
         yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, requestFile);
 

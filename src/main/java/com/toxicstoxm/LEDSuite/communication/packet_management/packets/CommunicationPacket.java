@@ -22,7 +22,8 @@ public abstract class CommunicationPacket implements Packet {
 
     @Override
     public String serialize() {
-        return saveYAML().saveToString();
+        yaml = saveYAML();
+        return yaml.saveToString();
     }
 
     @Override

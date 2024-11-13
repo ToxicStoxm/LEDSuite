@@ -9,7 +9,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import lombok.*;
 
 /**
@@ -51,7 +50,7 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = saveYAML();
+        super.serialize();
 
         yaml.set(Constants.Communication.YAML.Keys.Reply.UploadSuccessReply.FILE_NAME, fileName);
 

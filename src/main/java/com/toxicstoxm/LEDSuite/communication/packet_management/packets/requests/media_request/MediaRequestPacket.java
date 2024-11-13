@@ -4,7 +4,6 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 
 /**
  * Wrapper class for request packets related to animation control.
@@ -35,7 +34,7 @@ public abstract class MediaRequestPacket extends CommunicationPacket {
 
     @Override
     public String serialize() {
-        YamlConfiguration yaml = saveYAML();
+        super.serialize();
 
         yaml.set(Constants.Communication.YAML.Keys.Request.General.FILE_NAME, getRequestFile());
 

@@ -216,6 +216,6 @@ public class UploadPage extends PreferencesPage {
             }.runTaskLaterAsynchronously(2000);
         };
 
-        LEDSuiteApplication.triggerFileUpload(this.selectedFile, startAnimationAfterUploadSwitch.getActive(), uploadFinishTask);
+        LEDSuiteApplication.triggerFileUpload2(this.selectedFile, startAnimationAfterUploadSwitch.getActive(), uploadFinishTask);
     }
 }

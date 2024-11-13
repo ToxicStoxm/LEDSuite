@@ -68,6 +68,11 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
         // Module data specified by the child class
         AutoRegisterModule<T> module = autoRegisterModule();
 
+        if (module == null) {
+            LEDSuiteApplication.getLogger().error("Tried to auto register items for unsupported module!", new LEDSuiteLogAreas.GENERAL());
+            return;
+        }
+
         Class<T> moduleType = module.getModuleType();
         AutoRegisterModules moduleName = module.getModule();
         String moduleClassPath = module.getClassPath();

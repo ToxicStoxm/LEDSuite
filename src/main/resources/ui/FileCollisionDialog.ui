@@ -8,7 +8,7 @@
     <property name="body">File Name collision</property>
     <property name="close-response">cancel</property>
     <property name="default-response">rename</property>
-    <property name="heading">Upload Completed</property>
+    <property name="heading">Duplicate Filename</property>
     <!-- Custom template fragments -->
     <responses>
       <response id="rename" translatable="yes" appearance="suggested">_Rename</response>

@@ -454,7 +454,7 @@ public class LEDSuiteApplication extends Application {
 
     }
 
-    public static void triggerFileUpload2(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
+    public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
         try {
             if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
                 window.uploadPageSelect();
@@ -504,7 +504,7 @@ public class LEDSuiteApplication extends Application {
 
             uploadManager.setPending(fileName.get(), uploadPermitted -> {
                 if (uploadPermitted) {
-                    triggerFileUpload(fileToUpload, startAnimationAfterUpload, uploadFinishCallback, uploadSessionID, uploadEndpointPath, checksum);
+                    uploadFile(fileToUpload, startAnimationAfterUpload, uploadFinishCallback, uploadSessionID, uploadEndpointPath, checksum);
                 } else {
                     GLib.idleAddOnce(() -> {
                         AlertDialog.ResponseCallback cb = getResponseCallback(fileName, uploadSessionID, checksum, result -> {
@@ -590,7 +590,13 @@ public class LEDSuiteApplication extends Application {
                 }
             } catch (UploadAbortException e) {
                 e.printErrorMessage();
-                uploadFinishCallback.update(false);
+                UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
+                if (endpoint != null) {
+                    UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
+                    if (uploadSuccessCallback != null) {
+                        uploadSuccessCallback.update(false);
+                    }
+                }
             }
         };
     }
@@ -605,7 +611,7 @@ public class LEDSuiteApplication extends Application {
      * @param startAnimationAfterUpload if the uploaded file should be automatically started after the upload completed using {@link PlayRequestPacket}
      * @param uploadFinishCallback the function to call after the upload finished
      */
-    public static void triggerFileUpload(@NotNull File fileToUpload, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback, String uploadSessionID, URI uploadEndpointPath, String checksum) {
+    public static void uploadFile(@NotNull File fileToUpload, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback, String uploadSessionID, URI uploadEndpointPath, String checksum) {
 
         String filePath = fileToUpload.getAbsolutePath();
 
@@ -616,7 +622,7 @@ public class LEDSuiteApplication extends Application {
         AtomicLong transferredSize = new AtomicLong(0);
 
         String animationName = StringFormatter.getFileNameFromPath(filePath);
-        var uploadStatisticsUpdater = window.getUploadPageEndpoint().uploadStatisticsUpdater();
+        AtomicReference<UpdateCallback<UploadStatistics>> uploadStatisticsUpdater = new AtomicReference<>(window.getUploadPageEndpoint().uploadStatisticsUpdater());
         AtomicLong speedAverage = new AtomicLong(-1);
         AtomicLong speedMeasurementCount = new AtomicLong(1);
         AtomicBoolean finished = new AtomicBoolean(false);
@@ -660,12 +666,16 @@ public class LEDSuiteApplication extends Application {
                                 long estimatedMillisecondsRemaining = (speedAverage.get() > 0)
                                         ? ((fileSize - transferredSize.get()) / speedAverage.get()) * 1000
                                         : Long.MAX_VALUE;  // Handle division by zero for safety
-                                uploadStatisticsUpdater.update(
-                                        UploadStatistics.builder()
-                                                .bytesPerSecond(speedAverage.get())
-                                                .millisecondsRemaining(estimatedMillisecondsRemaining)
-                                                .build()
-                                );
+
+                                uploadStatisticsUpdater.set(window.getUploadPageEndpoint().uploadStatisticsUpdater());
+                                if (uploadStatisticsUpdater.get() != null) {
+                                    uploadStatisticsUpdater.get().update(
+                                            UploadStatistics.builder()
+                                                    .bytesPerSecond(speedAverage.get())
+                                                    .millisecondsRemaining(estimatedMillisecondsRemaining)
+                                                    .build()
+                                    );
+                                }
                                 lastUploadStatisticsUpdate.set(now);
                             }
 
@@ -730,7 +740,13 @@ public class LEDSuiteApplication extends Application {
             logger.info("Upload preparation complete!", new LEDSuiteLogAreas.NETWORK());
         } catch (IOException e) {
             logger.warn("Error during upload preparation: " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
-            uploadFinishCallback.update(false);
+            UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
+            if (endpoint != null) {
+                UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
+                if (uploadSuccessCallback != null) {
+                    uploadSuccessCallback.update(false);
+                }
+            }
             return;
         }
 
@@ -742,11 +758,23 @@ public class LEDSuiteApplication extends Application {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         logger.warn("Upload finish callback was interrupted!", new LEDSuiteLogAreas.NETWORK());
-                        uploadFinishCallback.update(false);
+                        UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
+                        if (endpoint != null) {
+                            UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
+                            if (uploadSuccessCallback != null) {
+                                uploadSuccessCallback.update(false);
+                            }
+                        }
                         cancel();
                     }
                 }
-                uploadFinishCallback.update(true);
+                UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
+                if (endpoint != null) {
+                    UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
+                    if (uploadSuccessCallback != null) {
+                        uploadSuccessCallback.update(true);
+                    }
+                }
                 window.uploadFinished();
 
                 if (startAnimationAfterUpload) {

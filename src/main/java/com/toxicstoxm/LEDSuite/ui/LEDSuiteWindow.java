@@ -202,13 +202,17 @@ public class LEDSuiteWindow extends ApplicationWindow {
      * Displays the provided animation menu if the corresponding animation (by id) is currently selected.
      * @param menu the menu to display
      */
-    public void displayAnimationManu(@NotNull AnimationMenu menu) {
+    public void displayAnimationMenu(@NotNull AnimationMenu menu) {
         String animationID = menu.getMenuID();
         if (Objects.equals(animationID, selectedAnimation)) {
-            AnimationMenu animationMenu = menu.init((AnimationRow) animationList.getSelectedRow());
-            changeMainContent(animationMenu);
-            setAnimationControlButtonsVisible(true);
-            LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+            AnimationRow selectedRow = (AnimationRow) animationList.getSelectedRow();
+            if (selectedRow != null) {
+                AnimationMenu animationMenu = menu.init(selectedRow);
+                selectedRow.setMenuReference(animationMenu);
+                changeMainContent(animationMenu);
+                setAnimationControlButtonsVisible(true);
+                LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+            }
         } else LEDSuiteApplication.getLogger().debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
     }
 
@@ -252,10 +256,23 @@ public class LEDSuiteWindow extends ApplicationWindow {
             public UpdateCallback<UploadStatistics> uploadStatisticsUpdater() {
                 return uploadPage.getUploadStatisticsUpdater();
             }
+
+            @Override
+            public UpdateCallback<Boolean> uploadButtonState() {
+                return uploadPage.getUploadButtonState();
+            }
+
+            @Override
+            public UpdateCallback<Boolean> uploadSuccessCallback() {
+                return uploadPage.getUploadCallback();
+            }
         };
         setAnimationControlButtonsVisible(false);
         changeMainContent(uploadPage);
         GLib.idleAddOnce(() -> {
+            if (uploadProgressBarRevealer.getChildRevealed()) {
+                uploadPageEndpoint.uploadButtonState().update(true);
+            }
             animationList.setSelectionMode(SelectionMode.NONE);
             animationList.setSelectionMode(SelectionMode.BROWSE);
         });
@@ -284,60 +301,69 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
         List<String> removedAnimations = new ArrayList<>(animations.keySet());
 
-        // Construct animation rows for all new animations and store them in a temporary map
         for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
             String newAnimationName = updatedAnimation.id();
-
             removedAnimations.remove(newAnimationName);
 
+            // Check if this animation already exists
             if (animations.containsKey(newAnimationName)) {
+                AnimationRow animationRow = animations.get(newAnimationName);
+
+                // Update the animation row with new data
+                GLib.idleAddOnce(() -> {
+                    animationRow.update(updatedAnimation.label(), updatedAnimation.iconName());
+                    LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                });
+
+                // Update the animations map to ensure consistency
+                animations.put(newAnimationName, animationRow);
+
+                // Handle additional update if this row is selected
                 Widget selectedRow = animationList.getSelectedRow();
-                if (selectedRow != null) {
-                    if (selectedRow instanceof AnimationRow animationRow) {
-                        GLib.idleAddOnce(() -> animationRow.update(updatedAnimation.label(), updatedAnimation.iconName()));
-                        animations.put(newAnimationName, animationRow);
-                        LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
-                    } else {
-                        LEDSuiteApplication.getLogger().warn("Wasn't able to update animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
-                    }
-                    continue;
-                } else {
-                    GLib.idleAddOnce(() -> {
-                        var widget = animations.remove(newAnimationName);
-                        if (widget.isAncestor(animationList)) animationList.remove(widget);
-                    });
+                if (selectedRow != null && selectedRow.equals(animationRow)) {
+                    LEDSuiteApplication.getLogger().verbose("Animation is currently selected: " + newAnimationName, new LEDSuiteLogAreas.UI());
                 }
-            }
+            } else {
+                // Add new animation row if it doesn't already exist
+                var newAnimationRow = AnimationRow.create(
+                        AnimationRowData.builder()
+                                .app(getApplication())
+                                .iconName(updatedAnimation.iconName())
+                                .label(updatedAnimation.label())
+                                .animationID(updatedAnimation.id())
+                                .cooldown(500L)
+                                .build()
+                );
+                animations.put(newAnimationName, newAnimationRow);
 
-            var newAnimationRow = AnimationRow.create(
-                    AnimationRowData.builder()
-                            .app(getApplication())
-                            .iconName(updatedAnimation.iconName())
-                            .label(updatedAnimation.label())
-                            .animationID(updatedAnimation.id())
-                            .cooldown(500L)
-                            .build()
-            );
-            animations.put(newAnimationName, newAnimationRow);
-            GLib.idleAddOnce(() -> animationList.append(newAnimationRow));
-            LEDSuiteApplication.getLogger().verbose("Added animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                GLib.idleAddOnce(() -> {
+                    animationList.append(newAnimationRow);
+                    LEDSuiteApplication.getLogger().verbose("Added animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                });
+            }
         }
 
-        // The remaining animations are simply removed from the animation row list.
-        // Except if a row is selected, then it is first deselected and the upload page is selected by default.
-        for (String removedAnimation : removedAnimations) {
-            if (Objects.equals(removedAnimation, selectedAnimation)) {
-                GLib.idleAddOnce(() -> animationList.unselectRow(animations.get(removedAnimation)));
-                uploadPageSelect();
-            }
-            GLib.idleAddOnce(() -> removeAction(removedAnimation));
-            GLib.idleAddOnce(() -> {
+        // Remove any animations that are no longer in the updated list
+        GLib.idleAddOnce(() -> {
+            for (String removedAnimation : removedAnimations) {
+                if (Objects.equals(removedAnimation, selectedAnimation)) {
+                    animationList.unselectRow(animations.get(removedAnimation));
+                    uploadPageSelect();
+                }
+
+                removeAction(removedAnimation);
+
                 var widget = animations.remove(removedAnimation);
-                if (widget.isAncestor(animationList)) animationList.remove(widget);
-            });
-            LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
-        }
+                if (widget != null && widget.isAncestor(animationList)) {
+                    animationList.remove(widget);
+                }
+
+                LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
+            }
+        });
     }
+
+
 
     @GtkChild(name = "upload_progress_bar_revealer")
     public Revealer uploadProgressBarRevealer;

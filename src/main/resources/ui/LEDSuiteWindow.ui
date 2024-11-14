@@ -309,5 +309,4 @@ circular</property>
       </object>
     </child>
   </object>
-  <object class="AdwLeafletPage"/>
 </interface>

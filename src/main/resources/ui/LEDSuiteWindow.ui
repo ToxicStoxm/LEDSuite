@@ -120,6 +120,7 @@
                                     </child>
                                   </object>
                                 </property>
+                                <property name="propagate-natural-width">True</property>
                                 <property name="vexpand">True</property>
                               </object>
                             </child>

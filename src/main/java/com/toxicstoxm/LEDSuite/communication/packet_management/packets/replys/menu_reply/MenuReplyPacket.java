@@ -100,7 +100,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                 if (animationMenuManager != null) {
                     try {
                         AnimationMenu menu = animationMenuManager.deserializeAnimationMenu(menuYAML);
-                        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationManu(menu));
+                        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationMenu(menu));
                     } catch (DeserializationException e) {
                         LEDSuiteApplication.getLogger().warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
                         errorCode = e.getErrorCode();

@@ -68,6 +68,8 @@ public class AnimationRow extends ListBoxRow {
         row.animationID = animationRowData.animationID();
         row.setIconName(animationRowData.iconName());
         row.setAnimationLabel(animationRowData.label());
+        row.animationRowLabel.setWrap(true);
+        row.animationRowLabel.setWidthChars(10);
 
         row.setTooltipText(animationRowData.animationID());
         return row;

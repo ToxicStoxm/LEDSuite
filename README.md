@@ -20,14 +20,14 @@
     - [X] Request handling
     - [X] Response handling
     - [X] Error handling
-  - [ ] File sending
+  - [X] File sending
     - [X] Loading file
     - [X] Sending file data to server
     - [X] Sending metadata to server
     - [X] Calculating upload statistics
     - [X] Error handling
-    - [ ] Handle duplicate names
-      - [ ] Rename support
+    - [X] Handle duplicate names
+      - [X] Rename support
       - [X] Overwrite support
   - [X] Define communication protocol with YAML
   - [ ] Additional features (?)

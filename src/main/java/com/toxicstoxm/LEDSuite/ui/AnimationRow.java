@@ -3,10 +3,12 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
+import lombok.Setter;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
@@ -16,6 +18,7 @@ import org.gnome.gtk.Image;
 import org.gnome.gtk.Label;
 import org.gnome.gtk.ListBoxRow;
 import org.jetbrains.annotations.NotNull;
+
 import java.lang.foreign.MemorySegment;
 
 /**
@@ -50,6 +53,9 @@ public class AnimationRow extends ListBoxRow {
     @GtkChild(name = "animation_label")
     public Label animationRowLabel;
 
+    @Setter
+    private AnimationMenu MenuReference;
+
     public final void setAnimationLabel(String animationLabel) {
         this.animationRowLabel.setLabel(animationLabel);
     }
@@ -70,6 +76,10 @@ public class AnimationRow extends ListBoxRow {
     public void update(String label, String iconName) {
         animationRowLabel.setLabel(label);
         animationIcon.setFromIconName(iconName);
+        if (MenuReference != null) {
+            MenuReference.animationLabel.setLabel(label);
+            MenuReference.animationMenuImage.setFromIconName(iconName);
+        }
     }
 
     private static void createAction(@NotNull Application app, String animationID, String animationLabel) {

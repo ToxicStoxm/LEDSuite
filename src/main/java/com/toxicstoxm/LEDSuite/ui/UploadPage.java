@@ -21,6 +21,7 @@ import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
@@ -52,6 +53,9 @@ public class UploadPage extends PreferencesPage {
     @Getter
     private UpdateCallback<UploadStatistics> uploadStatisticsUpdater;
 
+    @Getter
+    private UpdateCallback<Boolean> uploadButtonState;
+
     private String selectedFile;
 
     public static @NotNull UploadPage create(ApplicationWindow parent) {
@@ -59,6 +63,7 @@ public class UploadPage extends PreferencesPage {
         uploadPage.parent = parent;
         uploadPage.connectivityUpdater = uploadPage::setServerConnected;
         uploadPage.uploadStatisticsUpdater = uploadPage::setUploadStatistics;
+        uploadPage.uploadButtonState = uploadPage::setState;
         WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
         uploadPage.setUploadButtonState(false);
         uploadPage.uploadStatistics.setSensitive(false);
@@ -179,6 +184,15 @@ public class UploadPage extends PreferencesPage {
         });
     }
 
+    private void setState(boolean uploading) {
+        GLib.idleAddOnce(() -> {
+            filePickerRow.setSensitive(!uploading);
+            startAnimationAfterUploadSwitch.setSensitive(!uploading);
+            setUploadButtonState(!uploading);
+            uploadButtonSpinnerRevealer.setRevealChild(uploading);
+        });
+    }
+
     @GtkCallback(name = "upload_button_cb")
     public void uploadButtonClickedCb() {
         if (filePickerRow.getSubtitle().isBlank() || filePickerRow.getSubtitle().equals("N/A")) {
@@ -187,20 +201,25 @@ public class UploadPage extends PreferencesPage {
         }
         if (loading) return;
         loading = true;
-        filePickerRow.setSensitive(false);
-        startAnimationAfterUploadSwitch.setSensitive(false);
-        setUploadButtonState(false);
-        uploadButtonSpinnerRevealer.setRevealChild(true);
-        uploadButton.setCssClasses(new String[]{"pill", "regular"});
+        setState(true);
         LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
 
-        UpdateCallback<Boolean> uploadFinishTask = successfully -> {
+        UpdateCallback<Boolean> uploadFinishTask = getUploadCallback();
+
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                LEDSuiteApplication.triggerFileUpload(selectedFile, startAnimationAfterUploadSwitch.getActive(), uploadFinishTask);
+            }
+        }.runTaskAsynchronously();
+    }
+
+    @Contract(pure = true)
+    public @NotNull UpdateCallback<Boolean> getUploadCallback() {
+        return successfully -> {
 
             GLib.idleAddOnce(() -> {
-                setUploadButtonState(true);
-                filePickerRow.setSensitive(true);
-                startAnimationAfterUploadSwitch.setSensitive(true);
-                uploadButtonSpinnerRevealer.setRevealChild(false);
+                setState(false);
                 uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
                 resetUploadStatistics();
             });
@@ -215,7 +234,5 @@ public class UploadPage extends PreferencesPage {
                 }
             }.runTaskLaterAsynchronously(2000);
         };
-
-        LEDSuiteApplication.triggerFileUpload2(this.selectedFile, startAnimationAfterUploadSwitch.getActive(), uploadFinishTask);
     }
 }

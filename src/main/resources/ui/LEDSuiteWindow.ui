@@ -8,190 +8,243 @@
   <template class="LEDSuiteWindow" parent="AdwApplicationWindow">
     <property name="content">
       <object class="AdwToolbarView">
-        <property name="content">
-          <object class="GtkOverlay" id="main_view_overlay">
-            <property name="child">
-              <object class="AdwToolbarView">
+        <child>
+          <object class="AdwToolbarView">
+            <property name="content">
+              <object class="AdwOverlaySplitView" id="split_view">
                 <property name="content">
-                  <object class="AdwOverlaySplitView" id="split_view">
+                  <object class="AdwToolbarView">
                     <property name="content">
-                      <object class="AdwToolbarView">
-                        <property name="content">
+                      <object class="GtkOverlay" id="main_view_overlay">
+                        <property name="child">
                           <object class="GtkRevealer" id="content-box-revealer">
                             <property name="child">
-                              <object class="GtkBox" id="content-box"/>
+                              <object class="GtkBox" id="content-box">
+                                <child>
+                                  <object class="GtkRevealer"/>
+                                </child>
+                              </object>
                             </property>
                             <property name="reveal-child">True</property>
                             <property name="transition-type">crossfade</property>
                           </object>
                         </property>
-                        <child type="top">
-                          <object class="AdwHeaderBar">
-                            <property name="height-request">0</property>
-                            <property name="title-widget">
-                              <object class="GtkLabel">
-                                <property name="css-classes">heading</property>
-                                <property name="label">LEDSuite</property>
-                              </object>
-                            </property>
-                            <child type="start">
-                              <object class="GtkRevealer" id="sidebar_toggle_button_revealer">
-                                <property name="transition-type">crossfade</property>
+                        <child type="overlay">
+                          <object class="GtkRevealer" id="file_control_buttons">
+                            <property name="child">
+                              <object class="GtkBox">
                                 <child>
-                                  <object class="GtkButton" id="sidebar_toggle_button">
-                                    <property name="action-name">app.sidebar_toggle</property>
-                                    <property name="icon-name">sidebar-show-symbolic</property>
+                                  <object class="GtkRevealer" id="delete_button_revealer">
+                                    <property name="reveal-child">True</property>
+                                    <property name="transition-type">crossfade</property>
+                                    <child>
+                                      <object class="GtkButton" id="delete_button">
+                                        <property name="css-classes">osd
+circular</property>
+                                        <property name="height-request">50</property>
+                                        <property name="icon-name">org.gnome.Settings-trash-file-history-symbolic</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="width-request">50</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkRevealer" id="rename_button_revealer">
+                                    <property name="reveal-child">True</property>
+                                    <property name="transition-type">crossfade</property>
+                                    <child>
+                                      <object class="GtkButton" id="rename_button">
+                                        <property name="css-classes">osd
+circular</property>
+                                        <property name="height-request">50</property>
+                                        <property name="icon-name">document-edit-symbolic</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="width-request">50</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                            <child type="end">
-                              <object class="GtkMenuButton">
-                                <property name="icon-name">open-menu-symbolic</property>
-                                <property name="menu-model">primary_menu</property>
+                            </property>
+                            <property name="halign">start</property>
+                            <property name="reveal-child" bind-source="animation_control_buttons_revealer" bind-property="reveal-child" bind-flags="default">False</property>
+                            <property name="transition-type">crossfade</property>
+                            <property name="valign">end</property>
+                          </object>
+                        </child>
+                        <child type="overlay">
+                          <object class="GtkRevealer" id="animation_control_buttons_revealer">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <child>
+                                  <object class="GtkRevealer" id="stop_button_revealer">
+                                    <property name="reveal-child">True</property>
+                                    <property name="transition-type">crossfade</property>
+                                    <child>
+                                      <object class="GtkButton" id="stop_button">
+                                        <property name="css-classes">osd
+circular</property>
+                                        <property name="height-request">50</property>
+                                        <property name="icon-name">media-playback-stop</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="width-request">50</property>
+                                        <signal name="clicked" handler="stop_button_cb"/>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="play_pause_button">
+                                    <property name="css-classes">osd
+circular</property>
+                                    <property name="height-request">50</property>
+                                    <property name="icon-name">media-playback-start</property>
+                                    <property name="margin-bottom">10</property>
+                                    <property name="margin-end">10</property>
+                                    <property name="margin-top">10</property>
+                                    <property name="width-request">50</property>
+                                    <signal name="clicked" handler="play_pause_button_cb"/>
+                                  </object>
+                                </child>
                               </object>
-                            </child>
+                            </property>
+                            <property name="halign">end</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-end">4</property>
+                            <property name="transition-type">crossfade</property>
+                            <property name="valign">end</property>
                           </object>
                         </child>
                       </object>
                     </property>
-                    <property name="enable-hide-gesture">False</property>
-                    <property name="enable-show-gesture">False</property>
-                    <property name="sidebar">
-                      <object class="AdwToolbarView">
-                        <property name="content">
-                          <object class="GtkBox">
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">10</property>
+                    <child type="top">
+                      <object class="AdwHeaderBar">
+                        <property name="height-request">0</property>
+                        <property name="title-widget">
+                          <object class="GtkLabel">
+                            <property name="css-classes">heading</property>
+                            <property name="label">LEDSuite</property>
+                          </object>
+                        </property>
+                        <child type="start">
+                          <object class="GtkRevealer" id="sidebar_toggle_button_revealer">
+                            <property name="transition-type">crossfade</property>
                             <child>
-                              <object class="GtkListBox" id="file_management_list">
-                                <property name="css-classes">navigation-sidebar</property>
-                                <child>
-                                  <object class="GtkListBoxRow" id="file_management_upload_files_page">
-                                    <property name="action-name">app.sidebar_file_management_upload_page</property>
-                                    <property name="child">
-                                      <object class="GtkBox">
-                                        <property name="halign">start</property>
-                                        <property name="spacing">5</property>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="icon-name">document-send-symbolic</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <property name="label">Upload Files</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </property>
-                                  </object>
-                                </child>
+                              <object class="GtkButton" id="sidebar_toggle_button">
+                                <property name="action-name">app.sidebar_toggle</property>
+                                <property name="icon-name">sidebar-show-symbolic</property>
                               </object>
                             </child>
+                          </object>
+                        </child>
+                        <child type="end">
+                          <object class="GtkMenuButton">
+                            <property name="icon-name">open-menu-symbolic</property>
+                            <property name="menu-model">primary_menu</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="enable-hide-gesture">False</property>
+                <property name="enable-show-gesture">False</property>
+                <property name="sidebar">
+                  <object class="AdwToolbarView">
+                    <property name="content">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">10</property>
+                        <child>
+                          <object class="GtkListBox" id="file_management_list">
+                            <property name="css-classes">navigation-sidebar</property>
                             <child>
-                              <object class="GtkSeparator"/>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="sidebar_animation_group_title">
-                                <property name="css-classes">heading</property>
-                                <property name="label">Animations</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow">
+                              <object class="GtkListBoxRow" id="file_management_upload_files_page">
+                                <property name="action-name">app.sidebar_file_management_upload_page</property>
                                 <property name="child">
                                   <object class="GtkBox">
-                                    <property name="orientation">vertical</property>
+                                    <property name="halign">start</property>
+                                    <property name="spacing">5</property>
                                     <child>
-                                      <object class="GtkListBox" id="animation_list">
-                                        <property name="css-classes">navigation-sidebar</property>
-                                        <property name="selection-mode">browse</property>
+                                      <object class="GtkImage">
+                                        <property name="icon-name">document-send-symbolic</property>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkRevealer" id="animation_list_spinner_revealer">
-                                        <property name="child">
-                                          <object class="AdwSpinner"/>
-                                        </property>
-                                        <property name="reveal-child">True</property>
-                                        <property name="transition-type">crossfade</property>
+                                      <object class="GtkLabel">
+                                        <property name="label">Upload Files</property>
                                       </object>
                                     </child>
                                   </object>
                                 </property>
-                                <property name="propagate-natural-width">True</property>
-                                <property name="vexpand">True</property>
                               </object>
                             </child>
                           </object>
-                        </property>
-                        <child type="top">
-                          <object class="AdwHeaderBar">
-                            <property name="title-widget">
-                              <object class="GtkLabel">
-                                <property name="css-classes">heading</property>
-                                <property name="label">File Management</property>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator"/>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="sidebar_animation_group_title">
+                            <property name="css-classes">heading</property>
+                            <property name="label">Animations</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScrolledWindow">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkListBox" id="animation_list">
+                                    <property name="css-classes">navigation-sidebar</property>
+                                    <property name="selection-mode">browse</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkRevealer" id="animation_list_spinner_revealer">
+                                    <property name="child">
+                                      <object class="AdwSpinner"/>
+                                    </property>
+                                    <property name="reveal-child">True</property>
+                                    <property name="transition-type">crossfade</property>
+                                  </object>
+                                </child>
                               </object>
                             </property>
+                            <property name="propagate-natural-width">True</property>
+                            <property name="vexpand">True</property>
                           </object>
                         </child>
                       </object>
                     </property>
-                    <property name="sidebar-width-fraction">0.2</property>
-                    <property name="sidebar-width-unit">px</property>
+                    <child type="top">
+                      <object class="AdwHeaderBar">
+                        <property name="title-widget">
+                          <object class="GtkLabel">
+                            <property name="css-classes">heading</property>
+                            <property name="label">File Management</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </property>
+                <property name="sidebar-width-fraction">0.2</property>
+                <property name="sidebar-width-unit">px</property>
               </object>
             </property>
-            <child type="overlay">
-              <object class="GtkRevealer" id="animation_control_buttons_revealer">
-                <property name="child">
-                  <object class="GtkBox">
-                    <child>
-                      <object class="GtkRevealer" id="stop_button_revealer">
-                        <property name="reveal-child">True</property>
-                        <property name="transition-type">crossfade</property>
-                        <child>
-                          <object class="GtkButton" id="stop_button">
-                            <property name="css-classes">osd
-circular</property>
-                            <property name="height-request">50</property>
-                            <property name="icon-name">media-playback-stop</property>
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-end">10</property>
-                            <property name="margin-start">10</property>
-                            <property name="margin-top">10</property>
-                            <property name="width-request">50</property>
-                            <signal name="clicked" handler="stop_button_cb"/>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="play_pause_button">
-                        <property name="css-classes">osd
-circular</property>
-                        <property name="height-request">50</property>
-                        <property name="icon-name">media-playback-start</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="margin-end">10</property>
-                        <property name="margin-top">10</property>
-                        <property name="width-request">50</property>
-                        <signal name="clicked" handler="play_pause_button_cb"/>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-                <property name="halign">end</property>
-                <property name="margin-bottom">4</property>
-                <property name="margin-end">4</property>
-                <property name="transition-type">crossfade</property>
-                <property name="valign">end</property>
-              </object>
-            </child>
           </object>
-        </property>
+        </child>
         <child type="bottom">
           <object class="GtkRevealer" id="upload_progress_bar_revealer">
             <property name="child">

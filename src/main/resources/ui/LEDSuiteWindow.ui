@@ -48,6 +48,7 @@ circular</property>
                                         <property name="margin-start">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="width-request">50</property>
+                                        <signal name="clicked" handler="delete_button_cb"/>
                                       </object>
                                     </child>
                                   </object>
@@ -66,6 +67,7 @@ circular</property>
                                         <property name="margin-end">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="width-request">50</property>
+                                        <signal name="clicked" handler="rename_button_cb"/>
                                       </object>
                                     </child>
                                   </object>

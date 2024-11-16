@@ -4,10 +4,6 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.util.Objects;
 
 /**
@@ -28,7 +24,11 @@ public class Main {
 
         // creates new app instance and runs it
         var app = LEDSuiteApplication.create();
-        app.run(args);
-
+        try {
+            app.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Please report this error: " + Constants.Application.ISSUES);
+        }
     }
 }

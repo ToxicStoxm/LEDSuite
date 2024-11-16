@@ -94,7 +94,6 @@ public class RenameDialog extends AlertDialog {
                     GLib.idleAddOnce(() -> {
                         setResponseEnabled("rename", !newName.equals(currentName) && !newName.isBlank());
                         newName = fileNameRow.getText();
-                        System.out.println(currentName + " ----> " + newName);
                     });
                 }
             }

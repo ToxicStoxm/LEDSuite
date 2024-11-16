@@ -2,7 +2,7 @@
 Version=1.0
 Type=Application
 
-Name=LED Suite
+Name=LEDSuite
 
 Comment=Control an LED-Matrix with style
 Comment[de]=Steuere eine LED-Matrix mit style

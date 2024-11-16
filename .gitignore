@@ -56,3 +56,4 @@ bin/
 /AnimationMenuConcept.rnote
 /src/main/resources/ui/LEDSuiteWindow.cmb
 /src/main/resources/ui/RenameDialog.cmb
+/src/main/resources/ui/AuthenticationDialog.cmb

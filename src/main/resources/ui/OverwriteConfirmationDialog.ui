@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.92.2 -->
 <interface>
   <!-- interface-name FileCollisionDialog.ui -->
-  <requires lib="gtk" version="4.14"/>
+  <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="OverwriteConfirmationDialog" parent="AdwAlertDialog">
     <property name="body">Are you sure you want to overwrite the existing animation?</property>

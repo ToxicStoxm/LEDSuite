@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <interface>
-    <requires lib="gio" version="2.44"/>
-    <requires lib="gtk" version="4.14"/>
+    <requires lib="gio" version="2.82"/>
+    <requires lib="gtk" version="4.16"/>
     <requires lib="libadwaita" version="1.6"/>
     <template class="ShortcutsDialog" parent="GtkShortcutsWindow">
         <property name="destroy-with-parent">True</property>

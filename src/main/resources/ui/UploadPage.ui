@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.92.0 -->
 <interface>
   <!-- interface-name UploadPage.ui -->
-  <requires lib="gtk" version="4.14"/>
+  <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="UploadPage" parent="AdwPreferencesPage">
     <child>

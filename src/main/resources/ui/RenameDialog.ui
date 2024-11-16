@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.92.2 -->
 <interface>
   <!-- interface-name RenameDialog.ui -->
-  <requires lib="gtk" version="4.14"/>
+  <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="RenameDialog" parent="AdwAlertDialog">
     <property name="close-response">cancel</property>

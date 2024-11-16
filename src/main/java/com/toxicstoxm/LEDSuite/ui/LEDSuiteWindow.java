@@ -85,7 +85,6 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     public void displayAboutDialog() {
         AboutDialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.appdata.xml", LEDSuiteApplication.version);
-        aboutDialog.setApplicationIcon("com.toxicstoxm.LEDSuite");
         aboutDialog.present(this);
     }
 

@@ -41,6 +41,7 @@ import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
+import lombok.Setter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
@@ -64,6 +65,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -122,14 +124,19 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static UploadManager uploadManager;
 
+    @Setter
+    private ResourceBundle translations;
+
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
      * @return the newly created LEDSuiteApplication instance
      */
-    public static LEDSuiteApplication create() {
-        return GObject.newInstance(getType(),
+    public static LEDSuiteApplication create(ResourceBundle translations) {
+        LEDSuiteApplication app = GObject.newInstance(getType(),
                 "application-id", "com.toxicstoxm.LEDSuite",
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
+        app.setTranslations(translations);
+        return app;
     }
 
     /**
@@ -235,6 +242,22 @@ public class LEDSuiteApplication extends Application {
                                 new LEDSuiteLogAreas.YAML()
                         )
                 );
+    }
+
+    private @NotNull String translate(String key) {
+        return translations.getString(key);
+    }
+
+    private @NotNull Object getTranslatedObject(String key) {
+        return translations.getObject(key);
+    }
+
+    private boolean isTranslatable(String key) {
+        return translations.containsKey(key);
+    }
+
+    private String @NotNull [] getTranslatedArray(String key) {
+        return translations.getStringArray(key);
     }
 
     @Getter

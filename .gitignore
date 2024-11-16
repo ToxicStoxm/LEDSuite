@@ -43,7 +43,7 @@ bin/
 /.idea/
 /ToDo.txt
 /.run/
-/update-todo.txt
+/implementation-concepts/update-todo.txt
 /JavaDoc/
 /src/main/resources/LEDSuite.gresource
 /ledsuite-main-window.cmb
@@ -53,7 +53,9 @@ bin/
 /src/main/resources/ui/SettingsDialog.cmb
 /src/main/resources/ui/StatusDialog.cmb
 /src/main/resources/ui/AnimationRow.cmb
-/AnimationMenuConcept.rnote
+/implementation-concepts/AnimationMenuConcept.rnote
 /src/main/resources/ui/LEDSuiteWindow.cmb
 /src/main/resources/ui/RenameDialog.cmb
 /src/main/resources/ui/AuthenticationDialog.cmb
+!/implementation-concepts/
+/implementation-concepts/

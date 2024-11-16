@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
 
+import java.io.File;
 import java.util.Objects;
 
 /**
@@ -13,6 +14,17 @@ import java.util.Objects;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
+
+        // checks if the app directory already exists, if not tries to create it
+        File appDirectory = new File(Constants.FileSystem.getAppDir());
+        if (!appDirectory.isDirectory()) {
+            System.out.println("App directory wasn't found, creating it...");
+            if (!appDirectory.mkdirs()) {
+                System.err.println("Failed to create app dir at: '" + appDirectory + "'!");
+                return;
+            }
+            System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
+        }
 
         // loads UI template files (.ui) and registers them using java-gi
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {

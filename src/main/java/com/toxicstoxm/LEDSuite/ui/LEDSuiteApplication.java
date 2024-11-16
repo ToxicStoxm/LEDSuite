@@ -809,7 +809,7 @@ public class LEDSuiteApplication extends Application {
         window = (LEDSuiteWindow) win;
         win.present();
 
-        testPackets();
+        //testPackets();
         new LEDSuiteRunnable() {
             @Override
             public void run() {

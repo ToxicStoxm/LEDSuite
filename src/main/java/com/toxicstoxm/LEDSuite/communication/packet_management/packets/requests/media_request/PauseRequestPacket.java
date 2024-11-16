@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
+import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import lombok.*;
 
 /**

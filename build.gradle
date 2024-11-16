@@ -3,7 +3,7 @@ plugins {
     id 'application'
     id 'org.beryx.jlink' version '3.0.1'
     id 'io.github.jwharm.flatpak-gradle-generator' version '1.2.0'
-    id("io.github.crimix.replace-placeholders") version "2.0"
+    id 'io.github.crimix.replace-placeholders' version '2.0'
 }
 
 group = 'com.toxicstoxm.LEDSuite'
@@ -88,7 +88,7 @@ jlink {
     options = [
             '--strip-debug',
             '--no-header-files',
-            '--no-man-pages',
+            '--no-man-pages'
     ]
     launcher {
         name = 'LEDSuite'
@@ -118,7 +118,7 @@ tasks.register('fatJar', Jar) {
         attributes['Main-Class'] = 'com.toxicstoxm.LEDSuite.Main'
     }
 
-    archiveBaseName = "${rootProject.name}-fat"
+    archiveBaseName = '${rootProject.name}-fat'
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }

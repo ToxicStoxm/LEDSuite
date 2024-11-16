@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface>
+  <!-- interface-name RenameDialog.ui -->
+  <requires lib="gtk" version="4.16"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="AuthenticationDialog" parent="AdwAlertDialog">
+    <property name="close-response">cancel</property>
+    <property name="default-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup">
+        <child>
+          <object class="AdwEntryRow" id="username_row">
+            <property name="input-purpose">password</property>
+            <property name="title">Username</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwEntryRow" id="password_row">
+            <property name="input-purpose">password</property>
+            <property name="title">Password</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="heading">Login required</property>
+    <property name="prefer-wide-layout">True</property>
+    <!-- Custom template fragments -->
+    <responses>
+      <response id="authenticate" translatable="yes" appearance="suggested" enabled="false">_Athenticate</response>
+      <response id="cancel" translatable="yes">_Cancel</response>
+    </responses>
+  </template>
+</interface>

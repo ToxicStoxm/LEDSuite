@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.toxicstoxm.LEDSuite'
-version = '0.1.4'
+version = '1.0.0-non-final'
 
 repositories {
     maven { url './offline-repository/' }

@@ -11,6 +11,7 @@
         <file preprocess="xml-stripblanks" alias="FileCollisionDialog.ui">ui/FileCollisionDialog.ui</file>
         <file preprocess="xml-stripblanks" alias="OverwriteConfirmationDialog.ui">ui/OverwriteConfirmationDialog.ui</file>
         <file preprocess="xml-stripblanks" alias="RenameDialog.ui">ui/RenameDialog.ui</file>
+        <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.svg">metadata/Icons/com.toxicstoxm.ledsuite.svg</file>
         <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>
     </gresource>
 </gresources>

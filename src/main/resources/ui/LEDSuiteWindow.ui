@@ -183,7 +183,7 @@ circular</property>
                                     </child>
                                     <child>
                                       <object class="GtkLabel">
-                                        <property name="label">Upload Files</property>
+                                        <property name="label" translatable="yes">Upload Files</property>
                                       </object>
                                     </child>
                                   </object>
@@ -198,7 +198,7 @@ circular</property>
                         <child>
                           <object class="GtkLabel" id="sidebar_animation_group_title">
                             <property name="css-classes">heading</property>
-                            <property name="label">Animations</property>
+                            <property name="label" translatable="yes">Animations</property>
                           </object>
                         </child>
                         <child>
@@ -234,7 +234,7 @@ circular</property>
                         <property name="title-widget">
                           <object class="GtkLabel">
                             <property name="css-classes">heading</property>
-                            <property name="label">File Management</property>
+                            <property name="label" translatable="yes">File Management</property>
                           </object>
                         </property>
                       </object>
@@ -280,23 +280,23 @@ circular</property>
     <section>
       <item>
         <attribute name="action">app.status</attribute>
-        <attribute name="label">_Status Menu</attribute>
+        <attribute name="label" translatable="yes">_Status Menu</attribute>
       </item>
       <item>
         <attribute name="action">app.settings</attribute>
-        <attribute name="label">_Settings Menu</attribute>
+        <attribute name="label" translatable="yes">_Settings Menu</attribute>
       </item>
       <item>
         <attribute name="action">app.shortcuts</attribute>
-        <attribute name="label">_Shortcuts Menu</attribute>
+        <attribute name="label" translatable="yes">_Shortcuts Menu</attribute>
       </item>
       <item>
         <attribute name="action">app.about</attribute>
-        <attribute name="label">_About LEDSuite</attribute>
+        <attribute name="label" translatable="yes">_About LEDSuite</attribute>
       </item>
       <item>
         <attribute name="action">app.quit</attribute>
-        <attribute name="label">_Quit</attribute>
+        <attribute name="label" translatable="yes">_Quit</attribute>
       </item>
     </section>
   </menu>
@@ -308,36 +308,36 @@ circular</property>
     <property name="view-name">shortcuts_section</property>
     <child>
       <object class="GtkShortcutsSection" id="shortcuts_section">
-        <property name="section-name">Shortcuts</property>
+        <property name="section-name" translatable="yes">Shortcuts</property>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title">General</property>
+            <property name="title" translatable="yes">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;Alt&gt;s</property>
                 <property name="action-name">app.status</property>
-                <property name="title">Show Status</property>
+                <property name="title" translatable="yes">Show Status</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;Control&gt;comma</property>
                 <property name="action-name">app.settings</property>
-                <property name="title">Show Settings</property>
+                <property name="title" translatable="yes">Show Settings</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;Control&gt;question</property>
                 <property name="action-name">app.shortcuts</property>
-                <property name="title">Shortcuts</property>
+                <property name="title" translatable="yes">Shortcuts</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;Alt&gt;a</property>
                 <property name="action-name">app.about</property>
-                <property name="title">About LEDSuite</property>
+                <property name="title" translatable="yes">About LEDSuite</property>
               </object>
             </child>
             <child>
@@ -345,19 +345,19 @@ circular</property>
                 <property name="accelerator">&lt;Control&gt;Q</property>
                 <property name="action-name">app.quit</property>
                 <property name="direction">ltr</property>
-                <property name="title">Quit</property>
+                <property name="title" translatable="yes">Quit</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title">UI</property>
+            <property name="title" translatable="yes">UI</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">F9</property>
                 <property name="action-name">app.sidebar_toggle</property>
-                <property name="title">Toggle Sidebar</property>
+                <property name="title" translatable="yes">Toggle Sidebar</property>
               </object>
             </child>
           </object>

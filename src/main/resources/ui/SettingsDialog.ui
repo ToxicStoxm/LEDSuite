@@ -11,12 +11,12 @@
       <object class="AdwPreferencesPage">
         <child>
           <object class="AdwPreferencesGroup" id="settings_local_group">
-            <property name="title">Local</property>
+            <property name="title" translatable="true">Local</property>
             <child>
               <object class="AdwEntryRow" id="settings_server_address">
                 <property name="input-purpose">url</property>
                 <property name="text">N/A</property>
-                <property name="title">Server Address</property>
+                <property name="title" translatable="yes">Server Address</property>
                 <property name="tooltip-text" translatable="yes">The URL used to connect to the server.
 Example: wss://www.example.com:443/LEDSuite/
 Format: protcol://domain:port/folder/</property>
@@ -33,7 +33,7 @@ Format: protcol://domain:port/folder/</property>
                     <child>
                       <object class="GtkLabel" id="settings_server_group_suffix_label">
                         <property name="css-classes">error</property>
-                        <property name="label">Disconnected</property>
+                        <property name="label" translatable="yes">Disconnected</property>
                       </object>
                     </child>
                     <child>
@@ -62,7 +62,7 @@ Format: protcol://domain:port/folder/</property>
                 </property>
                 <property name="climb-rate">2.0</property>
                 <property name="numeric">True</property>
-                <property name="title">Brightness</property>
+                <property name="title" translatable="yes">Brightness</property>
                 <property name="update-policy">if-valid</property>
               </object>
             </child>
@@ -73,7 +73,7 @@ Format: protcol://domain:port/folder/</property>
                     <property name="strings">N/A</property>
                   </object>
                 </property>
-                <property name="title">Color Mode</property>
+                <property name="title" translatable="yes">Color Mode</property>
               </object>
             </child>
             <child>
@@ -92,7 +92,7 @@ Format: protcol://domain:port/folder/</property>
                     <property name="action-name">app.settings_apply</property>
                     <property name="css-classes">suggested-action
 pill</property>
-                    <property name="label">Apply</property>
+                    <property name="label" translatable="yes">Apply</property>
                   </object>
                 </property>
                 <property name="maximum-size">120</property>

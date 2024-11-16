@@ -12,18 +12,18 @@
         <child>
           <object class="AdwEntryRow" id="username_row">
             <property name="input-purpose">password</property>
-            <property name="title">Username</property>
+            <property name="title" translatable="yes">Username</property>
           </object>
         </child>
         <child>
           <object class="AdwEntryRow" id="password_row">
             <property name="input-purpose">password</property>
-            <property name="title">Password</property>
+            <property name="title" translatable="yes">Password</property>
           </object>
         </child>
       </object>
     </property>
-    <property name="heading">Login required</property>
+    <property name="heading" translatable="yes">Login required</property>
     <property name="prefer-wide-layout">True</property>
     <!-- Custom template fragments -->
     <responses>

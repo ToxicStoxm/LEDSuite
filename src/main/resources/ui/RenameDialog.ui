@@ -11,13 +11,13 @@
       <object class="AdwPreferencesGroup">
         <child>
           <object class="AdwEntryRow" id="filename_row">
-            <property name="text">filename</property>
-            <property name="title">Filename</property>
+            <property name="text" translatable="yes">filename</property>
+            <property name="title" translatable="yes">Filename</property>
           </object>
         </child>
       </object>
     </property>
-    <property name="heading">Rename file</property>
+    <property name="heading" translatable="yes">Rename file</property>
     <property name="prefer-wide-layout">True</property>
     <!-- Custom template fragments -->
     <responses>

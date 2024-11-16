@@ -20,13 +20,13 @@
                     <child>
                       <object class="AdwPreferencesGroup" id="status_general_group">
                         <property name="css-classes">background</property>
-                        <property name="title">General</property>
+                        <property name="title" translatable="yes">General</property>
                         <child>
                           <object class="AdwActionRow" id="status_lid_state">
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
-                            <property name="title">Lid State</property>
+                            <property name="title" translatable="yes">Lid State</property>
                           </object>
                         </child>
                       </object>
@@ -34,13 +34,13 @@
                     <child>
                       <object class="AdwPreferencesGroup" id="status_animation_group">
                         <property name="css-classes">background</property>
-                        <property name="title">Animation</property>
+                        <property name="title" translatable="yes">Animation</property>
                         <child>
                           <object class="AdwActionRow" id="status_current_file">
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
-                            <property name="title">Current File</property>
+                            <property name="title" translatable="yes">Current File</property>
                           </object>
                         </child>
                         <child>
@@ -48,7 +48,7 @@
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
-                            <property name="title">Current State</property>
+                            <property name="title" translatable="yes">Current State</property>
                           </object>
                         </child>
                       </object>
@@ -56,13 +56,13 @@
                     <child>
                       <object class="AdwPreferencesGroup" id="status_power_group">
                         <property name="css-classes">background</property>
-                        <property name="title">Power</property>
+                        <property name="title" translatable="yes">Power</property>
                         <child>
                           <object class="AdwActionRow" id="status_voltage">
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
-                            <property name="title">Voltage</property>
+                            <property name="title" translatable="yes">Voltage</property>
                           </object>
                         </child>
                         <child>
@@ -70,7 +70,7 @@
                             <property name="css-classes">property</property>
                             <property name="subtitle">N/A</property>
                             <property name="subtitle-selectable">True</property>
-                            <property name="title">Current Draw</property>
+                            <property name="title" translatable="yes">Current Draw</property>
                           </object>
                         </child>
                       </object>
@@ -78,7 +78,7 @@
                   </object>
                 </property>
                 <property name="icon-name">com.toxicstoxm.LEDSuite</property>
-                <property name="title">Server Status</property>
+                <property name="title" translatable="yes">Server Status</property>
               </object>
             </property>
             <property name="maximum-size">700</property>
@@ -89,7 +89,7 @@
           <object class="AdwHeaderBar">
             <property name="title-widget">
               <object class="GtkLabel">
-                <property name="label">Status</property>
+                <property name="label" translatable="yes">Status</property>
               </object>
             </property>
           </object>

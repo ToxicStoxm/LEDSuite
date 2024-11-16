@@ -7,11 +7,11 @@
   <template class="UploadPage" parent="AdwPreferencesPage">
     <child>
       <object class="AdwPreferencesGroup">
-        <property name="title">File</property>
+        <property name="title" translatable="yes">File</property>
         <child>
           <object class="AdwActionRow" id="file_picker_button_row">
             <property name="subtitle">N/A</property>
-            <property name="title">Selected File</property>
+            <property name="title" translatable="yes">Selected File</property>
             <child>
               <object class="AdwClamp">
                 <property name="child">
@@ -35,25 +35,25 @@
         </child>
         <child>
           <object class="AdwSwitchRow" id="start_animation_after_upload_switch">
-            <property name="title">Start Animation after upload</property>
+            <property name="title" translatable="yes">Start Animation after upload</property>
             <signal name="notify::active" handler="start_animation_after_upload_switch_cb"/>
           </object>
         </child>
         <child>
           <object class="AdwExpanderRow" id="upload_statistics">
-            <property name="title">Upload Statistics</property>
+            <property name="title" translatable="yes">Upload Statistics</property>
             <child>
               <object class="AdwActionRow" id="upload_speed">
                 <property name="css-classes">property</property>
                 <property name="subtitle">N/A</property>
-                <property name="title">Speed</property>
+                <property name="title" translatable="yes">Speed</property>
               </object>
             </child>
             <child>
               <object class="AdwActionRow" id="upload_eta">
                 <property name="css-classes">property</property>
                 <property name="subtitle">N/A</property>
-                <property name="title">ETA</property>
+                <property name="title" translatable="yes">ETA</property>
               </object>
             </child>
           </object>
@@ -77,7 +77,7 @@ suggested-action</property>
                         <property name="spacing">5</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Upload</property>
+                            <property name="label" translatable="yes">Upload</property>
                           </object>
                         </child>
                         <child>

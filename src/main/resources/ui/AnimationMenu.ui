@@ -29,7 +29,7 @@
                       <object class="GtkLabel" id="animation_menu_label">
                         <property name="css-classes">title-1</property>
                         <property name="justify">center</property>
-                        <property name="label">Hello Test</property>
+                        <property name="label" translatable="yes">Hello Test</property>
                         <property name="wrap">True</property>
                         <property name="wrap-mode">word-char</property>
                         <attributes>

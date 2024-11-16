@@ -5,10 +5,10 @@
   <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="FileCollisionDialog" parent="AdwAlertDialog">
-    <property name="body">File Name collision</property>
+    <property name="body" translatable="yes">File Name collision</property>
     <property name="close-response">cancel</property>
     <property name="default-response">rename</property>
-    <property name="heading">Duplicate Filename</property>
+    <property name="heading" translatable="yes">Duplicate Filename</property>
     <!-- Custom template fragments -->
     <responses>
       <response id="rename" translatable="yes" appearance="suggested">_Rename</response>

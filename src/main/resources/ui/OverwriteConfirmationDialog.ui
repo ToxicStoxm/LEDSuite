@@ -5,10 +5,10 @@
   <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="OverwriteConfirmationDialog" parent="AdwAlertDialog">
-    <property name="body">Are you sure you want to overwrite the existing animation?</property>
+    <property name="body" translatable="yes">Are you sure you want to overwrite the existing animation?</property>
     <property name="default-response">cancel</property>
     <property name="close-response">cancel</property>
-    <property name="heading">Confirm overwrite</property>
+    <property name="heading" translatable="yes">Confirm overwrite</property>
     <!-- Custom template fragments -->
     <responses>
       <response id="overwrite" translatable="yes" appearance="destructive">_Overwrite</response>

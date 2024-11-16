@@ -244,18 +244,41 @@ public class LEDSuiteApplication extends Application {
                 );
     }
 
-    private @NotNull String translate(String key) {
+    /**
+     * Get the translated string for the specified key. <br>
+     * If no translated string is available, the input key is returned.
+     * @param key the translation key to get the associated value for
+     * @return the translated string or the specified key if no value is found
+     */
+    private @NotNull String getTranslation(String key) {
         return translations.getString(key);
     }
 
+    /**
+     * Get the translated object for the specified key. <br>
+     * If no translated object is available, the input key is returned.
+     * @param key the translation key to get the associated value for
+     * @return the translated string or the specified key if no value is found
+     */
     private @NotNull Object getTranslatedObject(String key) {
         return translations.getObject(key);
     }
 
+    /**
+     * Check if the specified key is associated with a translated value.
+     * @param key the translation key to check
+     * @return {@code true} if the specified key is associated with a translated value, otherwise {@code false}
+     */
     private boolean isTranslatable(String key) {
         return translations.containsKey(key);
     }
 
+    /**
+     * Get the translated string array for the specified key. <br>
+     * If no translated string array is available, the input key is returned.
+     * @param key the translation key to get the associated value for
+     * @return the translated string or the specified key if no value is found
+     */
     private String @NotNull [] getTranslatedArray(String key) {
         return translations.getStringArray(key);
     }

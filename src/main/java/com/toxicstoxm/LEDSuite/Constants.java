@@ -43,6 +43,7 @@ public class Constants {
 
     }
 
+    @Deprecated(forRemoval = true)
     public static class UI {
         public static final String NOT_AVAILABLE_VALUE = "N/A";
         public static final class SettingsDialog {

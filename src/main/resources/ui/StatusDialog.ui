@@ -77,7 +77,7 @@
                     </child>
                   </object>
                 </property>
-                <property name="icon-name">com.toxicstoxm.ledsuite</property>
+                <property name="icon-name">com.toxicstoxm.LEDSuite</property>
                 <property name="title">Server Status</property>
               </object>
             </property>

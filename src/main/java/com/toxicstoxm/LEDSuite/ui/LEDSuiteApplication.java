@@ -33,6 +33,7 @@ import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.authentication.AuthenticationDialog;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.YAJLLogger;
@@ -323,6 +324,7 @@ public class LEDSuiteApplication extends Application {
 
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
+                    GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window));
                     result = true;
                     break;
                 } else if (retry) {

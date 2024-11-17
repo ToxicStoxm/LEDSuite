@@ -16,9 +16,17 @@
           </object>
         </child>
         <child>
-          <object class="AdwEntryRow" id="password_row">
+          <object class="AdwPasswordEntryRow" id="password_row">
             <property name="input-purpose">password</property>
             <property name="title" translatable="yes">Password</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer" id="spinner_revealer">
+            <property name="margin-top">10</property>
+            <child>
+              <object class="AdwSpinner"/>
+            </child>
           </object>
         </child>
       </object>
@@ -27,7 +35,7 @@
     <property name="prefer-wide-layout">True</property>
     <!-- Custom template fragments -->
     <responses>
-      <response id="authenticate" translatable="yes" appearance="suggested" enabled="false">_Athenticate</response>
+      <response id="authenticate" translatable="yes" appearance="suggested" enabled="false">_Authenticate</response>
       <response id="cancel" translatable="yes">_Cancel</response>
     </responses>
   </template>

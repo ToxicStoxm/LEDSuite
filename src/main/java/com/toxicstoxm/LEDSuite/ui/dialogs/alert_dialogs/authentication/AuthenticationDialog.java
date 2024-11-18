@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.authentication;
+package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.AuthenticationRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
@@ -11,6 +11,8 @@ import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.EntryRow;
 import org.gnome.adw.PasswordEntryRow;
+import org.gnome.adw.ResponseAppearance;
+import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Revealer;
@@ -51,6 +53,8 @@ public class AuthenticationDialog extends AlertDialog {
     @GtkChild(name = "spinner_revealer")
     public Revealer spinnerRevealer;
 
+    private LEDSuiteTask authenticationTimeoutTask;
+
     @Override
     protected void response(String response) {
         credentialCheckerTask.cancel();
@@ -84,10 +88,40 @@ public class AuthenticationDialog extends AlertDialog {
                             .build().serialize()
             );
             LEDSuiteApplication.getLogger().info("Authentication -> Waiting for server response...", new LEDSuiteLogAreas.USER_INTERACTIONS());
+
+            authenticationTimeoutTask = new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    GLib.idleAddOnce(() -> {
+                        spinnerRevealer.setRevealChild(false);
+                        setResponseAppearance("authenticate", ResponseAppearance.DESTRUCTIVE);
+                    });
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    GLib.idleAddOnce(() -> {
+                        setCanClose(true);
+                        close();
+
+                    });
+
+                }
+            }.runTaskLaterAsynchronously(10000);
+
         } else {
             setCanClose(true);
             close();
         }
+    }
+
+    @Override
+    protected void closed() {
+        super.closed();
+        if (authenticationTimeoutTask != null) authenticationTimeoutTask.cancel();
     }
 
     @Override

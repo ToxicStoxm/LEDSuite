@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog;
+package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;

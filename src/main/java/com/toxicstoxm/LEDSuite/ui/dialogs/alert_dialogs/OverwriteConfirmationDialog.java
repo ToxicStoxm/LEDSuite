@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog;
+package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -8,12 +8,11 @@ import org.gnome.gobject.GObject;
 
 import java.lang.foreign.MemorySegment;
 
-@GtkTemplate(name = "FileCollisionDialog", ui = "/com/toxicstoxm/LEDSuite/FileCollisionDialog.ui")
-public class FileCollisionDialog extends AlertDialog {
+@GtkTemplate(name = "OverwriteConfirmationDialog", ui = "/com/toxicstoxm/LEDSuite/OverwriteConfirmationDialog.ui")
+public class OverwriteConfirmationDialog extends AlertDialog {
+    private static final Type gtype = TemplateTypes.register(OverwriteConfirmationDialog.class);
 
-    private static final Type gtype = TemplateTypes.register(FileCollisionDialog.class);
-
-    public FileCollisionDialog(MemorySegment address) {
+    public OverwriteConfirmationDialog(MemorySegment address) {
         super(address);
     }
 
@@ -21,7 +20,7 @@ public class FileCollisionDialog extends AlertDialog {
         return gtype;
     }
 
-    public static FileCollisionDialog create() {
+    public static OverwriteConfirmationDialog create() {
         return GObject.newInstance(getType());
     }
 

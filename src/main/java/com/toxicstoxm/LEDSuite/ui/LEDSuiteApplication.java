@@ -31,9 +31,9 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.authentication.AuthenticationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.YAJLLogger;
@@ -126,7 +126,7 @@ public class LEDSuiteApplication extends Application {
     private static UploadManager uploadManager;
 
     @Setter
-    private ResourceBundle translations;
+    private static ResourceBundle translations;
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
@@ -136,7 +136,7 @@ public class LEDSuiteApplication extends Application {
         LEDSuiteApplication app = GObject.newInstance(getType(),
                 "application-id", "com.toxicstoxm.LEDSuite",
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
-        app.setTranslations(translations);
+        setTranslations(translations);
         return app;
     }
 
@@ -189,7 +189,6 @@ public class LEDSuiteApplication extends Application {
         setAccelsForAction("app.status", new String[]{"<Alt>s"});
         setAccelsForAction("app.settings", new String[]{"<Control>comma"});
         setAccelsForAction("app.shortcuts", new String[]{"<Control>question"});
-        setAccelsForAction("app.about", new String[]{"<Alt>a"});
         setAccelsForAction("app.sidebar_toggle", new String[]{"F9"});
 
         this.onShutdown(this::exit);
@@ -251,7 +250,7 @@ public class LEDSuiteApplication extends Application {
      * @param key the translation key to get the associated value for
      * @return the translated string or the specified key if no value is found
      */
-    private @NotNull String getTranslation(String key) {
+    public static @NotNull String getTranslation(String key) {
         return translations.getString(key);
     }
 
@@ -261,7 +260,7 @@ public class LEDSuiteApplication extends Application {
      * @param key the translation key to get the associated value for
      * @return the translated string or the specified key if no value is found
      */
-    private @NotNull Object getTranslatedObject(String key) {
+    public static @NotNull Object getTranslatedObject(String key) {
         return translations.getObject(key);
     }
 
@@ -270,7 +269,7 @@ public class LEDSuiteApplication extends Application {
      * @param key the translation key to check
      * @return {@code true} if the specified key is associated with a translated value, otherwise {@code false}
      */
-    private boolean isTranslatable(String key) {
+    public static boolean isTranslatable(String key) {
         return translations.containsKey(key);
     }
 
@@ -280,7 +279,7 @@ public class LEDSuiteApplication extends Application {
      * @param key the translation key to get the associated value for
      * @return the translated string or the specified key if no value is found
      */
-    private String @NotNull [] getTranslatedArray(String key) {
+    public static String @NotNull [] getTranslatedArray(String key) {
         return translations.getStringArray(key);
     }
 
@@ -864,6 +863,5 @@ public class LEDSuiteApplication extends Application {
                 startCommunicationSocket();
             }
         }.runTaskAsynchronously();
-
     }
 }

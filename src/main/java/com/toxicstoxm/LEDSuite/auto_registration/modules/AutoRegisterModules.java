@@ -11,5 +11,6 @@ import lombok.Getter;
 @Getter
 public enum AutoRegisterModules {
     PACKETS,
-    WIDGETS
+    WIDGETS,
+    ALERT_DIALOGS
 }

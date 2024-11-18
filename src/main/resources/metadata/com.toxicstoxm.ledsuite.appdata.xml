@@ -16,6 +16,14 @@
   <project_license>GPL-3.0-or-later</project_license>
 
   <releases>
+    <release version="1.0.0-non-final" date="2024-11-17" type="stable">
+      <description>
+        <p>Release Candidate #3</p>
+        <ul>
+          <li>Rewrite of the whole app.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.4" date="2024-08-12" type="stable">
       <description>
         <p>This is our second stable release. Please report any bugs on the projects GitHub</p>

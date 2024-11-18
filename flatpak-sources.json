@@ -834,17 +834,17 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.34/lombok-1.18.34.jar",
-    "sha512": "2276a0750ce67ae797648cadcdb43a221405cbb07012a3097a03d0965f45e7865b3a247f089060f1e83dff080594fd79a4f31f2ec69841c99b07b2371a76f3f8",
-    "dest": "./offline-repository/org/projectlombok/lombok/1.18.34",
-    "dest-filename": "lombok-1.18.34.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar",
+    "sha512": "c551a534ad8b4275ac881001b233e3abf32d5267b14eb19a3497f477e3752ebe0b09a55b1bf59bb6e4feb17c1b9c6d8c0554a5b63fbb8b5d441f66fc038bd8d6",
+    "dest": "./offline-repository/org/projectlombok/lombok/1.18.36",
+    "dest-filename": "lombok-1.18.36.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.34/lombok-1.18.34.pom",
-    "sha512": "67e51b67a2c75a81b77e8adcff7a4f8fe3321d21dae41336ec5151ef789806e5f88f944883c57a0acfb85a1eec64fbb664f90283895891f04cbbc0c4cc325568",
-    "dest": "./offline-repository/org/projectlombok/lombok/1.18.34",
-    "dest-filename": "lombok-1.18.34.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.36/lombok-1.18.36.pom",
+    "sha512": "2a6245c810ebc89704681cd73e4772eec6ec201ccaa409920f5edeed455b020c5e78e96d7e12f88a8616b6f955fc2b5a59f3f2cceeedef0b617647521186dad1",
+    "dest": "./offline-repository/org/projectlombok/lombok/1.18.36",
+    "dest-filename": "lombok-1.18.36.pom"
   },
   {
     "type": "file",

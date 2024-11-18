@@ -15,9 +15,9 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.FileCollisionDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.OverwriteConfirmationDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialog.RenameDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
@@ -525,6 +525,9 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     @GtkCallback(name = "rename_button_cb")
     public void renameButtonClicked() {
+
+        LEDSuiteApplication.getLogger().info(LEDSuiteApplication.getTranslation("Hello World!"), new LEDSuiteLogAreas.GENERAL());
+
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
             var renameDialog = RenameDialog.create(animation);
@@ -548,4 +551,5 @@ public class LEDSuiteWindow extends ApplicationWindow {
             LEDSuiteApplication.getLogger().warn("Can't rename animation, because no animation is currently selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         }
     }
+
 }

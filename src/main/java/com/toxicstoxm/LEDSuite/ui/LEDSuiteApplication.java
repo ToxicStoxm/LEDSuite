@@ -36,6 +36,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.YAJLLogger;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
@@ -89,22 +90,18 @@ public class LEDSuiteApplication extends Application {
     }
 
     public LEDSuiteApplication(MemorySegment address) {
-
         super(address);
     }
 
     public static String version = "@version@";
 
     @Getter
-    private static YAJLLogger logger;
+    private static Logger logger;
 
-    //public static NullSaveGetter<YAJLLogger> log;
-
-    @Getter
     private static YAJSISettingsManager configMgr;
 
     @Getter
-    private static LEDSuiteWindow window;
+    private static MainWindow window;
 
     @Getter
     private static LEDSuiteScheduler scheduler;
@@ -162,7 +159,7 @@ public class LEDSuiteApplication extends Application {
         settings.onActivate(_ -> window.displayPreferencesDialog());
         shortcuts.onActivate(_ -> window.displayShortcutsWindow());
         about.onActivate(_ -> window.displayAboutDialog());
-        sidebarToggle.onActivate(_ -> window.toggle_sidebar());
+        sidebarToggle.onActivate(_ -> window.toggleSidebar());
 
         CooldownManger.addAction("sidebarFileManagementUploadPage", () -> window.uploadPageSelect(), 500);
         sidebarFileManagementUploadPage.onActivate(_ -> {
@@ -345,7 +342,7 @@ public class LEDSuiteApplication extends Application {
 
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
-                    GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window));
+                    GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window.asApplicationWindow()));
                     result = true;
                     break;
                 } else if (retry) {
@@ -581,7 +578,7 @@ public class LEDSuiteApplication extends Application {
                             GLib.idleAddOnce(() -> uploadFinishCallback.update(result));
                         });
 
-                        window.displayFileCollisionDialog(cb,"Animation with name '" + fileName.get() + "' already exists.");
+                        window.displayFileCollisionDialog(cb, "Animation with name '" + fileName.get() + "' already exists.");
                     });
                 }
             });
@@ -633,7 +630,7 @@ public class LEDSuiteApplication extends Application {
                             }
                         }));
 
-                        GLib.idleAddOnce(() -> renameDialog.present(LEDSuiteApplication.getWindow()));
+                        GLib.idleAddOnce(() -> renameDialog.present(window.asApplicationWindow()));
                     }
                     case "overwrite" -> {
 
@@ -654,7 +651,7 @@ public class LEDSuiteApplication extends Application {
                             }
                         }));
 
-                        GLib.idleAddOnce(() -> confirmationDialog.present(LEDSuiteApplication.getWindow()));
+                        GLib.idleAddOnce(() -> confirmationDialog.present(window.asApplicationWindow()));
                     }
                 }
             } catch (UploadAbortException e) {

@@ -34,7 +34,7 @@ public class Main {
         // adds implementation which just returns the requested key as translated value
         ResourceBundle translationBundle;
         try {
-            translationBundle = ResourceBundle.getBundle("translation/LEDSuite");
+            translationBundle = ResourceBundle.getBundle("translation/java/LEDSuite");
         } catch (MissingResourceException e) {
             System.err.println("Translations not found!");
             translationBundle = new ResourceBundle() {

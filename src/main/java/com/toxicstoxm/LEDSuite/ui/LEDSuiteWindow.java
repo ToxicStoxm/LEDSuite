@@ -47,7 +47,7 @@ import java.util.*;
  * @since 1.0
  */
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
-public class LEDSuiteWindow extends ApplicationWindow {
+public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     private static final Type gtype = TemplateTypes.register(LEDSuiteWindow.class);
 
@@ -79,7 +79,7 @@ public class LEDSuiteWindow extends ApplicationWindow {
         sideBarBreakpointState = false;
     }
 
-    public void toggle_sidebar() {
+    public void toggleSidebar() {
         if (sideBarBreakpointState) split_view.setShowSidebar(!split_view.getShowSidebar());
     }
 
@@ -296,6 +296,11 @@ public class LEDSuiteWindow extends ApplicationWindow {
 
     public void showAnimationListSpinner(boolean show) {
         animationListSpinnerRevealer.setRevealChild(show);
+    }
+
+    @Override
+    public ApplicationWindow asApplicationWindow() {
+        return this;
     }
 
     public void setServerConnected(boolean serverConnected) {

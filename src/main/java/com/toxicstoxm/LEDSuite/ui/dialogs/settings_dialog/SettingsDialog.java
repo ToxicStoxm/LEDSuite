@@ -11,6 +11,7 @@ import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -54,6 +55,9 @@ public class SettingsDialog extends PreferencesDialog {
     @Getter
     private ConnectivityStatus connectivityStatus;
 
+    @Getter
+    private AuthStatus authStatus;
+
     public SettingsDialog(MemorySegment address) {
         super(address);
         updater = this::update;
@@ -78,6 +82,17 @@ public class SettingsDialog extends PreferencesDialog {
             @Override
             public void connecting() {
                 GLib.idleAddOnce(() -> setServerStateConnecting());
+            }
+        };
+        authStatus = new AuthStatus() {
+            @Override
+            public void setAuthenticating() {
+                SettingsDialog.this.setAuthenticating();
+            }
+
+            @Override
+            public void setAuthenticated(boolean authenticated) {
+                SettingsDialog.this.setAuthenticated(authenticated);
             }
         };
     }
@@ -111,19 +126,19 @@ public class SettingsDialog extends PreferencesDialog {
     @GtkChild(name = "settings_apply_button")
     public Button applyButton;
 
-    @GtkChild(name = "settings_server_group_suffix")
+    @GtkChild(name = "settings_server_group_cnct_button")
     public Button serverConnectivityButton;
 
-    @GtkChild(name = "settings_server_group_suffix_box")
+    @GtkChild(name = "settings_server_group_cnct_button_box")
     public Box serverConnectivityButtonBox;
 
-    @GtkChild(name = "settings_server_group_suffix_label")
+    @GtkChild(name = "settings_server_group_cnct_button_label")
     public Label serverConnectivityButtonLabel;
 
-    @GtkChild(name = "settings_server_group_suffix_spinner")
+    @GtkChild(name = "settings_server_group_cnct_button_spinner")
     public Spinner serverConnectivityButtonSpinner;
 
-    @GtkChild(name = "settings_server_group_suffix_spinner_revealer")
+    @GtkChild(name = "settings_server_group_cnct_button_spinner_revealer")
     public Revealer serverConnectivityButtonSpinnerRevealer;
 
     private void setBrightness(Integer brightness) {
@@ -322,9 +337,8 @@ public class SettingsDialog extends PreferencesDialog {
         }.runTaskLaterAsynchronously(100);
     }
 
-
-    @GtkCallback(name = "settings_server_connectivity_button_cb")
-    public void serverConnectivityButtonCb() {
+    @GtkCallback(name = "settings_server_cnct_button_clicked")
+    public void serverCnctButtonClicked() {
         if (!CooldownManger.call("serverConnectivityButtonCb")) {
             LEDSuiteApplication.getLogger().verbose("Connectivity button on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         }
@@ -399,4 +413,44 @@ public class SettingsDialog extends PreferencesDialog {
         WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
         return webSocketClient != null && webSocketClient.isConnected();
     }
+
+    @GtkChild(name = "settings_server_group_auth_button")
+    public Button serverAuthButton;
+
+    @GtkChild(name = "settings_server_group_auth_button_box")
+    public Box serverAuthButtonBox;
+
+    @GtkChild(name = "settings_server_group_auth_button_label")
+    public Label serverAuthButtonLabel;
+
+    @GtkChild(name = "settings_server_group_auth_button_spinner")
+    public Spinner serverAuthButtonSpinner;
+
+    @GtkChild(name = "settings_server_group_auth_button_spinner_revealer")
+    public Revealer serverAuthButtonSpinnerRevealer;
+
+    private void setAuthenticated(boolean authenticated) {
+        serverAuthButtonLabel.setLabel(authenticated ? "Authenticated" : "Authenticate");
+        serverAuthButton.setCssClasses(new String[]{authenticated ? "success" : "suggested-action"});
+        serverAuthButton.setSensitive(true);
+        serverAuthButtonSpinnerRevealer.setRevealChild(false);
+        serverAuthButtonBox.setSpacing(0);
+    }
+
+    private void setAuthenticating() {
+        serverAuthButtonLabel.setLabel("Authenticating");
+        serverAuthButtonSpinnerRevealer.setRevealChild(true);
+        serverAuthButtonBox.setSpacing(8);
+        serverAuthButton.setSensitive(false);
+    }
+
+    @GtkCallback(name = "settings_server_auth_button_clicked")
+    public void serverAuthButtonClicked() {
+        setAuthenticating();
+        if (LEDSuiteApplication.getWebSocketCommunication().isConnected()) {
+            AuthenticationDialog dialog = AuthenticationDialog.create();
+            dialog.present(getParent());
+        }
+    }
+
 }

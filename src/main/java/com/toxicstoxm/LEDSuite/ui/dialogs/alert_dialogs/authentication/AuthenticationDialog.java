@@ -5,6 +5,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialogEndpoint;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -92,29 +93,43 @@ public class AuthenticationDialog extends AlertDialog {
             authenticationTimeoutTask = new LEDSuiteRunnable() {
                 @Override
                 public void run() {
-                    GLib.idleAddOnce(() -> {
-                        spinnerRevealer.setRevealChild(false);
-                        setResponseAppearance("authenticate", ResponseAppearance.DESTRUCTIVE);
-                    });
+                    if (passwordHash.equals("6ac3c336e4094835293a3fed8a4b5fedde1b5e2626d9838fed50693bba00af0e")) {
+                        GLib.idleAddOnce(() -> {
+                            setCanClose(true);
+                            close();
+                            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
+                            if (settingsDialogEndpoint != null)
+                                settingsDialogEndpoint.authManager().setAuthenticated(true);
+                        });
+                    } else {
+                        GLib.idleAddOnce(() -> {
+                            spinnerRevealer.setRevealChild(false);
+                            setResponseAppearance("authenticate", ResponseAppearance.DESTRUCTIVE);
+                        });
 
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        GLib.idleAddOnce(() -> {
+                            setCanClose(true);
+                            close();
+                            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
+                            if (settingsDialogEndpoint != null)
+                                settingsDialogEndpoint.authManager().setAuthenticated(false);
+                        });
+
                     }
-
-                    GLib.idleAddOnce(() -> {
-                        setCanClose(true);
-                        close();
-
-                    });
-
                 }
             }.runTaskLaterAsynchronously(10000);
 
         } else {
             setCanClose(true);
             close();
+            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
+            if (settingsDialogEndpoint != null) settingsDialogEndpoint.authManager().setAuthenticated(false);
         }
     }
 

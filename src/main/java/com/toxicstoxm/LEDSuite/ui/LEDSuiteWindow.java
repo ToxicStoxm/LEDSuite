@@ -128,6 +128,11 @@ public class LEDSuiteWindow extends ApplicationWindow {
                 }
 
                 @Override
+                public AuthStatus authManager() {
+                    return settingsDialog.getAuthStatus();
+                }
+
+                @Override
                 public ProviderCallback<SettingsData> settingsManager() {
                     return settingsDialog.getProvider();
                 }

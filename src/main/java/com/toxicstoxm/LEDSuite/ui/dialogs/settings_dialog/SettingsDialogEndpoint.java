@@ -10,6 +10,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
  */
 public interface SettingsDialogEndpoint {
     ConnectivityStatus connectivityManager();
+    AuthStatus authManager();
     ProviderCallback<SettingsData> settingsManager();
     UpdateCallback<SettingsUpdate> updater();
     Action applyButtonCooldown();

@@ -98,6 +98,8 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static YAJLLogger logger;
 
+    //public static NullSaveGetter<YAJLLogger> log;
+
     @Getter
     private static YAJSISettingsManager configMgr;
 
@@ -199,6 +201,26 @@ public class LEDSuiteApplication extends Application {
         // init logger
         initYAJL();
 
+        // TODO finish concept
+        /*
+        log = new NullSaveGetter<>() {
+            @Override
+            public YAJLLogger get() {
+                return logger == null ? getDefault() : logger;
+            }
+
+            @Override
+            public boolean isAvailable() {
+                return logger != null;
+            }
+
+            @Contract(" -> new")
+            @Override
+            public @NotNull YAJLLogger getDefault() {
+                return new YAJLLogger(Constants.FileSystem.getAppDir(), new PrintStream(OutputStream.nullOutputStream()), new LEDSuiteLogAreas.GENERAL(), false);
+            }
+        };
+         */
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 

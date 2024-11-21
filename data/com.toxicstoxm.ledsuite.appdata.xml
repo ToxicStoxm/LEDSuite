@@ -5,8 +5,6 @@
   <name>LED Suite</name>
 
   <summary>Control an LED-Matrix with style</summary>
-  <summary xml:lang="de">Steuere eine LED-Matrix mit style</summary>
-  <summary xml:lang="it">Controlare una LED-Matrix con style</summary>
   
   <developer id="com.toxicstoxm">
     <name>ToxicStoxm</name>
@@ -145,20 +143,12 @@
     <p>Program for controlling any HDMI LCD/OLED/Plasma/CRT, LED-Matrix or an LED-Cube with the proper backend.</p>
     <p>With the following features:</p>
 
-    <p xml:lang="de">Ein Programm um einen HDMI LCD/OLED/Plasma/CRT, LED-Matrix oder einen LED-Cube zu steuern mit den richtigen Backend.</p>
-    <p xml:lang="de">Mit den folgenden Funktionen:</p>
     <ul>
       <li>Uploading files to the server</li>
       <li>Receiving status and errors from the server</li>
       <li>Changing and adjusting server-side settings</li>
       <li>Setting up and controlling interactive animations that are on the server</li>
       <li>Playing back MP4, JPEG and many other files on the server's LED-Matrix</li>
-
-      <li xml:lang="de">Dateien auf dem Server hochladen</li>
-      <li xml:lang="de">Status und Fehler vom Server empfangen</li>
-      <li xml:lang="de">Server-side Einstellungen ändern und anpassen</li>
-      <li xml:lang="de">Interaktive Animationen auf dem Server einrichten und steuern</li>
-      <li xml:lang="de">MP4, JPEG und viele andere Dateitypen auf der LED-Matrix beim Server abspielen </li>
     </ul>
   </description>
 

@@ -5,8 +5,6 @@ Type=Application
 Name=LEDSuite
 
 Comment=Control an LED-Matrix with style
-Comment[de]=Steuere eine LED-Matrix mit style
-Comment[it]=Controlare una LED-Matrix con style
 
 Categories=Utility;
 Keywords=LED;matrix;LCCP;Cube;LEDSuite;

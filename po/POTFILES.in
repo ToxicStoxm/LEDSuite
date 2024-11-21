@@ -1,0 +1,12 @@
+src/main/resources/AnimationMenu.ui
+src/main/resources/AnimationRow.ui
+src/main/resources/AuthenticationDialog.ui
+src/main/resources/ui/FileCollisionDialog.ui
+src/main/resources/ui/GeneralAlertDialog.ui
+src/main/resources/ui/LEDSuiteWindow.ui
+src/main/resources/ui/OverwriteConfirmationDialog.ui
+src/main/resources/ui/RenameDialog.ui
+src/main/resources/ui/SettingsDialog.ui
+src/main/resources/ui/ShortcutsDialog.ui
+src/main/resources/ui/StatusDialog.ui
+src/main/resources/ui/UploadPage.ui

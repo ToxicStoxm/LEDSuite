@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.92.1 -->
-<interface>
+<interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name StatusDialog.ui -->
   <requires lib="gio" version="2.82"/>
   <requires lib="gtk" version="4.16"/>

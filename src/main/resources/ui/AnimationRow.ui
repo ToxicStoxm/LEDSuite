@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<interface>
+<interface domain="com.toxicstoxm.LEDSuite">
   <requires lib="gtk" version="4.16"/>
   <template class="AnimationRow" parent="GtkListBoxRow">
     <property name="child">

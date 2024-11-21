@@ -12,7 +12,6 @@ import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import lombok.Getter;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Spinner;
 import org.gnome.adw.*;
@@ -21,7 +20,6 @@ import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
@@ -33,7 +31,7 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
-public class UploadPage extends PreferencesPage {
+public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
     private static final Type gtype = TemplateTypes.register(UploadPage.class);
 
@@ -47,27 +45,13 @@ public class UploadPage extends PreferencesPage {
 
     private ApplicationWindow parent;
 
-    @Getter
-    private UpdateCallback<Boolean> connectivityUpdater;
-
-    @Getter
-    private UpdateCallback<UploadStatistics> uploadStatisticsUpdater;
-
-    @Getter
-    private UpdateCallback<Boolean> uploadButtonState;
-
     private String selectedFile;
 
     public static @NotNull UploadPage create(ApplicationWindow parent) {
         UploadPage uploadPage = GObject.newInstance(getType());
         uploadPage.parent = parent;
-        uploadPage.connectivityUpdater = uploadPage::setServerConnected;
-        uploadPage.uploadStatisticsUpdater = uploadPage::setUploadStatistics;
-        uploadPage.uploadButtonState = uploadPage::setState;
-        WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
         uploadPage.setUploadButtonState(false);
         uploadPage.uploadStatistics.setSensitive(false);
-        uploadPage.connectivityUpdater.update(webSocketClient != null && webSocketClient.isConnected() && !uploadPage.loading);
         return uploadPage;
     }
 
@@ -146,7 +130,10 @@ public class UploadPage extends PreferencesPage {
     }
 
     public void setServerConnected(boolean serverConnected) {
-        GLib.idleAddOnce(() -> setUploadButtonState(serverConnected));
+        GLib.idleAddOnce(() -> {
+            WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
+            setUploadButtonActive(webSocketClient != null && webSocketClient.isConnected() && !loading);
+        });
     }
 
     @GtkChild(name = "upload_statistics")
@@ -184,7 +171,7 @@ public class UploadPage extends PreferencesPage {
         });
     }
 
-    private void setState(boolean uploading) {
+    public void setUploadButtonActive(boolean uploading) {
         GLib.idleAddOnce(() -> {
             filePickerRow.setSensitive(!uploading);
             startAnimationAfterUploadSwitch.setSensitive(!uploading);
@@ -201,10 +188,10 @@ public class UploadPage extends PreferencesPage {
         }
         if (loading) return;
         loading = true;
-        setState(true);
+        setUploadButtonActive(true);
         LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
 
-        UpdateCallback<Boolean> uploadFinishTask = getUploadCallback();
+        UpdateCallback<Boolean> uploadFinishTask = this::uploadCompleted;
 
         new LEDSuiteRunnable() {
             @Override
@@ -214,25 +201,21 @@ public class UploadPage extends PreferencesPage {
         }.runTaskAsynchronously();
     }
 
-    @Contract(pure = true)
-    public @NotNull UpdateCallback<Boolean> getUploadCallback() {
-        return successfully -> {
+    public void uploadCompleted(boolean successfully) {
+        GLib.idleAddOnce(() -> {
+            setUploadButtonActive(false);
+            uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
+            resetUploadStatistics();
+        });
 
-            GLib.idleAddOnce(() -> {
-                setState(false);
-                uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
-                resetUploadStatistics();
-            });
-
-            new LEDSuiteRunnable() {
-                @Override
-                public void run() {
-                    GLib.idleAddOnce(() -> {
-                        uploadButton.setCssClasses(new String[]{"pill", "suggested-action"});
-                        loading = false;
-                    });
-                }
-            }.runTaskLaterAsynchronously(2000);
-        };
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                GLib.idleAddOnce(() -> {
+                    uploadButton.setCssClasses(new String[]{"pill", "suggested-action"});
+                    loading = false;
+                });
+            }
+        }.runTaskLaterAsynchronously(2000);
     }
 }

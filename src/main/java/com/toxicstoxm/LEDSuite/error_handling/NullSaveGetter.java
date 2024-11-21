@@ -1,7 +1,14 @@
 package com.toxicstoxm.LEDSuite.error_handling;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface NullSaveGetter<T> {
-    T get();
-    boolean isAvailable();
-    T getDefault();
+    default @NotNull T getInstance() {
+        return isAvailable() ? value() : defaultValue();
+    }
+    T value();
+    default boolean isAvailable() {
+        return value() != null;
+    }
+    @NotNull T defaultValue();
 }

@@ -41,26 +41,18 @@ public class Constants {
         public static final String ID = "com.toxicstoxm." + NAME;
         public static final String WEBSITE = "https://github.com/ToxicStoxm/LEDSuite";
         public static final String ISSUES = WEBSITE + "/issues";
-
     }
 
-    @Deprecated(forRemoval = true)
     public static class UI {
-        public static final String NOT_AVAILABLE_VALUE = "N/A";
-        public static final class SettingsDialog {
+        public static final class CSS {
             public static final String[] DISCONNECTED_CSS = new String[]{"error"};
             public static final String[] CONNECTED_CSS = new String[]{"success"};
-            public static final String CONNECTED = "Connected";
-            public static final String CONNECTED_TOOLTIP = "Click to disconnect";
-            public static final String DISCONNECTED = "Disconnected";
-            public static final String DISCONNECTED_TOOLTIP = "Click to connect";
-            public static final String CONNECTING = "Connecting";
-            public static final String DISCONNECTING = "Disconnecting";
             public static final String[] CHANGING_CSS = new String[]{"warning"};
+        }
+        public static final class Intervals {
             public static final long MINIMUM_DELAY = 500;
             public static final long RETRY_DELAY = 3000;
             public static final long CONNECTION_TIMEOUT = 10000;
-
         }
     }
 

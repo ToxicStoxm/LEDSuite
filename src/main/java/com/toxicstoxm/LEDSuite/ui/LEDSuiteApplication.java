@@ -1,24 +1,11 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.server_error.ServerErrorPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.AnimationMenuManager;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.*;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.BinaryPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
@@ -54,7 +41,9 @@ import org.gnome.gtk.Window;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.foreign.MemorySegment;
 import java.math.BigInteger;
 import java.net.URI;
@@ -65,7 +54,6 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -272,7 +260,7 @@ public class LEDSuiteApplication extends Application {
 
         webSocketCommunication = new WebSocketClient(new WebSocketCommunication(), serverAddress);
 
-        while (timeElapsed < Constants.UI.SettingsDialog.CONNECTION_TIMEOUT) {
+        while (timeElapsed < Constants.UI.Intervals.CONNECTION_TIMEOUT) {
 
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
@@ -300,8 +288,8 @@ public class LEDSuiteApplication extends Application {
             }
 
             timeElapsed = System.currentTimeMillis() - start;
-            minDelayReached = timeElapsed > Constants.UI.SettingsDialog.MINIMUM_DELAY;
-            retry = timeElapsed > Constants.UI.SettingsDialog.RETRY_DELAY;
+            minDelayReached = timeElapsed > Constants.UI.Intervals.MINIMUM_DELAY;
+            retry = timeElapsed > Constants.UI.Intervals.RETRY_DELAY;
         }
 
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(false));
@@ -314,144 +302,6 @@ public class LEDSuiteApplication extends Application {
         LEDSuiteApplication.getLogger().info("Network connection timed out!", new LEDSuiteLogAreas.NETWORK());
 
         return false;
-    }
-
-    /**
-     * Tests all registered communication packets.
-     * @see PacketManager
-     * @see CommunicationPacket
-     */
-    private void testPackets() {
-
-        try {
-
-            logger.debug("Testing communication packets:", new LEDSuiteLogAreas.COMMUNICATION());
-
-            // request packets
-            logger.debug("\nTesting request packets:", new LEDSuiteLogAreas.COMMUNICATION());
-
-            logger.debug("\nTesting status request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            StatusRequestPacket statusRequestPacket = StatusRequestPacket.builder().build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusRequestPacket.serialize()));
-
-            logger.debug("\nTesting menu request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            MenuRequestPacket menuRequestPacket = MenuRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuRequestPacket.serialize()));
-
-            logger.debug("\nTesting play request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            PlayRequestPacket playRequestPacket = PlayRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(playRequestPacket.serialize()));
-
-            logger.debug("\nTesting pause request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            PauseRequestPacket pauseRequestPacket = PauseRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(pauseRequestPacket.serialize()));
-
-            logger.debug("\nTesting stop request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            StopRequestPacket stopRequestPacket = StopRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(stopRequestPacket.serialize()));
-
-            logger.debug("\nTesting file upload request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            FileUploadRequestPacket fileUploadRequestPacket = FileUploadRequestPacket.builder()
-                    .requestFile("Test-Animation")
-                    .sha256(String.valueOf(UUID.randomUUID()))
-                    .uploadSessionId(String.valueOf(UUID.randomUUID()))
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(fileUploadRequestPacket.serialize()));
-
-            logger.debug("\nTesting menu change request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            MenuChangeRequestPacket menuChangeRequestPacket = MenuChangeRequestPacket.builder()
-                    .objectId("Test-Object")
-                    .objectValue("6942")
-                    .fileName("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuChangeRequestPacket.serialize()));
-
-            logger.debug("\nTesting settings request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            SettingsRequestPacket settingsRequestPacket = SettingsRequestPacket.builder().build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsRequestPacket.serialize()));
-
-            logger.debug("\nTesting settings change request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            SettingsChangeRequestPacket settingsChangeRequestPacket = SettingsChangeRequestPacket.builder()
-                    .brightness(100)
-                    .selectedColorMode("RGB")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsChangeRequestPacket.serialize()));
-
-            logger.debug("\nTesting settings reset request packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            SettingsResetRequestPacket settingsResetRequestPacket = SettingsResetRequestPacket.builder().build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsResetRequestPacket.serialize()));
-
-            // reply packets
-            logger.debug("\nTesting reply packets:", new LEDSuiteLogAreas.COMMUNICATION());
-
-            logger.debug("\nTesting status reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            StatusReplyPacket statusReplyPacket  = StatusReplyPacket.builder()
-                    .fileState(FileState.playing)
-                    .selectedFile("Test-Animation")
-                    .currentDraw(1.9)
-                    .voltage(5.0)
-                    .lidState(LidState.open)
-                    .animations(List.of(
-                            new StatusReplyPacket.Animation("1", "Test-Animation1", "some-gnome-label", true),
-                            new StatusReplyPacket.Animation("1", "Test-Animation2", "some-gnome-label", false),
-                            new StatusReplyPacket.Animation("1", "Test-Animation3", "some-gnome-label", true)
-                    ))
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(statusReplyPacket.serialize()));
-
-            logger.debug("\nTesting upload file success reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            UploadSuccessReplyPacket uploadSuccessReplyPacket = UploadSuccessReplyPacket.builder()
-                    .fileName("Test-Animation")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(uploadSuccessReplyPacket.serialize()));
-
-            logger.debug("\nTesting settings reply packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            SettingsReplyPacket settingsReplyPacket = SettingsReplyPacket.builder()
-                    .brightness(100)
-                    .selectedColorMode("RGB")
-                    .availableColorModes(List.of("RGB", "RGBW"))
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(settingsReplyPacket.serialize()));
-
-            // error packets
-            logger.debug("\nTesting error packets:", new LEDSuiteLogAreas.COMMUNICATION());
-
-            logger.debug("\nTesting server error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            ServerErrorPacket serverErrorPacket = ServerErrorPacket.builder()
-                    .code(ErrorCode.ChecksumOfFileIsInvalid)
-                    .source(Constants.Communication.YAML.Values.Error.ServerError.Sources.PARSING_ERROR)
-                    .name("Failed to parse YAML!")
-                    .severity(5)
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(serverErrorPacket.serialize()));
-
-            logger.debug("\nTesting menu error packet -->", new LEDSuiteLogAreas.COMMUNICATION());
-            MenuErrorPacket menuErrorPacket = MenuErrorPacket.builder()
-                    .fileName("Test-Animation")
-                    .severity(Severity.FATAL)
-                    .code(ErrorCode.GroupSectionEmptyOrMissing)
-                    .message("Failed to parse YAML!")
-                    .build();
-            packetReceivedHandler.handleIncomingPacket(packetManager.deserialize(menuErrorPacket.serialize()));
-
-            logger.info("All packet tests passed!", new LEDSuiteLogAreas.COMMUNICATION());
-
-        } catch (DeserializationException e) {
-            logger.warn("Tests for communication packets failed!\n", new LEDSuiteLogAreas.COMMUNICATION());
-            logger.stacktrace("Stacktrace: \n", new LEDSuiteLogAreas.COMMUNICATION());
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.stacktrace(sw.toString());
-        }
-
     }
 
     public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {

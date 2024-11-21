@@ -167,7 +167,7 @@ public class LEDSuiteApplication extends Application {
         });
 
         CooldownManger.addAction("settingsApply", () -> window.settingsDialogApply(), 500);
-        CooldownManger.addAction("settingsApplyFail", () -> window.settingsDialogApplyFail(), 600);
+        CooldownManger.addAction("settingsApplyFail", () -> window.applyButtonCooldown(), 600);
         settingsApply.onActivate(_ -> {
             if (!CooldownManger.call("settingsApply")) {
                 logger.info("Settings apply on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
@@ -198,26 +198,6 @@ public class LEDSuiteApplication extends Application {
         // init logger
         initYAJL();
 
-        // TODO finish concept
-        /*
-        log = new NullSaveGetter<>() {
-            @Override
-            public YAJLLogger get() {
-                return logger == null ? getDefault() : logger;
-            }
-
-            @Override
-            public boolean isAvailable() {
-                return logger != null;
-            }
-
-            @Contract(" -> new")
-            @Override
-            public @NotNull YAJLLogger getDefault() {
-                return new YAJLLogger(Constants.FileSystem.getAppDir(), new PrintStream(OutputStream.nullOutputStream()), new LEDSuiteLogAreas.GENERAL(), false);
-            }
-        };
-         */
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
@@ -656,13 +636,7 @@ public class LEDSuiteApplication extends Application {
                 }
             } catch (UploadAbortException e) {
                 e.printErrorMessage();
-                UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
-                if (endpoint != null) {
-                    UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
-                    if (uploadSuccessCallback != null) {
-                        uploadSuccessCallback.update(false);
-                    }
-                }
+                window.uploadCompleted(false);
             }
         };
     }
@@ -688,7 +662,6 @@ public class LEDSuiteApplication extends Application {
         AtomicLong transferredSize = new AtomicLong(0);
 
         String animationName = StringFormatter.getFileNameFromPath(filePath);
-        AtomicReference<UpdateCallback<UploadStatistics>> uploadStatisticsUpdater = new AtomicReference<>(window.getUploadPageEndpoint().uploadStatisticsUpdater());
         AtomicLong speedAverage = new AtomicLong(-1);
         AtomicLong speedMeasurementCount = new AtomicLong(1);
         AtomicBoolean finished = new AtomicBoolean(false);
@@ -733,15 +706,13 @@ public class LEDSuiteApplication extends Application {
                                         ? ((fileSize - transferredSize.get()) / speedAverage.get()) * 1000
                                         : Long.MAX_VALUE;  // Handle division by zero for safety
 
-                                uploadStatisticsUpdater.set(window.getUploadPageEndpoint().uploadStatisticsUpdater());
-                                if (uploadStatisticsUpdater.get() != null) {
-                                    uploadStatisticsUpdater.get().update(
-                                            UploadStatistics.builder()
-                                                    .bytesPerSecond(speedAverage.get())
-                                                    .millisecondsRemaining(estimatedMillisecondsRemaining)
-                                                    .build()
-                                    );
-                                }
+                                window.setUploadStatistics(
+                                        UploadStatistics.builder()
+                                                .bytesPerSecond(speedAverage.get())
+                                                .millisecondsRemaining(estimatedMillisecondsRemaining)
+                                                .build()
+                                );
+
                                 lastUploadStatisticsUpdate.set(now);
                             }
 
@@ -806,13 +777,7 @@ public class LEDSuiteApplication extends Application {
             logger.info("Upload preparation complete!", new LEDSuiteLogAreas.NETWORK());
         } catch (IOException e) {
             logger.warn("Error during upload preparation: " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
-            UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
-            if (endpoint != null) {
-                UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
-                if (uploadSuccessCallback != null) {
-                    uploadSuccessCallback.update(false);
-                }
-            }
+            window.uploadCompleted(false);
             return;
         }
 
@@ -824,23 +789,11 @@ public class LEDSuiteApplication extends Application {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         logger.warn("Upload finish callback was interrupted!", new LEDSuiteLogAreas.NETWORK());
-                        UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
-                        if (endpoint != null) {
-                            UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
-                            if (uploadSuccessCallback != null) {
-                                uploadSuccessCallback.update(false);
-                            }
-                        }
+                        window.uploadCompleted(false);
                         cancel();
                     }
                 }
-                UploadPageEndpoint endpoint = window.getUploadPageEndpoint();
-                if (endpoint != null) {
-                    UpdateCallback<Boolean> uploadSuccessCallback = endpoint.uploadSuccessCallback();
-                    if (uploadSuccessCallback != null) {
-                        uploadSuccessCallback.update(true);
-                    }
-                }
+                window.uploadCompleted(true);
                 window.uploadFinished();
 
                 if (startAnimationAfterUpload) {

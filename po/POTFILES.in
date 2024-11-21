@@ -1,7 +1,7 @@
 # UI Files
-src/main/resources/AnimationMenu.ui
-src/main/resources/AnimationRow.ui
-src/main/resources/AuthenticationDialog.ui
+src/main/resources/ui/AnimationMenu.ui
+src/main/resources/ui/AnimationRow.ui
+src/main/resources/ui/AuthenticationDialog.ui
 src/main/resources/ui/FileCollisionDialog.ui
 src/main/resources/ui/GeneralAlertDialog.ui
 src/main/resources/ui/LEDSuiteWindow.ui

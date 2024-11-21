@@ -7,5 +7,5 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
  * @since 1.0.0
  */
 public interface StatusDialogEndpoint {
-    UpdateCallback<StatusUpdate> updater();
+    void update(StatusUpdate statusUpdate);
 }

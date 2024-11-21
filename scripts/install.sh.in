@@ -1,0 +1,2 @@
+#!/bin/sh
+cp $MESON_BUILD_ROOT/@SRC_FILE@ @DST_FILE@

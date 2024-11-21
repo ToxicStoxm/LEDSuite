@@ -6,7 +6,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.st
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import lombok.Getter;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
@@ -24,16 +23,12 @@ import java.util.List;
  * @since 1.0.0
  */
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
-public class StatusDialog extends Dialog {
+public class StatusDialog extends Dialog implements StatusDialogEndpoint {
 
     private static final Type gtype = TemplateTypes.register(StatusDialog.class);
 
-    @Getter
-    private StatusDialogEndpoint statusDialogEndpoint;
-
     public StatusDialog(MemorySegment address) {
         super(address);
-        statusDialogEndpoint = () -> StatusDialog.this::update;
     }
 
     public static Type getType() {

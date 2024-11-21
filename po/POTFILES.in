@@ -1,3 +1,4 @@
+# UI Files
 src/main/resources/AnimationMenu.ui
 src/main/resources/AnimationRow.ui
 src/main/resources/AuthenticationDialog.ui
@@ -10,3 +11,10 @@ src/main/resources/ui/SettingsDialog.ui
 src/main/resources/ui/ShortcutsDialog.ui
 src/main/resources/ui/StatusDialog.ui
 src/main/resources/ui/UploadPage.ui
+
+# Code
+src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java

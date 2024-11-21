@@ -6,11 +6,9 @@ import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -39,62 +37,12 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @GtkTemplate(name = "SettingsDialog", ui = "/com/toxicstoxm/LEDSuite/SettingsDialog.ui")
-public class SettingsDialog extends PreferencesDialog {
+public class SettingsDialog extends PreferencesDialog implements SettingsDialogEndpoint {
 
     private static final Type gtype = TemplateTypes.register(SettingsDialog.class);
 
-    @Getter
-    private UpdateCallback<SettingsUpdate> updater;
-
-    @Getter
-    private ProviderCallback<SettingsData> provider;
-
-    @Getter
-    private Action ApplyButtonCooldownTrigger;
-
-    @Getter
-    private ConnectivityStatus connectivityStatus;
-
-    @Getter
-    private AuthStatus authStatus;
-
     public SettingsDialog(MemorySegment address) {
         super(address);
-        updater = this::update;
-        provider = this::getData;
-        ApplyButtonCooldownTrigger = this::applyButtonCooldown;
-        connectivityStatus = new ConnectivityStatus() {
-            @Override
-            public void connected() {
-                GLib.idleAddOnce(() -> setServerStateConnected());
-            }
-
-            @Override
-            public void disconnected() {
-                GLib.idleAddOnce(() -> setServerStateDisconnected());
-            }
-
-            @Override
-            public void disconnecting() {
-                GLib.idleAddOnce(() -> setSeverStateDisconnecting());
-            }
-
-            @Override
-            public void connecting() {
-                GLib.idleAddOnce(() -> setServerStateConnecting());
-            }
-        };
-        authStatus = new AuthStatus() {
-            @Override
-            public void setAuthenticating() {
-                SettingsDialog.this.setAuthenticating();
-            }
-
-            @Override
-            public void setAuthenticated(boolean authenticated) {
-                SettingsDialog.this.setAuthenticated(authenticated);
-            }
-        };
     }
 
     public static Type getType() {
@@ -191,10 +139,10 @@ public class SettingsDialog extends PreferencesDialog {
     private void initialize() {
         CooldownManger.addAction("serverConnectivityButtonCb", () -> {
             if (isServerConnected()) {
-                connectivityStatus.disconnecting();
+                setServerStateDisconnecting();
                 triggerDisconnect();
             } else {
-                connectivityStatus.connecting();
+                this.setServerStateConnecting();
                 triggerConnect();
             }
         }, 500, true);
@@ -208,7 +156,7 @@ public class SettingsDialog extends PreferencesDialog {
         updateServerState();
     }
 
-    private void update(@NotNull SettingsUpdate settingsUpdate) {
+    public void update(@NotNull SettingsUpdate settingsUpdate) {
         GLib.idleAddOnce(() -> {
             setSupportedColorModes(settingsUpdate.supportedColorModes(), settingsUpdate.selectedColorMode());
             setBrightness(settingsUpdate.brightness());
@@ -221,9 +169,19 @@ public class SettingsDialog extends PreferencesDialog {
     private void updateServerState() {
         if (!serverConnectivityButton.isSensitive()) return;
         if (isServerConnected()) {
-            connectivityStatus.connected();
+            this.setServerStateConnected();
         } else {
-            connectivityStatus.disconnected();
+            this.setServerStateDisconnected();
+        }
+    }
+
+    public void setServerState(@NotNull ServerState serverState) {
+        switch (serverState) {
+            case CONNECTED -> setServerStateConnected();
+            case CONNECTING -> setServerStateConnecting();
+            case DISCONNECTED -> setServerStateDisconnected();
+            case DISCONNECTING -> setServerStateDisconnecting();
+            default -> throw new IllegalArgumentException("Unknown server state!");
         }
     }
 
@@ -250,7 +208,7 @@ public class SettingsDialog extends PreferencesDialog {
         markServerSettingsUnavailable();
     }
 
-    private void serverStateNormal() {
+    public void serverStateNormal() {
         serverConnectivityButton.setSensitive(true);
         serverConnectivityButtonBox.setSpacing(0);
         serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
@@ -276,7 +234,7 @@ public class SettingsDialog extends PreferencesDialog {
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.CONNECTING);
     }
 
-    private void setSeverStateDisconnecting() {
+    private void setServerStateDisconnecting() {
         serverStateChanging();
         serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.DISCONNECTING);
     }
@@ -323,14 +281,14 @@ public class SettingsDialog extends PreferencesDialog {
             public void run() {
                 if (!isServerConnected()) {
                     if (LEDSuiteApplication.startCommunicationSocket()) {
-                        connectivityStatus.connected();
+                        SettingsDialog.this.setServerStateConnected();
                         requestSettings();
                     } else {
-                        connectivityStatus.disconnected();
+                        SettingsDialog.this.setServerStateDisconnected();
                     }
                 } else {
                     LEDSuiteApplication.getLogger().info("Skipping connect attempt because communication websocket is already connected!", new LEDSuiteLogAreas.NETWORK());
-                    connectivityStatus.connected();
+                    SettingsDialog.this.setServerStateConnected();
                     requestSettings();
                 }
             }
@@ -345,7 +303,7 @@ public class SettingsDialog extends PreferencesDialog {
     }
 
     @Contract(" -> new")
-    private @NotNull SettingsData getData() {
+    public @NotNull SettingsData getData() {
         String temp = ((StringList<?>) colorMode.getModel()).getString(colorMode.getSelected());
         return new SettingsData(
                 (int) brightness.getValue(),
@@ -354,7 +312,7 @@ public class SettingsDialog extends PreferencesDialog {
         );
     }
 
-    private void applyButtonCooldown() {
+    public void applyButtonCooldown() {
         String[] defaultCSS = applyButton.getCssClasses();
         List<String> cssFail = new java.util.ArrayList<>(Arrays.stream(defaultCSS).toList());
         cssFail.remove("suggested-action");
@@ -389,17 +347,17 @@ public class SettingsDialog extends PreferencesDialog {
         updateServerState();
 
         if (LEDSuiteApplication.isConnecting()) {
-            connectivityStatus.connecting();
+            this.setServerStateConnecting();
             long start = LEDSuiteApplication.getConnectionAttempt();
             new LEDSuiteRunnable() {
                 @Override
                 public void run() {
                     if (isServerConnected()) {
-                        connectivityStatus.connected();
+                        SettingsDialog.this.setServerStateConnected();
                         cancel();
                     }
                     if (System.currentTimeMillis() - start > Constants.UI.SettingsDialog.CONNECTION_TIMEOUT) {
-                        connectivityStatus.disconnected();
+                        SettingsDialog.this.setServerStateDisconnected();
                         cancel();
                     }
                 }
@@ -429,7 +387,7 @@ public class SettingsDialog extends PreferencesDialog {
     @GtkChild(name = "settings_server_group_auth_button_spinner_revealer")
     public Revealer serverAuthButtonSpinnerRevealer;
 
-    private void setAuthenticated(boolean authenticated) {
+    public void setAuthenticated(boolean authenticated) {
         serverAuthButtonLabel.setLabel(authenticated ? "Authenticated" : "Authenticate");
         serverAuthButton.setCssClasses(new String[]{authenticated ? "success" : "suggested-action"});
         serverAuthButton.setSensitive(true);
@@ -437,7 +395,7 @@ public class SettingsDialog extends PreferencesDialog {
         serverAuthButtonBox.setSpacing(0);
     }
 
-    private void setAuthenticating() {
+    public void setAuthenticating() {
         serverAuthButtonLabel.setLabel("Authenticating");
         serverAuthButtonSpinnerRevealer.setRevealChild(true);
         serverAuthButtonBox.setSpacing(8);

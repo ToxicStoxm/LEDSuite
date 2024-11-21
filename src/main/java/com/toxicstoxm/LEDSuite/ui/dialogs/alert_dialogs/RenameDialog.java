@@ -14,6 +14,7 @@ import org.gnome.adw.EntryRow;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
+import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +83,9 @@ public class RenameDialog extends AlertDialog {
     @GtkChild(name = "filename_row")
     public EntryRow fileNameRow;
 
+    @GtkChild(name = "filename_too_long_revealer")
+    public Revealer fileNameTooLongRevealer;
+
     @Override
     public void present(@Nullable Widget parent) {
         AtomicReference<String> last = new AtomicReference<>(newName);
@@ -93,7 +97,9 @@ public class RenameDialog extends AlertDialog {
             if (!Objects.equals(last.get(), newName)) {
                     last.set(newName);
                     GLib.idleAddOnce(() -> {
-                        setResponseEnabled("rename", !newName.equals(currentName) && !newName.isBlank());
+                        boolean fileNameTooLong = newName.length() > 255;
+                        fileNameTooLongRevealer.setRevealChild(fileNameTooLong);
+                        setResponseEnabled("rename", !newName.equals(currentName) && !newName.isBlank() && !fileNameTooLong);
                         newName = fileNameRow.getText();
                     });
                 }

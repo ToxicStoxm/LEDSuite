@@ -489,9 +489,6 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "rename_button_cb")
     public void renameButtonClicked() {
-
-        LEDSuiteApplication.getLogger().info(LEDSuiteApplication.getTranslation("Hello World!"), new LEDSuiteLogAreas.GENERAL());
-
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
             var renameDialog = RenameDialog.create(animation);

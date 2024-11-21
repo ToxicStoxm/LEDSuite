@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite;
 
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
@@ -26,7 +27,7 @@ public class Main {
             System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
         }
 
-
+        Translations.init(Constants.Application.ID);
 
         // loads UI template files (.ui) and registers them using java-gi
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {

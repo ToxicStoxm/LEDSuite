@@ -43,7 +43,6 @@ import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
-import lombok.Setter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.gio.ApplicationFlags;
@@ -67,7 +66,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -124,19 +122,14 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static UploadManager uploadManager;
 
-    @Setter
-    private static ResourceBundle translations;
-
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
      * @return the newly created LEDSuiteApplication instance
      */
-    public static LEDSuiteApplication create(ResourceBundle translations) {
-        LEDSuiteApplication app = GObject.newInstance(getType(),
-                "application-id", "com.toxicstoxm.LEDSuite",
+    public static LEDSuiteApplication create() {
+        return GObject.newInstance(getType(),
+                "application-id", Constants.Application.ID,
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
-        setTranslations(translations);
-        return app;
     }
 
     /**
@@ -241,45 +234,6 @@ public class LEDSuiteApplication extends Application {
                                 new LEDSuiteLogAreas.YAML()
                         )
                 );
-    }
-
-    /**
-     * Get the translated string for the specified key. <br>
-     * If no translated string is available, the input key is returned.
-     * @param key the translation key to get the associated value for
-     * @return the translated string or the specified key if no value is found
-     */
-    public static @NotNull String getTranslation(String key) {
-        return translations.getString(key);
-    }
-
-    /**
-     * Get the translated object for the specified key. <br>
-     * If no translated object is available, the input key is returned.
-     * @param key the translation key to get the associated value for
-     * @return the translated string or the specified key if no value is found
-     */
-    public static @NotNull Object getTranslatedObject(String key) {
-        return translations.getObject(key);
-    }
-
-    /**
-     * Check if the specified key is associated with a translated value.
-     * @param key the translation key to check
-     * @return {@code true} if the specified key is associated with a translated value, otherwise {@code false}
-     */
-    public static boolean isTranslatable(String key) {
-        return translations.containsKey(key);
-    }
-
-    /**
-     * Get the translated string array for the specified key. <br>
-     * If no translated string array is available, the input key is returned.
-     * @param key the translation key to get the associated value for
-     * @return the translated string or the specified key if no value is found
-     */
-    public static String @NotNull [] getTranslatedArray(String key) {
-        return translations.getStringArray(key);
     }
 
     @Getter

@@ -291,7 +291,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
                 });
 
-                // Update the animations map to ensure consistency
+                // Update the animation map to ensure consistency
                 animations.put(newAnimationName, animationRow);
 
                 // Handle additional update if this row is selected

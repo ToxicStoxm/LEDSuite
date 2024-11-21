@@ -75,7 +75,7 @@ public class MenuReplyPacket extends CommunicationPacket {
         lock = true;
 
         long start = System.currentTimeMillis();
-        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().animationList.setSensitive(false));
+        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(false));
 
         LEDSuiteApplication.getWindow().changeMainContent(
                 Clamp.builder()
@@ -137,7 +137,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                                     .build().serialize()
                     );
                 }
-                GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().animationList.setSensitive(true));
+                GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(true));
                 lock = false;
             }
         }.runTaskAsynchronously();

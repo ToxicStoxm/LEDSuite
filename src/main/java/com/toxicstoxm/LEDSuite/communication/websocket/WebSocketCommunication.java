@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,12 +48,8 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     public void onClose(@NotNull Session session) {
         LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
 
-        var settingsDialog = LEDSuiteApplication.getWindow().getSettingsDialog();
-
-        if (settingsDialog != null) {
-            settingsDialog.connectivityManager().disconnected();
-        }
-
+        LEDSuiteApplication.getWindow().setServerState(ServerState.DISCONNECTED);
+        // TODO remove unnecessary second method call below
         LEDSuiteApplication.getWindow().setServerConnected(false);
     }
 

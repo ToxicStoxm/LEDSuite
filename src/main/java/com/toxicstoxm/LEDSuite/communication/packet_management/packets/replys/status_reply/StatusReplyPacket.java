@@ -84,6 +84,7 @@ public class StatusReplyPacket extends CommunicationPacket {
         packet.animations = new ArrayList<>();
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS)) {
+            animationsAvailable = true;
             ConfigurationSection animationsSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS);
             if (animationsSection == null) throw new DeserializationException("Deserialization failed! Failed to deserialize " + Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + " section!", ErrorCode.StatusUpdateInvalidAnimationsSection);
 
@@ -139,26 +140,21 @@ public class StatusReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
 
-        var statusDialogEndpoint = LEDSuiteApplication.getWindow().getStatusDialog();
+        LEDSuiteApplication.getWindow().update(
+                StatusUpdate.builder()
+                        .fileState(fileState)
+                        .lidState(lidState)
+                        .currentDraw(currentDraw)
+                        .voltage(voltage)
+                        .currentFile(fileState.equals(FileState.idle) ? null : selectedFile)
+                        .build()
+        );
 
-        if (statusDialogEndpoint != null) {
+        if (animationsAvailable || animations == null) {
+            animations = new ArrayList<>();
+        }
 
-            statusDialogEndpoint.updater().update(
-                    StatusUpdate.builder()
-                            .fileState(fileState)
-                            .lidState(lidState)
-                            .currentDraw(currentDraw)
-                            .voltage(voltage)
-                            .currentFile(fileState.equals(FileState.idle) ? null : selectedFile)
-                            .build()
-            );
-            LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
-
-            if (animationsAvailable || animations == null) {
-                animations = new ArrayList<>();
-            }
-
-        } else LEDSuiteApplication.getLogger().debug("Couldn't update status because no status updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
 
         LEDSuiteApplication.getWindow().updateAnimations(animations);
         LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState);

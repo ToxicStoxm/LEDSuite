@@ -97,9 +97,7 @@ public class AuthenticationDialog extends AlertDialog {
                         GLib.idleAddOnce(() -> {
                             setCanClose(true);
                             close();
-                            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
-                            if (settingsDialogEndpoint != null)
-                                settingsDialogEndpoint.authManager().setAuthenticated(true);
+                            LEDSuiteApplication.getWindow().setAuthenticated(true);
                         });
                     } else {
                         GLib.idleAddOnce(() -> {
@@ -116,9 +114,7 @@ public class AuthenticationDialog extends AlertDialog {
                         GLib.idleAddOnce(() -> {
                             setCanClose(true);
                             close();
-                            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
-                            if (settingsDialogEndpoint != null)
-                                settingsDialogEndpoint.authManager().setAuthenticated(false);
+                            LEDSuiteApplication.getWindow().setAuthenticated(false);
                         });
 
                     }
@@ -128,8 +124,7 @@ public class AuthenticationDialog extends AlertDialog {
         } else {
             setCanClose(true);
             close();
-            SettingsDialogEndpoint settingsDialogEndpoint = LEDSuiteApplication.getWindow().getSettingsDialog();
-            if (settingsDialogEndpoint != null) settingsDialogEndpoint.authManager().setAuthenticated(false);
+            LEDSuiteApplication.getWindow().setAuthenticated(false);
         }
     }
 

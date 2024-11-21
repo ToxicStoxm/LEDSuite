@@ -86,18 +86,14 @@ public class SettingsReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
 
-        var settingsDialog = LEDSuiteApplication.getWindow().getSettingsDialog();
-        if (settingsDialog != null) {
-            settingsDialog.updater().update(
-                    SettingsUpdate.builder()
-                            .brightness(brightness)
-                            .selectedColorMode(availableColorModes != null ? availableColorModes.stream().toList().indexOf(selectedColorMode) : Gtk.ACCESSIBLE_VALUE_UNDEFINED)
-                            .supportedColorModes(availableColorModes)
-                            .restorePreviousState(restorePreviousState)
-                            .build()
-            );
-            LEDSuiteApplication.getLogger().info("Updated settings using provided settings updater!", new LEDSuiteLogAreas.COMMUNICATION());
-        } else LEDSuiteApplication.getLogger().info("Couldn't update settings because no settings updater is currently available!", new LEDSuiteLogAreas.COMMUNICATION());
-
+        LEDSuiteApplication.getWindow().update(
+                SettingsUpdate.builder()
+                        .brightness(brightness)
+                        .selectedColorMode(availableColorModes != null ? availableColorModes.stream().toList().indexOf(selectedColorMode) : Gtk.ACCESSIBLE_VALUE_UNDEFINED)
+                        .supportedColorModes(availableColorModes)
+                        .restorePreviousState(restorePreviousState)
+                        .build()
+        );
+        LEDSuiteApplication.getLogger().info("Updated settings using provided settings updater!", new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

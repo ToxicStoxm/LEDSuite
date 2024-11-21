@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
@@ -73,7 +73,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         var filter = FileFilter.builder()
                 .setSuffixes(new String[]{"jar"})
                 .setMimeTypes(new String[]{"image/*", "video/*"})
-                .setName("Animations")
+                .setName(Translations.getText("Animations"))
                 .build();
 
         String initialFolder = LEDSuiteSettingsBundle.FilePickerInitialFolder.getInstance().get();
@@ -83,7 +83,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         }
 
         var filePicker = FileDialog.builder()
-                .setTitle("Pick a file")
+                .setTitle(Translations.getText("Pick a file"))
                 .setModal(true)
                 .setFilters(FilterListModel.builder().setFilter(filter).build())
                 .setDefaultFilter(filter)
@@ -126,7 +126,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     private boolean loading = false;
 
     public void setUploadButtonState(boolean state) {
-        uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals("N/A") && state);
+        uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals(Translations.getText("N/A")) && state);
     }
 
     public void setServerConnected(boolean serverConnected) {
@@ -166,8 +166,9 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         GLib.idleAddOnce(() -> {
             uploadStatistics.setExpanded(false);
             uploadStatistics.setSensitive(false);
-            uploadSpeed.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
-            uploadEta.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+            String notAvailableText = Translations.getText("N/A");
+            uploadSpeed.setSubtitle(notAvailableText);
+            uploadEta.setSubtitle(notAvailableText);
         });
     }
 
@@ -182,7 +183,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
     @GtkCallback(name = "upload_button_cb")
     public void uploadButtonClickedCb() {
-        if (filePickerRow.getSubtitle().isBlank() || filePickerRow.getSubtitle().equals("N/A")) {
+        if (filePickerRow.getSubtitle().isBlank() || filePickerRow.getSubtitle().equals(Translations.getText("N/A"))) {
             setUploadButtonState(false);
             return;
         }

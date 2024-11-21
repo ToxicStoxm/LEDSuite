@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 
-import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -141,7 +141,7 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     public static void markUnavailable(@NotNull ActionRow row) {
-        row.setSubtitle(Constants.UI.NOT_AVAILABLE_VALUE);
+        row.setSubtitle(Translations.getText("N/A"));
         row.setSensitive(false);
     }
 

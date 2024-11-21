@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
@@ -53,7 +54,7 @@ public class RenameDialog extends AlertDialog {
     protected void init(String fileName) {
         currentName = fileName;
         this.fileNameRow.setText(currentName);
-        this.setHeading("Rename " + currentName);
+        this.setHeading(Translations.getText("Rename") + " " + currentName);
         newName = fileName;
     }
 

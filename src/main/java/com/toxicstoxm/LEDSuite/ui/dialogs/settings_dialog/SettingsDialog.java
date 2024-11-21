@@ -3,18 +3,17 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManger;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import lombok.Getter;
 import org.gnome.adw.Spinner;
 import org.gnome.adw.*;
 import org.gnome.glib.GLib;
@@ -190,9 +189,10 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
         applyButton.setSensitive(true);
 
-        setServerGroupSuffixStyle(Constants.UI.SettingsDialog.CONNECTED_CSS);
-        serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.CONNECTED);
-        serverConnectivityButton.setTooltipText(Constants.UI.SettingsDialog.CONNECTED_TOOLTIP);
+        String connectedString = Translations.getText("Connected");
+        setServerGroupSuffixStyle(Constants.UI.CSS.CONNECTED_CSS);
+        serverConnectivityButtonLabel.setLabel(connectedString);
+        serverConnectivityButton.setTooltipText(connectedString);
 
         markServerSettingsAvailable();
     }
@@ -201,9 +201,11 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         serverStateNormal();
 
         serverAddress.setSensitive(true);
-        setServerGroupSuffixStyle(Constants.UI.SettingsDialog.DISCONNECTED_CSS);
-        serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.DISCONNECTED);
-        serverConnectivityButton.setTooltipText(Constants.UI.SettingsDialog.DISCONNECTED_TOOLTIP);
+
+        String disconnectedString = Translations.getText("Disconnected");
+        setServerGroupSuffixStyle(Constants.UI.CSS.DISCONNECTED_CSS);
+        serverConnectivityButtonLabel.setLabel(disconnectedString);
+        serverConnectivityButton.setTooltipText(disconnectedString);
 
         markServerSettingsUnavailable();
     }
@@ -231,12 +233,12 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     private void setServerStateConnecting() {
         serverStateChanging();
-        serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.CONNECTING);
+        serverConnectivityButtonLabel.setLabel(Translations.getText("Connecting"));
     }
 
     private void setServerStateDisconnecting() {
         serverStateChanging();
-        serverConnectivityButtonLabel.setLabel(Constants.UI.SettingsDialog.DISCONNECTING);
+        serverConnectivityButtonLabel.setLabel(Translations.getText("Disconnecting"));
     }
 
     private void serverStateChanging() {
@@ -245,7 +247,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         serverConnectivityButton.setTooltipText(null);
         serverConnectivityButtonBox.setSpacing(8);
         serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
-        setServerGroupSuffixStyle(Constants.UI.SettingsDialog.CHANGING_CSS);
+        setServerGroupSuffixStyle(Constants.UI.CSS.CHANGING_CSS);
         serverAddress.setSensitive(false);
     }
 
@@ -262,7 +264,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                 if (isServerConnected()) {
 
                     try {
-                        Thread.sleep(Constants.UI.SettingsDialog.MINIMUM_DELAY);
+                        Thread.sleep(Constants.UI.Intervals.MINIMUM_DELAY);
                     } catch (InterruptedException e) {
                         LEDSuiteApplication.getLogger().warn("Minimum delay sleeper was interrupted!", new LEDSuiteLogAreas.USER_INTERACTIONS());
                     }
@@ -307,7 +309,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         String temp = ((StringList<?>) colorMode.getModel()).getString(colorMode.getSelected());
         return new SettingsData(
                 (int) brightness.getValue(),
-                temp == null || temp.equals(Constants.UI.NOT_AVAILABLE_VALUE) ? null : temp,
+                temp == null || temp.equals(Translations.getText("N/A")) ? null : temp,
                 restorePreviousState.getActive()
         );
     }
@@ -319,7 +321,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         cssFail.add("regular");
         applyButton.setCssClasses(cssFail.toArray(new String[]{}));
         String defaultLabel = applyButton.getLabel();
-        applyButton.setLabel("Slow down!");
+        applyButton.setLabel(Translations.getText("Slow down!"));
         applyButton.setSensitive(false);
 
         new LEDSuiteRunnable() {
@@ -356,7 +358,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         SettingsDialog.this.setServerStateConnected();
                         cancel();
                     }
-                    if (System.currentTimeMillis() - start > Constants.UI.SettingsDialog.CONNECTION_TIMEOUT) {
+                    if (System.currentTimeMillis() - start > Constants.UI.Intervals.CONNECTION_TIMEOUT) {
                         SettingsDialog.this.setServerStateDisconnected();
                         cancel();
                     }
@@ -388,7 +390,10 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     public Revealer serverAuthButtonSpinnerRevealer;
 
     public void setAuthenticated(boolean authenticated) {
-        serverAuthButtonLabel.setLabel(authenticated ? "Authenticated" : "Authenticate");
+        serverAuthButtonLabel.setLabel(authenticated ?
+                Translations.getText("Authenticated") :
+                Translations.getText("Authenticate")
+        );
         serverAuthButton.setCssClasses(new String[]{authenticated ? "success" : "suggested-action"});
         serverAuthButton.setSensitive(true);
         serverAuthButtonSpinnerRevealer.setRevealChild(false);
@@ -396,7 +401,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     public void setAuthenticating() {
-        serverAuthButtonLabel.setLabel("Authenticating");
+        serverAuthButtonLabel.setLabel(Translations.getText("Authenticating"));
         serverAuthButtonSpinnerRevealer.setRevealChild(true);
         serverAuthButtonBox.setSpacing(8);
         serverAuthButton.setSensitive(false);

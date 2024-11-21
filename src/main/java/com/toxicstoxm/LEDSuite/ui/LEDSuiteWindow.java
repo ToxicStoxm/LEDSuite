@@ -9,6 +9,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
@@ -467,9 +468,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
             var deleteConfirmDialog = OverwriteConfirmationDialog.create();
-            deleteConfirmDialog.setHeading("Confirm deletion");
-            deleteConfirmDialog.setBody("Are you sure that you want to delete '" + animation + "'?");
-            deleteConfirmDialog.setResponseLabel("overwrite", "Delete");
+            deleteConfirmDialog.setHeading(Translations.getText("Confirm deletion"));
+            deleteConfirmDialog.setBody(Translations.getText("Are you sure that you want to delete '" + animation + "'?"));
+            deleteConfirmDialog.setResponseLabel("overwrite", Translations.getText("Delete"));
             deleteConfirmDialog.onResponse(response -> {
                 if (Objects.equals(response, "overwrite")) {
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

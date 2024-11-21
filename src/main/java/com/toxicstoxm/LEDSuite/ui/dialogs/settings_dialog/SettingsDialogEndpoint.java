@@ -1,6 +1,5 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
 
-import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -11,16 +11,16 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
-import com.toxicstoxm.LEDSuite.ui.dialogs.ProviderCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.*;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialogEndpoint;
+import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -53,6 +53,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     public LEDSuiteWindow(MemorySegment address) {
         super(address);
+        endpointProvider = EndpointProvider.builder().build();
     }
 
     public static Type getType() {
@@ -63,6 +64,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         return GObject.newInstance(getType(),
                 "application", app);
     }
+
+    private final EndpointProvider endpointProvider;
 
     @GtkChild
     public OverlaySplitView split_view;
@@ -95,59 +98,29 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         shortcutsDialog.present();
     }
 
-    @Getter
-    private StatusDialogEndpoint statusDialog;
-
     /**
      * Displays the status dialog if it isn't already open.
      */
     public void displayStatusDialog() {
-        if (statusDialog == null) {
+        if (!endpointProvider.isStatusDialogEndpointConnected()) {
             var statusDialog = StatusDialog.create();
-            this.statusDialog = statusDialog.getStatusDialogEndpoint();
-            statusDialog.onClosed(() -> this.statusDialog = null);
+            endpointProvider.connectStatusDialogEndpoint(statusDialog);
+            statusDialog.onClosed(endpointProvider::disconnectStatusDialogEndpoint);
             statusDialog.present(this);
             LEDSuiteApplication.getLogger().info("Opened new status dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        } else
+        } else {
             LEDSuiteApplication.getLogger().info("Couldn't open status dialog because it is already open!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+        }
     }
-
-    @Getter
-    private SettingsDialogEndpoint settingsDialog;
 
     /**
      * Displays the preference dialog if it isn't already open.
      */
     public void displayPreferencesDialog() {
-        if (settingsDialog == null) {
+        if (!endpointProvider.isSettingsDialogEndpointConnected()) {
             var settingsDialog = SettingsDialog.create();
-            this.settingsDialog = new SettingsDialogEndpoint() {
-                @Override
-                public ConnectivityStatus connectivityManager() {
-                    return settingsDialog.getConnectivityStatus();
-                }
-
-                @Override
-                public AuthStatus authManager() {
-                    return settingsDialog.getAuthStatus();
-                }
-
-                @Override
-                public ProviderCallback<SettingsData> settingsManager() {
-                    return settingsDialog.getProvider();
-                }
-
-                @Override
-                public UpdateCallback<SettingsUpdate> updater() {
-                    return settingsDialog.getUpdater();
-                }
-
-                @Override
-                public Action applyButtonCooldown() {
-                    return settingsDialog.getApplyButtonCooldownTrigger();
-                }
-            };
-            settingsDialog.onClosed(() -> this.settingsDialog = null);
+            endpointProvider.connectSettingsDialogEndpoint(settingsDialog);
+            settingsDialog.onClosed(endpointProvider::disconnectSettingsDialogEndpoint);
             settingsDialog.present(this);
             LEDSuiteApplication.getLogger().info("Opened new settings dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         } else {
@@ -156,25 +129,11 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void settingsDialogApply() {
-        if (settingsDialog != null) {
-            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                    SettingsChangeRequestPacket
-                            .fromSettingsData(settingsDialog.settingsManager().getData())
-                            .serialize()
-            );
-            LEDSuiteApplication.getLogger().info("Applied settings and send changes to server!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        } else {
-            LEDSuiteApplication.getLogger().warn("Couldn't apply settings because no settings data provider callback was found!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        }
-    }
-
-    public void settingsDialogApplyFail() {
-        if (settingsDialog != null) {
-            settingsDialog.applyButtonCooldown().run();
-            LEDSuiteApplication.getLogger().info("Settings dialog apply failed, on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        } else {
-            LEDSuiteApplication.getLogger().info("Couldn't fail settings dialog apply, apply fail callback missing!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-        }
+        LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                SettingsChangeRequestPacket
+                        .fromSettingsData(getData())
+                        .serialize()
+        );
     }
 
     @GtkChild(name = "content-box-revealer")
@@ -235,6 +194,10 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     @GtkChild(name = "animation_list")
     public ListBox animationList;
 
+    public void setAnimationListSensitive(boolean sensitive) {
+        if (animationList != null) animationList.setSensitive(sensitive);
+    }
+
     private final HashMap<String, AnimationRow> animations = new HashMap<>();
 
     @Getter
@@ -255,39 +218,15 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkChild(name = "main_view_overlay")
     public Overlay mainViewOverlay;
-
-    @Getter
-    private UploadPageEndpoint uploadPageEndpoint;
-
     public void uploadPageSelect() {
         LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         UploadPage uploadPage = UploadPage.create(this);
-        uploadPageEndpoint = new UploadPageEndpoint() {
-            @Override
-            public UpdateCallback<Boolean> connectivityUpdater() {
-                return uploadPage.getConnectivityUpdater();
-            }
-
-            @Override
-            public UpdateCallback<UploadStatistics> uploadStatisticsUpdater() {
-                return uploadPage.getUploadStatisticsUpdater();
-            }
-
-            @Override
-            public UpdateCallback<Boolean> uploadButtonState() {
-                return uploadPage.getUploadButtonState();
-            }
-
-            @Override
-            public UpdateCallback<Boolean> uploadSuccessCallback() {
-                return uploadPage.getUploadCallback();
-            }
-        };
+        endpointProvider.connectUploadPageEndpoint(uploadPage);
         setAnimationControlButtonsVisible(false);
         changeMainContent(uploadPage);
         GLib.idleAddOnce(() -> {
             if (uploadProgressBarRevealer.getChildRevealed()) {
-                uploadPageEndpoint.uploadButtonState().update(true);
+                setUploadButtonActive(true);
             }
             animationList.setSelectionMode(SelectionMode.NONE);
             animationList.setSelectionMode(SelectionMode.BROWSE);
@@ -309,8 +248,23 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
             if (!serverConnected) showAnimationListSpinner(false);
-            if (uploadPageEndpoint != null) uploadPageEndpoint.connectivityUpdater().update(serverConnected);
+            setServerState(serverConnected ? ServerState.CONNECTED : ServerState.DISCONNECTED);
         });
+    }
+
+    @Override
+    public void setUploadStatistics(UploadStatistics uploadStatistics) {
+        endpointProvider.getUploadPageEndpoint().setUploadStatistics(uploadStatistics);
+    }
+
+    @Override
+    public void setUploadButtonActive(boolean active) {
+        endpointProvider.getUploadPageEndpoint().setUploadButtonActive(active);
+    }
+
+    @Override
+    public void uploadCompleted(boolean success) {
+        endpointProvider.getUploadPageEndpoint().uploadCompleted(success);
     }
 
     /**
@@ -562,4 +516,38 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         }
     }
 
+    @Override
+    public void update(SettingsUpdate settingsUpdate) {
+        endpointProvider.getSettingsDialogInstance().update(settingsUpdate);
+    }
+
+    @Override
+    public void applyButtonCooldown() {
+        endpointProvider.getSettingsDialogInstance().applyButtonCooldown();
+    }
+
+    @Override
+    public SettingsData getData() {
+        return endpointProvider.getSettingsDialogInstance().getData();
+    }
+
+    @Override
+    public void setAuthenticating() {
+        endpointProvider.getSettingsDialogInstance().setAuthenticating();
+    }
+
+    @Override
+    public void setAuthenticated(boolean authenticated) {
+        endpointProvider.getSettingsDialogInstance().setAuthenticated(authenticated);
+    }
+
+    @Override
+    public void setServerState(@NotNull ServerState serverState) {
+        endpointProvider.getSettingsDialogInstance().setServerState(serverState);
+    }
+
+    @Override
+    public void update(StatusUpdate statusUpdate) {
+        endpointProvider.getStatusDialogInstance().update(statusUpdate);
+    }
 }

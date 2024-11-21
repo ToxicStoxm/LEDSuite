@@ -38,6 +38,7 @@ public class Constants {
 
     public static class Application {
         public static final String NAME = "LEDSuite";
+        public static final String ID = "com.toxicstoxm." + NAME;
         public static final String WEBSITE = "https://github.com/ToxicStoxm/LEDSuite";
         public static final String ISSUES = WEBSITE + "/issues";
 

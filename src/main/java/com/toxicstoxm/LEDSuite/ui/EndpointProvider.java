@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
-import com.toxicstoxm.LEDSuite.error_handling.NullSaveGetter;
+import com.toxicstoxm.LEDSuite.tools.NullSaveGetter;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.DefaultSettingsDialogEndpoint;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialogEndpoint;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.DefaultStatusDialogEndpoint;

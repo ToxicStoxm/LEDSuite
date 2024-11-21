@@ -1,4 +1,4 @@
-package com.toxicstoxm.LEDSuite.error_handling;
+package com.toxicstoxm.LEDSuite.tools;
 
 import org.jetbrains.annotations.NotNull;
 

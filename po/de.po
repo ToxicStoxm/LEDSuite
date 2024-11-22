@@ -2,108 +2,107 @@
 # Copyright (C) 2024 THE LEDSuite'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the LEDSuite package.
 # Automatically generated, 2024.
+# ToxicStoxm <dominik@crafti-servi.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: LEDSuite\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-21 22:06+0000\n"
-"PO-Revision-Date: 2024-11-17 00:14+0100\n"
-"Last-Translator: Hannes Campidell <hannes@crafti-servi.com>\n"
-"Language-Team: none\n"
-"Language: de\n"
+"PO-Revision-Date: 2024-11-22 18:19+0100\n"
+"Last-Translator: ToxicStoxm <dominik@crafti-servi.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Gtranslator 47.0\n"
 
 #: src/main/resources/ui/AnimationMenu.ui:32
 msgid "Hello Test"
-msgstr ""
+msgstr "Hallo Test"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:15
 msgid "Username"
-msgstr ""
+msgstr "Benutzername"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:21
 msgid "Password"
-msgstr ""
+msgstr "Passwort"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:34
 msgid "Login required"
-msgstr ""
+msgstr "Anmeldung erforderlich"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:38
 msgid "_Authenticate"
-msgstr ""
+msgstr "_Authentifizieren"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:39
 #: src/main/resources/ui/FileCollisionDialog.ui:16
 #: src/main/resources/ui/OverwriteConfirmationDialog.ui:15
 #: src/main/resources/ui/RenameDialog.ui:36
 msgid "_Cancel"
-msgstr ""
+msgstr "_Abbrechen"
 
 #: src/main/resources/ui/FileCollisionDialog.ui:8
 msgid "File Name collision"
-msgstr ""
+msgstr "Dateinamen Kollision"
 
 #: src/main/resources/ui/FileCollisionDialog.ui:11
 msgid "Duplicate Filename"
-msgstr ""
+msgstr "Doppelter Dateiname"
 
 #: src/main/resources/ui/FileCollisionDialog.ui:14
 #: src/main/resources/ui/RenameDialog.ui:35
 msgid "_Rename"
-msgstr ""
+msgstr "_Umbenennen"
 
 #: src/main/resources/ui/FileCollisionDialog.ui:15
 #: src/main/resources/ui/OverwriteConfirmationDialog.ui:14
 msgid "_Overwrite"
-msgstr ""
+msgstr "_Überschreiben"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:186
 msgid "Upload Files"
-msgstr ""
+msgstr "Dateien Hochladen"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:201
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:76
-#, fuzzy
 msgid "Animations"
-msgstr "Animation"
+msgstr "Animationen"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:237
 msgid "File Management"
-msgstr ""
+msgstr "Datei Verwaltung"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:283
-#, fuzzy
 msgid "_Status Menu"
 msgstr "_Status Menü"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:287
 msgid "_Settings Menu"
-msgstr ""
+msgstr "_Einstellungen"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:291
 msgid "_Shortcuts Menu"
-msgstr ""
+msgstr "_Tastenkürzel"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:295
 msgid "_About LEDSuite"
-msgstr ""
+msgstr "_Über LEDSuite"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:299
 msgid "_Quit"
-msgstr ""
+msgstr "_Beenden"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:311
 #: src/main/resources/ui/LEDSuiteWindow.ui:333
 #: src/main/resources/ui/ShortcutsDialog.ui:14
 #: src/main/resources/ui/ShortcutsDialog.ui:36
 msgid "Shortcuts"
-msgstr ""
+msgstr "Tastenkürzel"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:314
 #: src/main/resources/ui/ShortcutsDialog.ui:17
@@ -113,71 +112,71 @@ msgstr "Allgemein"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:319
 #: src/main/resources/ui/ShortcutsDialog.ui:22
-#, fuzzy
 msgid "Show Status"
-msgstr "Status"
+msgstr "Status Menü öffnen"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:326
 #: src/main/resources/ui/ShortcutsDialog.ui:29
 msgid "Show Settings"
-msgstr ""
+msgstr "Einstellungen öffnen"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:340
 #: src/main/resources/ui/ShortcutsDialog.ui:43
 msgid "About LEDSuite"
-msgstr ""
+msgstr "Über LEDSuite"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:348
 #: src/main/resources/ui/ShortcutsDialog.ui:51
 msgid "Quit"
-msgstr ""
+msgstr "Beenden"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:355
 #: src/main/resources/ui/ShortcutsDialog.ui:58
 msgid "UI"
-msgstr ""
+msgstr "Benutzeroberfläche"
 
 #: src/main/resources/ui/LEDSuiteWindow.ui:360
 #: src/main/resources/ui/ShortcutsDialog.ui:63
 msgid "Toggle Sidebar"
-msgstr ""
+msgstr "Seitenleiste Umschalten"
 
 #: src/main/resources/ui/OverwriteConfirmationDialog.ui:8
 msgid "Are you sure you want to overwrite the existing animation?"
 msgstr ""
+"Sind Sie sicher, dass Sie die vorhandene Animation überschreiben möchten?"
 
 #: src/main/resources/ui/OverwriteConfirmationDialog.ui:11
 msgid "Confirm overwrite"
-msgstr ""
+msgstr "Überschreiben bestätigen"
 
 #: src/main/resources/ui/RenameDialog.ui:14
 msgid "filename"
-msgstr ""
+msgstr "dateiname"
 
 #: src/main/resources/ui/RenameDialog.ui:15
 msgid "Filename"
-msgstr ""
+msgstr "Dateiname"
 
 #: src/main/resources/ui/RenameDialog.ui:31
 msgid "Rename file"
-msgstr ""
+msgstr "Datei Umbenennen"
 
 #: src/main/resources/ui/SettingsDialog.ui:23
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:205
 msgid "Disconnected"
-msgstr ""
+msgstr "Verbindung trennen"
 
 #: src/main/resources/ui/SettingsDialog.ui:36
 msgid "Click to connect"
-msgstr ""
+msgstr "Klicken Sie, um eine Verbindung herzustellen"
 
 #: src/main/resources/ui/SettingsDialog.ui:42
 msgid "Local"
-msgstr ""
+msgstr "Lokal"
 
 #: src/main/resources/ui/SettingsDialog.ui:47
 msgid "Server Address"
-msgstr ""
+msgstr "Server Addresse"
 
 #: src/main/resources/ui/SettingsDialog.ui:48
 msgid ""
@@ -185,22 +184,25 @@ msgid ""
 "Example: wss://www.example.com:443/LEDSuite/\n"
 "Format: protcol://domain:port/folder/"
 msgstr ""
+"Die URL, die für die Verbindung zum Server verwendet wird.\n"
+"Beispiel: wss://www.example.com:443/LEDSuite/\n"
+"Format: Protokoll://Domäne:Port/Ordner/"
 
 #: src/main/resources/ui/SettingsDialog.ui:98
 msgid "Brightness"
-msgstr ""
+msgstr "Helligkeit"
 
 #: src/main/resources/ui/SettingsDialog.ui:109
 msgid "Color Mode"
-msgstr ""
+msgstr "Farbmodus"
 
 #: src/main/resources/ui/SettingsDialog.ui:114
 msgid "Restore previous state on boot"
-msgstr ""
+msgstr "Vorherigen Stand beim Start wiederherstellen"
 
 #: src/main/resources/ui/SettingsDialog.ui:128
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: src/main/resources/ui/StatusDialog.ui:29
 msgid "Lid State"
@@ -240,47 +242,47 @@ msgstr "Status"
 
 #: src/main/resources/ui/UploadPage.ui:10
 msgid "File"
-msgstr ""
+msgstr "Datei"
 
 #: src/main/resources/ui/UploadPage.ui:14
 msgid "Selected File"
-msgstr ""
+msgstr "Ausgewählte Datei"
 
 #: src/main/resources/ui/UploadPage.ui:38
 msgid "Start Animation after upload"
-msgstr ""
+msgstr "Animation nach dem Hochladen automatisch starten"
 
 #: src/main/resources/ui/UploadPage.ui:44
 msgid "Upload Statistics"
-msgstr ""
+msgstr "Hochlade Statistiken"
 
 #: src/main/resources/ui/UploadPage.ui:49
 msgid "Speed"
-msgstr ""
+msgstr "Geschwindigkeit"
 
 #: src/main/resources/ui/UploadPage.ui:56
 msgid "ETA"
-msgstr ""
+msgstr "Verbleibende Zeit"
 
 #: src/main/resources/ui/UploadPage.ui:80
 msgid "Upload"
-msgstr ""
+msgstr "Hochladen"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:471
 msgid "Confirm deletion"
-msgstr ""
+msgstr "Löschen bestätigen"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:472
 msgid "Are you sure that you want to delete '"
-msgstr ""
+msgstr "Bist du sicher, dass du die folgende Datei löschen möchtest?: '"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:473
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:86
 msgid "Pick a file"
-msgstr ""
+msgstr "Wähle eine Datei"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:129
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:169
@@ -288,36 +290,36 @@ msgstr ""
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:312
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java:144
 msgid "N/A"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java:58
 msgid "Rename"
-msgstr ""
+msgstr "Umbenennen"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:192
 msgid "Connected"
-msgstr ""
+msgstr "Verbunden"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:236
 msgid "Connecting"
-msgstr ""
+msgstr "Verbindung wird hergestellt"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:241
 msgid "Disconnecting"
-msgstr ""
+msgstr "Verbindung wird getrennt"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:324
 msgid "Slow down!"
-msgstr ""
+msgstr "Langsam!"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:394
 msgid "Authenticated"
-msgstr ""
+msgstr "Authentifiziert"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:395
 msgid "Authenticate"
-msgstr ""
+msgstr "Authentifizieren"
 
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:404
 msgid "Authenticating"
-msgstr ""
+msgstr "Authentifizierung läuft"

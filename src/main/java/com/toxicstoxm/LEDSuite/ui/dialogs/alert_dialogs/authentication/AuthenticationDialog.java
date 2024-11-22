@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication;
 
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.AuthenticationRequestPacket;
+import com.toxicstoxm.LEDSuite.authentication.Credentials;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
@@ -81,49 +81,47 @@ public class AuthenticationDialog extends AlertDialog {
 
             LEDSuiteApplication.getLogger().info("Authentication -> Username: " + username + " - Password Hash: " + passwordHash, new LEDSuiteLogAreas.USER_INTERACTIONS());
 
-            LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
-                    AuthenticationRequestPacket.builder()
+
+            LEDSuiteApplication.getAuthManager().requestAuth(
+                    Credentials.builder()
                             .username(username)
                             .passwordHash(passwordHash)
-                            .build().serialize()
+                            .build(),
+                    () -> GLib.idleAddOnce(() -> {
+                        setCanClose(true);
+                        close();
+                    })
             );
+
             LEDSuiteApplication.getLogger().info("Authentication -> Waiting for server response...", new LEDSuiteLogAreas.USER_INTERACTIONS());
 
             authenticationTimeoutTask = new LEDSuiteRunnable() {
                 @Override
                 public void run() {
-                    if (passwordHash.equals("6ac3c336e4094835293a3fed8a4b5fedde1b5e2626d9838fed50693bba00af0e")) {
-                        GLib.idleAddOnce(() -> {
-                            setCanClose(true);
-                            close();
-                            LEDSuiteApplication.getWindow().setAuthenticated(true);
-                        });
-                    } else {
-                        GLib.idleAddOnce(() -> {
-                            spinnerRevealer.setRevealChild(false);
-                            setResponseAppearance("authenticate", ResponseAppearance.DESTRUCTIVE);
-                        });
 
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                    GLib.idleAddOnce(() -> {
+                        spinnerRevealer.setRevealChild(false);
+                        setResponseAppearance("authenticate", ResponseAppearance.DESTRUCTIVE);
+                    });
 
-                        GLib.idleAddOnce(() -> {
-                            setCanClose(true);
-                            close();
-                            LEDSuiteApplication.getWindow().setAuthenticated(false);
-                        });
-
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
+
+                    GLib.idleAddOnce(() -> {
+                        setCanClose(true);
+                        close();
+                        LEDSuiteApplication.getAuthManager().authResult(username, false);
+                    });
                 }
             }.runTaskLaterAsynchronously(10000);
 
         } else {
             setCanClose(true);
             close();
-            LEDSuiteApplication.getWindow().setAuthenticated(false);
+            LEDSuiteApplication.getAuthManager().authResult(username, false);
         }
     }
 

@@ -153,6 +153,10 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         serverAddress.setSensitive(false);
 
         updateServerState();
+
+        if (isServerConnected()) {
+            setAuthenticated(true, LEDSuiteApplication.getAuthManager().getUsername());
+        }
     }
 
     public void update(@NotNull SettingsUpdate settingsUpdate) {
@@ -389,16 +393,34 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     @GtkChild(name = "settings_server_group_auth_button_spinner_revealer")
     public Revealer serverAuthButtonSpinnerRevealer;
 
-    public void setAuthenticated(boolean authenticated) {
-        serverAuthButtonLabel.setLabel(authenticated ?
-                Translations.getText("Authenticated") :
-                Translations.getText("Authenticate")
-        );
-        serverAuthButton.setCssClasses(new String[]{authenticated ? "success" : "suggested-action"});
-        serverAuthButton.setSensitive(true);
-        serverAuthButtonSpinnerRevealer.setRevealChild(false);
-        serverAuthButtonBox.setSpacing(0);
+    public void setAuthenticated(boolean authenticated, String username) {
+       setAuthenticated(authenticated, username, false);
     }
+
+    public void setAuthenticated(boolean authenticated, String username, boolean setAuthenticating) {
+        GLib.idleAddOnce(() -> {
+            if (authenticated) {
+                if (username != null) {
+                    serverAuthButtonLabel.setLabel(Translations.getText("Authenticated as $", username));
+                } else {
+                    // Prevent recursion by breaking the loop
+                    setAuthenticated(false);
+                    return;
+                }
+            } else {
+                serverAuthButtonLabel.setLabel(Translations.getText("Authenticate"));
+            }
+
+            // Use predefined CSS class constants
+            serverAuthButton.setCssClasses(authenticated ? new String[]{"success"} : new String[]{"suggested-action"});
+            serverAuthButton.setSensitive(true);
+            serverAuthButtonSpinnerRevealer.setRevealChild(false);
+
+            serverAuthButtonBox.setSpacing(0);
+            if (setAuthenticating) setAuthenticating();
+        });
+    }
+
 
     public void setAuthenticating() {
         serverAuthButtonLabel.setLabel(Translations.getText("Authenticating"));
@@ -409,8 +431,8 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @GtkCallback(name = "settings_server_auth_button_clicked")
     public void serverAuthButtonClicked() {
-        setAuthenticating();
         if (LEDSuiteApplication.getWebSocketCommunication().isConnected()) {
+            setAuthenticated(false, null, true);
             AuthenticationDialog dialog = AuthenticationDialog.create();
             dialog.present(getParent());
         }

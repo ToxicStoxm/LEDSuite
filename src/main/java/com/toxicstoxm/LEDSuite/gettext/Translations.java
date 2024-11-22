@@ -73,8 +73,14 @@ public class Translations {
      * @param key the message key to translate.
      * @return the translated string if available; otherwise, the original key.
      */
-    public static @NotNull String getText(String key) {
-        return getTextPlural(key, 1);
+    public static @NotNull String getText(String key, String... vars) {
+        String translatedString = getTextPlural(key, 1);
+        if (vars != null) {
+            for (String s : vars) {
+                translatedString = translatedString.replaceFirst("\\$", s);
+            }
+        }
+        return translatedString;
     }
 
     /**

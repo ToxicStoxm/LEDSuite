@@ -13,7 +13,6 @@
         <file preprocess="xml-stripblanks" alias="RenameDialog.ui">ui/RenameDialog.ui</file>
         <file preprocess="xml-stripblanks" alias="AuthenticationDialog.ui">ui/AuthenticationDialog.ui</file>
         <file preprocess="xml-stripblanks" alias="GeneralAlertDialog.ui">ui/GeneralAlertDialog.ui</file>
-        <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.svg">metadata/Icons/com.toxicstoxm.ledsuite.svg</file>
-        <file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>
+        <!--<file preprocess="xml-stripblanks" alias="com.toxicstoxm.LEDSuite.appdata.xml">metadata/com.toxicstoxm.ledsuite.appdata.xml</file>-->
     </gresource>
 </gresources>

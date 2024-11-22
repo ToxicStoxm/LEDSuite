@@ -1,6 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.authentication.AuthManager;
+import com.toxicstoxm.LEDSuite.authentication.AuthManagerEndpoint;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.AnimationMenuManager;
@@ -21,6 +23,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.Logger;
@@ -110,6 +113,9 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static UploadManager uploadManager;
 
+    @Getter
+    private static AuthManagerEndpoint authManager;
+
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
      * @return the newly created LEDSuiteApplication instance
@@ -191,8 +197,9 @@ public class LEDSuiteApplication extends Application {
         packetReceivedHandler = new PacketReceivedHandler();
         packetManager.autoRegister();
 
-
         uploadManager = new UploadManager();
+
+        authManager = new AuthManager();
     }
 
     private void initYAJSI() {
@@ -256,7 +263,7 @@ public class LEDSuiteApplication extends Application {
         boolean retry = false;
         Boolean result = null;
 
-        window.setServerConnected(false);
+        window.setServerState(ServerState.CONNECTING);
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(true));
 
         if (webSocketCommunication != null) webSocketCommunication.shutdown();

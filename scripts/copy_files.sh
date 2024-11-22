@@ -1,6 +1,5 @@
 #!/bin/sh
 
-cp $MESON_SOURCE_ROOT/build.gradle $MESON_BUILD_ROOT
 cp $MESON_SOURCE_ROOT/settings.gradle $MESON_BUILD_ROOT
 cp -r $MESON_SOURCE_ROOT/src $MESON_BUILD_ROOT
 

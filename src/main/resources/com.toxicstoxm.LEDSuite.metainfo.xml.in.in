@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.toxicstoxm.LEDSuite</id>
+  <id>@ID@</id>
 
-  <name>LED Suite</name>
+  <name>@NAME@</name>
 
   <summary>Control an LED-Matrix with style</summary>
   
-  <developer id="com.toxicstoxm">
-    <name>ToxicStoxm</name>
+  <developer id="@DEVELOPER_ID@">
+    <name>@DEVELOPER_NAME@</name>
   </developer>
 
   <metadata_license>CC-BY-SA-4.0</metadata_license>
@@ -92,7 +92,6 @@
     </release>
   </releases>
 
-
   <content_rating type="oars-1.1">
     <content_attribute id="violence-cartoon">none</content_attribute>
     <content_attribute id="violence-fantasy">none</content_attribute>
@@ -123,16 +122,15 @@
     <content_attribute id="money-gambling">none</content_attribute>
   </content_rating>
 
-
   <url type="homepage">https://github.com/ToxicStoxm/LEDSuite</url>
   <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
   <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
   <url type="contribute">https://github.com/ToxicStoxm/LEDSuite/tree/dev</url>
 
-
   <recommends>
     <display_length compare="ge">300</display_length>
   </recommends>
+  
   <supports>
     <control>pointing</control>
     <control>keyboard</control>
@@ -160,7 +158,8 @@
     <keyword>LEDSuite</keyword>
   </keywords>
 
-  <launchable type="desktop-id">com.toxicstoxm.ledsuite.desktop</launchable>
+  <launchable type="desktop-id">@DESKTOP_FILE@</launchable>
+
   <screenshots>
     <screenshot type="default">
       <caption>LEDSuite add file dialog, used to upload files to the backend</caption>

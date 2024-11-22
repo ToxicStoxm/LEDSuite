@@ -18,3 +18,7 @@ src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java
 src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java
 src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java
 src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java
+
+# Metadata
+data/com.toxicstoxm.LEDSuite.desktop.in.in
+data/com.toxicstoxm.LEDSuite.metainfo.xml.in.in

@@ -1,14 +1,13 @@
 [Desktop Entry]
-Version=1.0.0-non-final
 Type=Application
 
-Name=LEDSuite
+Name=@NAME@
 
 Comment=Control an LED-Matrix with style
 
 Categories=Utility;
 Keywords=LED;matrix;LCCP;Cube;LEDSuite;
-
-Icon=com.toxicstoxm.ledsuite
-Exec=LEDSuite
+X-Purism-FormFactor=Workstation;Mobile;
+Icon=@ID@
+Exec=@COMMAND@
 Terminal=false

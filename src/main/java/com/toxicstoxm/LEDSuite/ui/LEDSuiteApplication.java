@@ -307,7 +307,7 @@ public class LEDSuiteApplication extends Application {
         return false;
     }
 
-    public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback) {
+    public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload) {
         try {
             if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
                 window.uploadPageSelect();
@@ -357,12 +357,12 @@ public class LEDSuiteApplication extends Application {
 
             uploadManager.setPending(fileName.get(), uploadPermitted -> {
                 if (uploadPermitted) {
-                    uploadFile(fileToUpload, startAnimationAfterUpload, uploadFinishCallback, uploadSessionID, uploadEndpointPath, checksum);
+                    uploadFile(fileToUpload, startAnimationAfterUpload, uploadSessionID, uploadEndpointPath, checksum);
                 } else {
                     GLib.idleAddOnce(() -> {
                         AlertDialog.ResponseCallback cb = getResponseCallback(fileName, uploadSessionID, checksum, result -> {
                             if (result) uploadManager.removePending(fileName.get());
-                            GLib.idleAddOnce(() -> uploadFinishCallback.update(result));
+                            GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().uploadCompleted(result));
                         });
 
                         window.displayFileCollisionDialog(cb, "Animation with name '" + fileName.get() + "' already exists.");
@@ -380,7 +380,7 @@ public class LEDSuiteApplication extends Application {
 
         } catch (UploadAbortException e) {
             e.printErrorMessage();
-            uploadFinishCallback.update(false);
+            LEDSuiteApplication.getWindow().uploadCompleted(false);
         }
     }
 
@@ -456,9 +456,8 @@ public class LEDSuiteApplication extends Application {
      * @param uploadEndpointPath the websocket endpoint to send the file to
      * @param uploadSessionID the session id to use for websocket communication
      * @param startAnimationAfterUpload if the uploaded file should be automatically started after the upload completed using {@link PlayRequestPacket}
-     * @param uploadFinishCallback the function to call after the upload finished
      */
-    public static void uploadFile(@NotNull File fileToUpload, boolean startAnimationAfterUpload, UpdateCallback<Boolean> uploadFinishCallback, String uploadSessionID, URI uploadEndpointPath, String checksum) {
+    public static void uploadFile(@NotNull File fileToUpload, boolean startAnimationAfterUpload, String uploadSessionID, URI uploadEndpointPath, String checksum) {
 
         String filePath = fileToUpload.getAbsolutePath();
 

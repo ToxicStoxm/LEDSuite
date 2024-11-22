@@ -6,7 +6,6 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -192,12 +191,10 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         setUploadButtonActive(true);
         LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
 
-        UpdateCallback<Boolean> uploadFinishTask = this::uploadCompleted;
-
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                LEDSuiteApplication.triggerFileUpload(selectedFile, startAnimationAfterUploadSwitch.getActive(), uploadFinishTask);
+                LEDSuiteApplication.triggerFileUpload(selectedFile, startAnimationAfterUploadSwitch.getActive());
             }
         }.runTaskAsynchronously();
     }

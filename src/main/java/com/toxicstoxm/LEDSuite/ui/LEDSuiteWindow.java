@@ -469,7 +469,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         if (animation != null && !animation.isBlank()) {
             var deleteConfirmDialog = OverwriteConfirmationDialog.create();
             deleteConfirmDialog.setHeading(Translations.getText("Confirm deletion"));
-            deleteConfirmDialog.setBody(Translations.getText("Are you sure that you want to delete '" + animation + "'?"));
+            deleteConfirmDialog.setBody(Translations.getText("Are you sure that you want to delete '$'?", animation));
             deleteConfirmDialog.setResponseLabel("overwrite", Translations.getText("Delete"));
             deleteConfirmDialog.onResponse(response -> {
                 if (Objects.equals(response, "overwrite")) {

@@ -42,6 +42,7 @@ public class StatusReplyPacket extends CommunicationPacket {
     private LidState lidState;                          // not guaranteed
     private List<Animation> animations;                 // only if available
     private boolean animationsAvailable;
+    private String username;
 
 
     @Override
@@ -106,6 +107,10 @@ public class StatusReplyPacket extends CommunicationPacket {
             }
         } else packet.animationsAvailable = false;
 
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME)) {
+            packet.username = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME);
+        }
+
         return packet;
     }
 
@@ -119,6 +124,7 @@ public class StatusReplyPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.CURRENT_DRAW, currentDraw);
         yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.VOLTAGE, voltage);
         yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.LID_STATE, lidState.asBool());
+        yaml.set(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME, username);
 
         // Save the list of animations
         if (animationsAvailable && animations != null && !animations.isEmpty()) {
@@ -158,6 +164,8 @@ public class StatusReplyPacket extends CommunicationPacket {
 
         LEDSuiteApplication.getWindow().updateAnimations(animations);
         LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState);
+
+        //LEDSuiteApplication.getAuthManager().authResult("testUser", true);
 
     }
 }

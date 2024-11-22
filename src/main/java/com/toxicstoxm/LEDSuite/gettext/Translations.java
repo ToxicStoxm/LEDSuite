@@ -1,7 +1,14 @@
 package com.toxicstoxm.LEDSuite.gettext;
 
+import io.github.jwharm.javagi.interop.Interop;
 import org.gnome.glib.GLib;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.foreign.Arena;
+import java.lang.foreign.FunctionDescriptor;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.lang.invoke.MethodHandle;
 
 /**
  * A utility class for handling string translations using the GNU `gettext` system.
@@ -23,7 +30,16 @@ public class Translations {
      *
      * @param translationDomain the name of the translation domain (usually the name of the application or module).
      */
-    public static void init(String translationDomain) {
+    public static void init(String translationDomain, String directory) {
+        try (var _arena = Arena.ofConfined()) {
+            try {
+                MethodHandles.bindtextdomain.invokeExact(
+                        (MemorySegment) (translationDomain == null ? MemorySegment.NULL : Interop.allocateNativeString(translationDomain, _arena)),
+                        (MemorySegment) (directory == null ? MemorySegment.NULL : Interop.allocateNativeString(directory, _arena)));
+            } catch (Throwable _err) {
+                throw new AssertionError(_err);
+            }
+        }
         Translations.translationDomain = translationDomain;
     }
 
@@ -81,5 +97,11 @@ public class Translations {
      */
     public static @NotNull String getTextOtherLanguage(@NotNull String key, int category) {
         return GLib.dcgettext(translationDomain, key, category);
+    }
+
+    private static final class MethodHandles {
+        static final MethodHandle bindtextdomain = Interop.downcallHandle("bindtextdomain",
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS), false);
     }
 }

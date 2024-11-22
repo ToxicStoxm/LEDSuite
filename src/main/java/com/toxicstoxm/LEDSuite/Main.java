@@ -27,7 +27,7 @@ public class Main {
             System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
         }
 
-        Translations.init(Constants.Application.ID);
+        Translations.init(Constants.Application.ID, "/app/share/locale");
 
         // loads UI template files (.ui) and registers them using java-gi
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {

@@ -18,9 +18,6 @@ import java.lang.invoke.MethodHandle;
  */
 public class Translations {
 
-    // The current translation domain for resolving translations.
-    private static String translationDomain = null;
-
     /**
      * Initializes the translation domain to be used for all following translation operations.
      * <p>
@@ -30,17 +27,29 @@ public class Translations {
      *
      * @param translationDomain the name of the translation domain (usually the name of the application or module).
      */
-    public static void init(String translationDomain, String directory) {
-        try (var _arena = Arena.ofConfined()) {
-            try {
-                MethodHandles.bindtextdomain.invokeExact(
-                        (MemorySegment) (translationDomain == null ? MemorySegment.NULL : Interop.allocateNativeString(translationDomain, _arena)),
-                        (MemorySegment) (directory == null ? MemorySegment.NULL : Interop.allocateNativeString(directory, _arena)));
-            } catch (Throwable _err) {
-                throw new AssertionError(_err);
+    public static void init(String translationDomain, String directory) throws AssertionError {
+        if (directory != null) {
+            try (var _arena = Arena.ofConfined()) {
+                try {
+                    MethodHandles.bindtextdomain.invokeExact(
+                            (MemorySegment) Interop.allocateNativeString(translationDomain, _arena),
+                            (MemorySegment) Interop.allocateNativeString(directory, _arena));
+                } catch (Throwable _err) {
+                    throw new AssertionError(_err);
+                }
             }
         }
-        Translations.translationDomain = translationDomain;
+        if (translationDomain != null) {
+            try (var _arena = Arena.ofConfined()) {
+                try {
+                    MethodHandles.textdomain.invokeExact(
+                            (MemorySegment) Interop.allocateNativeString(translationDomain, _arena)
+                    );
+                } catch (Throwable _err) {
+                    throw new AssertionError(_err);
+                }
+            }
+        }
     }
 
     /**
@@ -81,7 +90,7 @@ public class Translations {
      * @return the appropriate translation for the given quantity.
      */
     public static @NotNull String getTextPlural(@NotNull String key, int n) {
-        return GLib.dngettext(translationDomain, key, key + "_plural", n);
+        return GLib.dngettext(null, key, key + "_plural", n);
     }
 
     /**
@@ -96,12 +105,17 @@ public class Translations {
      * @return the translated string for the specified language category.
      */
     public static @NotNull String getTextOtherLanguage(@NotNull String key, int category) {
-        return GLib.dcgettext(translationDomain, key, category);
+        return GLib.dcgettext(null, key, category);
     }
 
+    /**
+     * Method handles for handling downcalls to native methods.
+     */
     private static final class MethodHandles {
         static final MethodHandle bindtextdomain = Interop.downcallHandle("bindtextdomain",
                 FunctionDescriptor.ofVoid(ValueLayout.ADDRESS,
                         ValueLayout.ADDRESS), false);
+        static final MethodHandle textdomain = Interop.downcallHandle("textdomain",
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS), false);
     }
 }

@@ -6,6 +6,8 @@ import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Objects;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        // checks if the app directory already exists, if not tries to create it
+        // Checks if the app directory already exists, if not tries to create it
         File appDirectory = new File(Constants.FileSystem.getAppDir());
         if (!appDirectory.isDirectory()) {
             System.out.println("App directory wasn't found, creating it...");
@@ -27,9 +29,20 @@ public class Main {
             System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
         }
 
-        Translations.init(Constants.Application.ID, "/app/share/locale");
+        // Tries to extract a translationDirectory from CLI arguments
+        List<String> argsList = new java.util.ArrayList<>(Arrays.stream(args).toList());
+        String translationDirectory = null;
+        if (argsList.contains("-t")) {
+            int textDomainOption = argsList.indexOf("-t");
+            translationDirectory = argsList.get(textDomainOption + 1);
+            argsList.remove(textDomainOption);
+            argsList.remove(textDomainOption);
+        }
 
-        // loads UI template files (.ui) and registers them using java-gi
+        // Inits translation implementation with APP_ID and a TextDomain if one was specified
+        Translations.init(Constants.Application.ID, translationDirectory);
+
+        // Loads UI template files (.ui) and registers them using java-gi
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {
             Objects.requireNonNull(stream);
             byte[] bytes = stream.readAllBytes();
@@ -37,10 +50,10 @@ public class Main {
             resource.resourcesRegister();
         }
 
-        // creates new app instance and runs it
+        // Creates new app instance and runs it
         var app = LEDSuiteApplication.create();
         try {
-            app.run(args);
+            app.run(argsList.toArray(new String[]{}));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Please report this error: " + Constants.Application.ISSUES);

@@ -2,24 +2,26 @@
 # Copyright (C) 2024 THE LEDSuite'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the LEDSuite package.
 # Automatically generated, 2024.
+# ToxicStoxm <dominik@crafti-servi.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: LEDSuite\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-21 22:06+0000\n"
-"PO-Revision-Date: 2024-11-17 00:08+0100\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: it\n"
+"PO-Revision-Date: 2024-11-22 18:26+0100\n"
+"Last-Translator: ToxicStoxm <dominik@crafti-servi.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 47.0\n"
 
 #: src/main/resources/ui/AnimationMenu.ui:32
 msgid "Hello Test"
-msgstr ""
+msgstr "Ciao test"
 
 #: src/main/resources/ui/AuthenticationDialog.ui:15
 msgid "Username"

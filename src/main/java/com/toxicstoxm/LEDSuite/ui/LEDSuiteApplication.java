@@ -144,7 +144,8 @@ public class LEDSuiteApplication extends Application {
 
         CooldownManger.addAction("sidebarFileManagementUploadPage", () -> window.uploadPageSelect(), 500);
         sidebarFileManagementUploadPage.onActivate(_ -> {
-            if (!CooldownManger.call("sidebarFileManagementUploadPage")) logger.info("Upload page select on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            if (!CooldownManger.call("sidebarFileManagementUploadPage"))
+                logger.info("Upload page select on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         });
 
         CooldownManger.addAction("settingsApply", () -> window.settingsDialogApply(), 500);
@@ -182,12 +183,14 @@ public class LEDSuiteApplication extends Application {
         scheduler = new LEDSuiteScheduler();
         tickingSystem = new TickingSystem();
 
+
         animationMenuManager = new AnimationMenuManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets");
         animationMenuManager.autoRegister();
 
         packetManager = new PacketManager("com.toxicstoxm.LEDSuite.communication.packet_management.packets");
         packetReceivedHandler = new PacketReceivedHandler();
         packetManager.autoRegister();
+
 
         uploadManager = new UploadManager();
     }

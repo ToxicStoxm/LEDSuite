@@ -6,8 +6,13 @@ plugins {
     id 'io.github.crimix.replace-placeholders' version '2.0'
 }
 
-group = 'com.toxicstoxm.LEDSuite'
-version = '1.0.0-non-final'
+if ("@ID@".endsWith("@")) {
+    group = 'com.toxicstoxm.LEDSuite'
+    version = '1.0.0-non-final'
+} else {
+    group = '@ID@'
+    version = '@VERSION@'
+}
 
 repositories {
     maven { url './offline-repository/' }
@@ -24,18 +29,18 @@ dependencies {
     implementation 'org.glassfish.tyrus:tyrus-client:2.2.0'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly-client:2.2.0'
 
-    implementation 'org.jetbrains:annotations:24.1.0'
-    annotationProcessor 'org.jetbrains:annotations:24.1.0'
+    implementation 'org.jetbrains:annotations:26.0.1'
+    annotationProcessor 'org.jetbrains:annotations:26.1.0'
 
     implementation 'com.toxicstoxm.YAJSI:YAJSI:1.6.4'
     implementation 'com.toxicstoxm.YAJL:YAJL:1.4.3'
 
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-    implementation 'io.github.classgraph:classgraph:4.8.177'
+    implementation 'io.github.classgraph:classgraph:4.8.179'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

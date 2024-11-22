@@ -32,4 +32,9 @@ public abstract class DefaultSettingsDialogEndpoint implements SettingsDialogEnd
     public void setServerState(@NotNull ServerState serverState) {
 
     }
+
+    @Override
+    public void setAuthenticated(boolean authenticated, String username) {
+
+    }
 }

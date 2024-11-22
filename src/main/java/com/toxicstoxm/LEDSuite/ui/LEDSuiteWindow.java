@@ -88,7 +88,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void displayAboutDialog() {
-        AboutDialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.appdata.xml", LEDSuiteApplication.version);
+        AboutDialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.metainfo.xml", LEDSuiteApplication.version);
         aboutDialog.present(this);
     }
 

@@ -535,8 +535,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     @Override
-    public void setAuthenticated(boolean authenticated) {
-        endpointProvider.getSettingsDialogInstance().setAuthenticated(authenticated);
+    public void setAuthenticated(boolean authenticated, String username) {
+        endpointProvider.getSettingsDialogInstance().setAuthenticated(authenticated, username);
     }
 
     @Override

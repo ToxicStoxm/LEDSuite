@@ -12,26 +12,51 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <strong>Meaning:</strong><br>
- * Request for getting the servers current settings.
+ * Represents a request to retrieve the current settings from the server.
+ * <p>
+ * This packet is sent to the server when the client needs to fetch the current configuration
+ * settings, such as display preferences, system settings, or other configurable options.
+ * The server will respond with a {@link SettingsReplyPacket}, which contains the requested settings.
+ * </p>
+ *
  * @since 1.0.0
- * @see SettingsReplyPacket
+ * @see SettingsReplyPacket The packet the server will respond with, containing the current settings.
  */
 @AutoRegister(module = AutoRegisterModules.PACKETS)
 @Builder
 @Getter
 @Setter
 public class SettingsRequestPacket extends CommunicationPacket {
+
+    /**
+     * Gets the packet type. This value is used to identify the type of packet being sent in the communication protocol.
+     *
+     * @return the packet type as a string (e.g., "REQUEST").
+     */
     @Override
     public String getType() {
         return Constants.Communication.YAML.Values.General.PacketTypes.REQUEST;
     }
 
+    /**
+     * Gets the packet subtype. This value specifies the particular kind of request being made.
+     * In this case, it is a request for the current settings from the server.
+     *
+     * @return the packet subtype (e.g., "SETTINGS").
+     */
     @Override
     public String getSubType() {
         return Constants.Communication.YAML.Values.Request.Types.SETTINGS;
     }
 
+    /**
+     * Deserializes the YAML string into a {@link SettingsRequestPacket} instance.
+     * Since this packet does not contain any data, the method simply returns a new instance of the packet.
+     *
+     * @param yamlString the YAML string representing the packet data (ignored in this case as no data is included).
+     * @return a newly created {@code SettingsRequestPacket} instance.
+     * @throws DeserializationException if an error occurs during deserialization (not applicable here, but required by the method signature).
+     */
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         return SettingsRequestPacket.builder().build();

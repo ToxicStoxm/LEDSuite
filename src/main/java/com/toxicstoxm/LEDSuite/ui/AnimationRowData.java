@@ -6,15 +6,28 @@ import org.gnome.gtk.Application;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Wrapper record for an individual animation row.
- * Allows for quick and simple creating of new animation rows.
+ * A data record representing an individual animation row.
+ * This record is used to store all the necessary information for creating and managing an animation row in the UI.
+ * It simplifies the creation process by grouping together key data like the application instance, icon, label, and action associated with the animation.
+ * The data is primarily used by the {@link AnimationRow} class to create new rows in the sidebar.
+ *
+ * <p>This record provides a convenient way to pass and initialize all the required properties when constructing an animation row.</p>
+ *
  * @since 1.0.0
- * @param app the main application instance
- * @param iconName the animation-icon-name
- * @param label the animation-name
- * @param animationID the animation-id or filename
- * @param action the animation-action-name, used for handling interactions
- * @param cooldown minimum time that must pass between interactions
+ *
+ * @param app The main {@link Application} instance for the GTK application. This is used to associate the row with the application.
+ * @param iconName The name of the icon to represent the animation. This is typically a string corresponding to an icon name that can be rendered by the GTK library.
+ * @param label The name or description of the animation. This text is displayed on the animation row.
+ * @param animationID The unique identifier for the animation. This could be the animation's ID or the filename associated with it.
+ * @param action The action associated with this animation, typically used to handle interactions like button clicks. This is typically a unique action name used to trigger specific behavior.
+ * @param cooldown The minimum time (in milliseconds) that must pass between interactions with the animation row. This is used to prevent repeated activation (e.g., avoiding accidental double-clicks).
  */
 @Builder
-public record AnimationRowData(@NotNull Application app, String iconName, String label, String animationID, Action action, Long cooldown) {}
+public record AnimationRowData(
+        @NotNull Application app,
+        String iconName,
+        String label,
+        String animationID,
+        Action action,
+        Long cooldown
+) {}

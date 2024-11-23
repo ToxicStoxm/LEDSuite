@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite;
 
 import com.toxicstoxm.LEDSuite.gettext.Translations;
+import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
 import org.gnome.glib.Bytes;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 /**
  * Main entry point for the LEDSuite application.
- * This class is responsible for initializing necessary resources, setting up translations,
+ * This class is responsible for initializing the necessary resources, setting up translations,
  * managing the application's directory structure, and running the application.
  *
  * @since 1.0.0
@@ -30,9 +31,8 @@ public class Main {
      * 5. Running the application.
      *
      * @param args Command-line arguments passed to the application.
-     * @throws Exception If any error occurs during the application startup process.
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         // Ensure the app's directory exists, creating it if necessary
         File appDirectory = new File(Constants.FileSystem.getAppDir());
@@ -60,12 +60,19 @@ public class Main {
         // Initialize translations with the specified text domain (if provided)
         Translations.init(Constants.Application.ID, translationDirectory);
 
+        System.out.println("Bound test domain '" + Constants.Application.ID + "' to '" + translationDirectory + "'!");
+
         // Load UI templates from a bundled resource (LEDSuite.gresource) and register them using Java-GI
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {
             Objects.requireNonNull(stream, "Resource stream is null, failed to load gresource.");
             byte[] bytes = stream.readAllBytes();
             Resource resource = Resource.fromData(Bytes.static_(bytes));
             resource.resourcesRegister();
+        } catch (Exception e) {
+            // If the gresource cannot be found, or an error occurred during loading or registering it,
+            // print an error and provide a bug report link
+            ExceptionTools.printStackTrace(e, System.err::println);
+            System.err.println("You can report this error at: " + Constants.Application.ISSUES);
         }
 
         // Create and run the LEDSuite application instance
@@ -75,8 +82,8 @@ public class Main {
             app.run(argsList.toArray(new String[0]));
         } catch (Exception e) {
             // If the application fails, print the error and provide a bug report link
-            e.printStackTrace();
-            System.out.println("Please report this error: " + Constants.Application.ISSUES);
+            ExceptionTools.printStackTrace(e, System.err::println);
+            System.err.println("You can report this error at: " + Constants.Application.ISSUES);
         }
     }
 }

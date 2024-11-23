@@ -1,32 +1,23 @@
 package com.toxicstoxm.LEDSuite.auto_registration.modules;
 
-import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import lombok.Builder;
-import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Wrapper class for auto register module information data.
- * @param <T> module type
+ * Represents metadata for an auto-registrable module.
+ * This wrapper record provides type, class path, and module-specific details,
+ * and is used for automatic registration mechanisms.
+ *
+ * @param <T> the type of the module
+ * @param moduleType the type of the module being registered
+ * @param classPath  the classpath where the module is located
+ * @param module     the specific module identifier, see {@link AutoRegisterModules}
+ *
  * @since 1.0.0
  */
 @Builder
-@Getter
-public class AutoRegisterModule<T> {
-
-    private Class<T> moduleType;
-    private String classPath;
-    private AutoRegisterModules module;
-
-    /**
-     * Constructs a new module with the specified information data parameters.
-     * This is used by {@link Registrable}.
-     * @param moduleType module data type
-     * @param classPath classpath of this module
-     * @param module the module name, see {@link AutoRegisterModules}
-     */
-    public AutoRegisterModule(Class<T> moduleType, String classPath, AutoRegisterModules module) {
-        this.moduleType = moduleType;
-        this.classPath = classPath;
-        this.module = module;
-    }
-}
+public record AutoRegisterModule<T>(
+        @NotNull Class<T> moduleType,
+        @NotNull String classPath,
+        @NotNull AutoRegisterModules module
+) {}

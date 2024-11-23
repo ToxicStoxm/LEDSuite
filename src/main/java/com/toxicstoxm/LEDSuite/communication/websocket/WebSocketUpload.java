@@ -74,7 +74,10 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
             // Send the session ID to the server to initiate the upload session
             session.getBasicRemote().sendText(sessionID);
         } catch (IOException e) {
-            LEDSuiteApplication.getLogger().error("Failed to send sessionID to server, terminating file upload!", new LEDSuiteLogAreas.NETWORK());
+            LEDSuiteApplication.handleError(
+                    "Failed to send sessionID to server, terminating file upload!",
+                    new LEDSuiteLogAreas.NETWORK()
+            );
             throw new RuntimeException(e);
         }
 

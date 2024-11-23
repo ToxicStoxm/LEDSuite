@@ -101,6 +101,9 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
-        LEDSuiteApplication.getLogger().error("Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(), new LEDSuiteLogAreas.NETWORK());
+        LEDSuiteApplication.handleError(
+                "Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(),
+                new LEDSuiteLogAreas.NETWORK()
+        );
     }
 }

@@ -113,7 +113,10 @@ public class AuthenticationDialog extends AlertDialog {
                 // If password hashing fails, close the dialog and log the error
                 setCanClose(true);
                 close();
-                LEDSuiteApplication.getLogger().error("Authentication -> Username: " + username + " - Password hashing failed!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                LEDSuiteApplication.handleError(
+                        "Authentication -> Username: " + username + " - Password hashing failed!",
+                        new LEDSuiteLogAreas.USER_INTERACTIONS()
+                );
                 return;
             }
 

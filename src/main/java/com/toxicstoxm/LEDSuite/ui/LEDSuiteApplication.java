@@ -496,7 +496,7 @@ public class LEDSuiteApplication extends Application {
      * </ul>
      *
      * @param fileName              A reference to the current file name involved in the upload process.
-     * @param uploadSessionID       The session ID of the upload's WebSocket endpoint.
+     * @param uploadSessionID       The session ID of the uploads WebSocket endpoint.
      * @param checksum              The checksum of the uploaded file for verification purposes.
      * @param uploadFinishCallback  The callback to be invoked once the upload process is completed.
      * @return                      The constructed {@link org.gnome.adw.AlertDialog.ResponseCallback}.

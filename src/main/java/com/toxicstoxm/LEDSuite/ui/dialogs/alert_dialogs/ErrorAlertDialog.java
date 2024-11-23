@@ -13,6 +13,30 @@ import org.gnome.gtk.Widget;
 
 import java.util.Objects;
 
+/**
+ * This class provides an implementation for error alert dialogs within the LEDSuite application.
+ * It offers the following functionality:
+ *
+ * <ul>
+ *   <li>Displays an error message to the user.</li>
+ *   <li>Allows the user to acknowledge the error through an "OK" response.</li>
+ *   <li>Optionally, the user can report the issue by launching a predefined URL.</li>
+ * </ul>
+ *
+ * The dialog uses pre-configured responses for the "OK" and "Report" buttons.
+ * If an error occurs while launching the reporting URL, the "Report" option will be disabled.
+ * <p>
+ * Typical usage:
+ * <pre>
+ *     ErrorAlertDialog dialog = ErrorAlertDialog.builder()
+ *          .errorMessage("An unexpected error occurred.")
+ *          .heading("Critical Error")
+ *          .build();
+ *     dialog.present(parentWidget);
+ * </pre>
+ *
+ * @since 1.0.0
+ */
 public class ErrorAlertDialog {
 
     private static boolean disableReportResponse = false;
@@ -69,7 +93,6 @@ public class ErrorAlertDialog {
                         .build()
         );
     }
-
 
     public void present(Widget parent) {
         GLib.idleAddOnce(() -> alertDialog.present(parent));

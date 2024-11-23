@@ -11,14 +11,30 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Main entry point for the LEDSuite application.
+ * This class is responsible for initializing necessary resources, setting up translations,
+ * managing the application's directory structure, and running the application.
+ *
  * @since 1.0.0
  * @see LEDSuiteApplication
  * @author ToxicStoxm
  */
 public class Main {
+
+    /**
+     * The main method of the LEDSuite application. It is responsible for:
+     * 1. Ensuring the application's directory exists.
+     * 2. Parsing command-line arguments for a translation directory.
+     * 3. Initializing the translation system.
+     * 4. Loading UI resources.
+     * 5. Running the application.
+     *
+     * @param args Command-line arguments passed to the application.
+     * @throws Exception If any error occurs during the application startup process.
+     */
     public static void main(String[] args) throws Exception {
 
-        // Checks if the app directory already exists, if not tries to create it
+        // Ensure the app's directory exists, creating it if necessary
         File appDirectory = new File(Constants.FileSystem.getAppDir());
         if (!appDirectory.isDirectory()) {
             System.out.println("App directory wasn't found, creating it...");
@@ -29,9 +45,11 @@ public class Main {
             System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
         }
 
-        // Tries to extract a translationDirectory from CLI arguments
+        // Attempt to extract a translation directory from the command-line arguments
         List<String> argsList = new java.util.ArrayList<>(Arrays.stream(args).toList());
         String translationDirectory = null;
+
+        // Check if the translation directory argument exists (flag -t)
         if (argsList.contains("-t")) {
             int textDomainOption = argsList.indexOf("-t");
             translationDirectory = argsList.get(textDomainOption + 1);
@@ -39,22 +57,24 @@ public class Main {
             argsList.remove(textDomainOption);
         }
 
-        // Inits translation implementation with APP_ID and a TextDomain if one was specified
+        // Initialize translations with the specified text domain (if provided)
         Translations.init(Constants.Application.ID, translationDirectory);
 
-        // Loads UI template files (.ui) and registers them using java-gi
+        // Load UI templates from a bundled resource (LEDSuite.gresource) and register them using Java-GI
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {
-            Objects.requireNonNull(stream);
+            Objects.requireNonNull(stream, "Resource stream is null, failed to load gresource.");
             byte[] bytes = stream.readAllBytes();
             Resource resource = Resource.fromData(Bytes.static_(bytes));
             resource.resourcesRegister();
         }
 
-        // Creates new app instance and runs it
+        // Create and run the LEDSuite application instance
         var app = LEDSuiteApplication.create();
         try {
-            app.run(argsList.toArray(new String[]{}));
+            // Run the application, passing in the modified list of arguments (after parsing translation directory)
+            app.run(argsList.toArray(new String[0]));
         } catch (Exception e) {
+            // If the application fails, print the error and provide a bug report link
             e.printStackTrace();
             System.out.println("Please report this error: " + Constants.Application.ISSUES);
         }

@@ -23,7 +23,7 @@ public interface AlertDialog<T> extends AutoRegistrableItem {
      * @param data the data used to customize the alert dialog
      * @return a new instance of the alert dialog, customized with the provided data
      */
-    AlertDialog<T> create(T data);
+    AlertDialog<T> configure(T data);
 
     /**
      * Presents the alert dialog within the specified parent widget.

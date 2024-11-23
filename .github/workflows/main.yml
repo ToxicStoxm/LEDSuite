@@ -25,7 +25,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             libadwaita-1-dev=1.6.0-1ubuntu2 \
-            gettext
+            gettext \
+            desktop-file-utils
 
       # Set up JDK
       - name: Set up JDK 23

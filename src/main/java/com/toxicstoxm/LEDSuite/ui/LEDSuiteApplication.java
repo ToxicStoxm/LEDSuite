@@ -17,7 +17,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
-import com.toxicstoxm.LEDSuite.time.CooldownManger;
+import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
@@ -148,18 +148,18 @@ public class LEDSuiteApplication extends Application {
         about.onActivate(_ -> window.displayAboutDialog());
         sidebarToggle.onActivate(_ -> window.toggleSidebar());
 
-        CooldownManger.addAction("sidebarFileManagementUploadPage", () -> window.uploadPageSelect(), 500);
+        CooldownManager.addAction("sidebarFileManagementUploadPage", () -> window.uploadPageSelect(), 500);
         sidebarFileManagementUploadPage.onActivate(_ -> {
-            if (!CooldownManger.call("sidebarFileManagementUploadPage"))
+            if (!CooldownManager.call("sidebarFileManagementUploadPage"))
                 logger.info("Upload page select on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         });
 
-        CooldownManger.addAction("settingsApply", () -> window.settingsDialogApply(), 500);
-        CooldownManger.addAction("settingsApplyFail", () -> window.applyButtonCooldown(), 600);
+        CooldownManager.addAction("settingsApply", () -> window.settingsDialogApply(), 500);
+        CooldownManager.addAction("settingsApplyFail", () -> window.applyButtonCooldown(), 600);
         settingsApply.onActivate(_ -> {
-            if (!CooldownManger.call("settingsApply")) {
+            if (!CooldownManager.call("settingsApply")) {
                 logger.info("Settings apply on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
-                CooldownManger.call("settingsApplyFail");
+                CooldownManager.call("settingsApplyFail");
             }
         });
 

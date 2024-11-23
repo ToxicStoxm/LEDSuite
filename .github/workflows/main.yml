@@ -36,7 +36,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: latest
+          gradle-version: 8.10.2
 
       # Meson Build Setup
       - name: Meson Setup

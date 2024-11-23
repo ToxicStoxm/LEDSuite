@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Get Dependencies and Build
     runs-on: ubuntu-24.04
 
     steps:      
@@ -46,3 +46,54 @@ jobs:
           directory: build
           meson-version: 1.6.0
           ninja-version: 1.11.1.2
+          
+  flatpak-comparison:
+    name: Generate and Compare Flatpak Source JSON
+    runs-on: ubuntu-24.04
+    needs: build  # This ensures it runs after the 'build' job
+
+    steps:
+      # Checkout the repository (including all branches)
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up Gradle
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: latest
+
+      # Generate flatpak-sources.json
+      - name: Generate flatpak-sources.json
+        run: |
+          gradle flatpakGradleGenerator
+
+      # Compare flatpak-sources.json with the one in the main branch
+      - name: Compare flatpak-sources.json
+        id: compare
+        run: |
+          git fetch origin main
+          diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || echo "Files are different"
+
+      # Create a Pull Request if files are different
+      - name: Create Pull Request if Needed
+        if: steps.compare.outcome == 'failure'
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          
+          # Create a new branch for the PR
+          git checkout -b update-flatpak-sources
+          
+          # Commit the changes
+          git add build/flatpak-sources.json
+          git commit -m "Update flatpak-sources.json"
+
+          # Push the changes
+          git push --set-upstream origin update-flatpak-sources
+
+          # Create a pull request
+          gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
+
+
+    

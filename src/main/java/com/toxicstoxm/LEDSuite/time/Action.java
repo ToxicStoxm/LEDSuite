@@ -1,7 +1,7 @@
 package com.toxicstoxm.LEDSuite.time;
 
 /**
- * An abstract action.
+ * Represents a simple action that can be executed.
  * @since 1.0.0
  */
 @FunctionalInterface

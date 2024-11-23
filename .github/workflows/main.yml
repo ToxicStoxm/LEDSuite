@@ -13,7 +13,7 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
-    steps:
+    steps:      
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,6 +31,8 @@ jobs:
         with:
           java-version: '23'
           distribution: 'temurin'
+
+      - uses: actions/setup-python@v1
 
       # Meson Install
       - name: Meson Install

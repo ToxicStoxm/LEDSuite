@@ -1,5 +1,5 @@
 # LEDSuite
-[![Java CI with Meson](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/gradle.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/main.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
+[![CI for LEDSuite](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/main.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/main.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
 
 - Front-End for any LED-Matrix with the matching backend
 - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)

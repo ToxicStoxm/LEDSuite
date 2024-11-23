@@ -87,7 +87,7 @@
     - [ ] Description
     - [ ] Screenshots
     - [ ] Icon
-    - [ ] Version
+    - [X] Version
     - [ ] Patch notes
   - [X] Update dependencies
 - [ ] Logging

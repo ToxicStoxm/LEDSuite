@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * A dialog for renaming a file or item.
  * <p>
  * This dialog allows the user to provide a new name for an existing file or item.
- * It validates the input, ensuring the new name is not the same as the current name,
+ * It validates the input, ensuring the new name is different from the current name,
  * and that the name doesn't exceed the allowed character limit.
  * </p>
  *
@@ -144,7 +144,7 @@ public class RenameDialog extends AlertDialog {
      * Presents the dialog to the user, periodically checking if the entered file name is valid.
      * Enables or disables the "rename" button based on the validity of the new name.
      *
-     * @param parent the parent widget to which the dialog is attached, can be null
+     * @param parent the parent widget, to which the dialog is attached, can be null
      */
     @Override
     public void present(@Nullable Widget parent) {

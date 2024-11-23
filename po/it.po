@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LEDSuite\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-23 01:45+0100\n"
+"POT-Creation-Date: 2024-11-23 21:46+0100\n"
 "PO-Revision-Date: 2024-11-22 18:26+0100\n"
 "Last-Translator: ToxicStoxm <dominik@crafti-servi.com>\n"
 "Language-Team: English\n"
@@ -47,7 +47,7 @@ msgid "_Cancel"
 msgstr ""
 
 #: src/main/resources/ui/FileCollisionDialog.ui:8
-msgid "File Name collision"
+msgid "Animation with name '$' already exists."
 msgstr ""
 
 #: src/main/resources/ui/FileCollisionDialog.ui:11
@@ -338,218 +338,218 @@ msgstr ""
 msgid "@DEVELOPER_NAME@"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:20
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:22
 msgid "Release Candidate #1"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:22
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:24
 msgid "Rewrite of the whole app."
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:28
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:30
 msgid ""
 "This is our second stable release. Please report any bugs on the projects "
 "GitHub"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:30
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:32
 msgid "Added internationalization (en_US, de_DE, it_IT)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:31
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:33
 msgid "Fixed a ton of bugs"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:32
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:34
 msgid "Code cleanup and refactoring"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:33
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:35
 msgid "Added a lot of features to the logger"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:34
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:36
 msgid "General refactoring of GUI logic"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:40
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:42
 msgid ""
 "This is our first stable release. Please report any bugs on the projects "
 "GitHub"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:42
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:44
 msgid "Added CLI arguments for all config options that are set on startup"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:43
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:45
 msgid "Changed the startup process to support CLI arguments"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:44
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:46
 msgid "Added new config options"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:45
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:57
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:47
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:59
 msgid "Fixed a few bugs"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:46
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:48
 msgid "Documentation (7%)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:47
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:49
 msgid "Code cleanup (12%)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:54
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:56
 msgid ""
 "This is our third pre-release. Please report any bugs on the projects GitHub"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:56
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:58
 msgid "Refactored 'LCCP' to 'LEDSuite' internally"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:58
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:60
 msgid "Implemented CLI Arguments"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:59
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:61
 msgid "Fixed Segfault (hopefully)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:60
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:62
 msgid "Documentation (6%)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:61
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:63
 msgid "Code cleanup (8%)"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:68
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:70
 msgid ""
 "This is our second pre-release. Please report any bugs on the projects GitHub"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:70
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:72
 msgid "A ton of bug fixes"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:71
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:73
 msgid "Documentation progress 5%"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:72
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:74
 msgid "Code cleanup"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:73
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:75
 msgid "Switched from maven to gradle"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:74
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:76
 msgid "File cleanup"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:81
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:83
 msgid ""
 "This is our first (pre) release so no release note but we have plans for the "
 "future:"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:83
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:85
 msgid "Translation for the app"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:84
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:86
 msgid "Writing the backend"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:85
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:87
 msgid "Bugfixes"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:86
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:88
 msgid "Waiting for the OpenJDK 22 Flatpak SDK extension to arrive"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:87
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:89
 msgid "Maybe a Web/JavaScript frontend"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:88
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:90
 msgid "More/better documentation"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:89
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:91
 msgid "Maybe a new icon"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:90
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:92
 msgid "ARM64 build"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:142
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:144
 msgid ""
 "Program for controlling any HDMI LCD/OLED/Plasma/CRT, LED-Matrix or an LED-"
 "Cube with the proper backend."
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:143
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:145
 msgid "With the following features:"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:146
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:148
 msgid "Uploading files to the server"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:147
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:149
 msgid "Receiving status and errors from the server"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:148
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:150
 msgid "Changing and adjusting server-side settings"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:149
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:151
 msgid ""
 "Setting up and controlling interactive animations that are on the server"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:150
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:152
 msgid "Playing back MP4, JPEG and many other files on the server's LED-Matrix"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:155
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:157
 msgid "LED"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:156
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:158
 msgid "matrix"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:157
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:159
 msgid "LCCP"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:158
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:160
 msgid "Cube"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:159
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:161
 msgid "LEDSuite"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:166
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:168
 msgid "LEDSuite add file dialog, used to upload files to the backend"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:170
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:172
 msgid "Example of what the settings menu of an animation can look like"
 msgstr ""
 
-#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:174
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:176
 msgid "LEDSuite settings menu"
 msgstr ""

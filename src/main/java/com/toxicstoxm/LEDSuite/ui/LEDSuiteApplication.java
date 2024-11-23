@@ -21,6 +21,7 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorAlertDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
@@ -29,6 +30,7 @@ import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.YAJLLogger;
+import com.toxicstoxm.YAJL.areas.LogArea;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
@@ -36,6 +38,7 @@ import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
+import org.gnome.adw.ApplicationWindow;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
@@ -443,7 +446,12 @@ public class LEDSuiteApplication extends Application {
             String uploadSessionID = String.valueOf(UUID.randomUUID());
             AtomicReference<String> fileName = new AtomicReference<>(StringFormatter.getFileNameFromPath(filePath));
             if (uploadSessionID == null) {
-                throw new UploadAbortException(() -> logger.error("Cancelled file upload because upload session id was null! This should be reported!", new LEDSuiteLogAreas.NETWORK()));
+                throw new UploadAbortException(() -> {
+                    LEDSuiteApplication.handleError(
+                            "Cancelled file upload because upload session id was null! This should be reported!",
+                            new LEDSuiteLogAreas.NETWORK()
+                    );
+                });
             }
 
             uploadManager.setPending(fileName.get(), uploadPermitted -> {
@@ -715,6 +723,32 @@ public class LEDSuiteApplication extends Application {
                 }
             }
         }.runTaskAsynchronously();
+    }
+
+    public static void handleError(String message, String heading, LogArea logArea) {
+        ApplicationWindow parent = window.asApplicationWindow();
+        if (parent != null) {
+            //GLib.idleAddOnce(() -> {
+                ErrorAlertDialog.builder()
+                        .errorMessage(message)
+                        .heading(heading)
+                        .build()
+                        .present(parent);
+            //});
+        }
+        logger.error(message, logArea);
+    }
+
+    public static void handleError(String message) {
+        handleError(message, null, null);
+    }
+
+    public static void handleError(String message, String heading) {
+        handleError(message, heading, null);
+    }
+
+    public static void handleError(String message, LogArea logArea) {
+        handleError(message, null, logArea);
     }
 
     /**

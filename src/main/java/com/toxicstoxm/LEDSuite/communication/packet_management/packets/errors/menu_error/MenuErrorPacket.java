@@ -12,8 +12,9 @@ import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 /**
- * <strong>Meaning:</strong><br>
- * Information about a client side error related to animation menus.
+ * Represents a client-side error related to animation menus in the communication packet.
+ * This class is automatically registered as part of the communication packet system.
+ *
  * @since 1.0.0
  */
 @AllArgsConstructor
@@ -24,10 +25,10 @@ import lombok.*;
 @Setter
 public class MenuErrorPacket extends CommunicationPacket {
 
-    private String fileName;    // not guaranteed
-    private String message;     // guaranteed
-    private Severity severity;  // guaranteed
-    private ErrorCode code;     // guaranteed
+    private String fileName;    // Optional field (may be null)
+    private String message;     // Mandatory field (must always be provided)
+    private Severity severity;  // Mandatory field (must always be provided)
+    private ErrorCode code;     // Mandatory field (must always be provided)
 
     @Override
     public String getType() {
@@ -39,20 +40,30 @@ public class MenuErrorPacket extends CommunicationPacket {
         return Constants.Communication.YAML.Values.Error.Types.MENU;
     }
 
+    /**
+     * Deserializes the provided YAML string to create a MenuErrorPacket instance.
+     *
+     * @param yamlString the YAML string to deserialize
+     * @return a populated MenuErrorPacket instance
+     * @throws DeserializationException if the YAML string is invalid or missing required fields
+     */
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         MenuErrorPacket packet = MenuErrorPacket.builder().build();
         YamlConfiguration yaml;
+
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException("Failed to load YAML configuration.", e);
         }
 
+        // Optional: check for and load the file name if it exists
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, yaml)) {
             packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME);
         }
 
+        // Mandatory fields: message, severity, and code must always be provided
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, yaml);
         packet.message = yaml.getString(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE);
 
@@ -65,13 +76,23 @@ public class MenuErrorPacket extends CommunicationPacket {
         return packet;
     }
 
+    /**
+     * Serializes the current MenuErrorPacket instance to a YAML string.
+     *
+     * @return a YAML representation of the MenuErrorPacket
+     */
     @Override
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
+        // Set all fields in the YAML
         yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.FILE_NAME, fileName);
         yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.MESSAGE, message);
-        if (severity != null) yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY, severity.value);
+
+        if (severity != null) {
+            yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.SEVERITY, severity.getValue());
+        }
+
         yaml.set(Constants.Communication.YAML.Keys.Error.MenuError.CODE, code.getCode());
 
         return yaml.saveToString();

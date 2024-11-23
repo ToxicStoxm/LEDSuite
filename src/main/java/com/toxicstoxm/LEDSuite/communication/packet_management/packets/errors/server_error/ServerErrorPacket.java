@@ -14,8 +14,7 @@ import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
 
 /**
- * <strong>Meaning:</strong><br>
- * Information about a server side error.
+ * Information about a server-side error.
  * The user should be notified in some way when receiving such a packet.
  * @since 1.0.0
  */
@@ -27,10 +26,10 @@ import lombok.*;
 @Setter
 public class ServerErrorPacket extends CommunicationPacket {
 
-   private String source;        // guaranteed
-   private ErrorCode code;       // guaranteed
-   private String name;          // guaranteed
-   private int severity;         // guaranteed
+    private String source;        // guaranteed
+    private ErrorCode code;       // guaranteed
+    private String name;          // guaranteed
+    private int severity;         // guaranteed
 
     @Override
     public String getType() {
@@ -49,7 +48,7 @@ public class ServerErrorPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException(e);
+            throw new DeserializationException("Invalid YAML format", e);
         }
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.NAME, yaml);
@@ -81,6 +80,10 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        LEDSuiteApplication.getLogger().warn(toString(), new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().warn("Server Error: " +
+                        "Source: " + source + ", " +
+                        "Code: " + code + ", " +
+                        "Severity: " + severity,
+                new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

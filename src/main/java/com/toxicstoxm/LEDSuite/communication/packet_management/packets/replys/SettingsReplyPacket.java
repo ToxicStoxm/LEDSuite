@@ -16,8 +16,12 @@ import org.gnome.gtk.Gtk;
 import java.util.Collection;
 
 /**
- * <strong>Meaning:</strong><br>
- * Current server settings used to update the setting dialogs values.
+ * Represents the current server settings, used to update the settings dialog values in the application.
+ *
+ * <p><strong>Usage:</strong><br>
+ * Typically sent as a reply to {@link MenuRequestPacket}, this packet contains settings such as brightness,
+ * selected color mode, available color modes, and whether to restore the previous state on boot.</p>
+ *
  * @since 1.0.0
  * @see MenuRequestPacket
  */
@@ -29,45 +33,70 @@ import java.util.Collection;
 @Setter
 public class SettingsReplyPacket extends CommunicationPacket {
 
+    /**
+     * The brightness level of the system.
+     */
     private Integer brightness;
+
+    /**
+     * The currently selected color mode.
+     */
     private String selectedColorMode;
+
+    /**
+     * Whether to restore the previous state on boot.
+     */
     private Boolean restorePreviousState;
+
+    /**
+     * A collection of available color modes.
+     */
     private Collection<String> availableColorModes;
 
+    /**
+     * Specifies the type of the packet, identifying it as a reply.
+     *
+     * @return the packet type as a string
+     */
     @Override
     public String getType() {
         return Constants.Communication.YAML.Values.General.PacketTypes.REPLY;
     }
 
+    /**
+     * Specifies the subtype of the packet, identifying it as a settings reply.
+     *
+     * @return the packet subtype as a string
+     */
     @Override
     public String getSubType() {
         return Constants.Communication.YAML.Values.Reply.Types.SETTINGS;
     }
 
+    /**
+     * Deserializes the YAML string into a {@link SettingsReplyPacket} object.
+     *
+     * @param yamlString the YAML string to deserialize
+     * @return the deserialized {@link SettingsReplyPacket}
+     * @throws DeserializationException if required keys are missing or invalid
+     */
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         super.deserialize(yamlString);
-        SettingsReplyPacket packet = SettingsReplyPacket.builder().build();
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS)) {
-            packet.brightness = (Integer) yaml.get(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS);
-        }
+        brightness = yaml.getInt(Constants.Communication.YAML.Keys.Reply.SettingsReply.BRIGHTNESS);
+        selectedColorMode = yaml.getString(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE);
+        availableColorModes = yaml.getStringList(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES);
+        restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT);
 
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE)) {
-            packet.selectedColorMode = yaml.getString(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE);
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES)) {
-            packet.availableColorModes = yaml.getStringList(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES);
-        }
-
-        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT)) {
-            packet.restorePreviousState = yaml.getBoolean(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT);
-        }
-
-        return packet;
+        return this;
     }
 
+    /**
+     * Serializes the {@link SettingsReplyPacket} into a YAML string.
+     *
+     * @return the serialized YAML string
+     */
     @Override
     public String serialize() {
         super.serialize();
@@ -76,24 +105,32 @@ public class SettingsReplyPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.SELECTED_COLOR_MODE, selectedColorMode);
         yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.RESTORE_PREVIOUS_STATE_ON_BOOT, restorePreviousState);
 
-        if (!availableColorModes.isEmpty()) {
+        if (availableColorModes != null && !availableColorModes.isEmpty()) {
             yaml.set(Constants.Communication.YAML.Keys.Reply.SettingsReply.AVAILABLE_COLOR_MODES, availableColorModes);
         }
 
         return yaml.saveToString();
     }
 
+    /**
+     * Handles the packet by updating the application settings and logging the update.
+     */
     @Override
     public void handlePacket() {
+        int selectedColorModeIndex = Gtk.ACCESSIBLE_VALUE_UNDEFINED;
+        if (availableColorModes != null && selectedColorMode != null) {
+            selectedColorModeIndex = availableColorModes.stream().toList().indexOf(selectedColorMode);
+        }
 
         LEDSuiteApplication.getWindow().update(
                 SettingsUpdate.builder()
                         .brightness(brightness)
-                        .selectedColorMode(availableColorModes != null ? availableColorModes.stream().toList().indexOf(selectedColorMode) : Gtk.ACCESSIBLE_VALUE_UNDEFINED)
+                        .selectedColorMode(selectedColorModeIndex)
                         .supportedColorModes(availableColorModes)
                         .restorePreviousState(restorePreviousState)
                         .build()
         );
-        LEDSuiteApplication.getLogger().info("Updated settings using provided settings updater!", new LEDSuiteLogAreas.COMMUNICATION());
+
+        LEDSuiteApplication.getLogger().info("Updated settings using the provided settings updater.", new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

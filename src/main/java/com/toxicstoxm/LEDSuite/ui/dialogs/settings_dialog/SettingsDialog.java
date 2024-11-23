@@ -7,7 +7,7 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.time.CooldownManger;
+import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
@@ -136,7 +136,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void initialize() {
-        CooldownManger.addAction("serverConnectivityButtonCb", () -> {
+        CooldownManager.addAction("serverConnectivityButtonCb", () -> {
             if (isServerConnected()) {
                 setServerStateDisconnecting();
                 triggerDisconnect();
@@ -303,7 +303,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @GtkCallback(name = "settings_server_cnct_button_clicked")
     public void serverCnctButtonClicked() {
-        if (!CooldownManger.call("serverConnectivityButtonCb")) {
+        if (!CooldownManager.call("serverConnectivityButtonCb")) {
             LEDSuiteApplication.getLogger().verbose("Connectivity button on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
         }
     }

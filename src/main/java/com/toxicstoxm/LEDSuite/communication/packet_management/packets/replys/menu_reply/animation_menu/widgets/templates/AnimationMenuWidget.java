@@ -46,7 +46,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
 
     protected DeserializableWidget save() {
         YamlConfiguration yaml = new YamlConfiguration();
-        LEDSuiteApplication.getLogger().error("Serialization of animation menu widgets is not supported!", new LEDSuiteLogAreas.UI_CONSTRUCTION());
+        LEDSuiteApplication.getLogger().error("Serialization of animation menu widgets is not supported!", new LEDSuiteLogAreas.UI());
         yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, getWidgetID());
         return new DeserializableWidget(
                 yaml,

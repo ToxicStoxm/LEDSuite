@@ -55,7 +55,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         try {
             yaml.loadFromString(menuYAML);
         } catch (InvalidConfigurationException e) {
-            ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.UI_CONSTRUCTION()));
+            ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.YAML()));
             throw new DeserializationException("Failed to deserialize YAML from string!", ErrorCode.FailedToParseYAML);
         }
 

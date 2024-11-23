@@ -38,7 +38,7 @@ public class LEDSuiteLogAreas implements LogAreaBundle {
      */
     public static class YAML extends YAJLLogArea {
         public YAML() {
-            super(new Color(0, 89, 255), List.of(new NETWORK().getName())); // Blue, dependent on NETWORK
+            super(new Color(0, 223, 76)); // Green
         }
     }
 
@@ -47,7 +47,7 @@ public class LEDSuiteLogAreas implements LogAreaBundle {
      */
     public static class COMMUNICATION extends YAJLLogArea {
         public COMMUNICATION() {
-            super(new Color(0, 38, 151), List.of(new NETWORK().getName())); // Dark blue, dependent on NETWORK
+            super(new Color(0, 129, 253), List.of(new NETWORK().getName())); // Light blue
         }
     }
 
@@ -56,7 +56,7 @@ public class LEDSuiteLogAreas implements LogAreaBundle {
      */
     public static class UI extends YAJLLogArea {
         public UI() {
-            super(new Color(84, 0, 184)); // Purple
+            super(new Color(55, 7, 179)); // Purple
         }
     }
 
@@ -65,16 +65,7 @@ public class LEDSuiteLogAreas implements LogAreaBundle {
      */
     public static class USER_INTERACTIONS extends YAJLLogArea {
         public USER_INTERACTIONS() {
-            super(new Color(130, 38, 248), List.of(new UI().getName())); // Violet, dependent on UI
-        }
-    }
-
-    /**
-     * Log area for UI construction and UI-related changes, inherits from UI.
-     */
-    public static class UI_CONSTRUCTION extends YAJLLogArea {
-        public UI_CONSTRUCTION() {
-            super(new Color(221, 0, 255), List.of(new UI().getName())); // Pink, dependent on UI
+            super(new Color(130, 38, 248)); // Violet
         }
     }
 }

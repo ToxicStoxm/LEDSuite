@@ -18,8 +18,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * StatusReply dialog template class with update functions.
- * <br>Template file: {@code StatusDialog.ui}
+ * Represents a dialog for displaying the current status of various system parameters.
+ * <p>This class manages the update of status information such as voltage, current draw, file state,
+ * lid state, and the current file. It interacts with GTK-based UI components to dynamically show
+ * or hide values based on the provided updates.</p>
+ * <p>Template file: {@code StatusDialog.ui}</p>
+ *
  * @since 1.0.0
  */
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
@@ -27,20 +31,37 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
 
     private static final Type gtype = TemplateTypes.register(StatusDialog.class);
 
+    /**
+     * Constructs a new StatusDialog instance.
+     *
+     * @param address the memory address used by the native GTK dialog.
+     */
     public StatusDialog(MemorySegment address) {
         super(address);
     }
 
+    /**
+     * Returns the {@link Type} associated with the {@code StatusDialog}.
+     *
+     * @return the GTK type of the dialog
+     */
     public static Type getType() {
         return gtype;
     }
 
+    /**
+     * Creates a new instance of the {@link StatusDialog}.
+     * <p>This method initializes the dialog and marks all rows as unavailable initially.</p>
+     *
+     * @return a new instance of {@link StatusDialog}
+     */
     public static @NotNull StatusDialog create() {
         StatusDialog dialog = GObject.newInstance(getType());
         dialog.markAllUnavailable();
         return dialog;
     }
 
+    // GTK UI elements defined in the template
     @GtkChild(name = "status_lid_state")
     public ActionRow lidState;
 
@@ -56,10 +77,10 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     @GtkChild(name = "status_voltage")
     public ActionRow voltage;
 
-
     /**
-     * Updates the voltage value or hides the voltage row if no value was specified.
-     * @param voltage the new voltage value or {@code null} to hide the voltage row
+     * Updates the voltage value or hides the voltage row if no value is provided.
+     *
+     * @param voltage the voltage value to display or {@code null} to hide the voltage row
      */
     private void setVoltage(Double voltage) {
         if (voltage == null) {
@@ -70,33 +91,35 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     /**
-     * Updates the current-draw value or hides the current-draw row if no value was specified.
-     * @param currentDraw the new current-draw value or {@code null} to hide the current-draw row
+     * Updates the current draw value or hides the current draw row if no value is provided.
+     *
+     * @param currentDraw the current draw value to display or {@code null} to hide the row
      */
     private void setCurrentDraw(Double currentDraw) {
         if (currentDraw == null) {
             markUnavailable(this.currentDraw);
-
         } else {
-            this.markAvailableWithValue(this.currentDraw, currentDraw + "A");
+            markAvailableWithValue(this.currentDraw, currentDraw + "A");
         }
     }
 
     /**
-     * Updates the file state value.
-     * @param fileState the new file state value
+     * Updates the file state row with the provided value.
+     *
+     * @param fileState the file state to display or {@code null} to hide the row
      */
     private void setFileState(FileState fileState) {
         if (fileState == null) {
             markUnavailable(this.currentState);
         } else {
-            this.markAvailableWithValue(this.currentState, fileState.name());
+            markAvailableWithValue(this.currentState, fileState.name());
         }
     }
 
     /**
-     * Updates the current-file value or hides the current-file row if no value was specified.
-     * @param currentFile the new current-file value or {@code null} to hide the current-file row
+     * Updates the current file row with the provided file name.
+     *
+     * @param currentFile the name of the current file to display or {@code null} to hide the row
      */
     private void setCurrentFile(String currentFile) {
         if (currentFile == null) {
@@ -107,8 +130,9 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     /**
-     * Updates the lid-state value or hides the lid-state row if no value was specified.
-     * @param lidState the new lid-state value or {@code null} to hide the lid-state row
+     * Updates the lid state row with the provided value.
+     *
+     * @param lidState the lid state to display or {@code null} to hide the row
      */
     private void setLidState(LidState lidState) {
         if (lidState == null) {
@@ -119,11 +143,10 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     /**
-     * Marks all rows as unavailable using {@link #markUnavailable(ActionRow)}
-     * @see #markAvailableWithValue(ActionRow, String)
+     * Marks all status rows as unavailable by setting their subtitle to "N/A" and disabling interaction.
      */
     private void markAllUnavailable() {
-       markAllUnavailable(
+        markAllUnavailable(
                 List.of(
                         lidState,
                         currentDraw,
@@ -134,22 +157,32 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
         );
     }
 
+    /**
+     * Marks the specified rows as unavailable by setting their subtitle to "N/A" and disabling interaction.
+     *
+     * @param rows the rows to mark as unavailable
+     */
     public static void markAllUnavailable(@NotNull Collection<ActionRow> rows) {
         for (ActionRow row : rows) {
             markUnavailable(row);
         }
     }
 
+    /**
+     * Marks a specific row as unavailable by setting its subtitle to "N/A" and disabling it.
+     *
+     * @param row the row to mark as unavailable
+     */
     public static void markUnavailable(@NotNull ActionRow row) {
         row.setSubtitle(Translations.getText("N/A"));
         row.setSensitive(false);
     }
 
     /**
-     * Marks the specified row as available by resetting its opacity and changing its value to the specified new value.
-     * @param row the row to mark as available
-     * @param value the new value to display in the row
-     * @see #markAllUnavailable()
+     * Marks a specific row as available by setting its subtitle to the specified value and enabling it.
+     *
+     * @param row   the row to mark as available
+     * @param value the value to display in the row
      */
     private void markAvailableWithValue(@NotNull ActionRow row, String value) {
         row.setSubtitle(value);
@@ -157,9 +190,11 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     /**
-     * Update the status values to the provided ones
-     * and changes the status rows and groups visibility based on what values are provided.
-     * @param statusUpdate the new values to display
+     * Updates the dialog with the provided status information.
+     * <p>This method updates the rows based on the given {@link StatusUpdate} and ensures that only
+     * the relevant rows are visible.</p>
+     *
+     * @param statusUpdate the new status information to display in the dialog
      */
     public void update(@NotNull StatusUpdate statusUpdate) {
         GLib.idleAddOnce(() -> {

@@ -60,7 +60,7 @@ public class Main {
         // Initialize translations with the specified text domain (if provided)
         Translations.init(Constants.Application.ID, translationDirectory);
 
-        System.out.println("Bound test domain '" + Constants.Application.ID + "' to '" + translationDirectory + "'!");
+        System.out.println("Bound text domain '" + Constants.Application.ID + "' to '" + translationDirectory + "'!");
 
         // Load UI templates from a bundled resource (LEDSuite.gresource) and register them using Java-GI
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {

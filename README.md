@@ -9,7 +9,7 @@
 
 ## ToDo
 ###### (?) → planned but not final
-- [ ] Networking
+- [X] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
     - [X] Connect to server endpoints
@@ -92,7 +92,7 @@
   - [X] Update dependencies
 - [ ] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
-  - [ ] Create log areas
+  - [X] Create log areas
   - [ ] add a lot of log messages
 - [X] Settings
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)

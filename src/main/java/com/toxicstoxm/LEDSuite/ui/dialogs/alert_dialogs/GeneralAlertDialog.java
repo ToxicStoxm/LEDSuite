@@ -4,12 +4,16 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
+import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A general-purpose alert dialog used to display messages and handle user responses in the LEDSuite application.
@@ -84,26 +88,39 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
 
     @Override
     public com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> configure(@NotNull AlertDialogData data) {
-        setHeading(data.heading());
-        setBody(data.body());
-        
-        ResponseCallback responseCb = response -> {
-            
-            if (registeredResponses.containsKey(response)) {
-                registeredResponses.get(response).run();
+        String heading = data.heading();
+        if (heading != null) setHeading(heading);
+
+        String body = data.body();
+        if (body != null) setBody(body);
+
+        List<AlertDialogResponse> responses = data.responses();
+
+        if (responses != null) {
+            ResponseCallback responseCb = response -> {
+
+                if (registeredResponses.containsKey(response)) {
+                    registeredResponses.get(response).run();
+                }
+
+            };
+
+            for (AlertDialogResponse response : data.responses()) {
+                String label = response.label();
+                if (label != null) {
+                    String id = Objects.requireNonNullElse(response.id(), String.valueOf(UUID.randomUUID()));
+                    Action cb = Objects.requireNonNullElse(response.responseCallback(), () -> {});
+                    ResponseAppearance appearance = Objects.requireNonNullElse(response.appearance(), ResponseAppearance.DEFAULT);
+
+                    registeredResponses.put(id, cb);
+                    addResponse(id, response.label());
+                    setResponseAppearance(id, appearance);
+                    setResponseEnabled(id, response.activated());
+                }
             }
-            
-        };
 
-        for (AlertDialogResponse response : data.responses()) {
-            registeredResponses.put(response.id(), response.responseCallback());
-            addResponse(response.id(), response.label());
-            setResponseAppearance(response.id(), response.appearance());
-            setResponseEnabled(response.id(), response.activated());
+            onResponse(responseCb);
         }
-        
-        onResponse(responseCb);
-
         return this;
     }
 }

@@ -57,16 +57,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Set up Gradle
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: latest
-
       # Generate flatpak-sources.json
       - name: Generate flatpak-sources.json
         run: |
-          gradle flatpakGradleGenerator
+          ./gradlew flatpakGradleGenerator
 
       # Compare flatpak-sources.json with the one in the main branch
       - name: Compare flatpak-sources.json

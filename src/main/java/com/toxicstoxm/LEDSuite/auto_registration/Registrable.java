@@ -79,7 +79,7 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
         AutoRegisterModule<T> module = autoRegisterModule();
 
         if (module == null) {
-            LEDSuiteApplication.getLogger().error("Tried to auto-register items for an unsupported module!", new LEDSuiteLogAreas.GENERAL());
+            LEDSuiteApplication.getLogger().error(" > Tried to auto-register items for an unsupported module!", new LEDSuiteLogAreas.GENERAL());
             return;
         }
 
@@ -109,12 +109,12 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                             Class<T> typeClass = (Class<T>) loadedClass;
                             annotatedClasses.add(typeClass);
                         } else {
-                            LEDSuiteApplication.getLogger().error("Class " + classInfo.getName()
+                            LEDSuiteApplication.getLogger().error(" > Class " + classInfo.getName()
                                     + " does not implement " + moduleTypeName + " interface!", new LEDSuiteLogAreas.COMMUNICATION());
                         }
                     }
                 } catch (Exception e) {
-                    LEDSuiteApplication.getLogger().error("Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'",
+                    LEDSuiteApplication.getLogger().error(" > Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'",
                             new LEDSuiteLogAreas.COMMUNICATION());
                     LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
                     throw new RuntimeException(e);
@@ -131,14 +131,14 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
 
                 String id = item.getItemType();
                 if (registerItem(item)) {
-                    LEDSuiteApplication.getLogger().info("Successfully registered " + moduleTypeName + ": " + id,
+                    LEDSuiteApplication.getLogger().verbose(" > Successfully registered " + moduleTypeName + ": " + id,
                             new LEDSuiteLogAreas.COMMUNICATION());
                 } else {
-                    LEDSuiteApplication.getLogger().debug("Item " + id + " is already registered. Skipping it.",
+                    LEDSuiteApplication.getLogger().debug(" > Item " + id + " is already registered. Skipping it.",
                             new LEDSuiteLogAreas.COMMUNICATION());
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                LEDSuiteApplication.getLogger().error("Failed to auto-register " + moduleTypeName + ": " + itemClass.getName(),
+                LEDSuiteApplication.getLogger().error(" > Failed to auto-register " + moduleTypeName + ": " + itemClass.getName(),
                         new LEDSuiteLogAreas.COMMUNICATION());
                 LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
                 throw new RuntimeException(e);

@@ -32,12 +32,6 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
 
-      # Install Gradle
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 8.10.2
-
       # Meson Build Setup
       - name: Meson Setup
         uses: BSFishy/meson-build@v1.0.3

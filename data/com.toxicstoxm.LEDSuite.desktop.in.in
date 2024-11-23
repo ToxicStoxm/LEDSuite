@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+
+Name=@NAME@
+
+Comment=Control an LED-Matrix with style
+
+Categories=Utility;
+Keywords=LED;matrix;LCCP;Cube;LEDSuite;
+X-Purism-FormFactor=Workstation;Mobile;
+Icon=@ID@
+Exec=@COMMAND@
+Terminal=false

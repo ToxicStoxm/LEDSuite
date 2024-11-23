@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import com.toxicstoxm.LEDSuite.LEDSuite;
-import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 /**
  * The `LEDSuiteTask` class represents a task to be scheduled and executed by the `LEDSuiteScheduler`.
@@ -24,7 +23,6 @@ public class LEDSuiteTask implements Task, Runnable {
     private volatile long period;
     private long nextRun;
     private final Runnable task;
-    private YAMLMessage yaml;
     private final int id;
 
     /**
@@ -55,7 +53,7 @@ public class LEDSuiteTask implements Task, Runnable {
      * @since 1.0.0
      */
     LEDSuiteTask(final Runnable task, final int id, final long period) {
-        this(task, id, period, null);
+        this(task, id, period, -1);
     }
 
     /**
@@ -64,14 +62,13 @@ public class LEDSuiteTask implements Task, Runnable {
      * @param task The task to be executed.
      * @param id The unique ID of the task.
      * @param period The period between task executions.
-     * @param yaml The YAML message associated with the task.
      * @since 1.0.0
      */
-    LEDSuiteTask(final Runnable task, final int id, final long period, YAMLMessage yaml) {
+    LEDSuiteTask(final Runnable task, final int id, final long period, long nextRun) {
         this.task = task;
         this.id = id;
         this.period = period;
-        this.yaml = yaml;
+        this.nextRun = nextRun;
     }
 
     /**
@@ -179,7 +176,7 @@ public class LEDSuiteTask implements Task, Runnable {
      * @since 1.0.0
      */
     public void cancel() {
-        LEDSuite.getScheduler().cancelTask(id);
+        LEDSuiteApplication.getScheduler().cancelTask(id);
     }
 
     /**

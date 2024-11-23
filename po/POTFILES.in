@@ -1,0 +1,24 @@
+# UI Files
+src/main/resources/ui/AnimationMenu.ui
+src/main/resources/ui/AnimationRow.ui
+src/main/resources/ui/AuthenticationDialog.ui
+src/main/resources/ui/FileCollisionDialog.ui
+src/main/resources/ui/GeneralAlertDialog.ui
+src/main/resources/ui/LEDSuiteWindow.ui
+src/main/resources/ui/OverwriteConfirmationDialog.ui
+src/main/resources/ui/RenameDialog.ui
+src/main/resources/ui/SettingsDialog.ui
+src/main/resources/ui/ShortcutsDialog.ui
+src/main/resources/ui/StatusDialog.ui
+src/main/resources/ui/UploadPage.ui
+
+# Code
+src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java
+src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java
+
+# Metadata
+data/com.toxicstoxm.LEDSuite.desktop.in.in
+src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in

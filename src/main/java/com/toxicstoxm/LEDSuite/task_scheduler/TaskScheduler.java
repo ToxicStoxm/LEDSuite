@@ -1,6 +1,5 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
 import java.util.List;
 
 /**
@@ -82,19 +81,9 @@ public interface TaskScheduler {
     LEDSuiteTask runTaskAsynchronously(Runnable task) throws IllegalStateException;
 
     /**
-     * Schedules a task to run asynchronously with an associated YAML message.
-     *
-     * @param runnable The task to be scheduled.
-     * @param yaml The YAML message associated with the task.
-     * @return The scheduled {@link LEDSuiteTask} instance.
-     * @since 1.0.0
-     */
-    LEDSuiteTask runTaskAsynchronously(Runnable runnable, YAMLMessage yaml);
-
-    /**
      * Schedules a task to run after a specified delay.
      *
-     * @param task The task to be scheduled.
+     * @param task  The task to be scheduled.
      * @param delay The delay in ticks before the task runs.
      * @return The scheduled {@link LEDSuiteTask} instance.
      * @throws IllegalStateException If the task cannot be scheduled.
@@ -105,7 +94,7 @@ public interface TaskScheduler {
     /**
      * Schedules a task to run asynchronously after a specified delay.
      *
-     * @param task The task to be scheduled.
+     * @param task  The task to be scheduled.
      * @param delay The delay in ticks before the task runs.
      * @return The scheduled {@link LEDSuiteTask} instance.
      * @throws IllegalStateException If the task cannot be scheduled.
@@ -114,21 +103,10 @@ public interface TaskScheduler {
     LEDSuiteTask runTaskLaterAsynchronously(Runnable task, long delay) throws IllegalStateException;
 
     /**
-     * Schedules a task to run asynchronously after a specified delay with an associated YAML message.
-     *
-     * @param runnable The task to be scheduled.
-     * @param delay The delay in ticks before the task runs.
-     * @param yaml The YAML message associated with the task.
-     * @return The scheduled {@link LEDSuiteTask} instance.
-     * @since 1.0.0
-     */
-    LEDSuiteTask runTaskLaterAsynchronously(Runnable runnable, long delay, YAMLMessage yaml);
-
-    /**
      * Schedules a task to run repeatedly with a specified delay and period.
      *
-     * @param task The task to be scheduled.
-     * @param delay The delay in ticks before the first run.
+     * @param task   The task to be scheduled.
+     * @param delay  The delay in ticks before the first run.
      * @param period The period in ticks between subsequent runs.
      * @return The scheduled {@link LEDSuiteTask} instance.
      * @throws IllegalStateException If the task cannot be scheduled.
@@ -139,25 +117,12 @@ public interface TaskScheduler {
     /**
      * Schedules a task to run asynchronously and repeatedly with a specified delay and period.
      *
-     * @param task The task to be scheduled.
-     * @param delay The delay in ticks before the first run.
+     * @param task   The task to be scheduled.
+     * @param delay  The delay in ticks before the first run.
      * @param period The period in ticks between subsequent runs.
      * @return The scheduled {@link LEDSuiteTask} instance.
      * @throws IllegalStateException If the task cannot be scheduled.
      * @since 1.0.0
      */
     LEDSuiteTask runTaskTimerAsynchronously(Runnable task, long delay, long period) throws IllegalStateException;
-
-    /**
-     * Schedules a task to run asynchronously and repeatedly with a specified delay and period,
-     * with an associated YAML message.
-     *
-     * @param runnable The task to be scheduled.
-     * @param delay The delay in ticks before the first run.
-     * @param period The period in ticks between subsequent runs.
-     * @param yaml The YAML message associated with the task.
-     * @return The scheduled {@link LEDSuiteTask} instance.
-     * @since 1.0.0
-     */
-    LEDSuiteTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period, YAMLMessage yaml);
 }

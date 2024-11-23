@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface domain="com.toxicstoxm.LEDSuite">
+  <requires lib="gtk" version="4.16"/>
+  <template class="AnimationRow" parent="GtkListBoxRow">
+    <property name="child">
+      <object class="GtkBox" id="animation_box">
+        <property name="halign">start</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkImage" id="animation_icon"/>
+        </child>
+        <child>
+          <object class="GtkLabel" id="animation_label"/>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

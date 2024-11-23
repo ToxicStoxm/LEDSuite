@@ -9,7 +9,7 @@
 
 ## ToDo
 ###### (?) → planned but not final
-- [ ] Networking
+- [X] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
     - [X] Connect to server endpoints
@@ -20,14 +20,14 @@
     - [X] Request handling
     - [X] Response handling
     - [X] Error handling
-  - [ ] File sending
+  - [X] File sending
     - [X] Loading file
     - [X] Sending file data to server
     - [X] Sending metadata to server
     - [X] Calculating upload statistics
     - [X] Error handling
-    - [ ] Handle duplicate names
-      - [ ] Rename support
+    - [X] Handle duplicate names
+      - [X] Rename support
       - [X] Overwrite support
   - [X] Define communication protocol with YAML
   - [ ] Additional features (?)
@@ -68,16 +68,16 @@
         - [X] Status reply
         - [X] Menu reply
       - [X] Error packets
-- [ ] Documentation
-  - [ ] Add Javadoc
+- [X] Documentation
+  - [X] Add Javadoc
     - [X] Classes
-    - [ ] Functions
-  - [ ] Add tons of comments to the code
+    - [X] Functions
+  - [X] Add tons of comments to the code
   - [ ] Create examples (?)
 - [ ] I18N
   - [ ] Languages
     - [X] English
-    - [ ] German
+    - [X] German
     - [ ] Italian
     - [ ] French (?)
     - [ ] Spanish (?)
@@ -87,15 +87,15 @@
     - [ ] Description
     - [ ] Screenshots
     - [ ] Icon
-    - [ ] Version
+    - [X] Version
     - [ ] Patch notes
-  - [ ] Update dependencies
+  - [X] Update dependencies
 - [ ] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
-  - [ ] Create log areas
+  - [X] Create log areas
   - [ ] add a lot of log messages
-- [ ] Settings
+- [X] Settings
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
-  - [ ] Implement all necessary settings
+  - [X] Implement all necessary settings
 - [ ] Other
   - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 

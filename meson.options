@@ -1,0 +1,6 @@
+option(
+	'javadir',
+	type				: 'string',
+	value				: '',
+	description	: 'Java home for gradle'
+)

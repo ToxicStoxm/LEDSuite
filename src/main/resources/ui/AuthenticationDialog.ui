@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface domain="com.toxicstoxm.LEDSuite">
+  <!-- interface-name RenameDialog.ui -->
+  <requires lib="gtk" version="4.16"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="AuthenticationDialog" parent="AdwAlertDialog">
+    <property name="close-response">cancel</property>
+    <property name="default-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup">
+        <child>
+          <object class="AdwEntryRow" id="username_row">
+            <property name="input-purpose">password</property>
+            <property name="title" translatable="yes">Username</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPasswordEntryRow" id="password_row">
+            <property name="input-purpose">password</property>
+            <property name="title" translatable="yes">Password</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer" id="spinner_revealer">
+            <property name="margin-top">10</property>
+            <child>
+              <object class="AdwSpinner"/>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="heading" translatable="yes">Login required</property>
+    <property name="prefer-wide-layout">True</property>
+    <!-- Custom template fragments -->
+    <responses>
+      <response id="authenticate" translatable="yes" appearance="suggested" enabled="false">_Authenticate</response>
+      <response id="cancel" translatable="yes">_Cancel</response>
+    </responses>
+  </template>
+</interface>

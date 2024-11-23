@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import com.toxicstoxm.LEDSuite.LEDSuite;
-import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,19 +83,6 @@ public class LEDSuiteScheduler implements TaskScheduler {
     }
 
     /**
-     * Schedules a task to run asynchronously with a YAMLMessage.
-     *
-     * @param runnable The task to be run.
-     * @param yaml The YAML message associated with the task.
-     * @return A reference to the scheduled task.
-     * @since 1.0.0
-     */
-    @Override
-    public LEDSuiteTask runTaskAsynchronously(Runnable runnable, YAMLMessage yaml) {
-        return runTaskLaterAsynchronously(runnable, 0, yaml);
-    }
-
-    /**
      * Schedules a task to run after a specified delay.
      *
      * @param runnable The task to be run.
@@ -120,20 +106,6 @@ public class LEDSuiteScheduler implements TaskScheduler {
     @Override
     public LEDSuiteTask runTaskLaterAsynchronously(Runnable runnable, long delay) {
         return runTaskTimerAsynchronously(runnable, delay, -1);
-    }
-
-    /**
-     * Schedules a task to run asynchronously after a specified delay with a YAMLMessage.
-     *
-     * @param runnable The task to be run.
-     * @param delay The delay in ticks before the task is run.
-     * @param yaml The YAML message associated with the task.
-     * @return A reference to the scheduled task.
-     * @since 1.0.0
-     */
-    @Override
-    public LEDSuiteTask runTaskLaterAsynchronously(Runnable runnable, long delay, YAMLMessage yaml) {
-        return runTaskTimerAsynchronously(runnable, delay, -1, yaml);
     }
 
     /**
@@ -178,29 +150,6 @@ public class LEDSuiteScheduler implements TaskScheduler {
             period = -1;
         }
         return handle(new LEDSuiteAsyncTask(runners, runnable, nextId(), period), delay);
-    }
-
-    /**
-     * Schedules a task to run asynchronously and periodically after an initial delay with a YAMLMessage.
-     *
-     * @param runnable The task to be run.
-     * @param delay The delay in ticks before the first execution.
-     * @param period The period in ticks between subsequent executions.
-     * @param yaml The YAML message associated with the task.
-     * @return A reference to the scheduled task.
-     * @since 1.0.0
-     */
-    @Override
-    public LEDSuiteTask runTaskTimerAsynchronously(Runnable runnable, long delay, long period, YAMLMessage yaml) {
-        if (delay < 0) {
-            delay = 0;
-        }
-        if (period == 0) {
-            period = 1;
-        } else if (period < -1) {
-            period = -1;
-        }
-        return handle(new LEDSuiteAsyncTask(runners, runnable, nextId(), period, yaml), delay);
     }
 
     /**
@@ -404,10 +353,10 @@ public class LEDSuiteScheduler implements TaskScheduler {
                 try {
                     task.run();
                 } catch (final Throwable throwable) {
-                    LEDSuite.logger.warn(String.format(
+                    LEDSuiteApplication.getLogger().warn(String.format(
                             "Task #%s for %s generated an exception",
                             task.getTaskId(),
-                            LEDSuite.class.getName()));
+                            LEDSuiteApplication.class.getName()));
                 }
                 parsePending();
             } else {

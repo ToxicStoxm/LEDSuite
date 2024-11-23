@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface domain="com.toxicstoxm.LEDSuite">
+  <!-- interface-name RenameDialog.ui -->
+  <requires lib="gtk" version="4.16"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="RenameDialog" parent="AdwAlertDialog">
+    <property name="close-response">cancel</property>
+    <property name="default-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup">
+        <child>
+          <object class="AdwEntryRow" id="filename_row">
+            <property name="text" translatable="yes">filename</property>
+            <property name="title" translatable="yes">Filename</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer" id="filename_too_long_revealer">
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">File name is too long.</property>
+                <property name="margin-top">10</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="heading" translatable="yes">Rename file</property>
+    <property name="prefer-wide-layout">True</property>
+    <!-- Custom template fragments -->
+    <responses>
+      <response id="rename" translatable="yes" appearance="suggested" enabled="false">_Rename</response>
+      <response id="cancel" translatable="yes">_Cancel</response>
+    </responses>
+  </template>
+</interface>

@@ -1,223 +1,324 @@
 package com.toxicstoxm.LEDSuite;
 
-// static utility class for storing paths
-public final class Constants {
-    // file paths
-    public static final class File_System {
-        public static String getAppDir() {
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Holds all constant values used by the application. E.g. YAML-Keys, paths, project-website,
+ * @since 1.0.0
+ */
+public class Constants {
+
+    public static class FileSystem {
+
+        public static @NotNull String getAppDir() {
             String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything
                     java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
                     confHome + "/"; // else it gets the environment variable and appends / because, if it's missing, it will error, but when there are two it will still work
         }
 
-        public static String getTmpDir() {
-            String cacheHome =  java.lang.System.getenv("XDG_CACHE_HOME");
+        public static @NotNull String getTmpDir() {
+            String cacheHome = java.lang.System.getenv("XDG_CACHE_HOME");
             return cacheHome == null ? // Check if the cache home or just temp directory (mainly for flatpak) contains anything
                     java.lang.System.getProperty("java.io.tmpdir") + "/" + Application.NAME + "/" : // If not, it uses the java tmpdir with 'LED-Cube-Control-Panel/' appended as a path
                     cacheHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
-        public static String getDataDir() {
-            String dataHome =  java.lang.System.getenv("XDG_DATA_HOME");
+        public static @NotNull String getDataDir() {
+            String dataHome = java.lang.System.getenv("XDG_DATA_HOME");
             return dataHome == null ? // Check if the data home directory (mainly for flatpak) contains anything
                     java.lang.System.getProperty("user.home") + "/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
                     dataHome + "/"; // If yes, it gets the environment variable and appends / because, if it is missing, it will error, but when there are two it will still work
         }
 
-        public static final String logFile = getTmpDir() + "latest.log";
-        public static final String server_config = getAppDir() + "server_config.yaml";
-        public static final String config = getAppDir() + "config.yaml";
-    }
-    // YAML paths for config
-    public static final class Config {
-        // standard separator used by the config
-        public static final String SEPARATOR = ".";
-        // config sections
-        public static final String LOCAL_SETTINGS_SECTION = "Local-Settings";
-        public static final String WINDOW_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Window";
-        public static final String LOGGING_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Logging";
-        public static final String LOGGING_FILE_SECTION = LOGGING_SECTION + SEPARATOR + "Log-File";
-        public static final String NETWORK_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "Network";
-        public static final String TASKS_SECTION = NETWORK_SECTION + SEPARATOR + "Tasks";
-        public static final String PERIODIC_SECTION = TASKS_SECTION + SEPARATOR + "Periodic";
-        public static final String STATUS_REQUEST_CLOCK = PERIODIC_SECTION + SEPARATOR + "Status-Request-Clock";
-        public static final String USER_PREFERENCES_SECTION = LOCAL_SETTINGS_SECTION + SEPARATOR + "User-Preferences";
-        public static final String COLOR_CODING_SECTION = LOGGING_SECTION + SEPARATOR + "Color-Coding";
-        public static final String COLORS_SECTION = COLOR_CODING_SECTION + SEPARATOR + "Colors";
-
-        // settings
-        public static final String WINDOW_RESIZABLE = WINDOW_SECTION + SEPARATOR + "Window-Resizable";
-        public static final String WINDOW_DEFAULT_WIDTH = WINDOW_SECTION + SEPARATOR + "Window-Default-Width";
-        public static final String WINDOW_DEFAULT_HEIGHT = WINDOW_SECTION + SEPARATOR + "Window-Default-Height";
-
-        public static final String LOG_LEVEL = LOGGING_SECTION + SEPARATOR + "Log-Level";
-        public static final String STACK_TRACE_DEPTH = LOGGING_SECTION + SEPARATOR + "Stack-Trace-Depth";
-        public static final String COLOR_CODING_ENABLED = COLOR_CODING_SECTION + SEPARATOR + "Enabled";
-        public static final String LOG_FILE_ENABLED = LOGGING_FILE_SECTION + SEPARATOR + "Enabled";
-        public static final String LOG_FILE_LOG_LEVEL_ALL = LOGGING_FILE_SECTION + SEPARATOR + "Log-Level-All";
-        public static final String LOG_FILE_MAX_FILES = LOGGING_FILE_SECTION + SEPARATOR + "Max-Files";
-        public static final String MAX_STACK_TRACES_CACHED = LOGGING_SECTION + SEPARATOR + "Max-Stack-Traces-Cached";
-
-        public static final String CHECK_IPV4 = NETWORK_SECTION + SEPARATOR + "Check-IPv4";
-        public static final String NETWORK_COMMUNICATION_CLOCK = PERIODIC_SECTION + SEPARATOR + "Network-Communication-Clock";
-        public static final String STATUS_REQUEST_CLOCK_PASSIVE = STATUS_REQUEST_CLOCK + SEPARATOR + "Passive";
-        public static final String STATUS_REQUEST_CLOCK_ACTIVE = STATUS_REQUEST_CLOCK + SEPARATOR + "Active";
-
-        public static final String SELECTION_DIR = USER_PREFERENCES_SECTION + SEPARATOR + "Default-Selection-Dir";
-        public static final String DISPLAY_STATUS_BAR = USER_PREFERENCES_SECTION + SEPARATOR + "Display-Status-Bar";
-        public static final String AUTO_PLAY_AFTER_UPLOAD = USER_PREFERENCES_SECTION + SEPARATOR + "Auto-Play-After-Upload";
+        public static final String CONFIG_FILE_NAME = "config.yaml";
+        public static final String CONFIG_FILE_PATH = getAppDir() + "/" + CONFIG_FILE_NAME;
 
     }
-    // YAML paths for server_config
-    public static final class Server_Config {
-        public static final String BRIGHTNESS = "LED-Brightness";
-        public static final String IPV4 = "Server-IP";
-        public static final String PORT = "Server-Port";
-    }
-    // links used by the program
-    public static final class Links {
-        public static final String PROJECT_GITHUB = "https://github.com/ToxicStoxm/LEDSuite/";
-    }
-    // placeholders used by the program
-    public static final class Placeholders {
-        public static final String VERSION = "%VERSION%";
-    }
-    public static final class Patterns {
-        public static final String PORT = "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
-        public static final String IPV4 = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-    }
-    public static final class Network {
-        public static final class YAML {
-            public static final String PACKET_TYPE = "packet_type";
-            public static final String REQUEST_TYPE = "request_type";
-            public static final String REQUEST_FILE = "request_file";
-            public static final String KEEPALIVE = "keepalive";
-            public static final String OBJECT_PATH = "object_path";
-            public static final String OBJECT_NEW_VALUE = "object_new_value";
-            public static final String REPLY_TYPE = "reply_type";
-            public static final String FILE_IS_LOADED = "file_is_loaded";
-            public static final String FILE_STATE = "file_state";
-            public static final String FILE_SELECTED = "file_selected";
-            public static final String CURRENT_DRAW = "current_draw";
-            public static final String VOLTAGE = "voltage";
-            public static final String LID_STATE = "lid_state";
-            public static final String ERROR_SOURCE = "error_source";
-            public static final String ERROR_CODE = "error_code";
-            public static final String ERROR_NAME = "error_name";
-            public static final String ERROR_SEVERITY = "error_severity";
-            public static final String INTERNAL_NETWORK_ID = "internal_network_event_id";
-            public static final String AVAILABLE_ANIMATIONS = "available_animations";
-            public static final class MENU {
-                public static final String GROUP_PREFIX = "group";
-                public static final String GROUP_SUFFIX_WIDGET = "suffix";
 
-                public static final String WIDGET_PREFIX = "widget";
-                public static final String WIDGET_TYPE = "widget";
-                public static final String WIDGET_STYLE = "style";
-                public static final String WIDGET_LABEL = "label";
-                public static final String WIDGET_TOOLTIP = "tooltip";
-                public static final String WIDGET_CONTENT = "content";
-                public static final String WIDGET_VALUE = "value";
-                public static final String WIDGET_ICON = "icon";
-                public static final String BUTTON_ROW = "row";
-
-                public static final String SLIDER_MIN = "min";
-                public static final String SLIDER_MAX = "max";
-                public static final String SLIDER_STEP = "step";
-                public static final String SLIDER_CLIMB_RATE = "climb_rate";
-                public static final String SLIDER_DIGITS = "digits";
-                public static final String SLIDER_NUMERIC = "numeric";
-                public static final String SLIDER_SNAP = "snap";
-                public static final String SLIDER_WRAPAROUND = "wraparound";
-
-                public static final String ENTRY_APPLY_BUTTON = "apply_button";
-                public static final String ENTRY_EDITABLE = "editable";
-
-                public static final String EXPANDER_TOGGLEABLE = "toggleable";
-                public static final String DROPDOWN_SEARCHABLE = "searchable";
-                public static final String DROPDOWN_SELECTED = "selected";
-                public static final String DROPDOWN = "dropdown";
-
-                public static final String SPINNER_TIME = "time";
-            }
-        }
-    }
-    public static final class System {
-        public static final String NAME = java.lang.System.getProperty("os.name");
-        public static final String VERSION = java.lang.System.getProperty("os.version");
-    }
-    public static final class Application {
+    public static class Application {
         public static final String NAME = "LEDSuite";
-        public static final String DOMAIN = "com.toxicstoxm.ledsuite";
-        public static final String VERSION = "@version@";
-        public static final String VERSION_DESC = NAME + " " + VERSION;
-        public static final String ICON = DOMAIN;
+        public static final String ID = "com.toxicstoxm." + NAME;
+        public static final String WEBSITE = "https://github.com/ToxicStoxm/LEDSuite";
+        public static final String ISSUES = WEBSITE + "/issues";
     }
-    public static final class GTK {
-        public static final class Shortcuts {
+
+    public static class UI {
+        public static final class CSS {
+            public static final String[] DISCONNECTED_CSS = new String[]{"error"};
+            public static final String[] CONNECTED_CSS = new String[]{"success"};
+            public static final String[] CHANGING_CSS = new String[]{"warning"};
+        }
+        public static final class Intervals {
+            public static final long MINIMUM_DELAY = 500;
+            public static final long RETRY_DELAY = 3000;
+            public static final long CONNECTION_TIMEOUT = 10000;
+        }
+    }
+
+    public static final class Communication {
+        public static final class YAML {
             public static final class Keys {
-                public static final String CONTROL = "<Control>";
-                public static final String ALT = "<Alt>";
-                public static final String F9 = "F9";
-            }
-            public static final class Symbols {
-                public static final String QUESTIONMARK = "question";
-                public static final String COMMA = "comma";
-            }
-            public static final String STATUS = Keys.ALT + "s";
-            public static final String SETTINGS = Keys.CONTROL + Symbols.COMMA;
-            public static final String SHORTCUTS = Keys.CONTROL + Symbols.QUESTIONMARK;
-            public static final String ABOUT = Keys.ALT + "a";
-            public static final String SIDEBAR = Keys.F9;
 
-        }
-        public static final class Actions {
-            public static final String ACTION_PREFIX = "action(";
-            public static final String ACTION_SEPARATOR = ".";
-            public static final String ACTION_SUFFIX = ")";
-            public static final class Groups {
-                public static final String MENU = "menu";
-                public static final String GENERAL = "general";
-            }
-            public static final class _Actions {
-                public static final String STATUS  = "status";
-                public static final String SETTINGS = "settings";
-                public static final String SHORTCUTS = "shortcuts";
-                public static final String ABOUT = "about";
-                public static final String SIDEBAR = "sidebar";
+                public static final class General {
+                    public static final String PACKET_TYPE = "packet_type";
+                    public static final String SUB_TYPE = "subtype";
+                    public static final String FILE_NAME = "filename";
+                }
 
-                public static final String _STATUS  = Groups.MENU + ACTION_SEPARATOR + STATUS;
-                public static final String _SETTINGS = Groups.MENU + ACTION_SEPARATOR + SETTINGS;
-                public static final String _SHORTCUTS = Groups.MENU + ACTION_SEPARATOR + SHORTCUTS;
-                public static final String _ABOUT = Groups.MENU + ACTION_SEPARATOR + ABOUT;
-                public static final String _SIDEBAR = Groups.GENERAL + ACTION_SEPARATOR + SIDEBAR;
+                public static final class Error {
+                    public static final class ServerError {
+                        public static final String SOURCE = "error_source";
+                        public static final String CODE = "error_code";
+                        public static final String NAME = "error_name";
+                        public static final String SEVERITY = "error_severity";
+                    }
 
-            }
-            public static final String SHORTCUT_STATUS = ACTION_PREFIX + _Actions._STATUS + ACTION_SUFFIX;
-            public static final String SHORTCUT_SETTINGS = ACTION_PREFIX + _Actions._SETTINGS + ACTION_SUFFIX;
-            public static final String SHORTCUT_SHORTCUTS = ACTION_PREFIX + _Actions._SHORTCUTS + ACTION_SUFFIX;
-            public static final String SHORTCUT_ABOUT = ACTION_PREFIX + _Actions._ABOUT + ACTION_SUFFIX;
-            public static final String SHORTCUT_SIDEBAR = ACTION_PREFIX + _Actions._SIDEBAR + ACTION_SUFFIX;
-        }
-        public static final class Icons {
-            public static final class Symbolic {
-                public static final String SYMBOLIC = "symbolic";
-                public static final String SEPARATOR = "-";
-                public static final String SEARCH = "system-search" + SEPARATOR + SYMBOLIC;
-                public static final String MENU = "open-menu" + SEPARATOR + SYMBOLIC;
-                public static final String PLAY = "media-playback-start" + SEPARATOR + SYMBOLIC;
-                public static final String STOP = "media-playback-stop" + SEPARATOR + SYMBOLIC;
-                public static final String PAUSE = "media-playback-pause" + SEPARATOR + SYMBOLIC;
-                public static final String DOCUMENT_SEND = "document-send" + SEPARATOR + SYMBOLIC;
-                public static final String SIDEBAR_SHOW = "sidebar-show" + SEPARATOR + SYMBOLIC;
-            }
-        }
-    }
+                    public static final class MenuError {
+                        public static final String FILE_NAME = "filename";
+                        public static final String MESSAGE = "message";
+                        public static final String SEVERITY = "severity";
+                        public static final String CODE = "code";
+                    }
+                }
 
-    public static final class Messages {
-        public static final class WARN {
-            public static final String OPEN_GITHUB_ISSUE = "Please open an issue on the projects GitHub: " + Links.PROJECT_GITHUB;
+                public static final class Request {
+
+                    public static final class StatusRequest {}
+
+                    public static final class RenameRequest {
+                        public static final String NEW_NAME = "new_name";
+                    }
+
+                    public static final class MenuChangeRequest{
+                        public static final String OBJECT_ID = "object_id";
+                        public static final String OBJECT_VALUE = "object_value";
+                    }
+
+                    public static final class FileUploadRequest {
+                        public static final String FORCE_OVERWRITE = "force_overwrite";
+                        public static final String UPLOAD_SESSION_ID = "upload_session_id";
+                        public static final String SHA256 = "sha256";
+                    }
+
+                    public static final class SettingsRequest {}
+
+                    public static final class SettingsResetRequest {}
+
+                    public static final class SettingsChangeRequest {
+                        public static final String BRIGHTNESS = "brightness";
+                        public static final String SELECTED_COLOR_MODE = "selected_color_mode";
+                        public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
+                    }
+
+                    public static final class AuthenticationRequest {
+                        public static final String USERNAME = "username";
+                        public static final String PASSWORD_HASH = "password_hash";
+                    }
+                }
+
+                public static final class Reply {
+                    public static final class StatusReply {
+                        public static final String FILE_STATE = "file_state";
+                        public static final String SELECTED_FILE = "file_selected";
+                        public static final String CURRENT_DRAW = "current_draw";
+                        public static final String VOLTAGE = "voltage";
+                        public static final String LID_STATE = "lid_state";
+                        public static final String ANIMATIONS = "available_animations";
+                        public static final String USERNAME = "username";
+
+                        public static final class AnimationList {
+                            public static final String ICON = "icon";
+                            public static final String LABEL = "label";
+                            public static final String PAUSEABLE = "pause_able";
+                        }
+                    }
+
+                    public static final class SettingsReply {
+                        public static final String BRIGHTNESS = "brightness";
+                        public static final String SELECTED_COLOR_MODE = "selected_color_mode";
+                        public static final String AVAILABLE_COLOR_MODES = "available_color_modes";
+                        public static final String RESTORE_PREVIOUS_STATE_ON_BOOT = "restore_previous_state";
+                    }
+
+                    public static final class UploadFileCollisionReply {
+
+                    }
+
+                    public static final class UploadSuccessReply {
+
+                    }
+
+                    public static final class UploadReply {
+                        public static final String UPLOAD_PERMITTED = "upload_permitted";
+                    }
+
+                    public static final class MenuReply {
+                        public static final String CONTENT = "content";
+                        public static final String LABEL = "label";
+                        public static final String TOOLTIP = "tooltip";
+                        public static final String SUBTITLE = "subtitle";
+                        public static final String FILENAME = "filename";
+                        public static final String TYPE = "type";
+                        public static final String VALUE = "value";
+
+                        public static final class Groups {
+                            public static final String SUFFIX = "suffix";
+                            public static final class Suffix {
+                                public static final String ICON_NAME = "icon_name";
+                            }
+                        }
+
+                        public static final class EntryRow {
+                            public static final String EDITABLE = "editable";
+                            public static final String APPLY_BUTTON = "apply_button";
+                            public static final String ATTRIBUTE_STRING = "attribute_string";
+                            public static final String UPDATE_COOLDOWN = "update_cooldown";
+                        }
+
+                        public static final class ButtonRow {
+                            public static final String START_ICON_NAME = "start_icon_name";
+                            public static final String END_ICON_NAME = "end_icon_name";
+                        }
+
+                        public static final class SpinRow {
+                            public static final String DIGITS = "digits";
+                            public static final String MINIMUM = "minimum";
+                            public static final String MAXIMUM = "maximum";
+                            public static final String INCREMENT = "increment";
+                            public static final String CLIMB_RATE = "climb_rate";
+                            public static final String PAGE_INCREMENT = "page_increment";
+                            public static final String WRAP = "wrap";
+                            public static final String SNAP = "snap";
+                            public static final String UPDATE_COOLDOWN = "update_cooldown";
+                        }
+
+                        public static final class ComboRow {
+                            public static final String ENABLE_SEARCH = "enable_search";
+                        }
+
+                        public static final class ExpanderRow {
+                            public static final String WITH_SWITCH = "with_switch";
+                            public static final String ENABLE_EXPANSION = "enable_expansion";
+                            public static final String EXPANDED = "expanded";
+                        }
+
+                        public static final class Button {
+                            public static final String SPIN_ON_CLICKED = "spin_on_clicked";
+                            public static final String BLOCK_AFTER_CLICKED = "block_after_clicked";
+                            public static final String BLOCKING = "blocking";
+                            public static final String SPINNING = "spinning";
+                        }
+                    }
+                }
+            }
+
+            public static final class Values {
+                public static final class General {
+                    public static final class PacketTypes {
+                        public static final String ERROR = "error";
+                        public static final String REPLY = "reply";
+                        public static final String REQUEST = "request";
+                    }
+                }
+
+                public static final class Error {
+                    public static class Types {
+                        public static final String SERVER = "server";
+                        public static final String MENU = "menu";
+                    }
+
+                    public static final class ServerError {
+                        public static final class Sources {
+                            public static final String POWER = "power";
+                            public static final String INVALID_FILE = "invalid_file";
+                            public static final String PARSING_ERROR = "parsing_error";
+                            public static final String OTHER = "other";
+                            public static final String UPLOAD_ERROR = "upload_error";
+                            public static final String NOT_IMPLEMENTED_ERROR = "not_implemented_error";
+                            public static final String SERIALIZATION_ERROR = "serialization_error";
+                            public static final String HANDLING_ERROR = "handling_error";
+                            public static final String SENDING_ERROR = "sending_error";
+                            public static final String RECEIVING_ERROR = "receiving_error";
+                        }
+                    }
+
+                    public static final class MenuError {}
+
+                    public static final String UNKNOWN_ERROR = "Unknown error";
+                }
+
+                public static final class Request {
+
+                    public static final class Types {
+                        public static final String PLAY = "play";
+                        public static final String PAUSE = "pause";
+                        public static final String STOP = "stop";
+                        public static final String MENU = "menu";
+                        public static final String MENU_CHANGE = "menu_change";
+                        public static final String FILE_UPLOAD = "file_upload";
+                        public static final String RENAME_REQUEST = "rename_request";
+                        public static final String SETTINGS_CHANGE = "settings_change";
+                        public static final String STATUS = "status";
+                        public static final String SETTINGS = "settings";
+                        public static final String SETTINGS_RESET = "settings_reset";
+                        public static final String ANIMATION_DELETE = "animation_delete";
+                        public static final String AUTHENTICATE = "authenticate";
+                        public static final String PASSWORD_CHANGE = "password_change";
+                        public static final String CREATE_ACCOUNT = "create_account";
+                        public static final String DELETE_ACCOUNT = "delete_account";
+                    }
+                }
+
+                public static final class Reply {
+
+                    public static final class Types {
+                        public static final String STATUS = "status";
+                        public static final String MENU = "menu";
+                        public static final String UPLOAD = "upload";
+                        public static final String UPLOAD_SUCCESS = "upload_success";
+                        public static final String SETTINGS = "settings";
+                    }
+
+                    public static final class MenuReply {
+                        public static final class WidgetTypes {
+                            public static final String GROUP = "group";
+                            public static final String BUTTON_ROW = "button_row";
+                            public static final String BUTTON = "button";
+                            public static final String ENTRY_ROW = "entry_row";
+                            public static final String PROPERTY_ROW = "property_row";
+                            public static final String COMBO_ROW = "combo_row";
+                            public static final String SWITCH_ROW = "switch_row";
+                            public static final String SPIN_ROW = "spin_row";
+                            public static final String EXPANDER_ROW = "expander_row";
+                        }
+
+                        public static final class General {
+                            public static final String LABEL = "label";
+                            public static final String TEXT = "text";
+                        }
+                    }
+
+                    public static final class StatusReply {
+                        public static final class FileState {
+                            public static final String PLAYING = "playing";
+                            public static final String PAUSED = "paused";
+                        }
+                    }
+                }
+            }
         }
+
+        public static final class ErrorCodes {
+            public static final int FAILED_TO_PARSE_REQUEST_TYPE = 1;
+        }
+
+        public static final class WebSocketPaths {
+            public static final String UPLOAD = "/upload";
+            public static final String COMMUNICATION = "/communication";
+            public static final String DEFAULT_SERVER_ROOT = "/";
+        }
+
+        public static final int DEFAULT_PORT = 80;
     }
 }

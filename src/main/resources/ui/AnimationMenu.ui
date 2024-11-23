@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.2 -->
+<interface domain="com.toxicstoxm.LEDSuite">
+  <!-- interface-name AnimationMenu.ui -->
+  <requires lib="gtk" version="4.16"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="AnimationMenu" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="AdwStatusPage">
+        <child>
+          <object class="AdwClamp">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">31</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">35</property>
+                    <child>
+                      <object class="GtkImage" id="animation_menu_image">
+                        <property name="accessible-role">presentation</property>
+                        <property name="icon-name">applications-system</property>
+                        <property name="pixel-size">100</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="animation_menu_label">
+                        <property name="css-classes">title-1</property>
+                        <property name="justify">center</property>
+                        <property name="label" translatable="yes">Hello Test</property>
+                        <property name="wrap">True</property>
+                        <property name="wrap-mode">word-char</property>
+                        <attributes>
+                          <attribute end="-1" name="scale" value="1.5"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="animation_menu_subtitle"/>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="animation_menu_content">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="maximum-size">500</property>
+            <property name="tightening-threshold">500</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

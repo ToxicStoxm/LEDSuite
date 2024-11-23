@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import com.toxicstoxm.LEDSuite.LEDSuite;
-import com.toxicstoxm.LEDSuite.yaml_factory.YAMLMessage;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -22,7 +21,7 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
     private final Map<Integer, LEDSuiteTask> runners;
 
     /**
-     * Constructor for creating a new asynchronous task.
+     * Constructor for creating a new asynchronous task with additional YAML configuration.
      *
      * @param runners The map of all scheduled tasks.
      * @param task The task to run.
@@ -32,21 +31,6 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
      */
     LEDSuiteAsyncTask(final Map<Integer, LEDSuiteTask> runners, final Runnable task, final int id, final long delay) {
         super(task, id, delay);
-        this.runners = runners;
-    }
-
-    /**
-     * Constructor for creating a new asynchronous task with additional YAML configuration.
-     *
-     * @param runners The map of all scheduled tasks.
-     * @param task The task to run.
-     * @param id The unique identifier for the task.
-     * @param delay The delay before the task runs.
-     * @param yaml YAML configuration for the task.
-     * @since 1.0.0
-     */
-    LEDSuiteAsyncTask(final Map<Integer, LEDSuiteTask> runners, final Runnable task, final int id, final long delay, final YAMLMessage yaml) {
-        super(task, id, delay, yaml);
         this.runners = runners;
     }
 
@@ -98,7 +82,7 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
             throw new RuntimeException(
                     String.format(
                             "Thread %s generated an exception while executing task %s",
-                            LEDSuite.class.getName(),
+                            LEDSuiteApplication.class.getName(),
                             getTaskId()),
                     thrown);
         } finally {
@@ -120,7 +104,7 @@ public class LEDSuiteAsyncTask extends LEDSuiteTask {
                                         "Unable to remove worker %s on task %s for %s",
                                         thread.getName(),
                                         getTaskId(),
-                                        LEDSuite.class.getName()),
+                                        LEDSuiteApplication.class.getName()),
                                 thrown); // Preserve the original exception, if any
                     }
                 } finally {

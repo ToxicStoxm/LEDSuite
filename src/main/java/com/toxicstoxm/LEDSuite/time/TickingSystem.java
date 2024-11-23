@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.time;
 
-import com.toxicstoxm.LEDSuite.LEDSuite;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 /**
  * The {@code TickingSystem} class manages the main ticking loop for scheduling and running tasks
@@ -99,8 +99,7 @@ public class TickingSystem {
                 try {
                     Thread.sleep(TICK_DELAY_MS - elapsedTime);
                 } catch (InterruptedException e) {
-                    LEDSuite.logger.fatal("Ticking System was interrupted! " + LEDSuite.logger.getErrorMessage(e));
-                    LEDSuite.getInstance().exit(4);
+                    LEDSuiteApplication.getLogger().fatal("Ticking System was interrupted! " + e.getMessage());
                 }
             }
         }
@@ -116,6 +115,6 @@ public class TickingSystem {
      */
     private void tick() {
         currentTick++;
-        LEDSuite.getScheduler().mainThreadHeartbeat(currentTick);
+        LEDSuiteApplication.getScheduler().mainThreadHeartbeat(currentTick);
     }
 }

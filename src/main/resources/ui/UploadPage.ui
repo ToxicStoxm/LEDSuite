@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.0 -->
+<interface domain="com.toxicstoxm.LEDSuite">
+  <!-- interface-name UploadPage.ui -->
+  <requires lib="gtk" version="4.16"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="UploadPage" parent="AdwPreferencesPage">
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">File</property>
+        <child>
+          <object class="AdwActionRow" id="file_picker_button_row">
+            <property name="subtitle">N/A</property>
+            <property name="title" translatable="yes">Selected File</property>
+            <child>
+              <object class="AdwClamp">
+                <property name="child">
+                  <object class="GtkButton" id="file_picker_button">
+                    <property name="height-request">40</property>
+                    <property name="hexpand">True</property>
+                    <property name="icon-name">document-open</property>
+                    <property name="vexpand">True</property>
+                    <property name="width-request">40</property>
+                    <signal name="clicked" handler="file_picker_button_cb"/>
+                  </object>
+                </property>
+                <property name="halign">end</property>
+                <property name="maximum-size">40</property>
+                <property name="orientation">vertical</property>
+                <property name="tightening-threshold">40</property>
+                <property name="unit">px</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwSwitchRow" id="start_animation_after_upload_switch">
+            <property name="title" translatable="yes">Start Animation after upload</property>
+            <signal name="notify::active" handler="start_animation_after_upload_switch_cb"/>
+          </object>
+        </child>
+        <child>
+          <object class="AdwExpanderRow" id="upload_statistics">
+            <property name="title" translatable="yes">Upload Statistics</property>
+            <child>
+              <object class="AdwActionRow" id="upload_speed">
+                <property name="css-classes">property</property>
+                <property name="subtitle">N/A</property>
+                <property name="title" translatable="yes">Speed</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow" id="upload_eta">
+                <property name="css-classes">property</property>
+                <property name="subtitle">N/A</property>
+                <property name="title" translatable="yes">ETA</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwClamp">
+            <property name="margin-top">25</property>
+            <property name="maximum-size">120</property>
+            <property name="tightening-threshold">120</property>
+            <property name="unit">px</property>
+            <child>
+              <object class="GtkButton" id="upload_button">
+                <property name="css-classes">pill
+suggested-action</property>
+                <property name="halign">center</property>
+                <signal name="clicked" handler="upload_button_cb"/>
+                <child>
+                  <object class="AdwClamp">
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Upload</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkRevealer" id="upload_button_spinner_revealer">
+                            <property name="child">
+                              <object class="AdwSpinner" id="upload_button_spinner"/>
+                            </property>
+                            <property name="transition-type">slide-left</property>
+                            <property name="reveal-child">False</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <property name="maximum-size">70</property>
+                    <property name="tightening-threshold">70</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

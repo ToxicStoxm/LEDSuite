@@ -1,13 +1,13 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
-import com.toxicstoxm.LEDSuite.LEDSuite;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 
 /**
  * The `LEDSuiteRunnable` class is an abstract class that provides a base implementation
  * for tasks that can be scheduled and managed within the LEDSuite task scheduler.
  *
- * <p>This class implements `Runnable` and provides various methods to schedule the task
+ * <p>This class implements are `Runnable` and provides various methods to schedule the task
  * with different execution modes, including immediate, delayed, and periodic execution.
  *
  * @since 1.0.0
@@ -22,7 +22,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      * @since 1.0.0
      */
     public synchronized void cancel() throws IllegalStateException {
-        LEDSuite.getScheduler().cancelTask(getTaskId());
+        LEDSuiteApplication.getScheduler().cancelTask(getTaskId());
     }
 
     /**
@@ -34,7 +34,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTask() throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTask(this));
+        return setupId(LEDSuiteApplication.getScheduler().runTask(this));
     }
 
     /**
@@ -46,7 +46,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTaskAsynchronously() throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTaskAsynchronously(this));
+        return setupId(LEDSuiteApplication.getScheduler().runTaskAsynchronously(this));
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTaskLater(long delay) throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTaskLater(this, TickingSystem.translate(delay)));
+        return setupId(LEDSuiteApplication.getScheduler().runTaskLater(this, TickingSystem.translate(delay)));
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTaskLaterAsynchronously(long delay) throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTaskLaterAsynchronously(this, TickingSystem.translate(delay)));
+        return setupId(LEDSuiteApplication.getScheduler().runTaskLaterAsynchronously(this, TickingSystem.translate(delay)));
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTaskTimer(long delay, long period) throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTaskTimer(this, TickingSystem.translate(delay), TickingSystem.translate(period)));
+        return setupId(LEDSuiteApplication.getScheduler().runTaskTimer(this, TickingSystem.translate(delay), TickingSystem.translate(period)));
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class LEDSuiteRunnable implements Runnable {
      */
     public synchronized LEDSuiteTask runTaskTimerAsynchronously(long delay, long period) throws IllegalStateException {
         checkState();
-        return setupId(LEDSuite.getScheduler().runTaskTimerAsynchronously(this, TickingSystem.translate(delay), TickingSystem.translate(period)));
+        return setupId(LEDSuiteApplication.getScheduler().runTaskTimerAsynchronously(this, TickingSystem.translate(delay), TickingSystem.translate(period)));
     }
 
     /**

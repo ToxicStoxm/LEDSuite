@@ -1,0 +1,553 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.toxicstoxm.LEDSuite package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: com.toxicstoxm.LEDSuite\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-23 21:46+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main/resources/ui/AnimationMenu.ui:32
+msgid "Hello Test"
+msgstr ""
+
+#: src/main/resources/ui/AuthenticationDialog.ui:15
+msgid "Username"
+msgstr ""
+
+#: src/main/resources/ui/AuthenticationDialog.ui:21
+msgid "Password"
+msgstr ""
+
+#: src/main/resources/ui/AuthenticationDialog.ui:34
+msgid "Login required"
+msgstr ""
+
+#: src/main/resources/ui/AuthenticationDialog.ui:38
+msgid "_Authenticate"
+msgstr ""
+
+#: src/main/resources/ui/AuthenticationDialog.ui:39
+#: src/main/resources/ui/FileCollisionDialog.ui:16
+#: src/main/resources/ui/OverwriteConfirmationDialog.ui:15
+#: src/main/resources/ui/RenameDialog.ui:36
+msgid "_Cancel"
+msgstr ""
+
+#: src/main/resources/ui/FileCollisionDialog.ui:8
+msgid "Animation with name '$' already exists."
+msgstr ""
+
+#: src/main/resources/ui/FileCollisionDialog.ui:11
+msgid "Duplicate Filename"
+msgstr ""
+
+#: src/main/resources/ui/FileCollisionDialog.ui:14
+#: src/main/resources/ui/RenameDialog.ui:35
+msgid "_Rename"
+msgstr ""
+
+#: src/main/resources/ui/FileCollisionDialog.ui:15
+#: src/main/resources/ui/OverwriteConfirmationDialog.ui:14
+msgid "_Overwrite"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:186
+msgid "Upload Files"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:201
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:91
+msgid "Animations"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:237
+msgid "File Management"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:283
+msgid "_Status Menu"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:287
+msgid "_Settings Menu"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:291
+msgid "_Shortcuts Menu"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:295
+msgid "_About LEDSuite"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:299
+msgid "_Quit"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:311
+#: src/main/resources/ui/LEDSuiteWindow.ui:333
+#: src/main/resources/ui/ShortcutsDialog.ui:14
+#: src/main/resources/ui/ShortcutsDialog.ui:36
+msgid "Shortcuts"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:314
+#: src/main/resources/ui/ShortcutsDialog.ui:17
+#: src/main/resources/ui/StatusDialog.ui:23
+msgid "General"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:319
+#: src/main/resources/ui/ShortcutsDialog.ui:22
+msgid "Show Status"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:326
+#: src/main/resources/ui/ShortcutsDialog.ui:29
+msgid "Show Settings"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:340
+#: src/main/resources/ui/ShortcutsDialog.ui:43
+msgid "About LEDSuite"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:348
+#: src/main/resources/ui/ShortcutsDialog.ui:51
+msgid "Quit"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:355
+#: src/main/resources/ui/ShortcutsDialog.ui:58
+msgid "UI"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:360
+#: src/main/resources/ui/ShortcutsDialog.ui:63
+msgid "Toggle Sidebar"
+msgstr ""
+
+#: src/main/resources/ui/OverwriteConfirmationDialog.ui:8
+msgid "Are you sure you want to overwrite the existing animation?"
+msgstr ""
+
+#: src/main/resources/ui/OverwriteConfirmationDialog.ui:11
+msgid "Confirm overwrite"
+msgstr ""
+
+#: src/main/resources/ui/RenameDialog.ui:14
+msgid "filename"
+msgstr ""
+
+#: src/main/resources/ui/RenameDialog.ui:15
+msgid "Filename"
+msgstr ""
+
+#: src/main/resources/ui/RenameDialog.ui:31
+msgid "Rename file"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:23
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:209
+msgid "Disconnected"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:36
+msgid "Click to connect"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:42
+msgid "Local"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:47
+msgid "Server Address"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:48
+msgid ""
+"The URL used to connect to the server.\n"
+"Example: wss://www.example.com:443/LEDSuite/\n"
+"Format: protcol://domain:port/folder/"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:98
+msgid "Brightness"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:109
+msgid "Color Mode"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:114
+msgid "Restore previous state on boot"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:128
+msgid "Apply"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:29
+msgid "Lid State"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:37
+msgid "Animation"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:43
+msgid "Current File"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:51
+msgid "Current State"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:59
+msgid "Power"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:65
+msgid "Voltage"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:73
+msgid "Current Draw"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:81
+msgid "Server Status"
+msgstr ""
+
+#: src/main/resources/ui/StatusDialog.ui:92
+msgid "Status"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:10
+msgid "File"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:14
+msgid "Selected File"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:38
+msgid "Start Animation after upload"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:44
+msgid "Upload Statistics"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:49
+msgid "Speed"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:56
+msgid "ETA"
+msgstr ""
+
+#: src/main/resources/ui/UploadPage.ui:80
+msgid "Upload"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:471
+msgid "Confirm deletion"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:472
+msgid "Are you sure that you want to delete '$'?"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:473
+msgid "Delete"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:100
+msgid "Pick a file"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:147
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:200
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:222
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:316
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java:177
+msgid "N/A"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java:97
+msgid "Rename"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:196
+msgid "Connected"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:240
+msgid "Connecting"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:245
+msgid "Disconnecting"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:328
+msgid "Slow down!"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:404
+msgid "Authenticated as $"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:411
+msgid "Authenticate"
+msgstr ""
+
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:426
+msgid "Authenticating"
+msgstr ""
+
+#: data/com.toxicstoxm.LEDSuite.desktop.in.in:5
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:5
+msgid "@NAME@"
+msgstr ""
+
+#: data/com.toxicstoxm.LEDSuite.desktop.in.in:7
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:7
+msgid "Control an LED-Matrix with style"
+msgstr ""
+
+#: data/com.toxicstoxm.LEDSuite.desktop.in.in:10
+msgid "LED;matrix;LCCP;Cube;LEDSuite;"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:10
+msgid "@DEVELOPER_NAME@"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:22
+msgid "Release Candidate #1"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:24
+msgid "Rewrite of the whole app."
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:30
+msgid ""
+"This is our second stable release. Please report any bugs on the projects "
+"GitHub"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:32
+msgid "Added internationalization (en_US, de_DE, it_IT)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:33
+msgid "Fixed a ton of bugs"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:34
+msgid "Code cleanup and refactoring"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:35
+msgid "Added a lot of features to the logger"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:36
+msgid "General refactoring of GUI logic"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:42
+msgid ""
+"This is our first stable release. Please report any bugs on the projects "
+"GitHub"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:44
+msgid "Added CLI arguments for all config options that are set on startup"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:45
+msgid "Changed the startup process to support CLI arguments"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:46
+msgid "Added new config options"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:47
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:59
+msgid "Fixed a few bugs"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:48
+msgid "Documentation (7%)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:49
+msgid "Code cleanup (12%)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:56
+msgid ""
+"This is our third pre-release. Please report any bugs on the projects GitHub"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:58
+msgid "Refactored 'LCCP' to 'LEDSuite' internally"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:60
+msgid "Implemented CLI Arguments"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:61
+msgid "Fixed Segfault (hopefully)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:62
+msgid "Documentation (6%)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:63
+msgid "Code cleanup (8%)"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:70
+msgid ""
+"This is our second pre-release. Please report any bugs on the projects GitHub"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:72
+msgid "A ton of bug fixes"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:73
+msgid "Documentation progress 5%"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:74
+msgid "Code cleanup"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:75
+msgid "Switched from maven to gradle"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:76
+msgid "File cleanup"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:83
+msgid ""
+"This is our first (pre) release so no release note but we have plans for the "
+"future:"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:85
+msgid "Translation for the app"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:86
+msgid "Writing the backend"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:87
+msgid "Bugfixes"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:88
+msgid "Waiting for the OpenJDK 22 Flatpak SDK extension to arrive"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:89
+msgid "Maybe a Web/JavaScript frontend"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:90
+msgid "More/better documentation"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:91
+msgid "Maybe a new icon"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:92
+msgid "ARM64 build"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:144
+msgid ""
+"Program for controlling any HDMI LCD/OLED/Plasma/CRT, LED-Matrix or an LED-"
+"Cube with the proper backend."
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:145
+msgid "With the following features:"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:148
+msgid "Uploading files to the server"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:149
+msgid "Receiving status and errors from the server"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:150
+msgid "Changing and adjusting server-side settings"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:151
+msgid ""
+"Setting up and controlling interactive animations that are on the server"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:152
+msgid "Playing back MP4, JPEG and many other files on the server's LED-Matrix"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:157
+msgid "LED"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:158
+msgid "matrix"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:159
+msgid "LCCP"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:160
+msgid "Cube"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:161
+msgid "LEDSuite"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:168
+msgid "LEDSuite add file dialog, used to upload files to the backend"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:172
+msgid "Example of what the settings menu of an animation can look like"
+msgstr ""
+
+#: src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in:176
+msgid "LEDSuite settings menu"
+msgstr ""

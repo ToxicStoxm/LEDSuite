@@ -12,8 +12,12 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import lombok.*;
 
 /**
- * <strong>Meaning:</strong><br>
- * A file was successfully uploaded to the server.
+ * Represents a reply packet indicating the successful upload of a file to the server.
+ *
+ * <p><strong>Usage:</strong><br>
+ * This packet confirms that the file was successfully uploaded and is typically a response to {@link FileUploadRequestPacket}.
+ * </p>
+ *
  * @since 1.0.0
  * @see FileUploadRequestPacket
  */
@@ -25,29 +29,53 @@ import lombok.*;
 @Setter
 public class UploadSuccessReplyPacket extends CommunicationPacket {
 
+    /**
+     * The name of the successfully uploaded file.
+     */
     private String fileName;
 
+    /**
+     * Retrieves the type of this packet, identifying it as a reply.
+     *
+     * @return the packet type as a string
+     */
     @Override
     public String getType() {
         return Constants.Communication.YAML.Values.General.PacketTypes.REPLY;
     }
 
+    /**
+     * Retrieves the specific subtype of this packet, identifying it as an upload success reply.
+     *
+     * @return the packet subtype as a string
+     */
     @Override
     public String getSubType() {
         return Constants.Communication.YAML.Values.Reply.Types.UPLOAD_SUCCESS;
     }
 
+    /**
+     * Deserializes the given YAML string into an {@link UploadSuccessReplyPacket} object.
+     *
+     * @param yamlString the YAML string to deserialize
+     * @return the deserialized {@link UploadSuccessReplyPacket}
+     * @throws DeserializationException if any required keys are missing or invalid
+     */
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
         super.deserialize(yamlString);
-        UploadSuccessReplyPacket packet = UploadSuccessReplyPacket.builder().build();
 
         ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
-        packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
+        fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);
 
-        return packet;
+        return this;
     }
 
+    /**
+     * Serializes the {@link UploadSuccessReplyPacket} to a YAML string.
+     *
+     * @return the serialized YAML string
+     */
     @Override
     public String serialize() {
         super.serialize();
@@ -57,9 +85,12 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
         return yaml.saveToString();
     }
 
+    /**
+     * Handles the packet by logging the success message and updating the application's state accordingly.
+     */
     @Override
     public void handlePacket() {
-        LEDSuiteApplication.getLogger().info("File upload completed successfully. Received confirmation from the server!", new LEDSuiteLogAreas.COMMUNICATION());
+        LEDSuiteApplication.getLogger().info("File upload completed successfully. Server confirmation received.", new LEDSuiteLogAreas.COMMUNICATION());
         LEDSuiteApplication.getLogger().info(" > Filename: " + fileName, new LEDSuiteLogAreas.COMMUNICATION());
     }
 }

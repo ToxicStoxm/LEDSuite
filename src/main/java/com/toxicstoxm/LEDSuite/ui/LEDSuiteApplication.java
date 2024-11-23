@@ -483,6 +483,26 @@ public class LEDSuiteApplication extends Application {
         }
     }
 
+    /**
+     * Constructs a response callback for handling file upload collisions in the {@link RenameDialog}.
+     * This callback manages the user's response to file name collisions during an upload process
+     * by offering options to rename, overwrite, or cancel the upload.
+     * <p>
+     * The callback performs the following:
+     * <ul>
+     *   <li>If the user cancels the upload, an {@link UploadAbortException} is thrown.</li>
+     *   <li>If the user chooses to rename, a {@link RenameDialog} is presented to input a new file name.</li>
+     *   <li>If the user chooses to overwrite, an {@link OverwriteConfirmationDialog} is presented for final confirmation.</li>
+     * </ul>
+     *
+     * @param fileName              A reference to the current file name involved in the upload process.
+     * @param uploadSessionID       The session ID of the upload's WebSocket endpoint.
+     * @param checksum              The checksum of the uploaded file for verification purposes.
+     * @param uploadFinishCallback  The callback to be invoked once the upload process is completed.
+     * @return                      The constructed {@link org.gnome.adw.AlertDialog.ResponseCallback}.
+     *
+     * @throws UploadAbortException if the user cancels the upload.
+     */
     @Contract(pure = true)
     private static AlertDialog.@NotNull ResponseCallback getResponseCallback(AtomicReference<String> fileName, String uploadSessionID, String checksum, UpdateCallback<Boolean> uploadFinishCallback) {
         return response -> {
@@ -725,7 +745,16 @@ public class LEDSuiteApplication extends Application {
         }.runTaskAsynchronously();
     }
 
-    public static void handleError(String message, String heading, LogArea logArea) {
+    /**
+     * Handles an error by displaying an error dialog with a custom message, heading, and log area.
+     * If a parent application window is available, the error dialog will be presented to the user.
+     * The error message will also be logged in the specified log area.
+     *
+     * @param message  The error message to display and log. Must not be {@code null}.
+     * @param heading  The heading to display in the error dialog. Can be {@code null}.
+     * @param logArea  The log area to associate with this error in the log system. Can be {@code null}.
+     */
+    public static void handleError(@NotNull String message, String heading, LogArea logArea) {
         ApplicationWindow parent = window.asApplicationWindow();
         if (parent != null) {
             ErrorAlertDialog.builder()
@@ -737,15 +766,35 @@ public class LEDSuiteApplication extends Application {
         logger.error(message, logArea);
     }
 
-    public static void handleError(String message) {
+    /**
+     * Handles an error by displaying an error dialog with a custom message.
+     * Uses default values for the heading and log area.
+     *
+     * @param message  The error message to display and log. Must not be {@code null}.
+     */
+    public static void handleError(@NotNull String message) {
         handleError(message, null, null);
     }
 
-    public static void handleError(String message, String heading) {
+    /**
+     * Handles an error by displaying an error dialog with a custom message and heading.
+     * Uses a default value for the log area.
+     *
+     * @param message  The error message to display and log. Must not be {@code null}.
+     * @param heading  The heading to display in the error dialog. Can be {@code null}.
+     */
+    public static void handleError(@NotNull String message, String heading) {
         handleError(message, heading, null);
     }
 
-    public static void handleError(String message, LogArea logArea) {
+    /**
+     * Handles an error by displaying an error dialog with a custom message.
+     * Associates the error message with the specified log area.
+     *
+     * @param message  The error message to display and log. Must not be {@code null}.
+     * @param logArea  The log area to associate with this error in the log system. Can be {@code null}.
+     */
+    public static void handleError(@NotNull String message, LogArea logArea) {
         handleError(message, null, logArea);
     }
 

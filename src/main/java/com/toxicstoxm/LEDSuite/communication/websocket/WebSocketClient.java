@@ -81,7 +81,7 @@ public class WebSocketClient {
      * @param path The URI of the server to connect to.
      */
     private void run(WebSocketClientEndpoint clientEndpoint, URI path) {
-        LEDSuiteApplication.getLogger().info("Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path, new LEDSuiteLogAreas.NETWORK());
+        LEDSuiteApplication.getLogger().verbose(" > Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path, new LEDSuiteLogAreas.NETWORK());
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -97,7 +97,7 @@ public class WebSocketClient {
                         textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
-                    LEDSuiteApplication.getLogger().warn(e.getMessage(), new LEDSuiteLogAreas.NETWORK());
+                    LEDSuiteApplication.getLogger().verbose(" > " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
                     ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
                 } finally {
                     connected = false;
@@ -160,7 +160,7 @@ public class WebSocketClient {
             );
 
             if (isLast) {
-                LEDSuiteApplication.getLogger().info("Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+                LEDSuiteApplication.getLogger().verbose(" > Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
                 shutdown();
             }
         }
@@ -170,7 +170,7 @@ public class WebSocketClient {
      * Shuts down the WebSocket client, closing the connection and stopping further communication.
      */
     public void shutdown() {
-        LEDSuiteApplication.getLogger().info(StringFormatter.getClassName(getClass()) + ": Shutdown triggered!", new LEDSuiteLogAreas.NETWORK());
+        LEDSuiteApplication.getLogger().verbose(" > " + StringFormatter.getClassName(getClass()) + ": Shutdown triggered!", new LEDSuiteLogAreas.NETWORK());
         cancelled = true;
     }
 

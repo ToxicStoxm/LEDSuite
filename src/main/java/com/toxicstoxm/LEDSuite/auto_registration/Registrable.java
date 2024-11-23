@@ -17,13 +17,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class provides a way to dynamically allow registering specific items to specific module classes.<br>
- * @implNote Children of this class must provide {@link #autoRegisterModule()}. <br>
- * {@link #autoRegister()} will now search the provided classpath using reflection {@link ClassGraph}. <br>
- * It will automatically detect all classes annotated with the {@link AutoRegister} annotation
- * and check if their specified {@link AutoRegister#module()} matches the one specified by the child class.
- * If true, that class will be added to the {@link #registeredItems} map, and is accessible from the child class by calling {@link #get(String)}.
- * @param <T> the module-type, derivative of {@link AutoRegistrableItem}. E.g. {@link Packet}
+ * Provides a mechanism to dynamically register items to specific modules at runtime.
+ * <br>
+ * Subclasses must define the module information by overriding {@link #autoRegisterModule()}.
+ * {@link #autoRegister()} will scan the specified classpath for classes annotated with
+ * {@link AutoRegister} that match the module and type defined in the subclass.
+ * If matched, those classes will be registered and available for access through {@link #get(String)}.
+ * <br>
+ * @param <T> The type of the module, extending {@link AutoRegistrableItem}. For example, {@link Packet}.
  * @since 1.0.0
  */
 public abstract class Registrable<T extends AutoRegistrableItem> {
@@ -31,57 +32,66 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
     private final HashMap<String, T> registeredItems = new HashMap<>();
 
     /**
-     * Relay function for {@link HashMap#get(Object)}
-     * @param type key
-     * @return value associated with the specified key, or {@code null} if the key is not present or associated with null
+     * Retrieves the registered item corresponding to the given key (item type).
+     *
+     * @param type the key to look up in the registered items map
+     * @return the registered item associated with the specified type, or {@code null} if not found
      */
     public T get(String type) {
         return registeredItems.get(type);
     }
 
     /**
-     * Relay function for {@link HashMap#containsKey(Object)}
-     * @param type key
-     * @return {@code true} if {@link #registeredItems} contains this key, otherwise {@code false}
+     * Checks if an item of the specified type has been registered.
+     *
+     * @param type the key to check in the registered items map
+     * @return {@code true} if the item is registered, otherwise {@code false}
      */
     public boolean isRegistered(String type) {
         return registeredItems.containsKey(type);
     }
 
     /**
-     * Module data specified by the child class.
-     * @return the module data
-     * @see AutoRegisterModule
+     * Abstract method to be implemented by subclasses to specify module registration data.
+     *
+     * @return an {@link AutoRegisterModule} instance describing the module for registration
      */
     protected abstract AutoRegisterModule<T> autoRegisterModule();
 
+    /**
+     * Registers a given item to the module.
+     *
+     * @param item the item to register
+     * @return {@code true} if the item was successfully registered, otherwise {@code false} (item already registered)
+     */
     public boolean registerItem(T item) {
         return registeredItems.putIfAbsent(item.getItemType(), item) == null;
     }
 
     /**
-     * Searches through the classpath provided by the child class.
-     * Registers all classes annotated with {@link AutoRegister} and the same {@link AutoRegister#module()}
-     * as the one specified by the child class in {@link #autoRegisterModule()} to {@link #registeredItems}.
+     * Automatically registers all classes annotated with {@link AutoRegister} that match the
+     * module and type specified by the subclass.
+     * The registration process uses reflection to load and instantiate the classes.
+     * <br>
+     * Classes must implement the module type defined by {@link #autoRegisterModule()}.
      */
     public void autoRegister() {
-        // Module data specified by the child class
         AutoRegisterModule<T> module = autoRegisterModule();
 
         if (module == null) {
-            LEDSuiteApplication.getLogger().error("Tried to auto register items for unsupported module!", new LEDSuiteLogAreas.GENERAL());
+            LEDSuiteApplication.getLogger().error("Tried to auto-register items for an unsupported module!", new LEDSuiteLogAreas.GENERAL());
             return;
         }
 
-        Class<T> moduleType = module.getModuleType();
-        AutoRegisterModules moduleName = module.getModule();
-        String moduleClassPath = module.getClassPath();
+        Class<T> moduleType = module.moduleType();
+        AutoRegisterModules moduleName = module.module();
+        String moduleClassPath = module.classPath();
 
         String moduleTypeName = StringFormatter.getClassName(moduleType);
 
         Set<Class<T>> annotatedClasses = new HashSet<>();
 
-        // Scan the specified package for classes with @AutoRegister annotation
+        // Scan the specified package for classes annotated with @AutoRegister
         try (ScanResult scanResult = new ClassGraph()
                 .enableClassInfo()
                 .enableAnnotationInfo()
@@ -90,25 +100,21 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
 
             for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(AutoRegister.class.getName())) {
                 try {
-                    // Load class annotated with @AutoRegister
                     Class<?> loadedClass = classInfo.loadClass();
 
-                    // Only register if the class has the correct module name and type
                     AutoRegister annotation = loadedClass.getAnnotation(AutoRegister.class);
                     if (annotation != null && annotation.module().equals(moduleName)) {
                         if (moduleType.isAssignableFrom(loadedClass)) {
-                            // Casting the loaded class to type class
-                            // Suppressing the unchecked warning because compatability is checked with is assignable from above
                             @SuppressWarnings("unchecked")
                             Class<T> typeClass = (Class<T>) loadedClass;
                             annotatedClasses.add(typeClass);
                         } else {
-                            LEDSuiteApplication.getLogger().error("Failed to load class: " + classInfo.getName()
-                                    + ". Class doesn't implement " + moduleTypeName + " interface!", new LEDSuiteLogAreas.COMMUNICATION());
+                            LEDSuiteApplication.getLogger().error("Class " + classInfo.getName()
+                                    + " does not implement " + moduleTypeName + " interface!", new LEDSuiteLogAreas.COMMUNICATION());
                         }
                     }
                 } catch (Exception e) {
-                    LEDSuiteApplication.getLogger().error("Failed to load class: '" + classInfo.getName() + "' to module '" + moduleName + "'",
+                    LEDSuiteApplication.getLogger().error("Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'",
                             new LEDSuiteLogAreas.COMMUNICATION());
                     LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
                     throw new RuntimeException(e);
@@ -116,18 +122,16 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
             }
         }
 
-        // Loop through all previously loaded classes
+        // Register the valid items found in the previous step
         for (Class<T> itemClass : annotatedClasses) {
             try {
-                // Use reflection to bypass access check
                 Constructor<T> constructor = itemClass.getDeclaredConstructor();
-                constructor.setAccessible(true); // Enable access to non-public constructors
-                T item = constructor.newInstance(); // Create a new instance of the loaded class
-                String id = item.getItemType(); // Retrieve the item's id for logging
+                constructor.setAccessible(true);
+                T item = constructor.newInstance();
 
-                // Register the new item instance and log the results
+                String id = item.getItemType();
                 if (registerItem(item)) {
-                    LEDSuiteApplication.getLogger().info("Successfully Registered " + moduleTypeName + ": " + id,
+                    LEDSuiteApplication.getLogger().info("Successfully registered " + moduleTypeName + ": " + id,
                             new LEDSuiteLogAreas.COMMUNICATION());
                 } else {
                     LEDSuiteApplication.getLogger().debug("Item " + id + " is already registered. Skipping it.",
@@ -143,16 +147,17 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
     }
 
     /**
-     * Unregisters a singular item, associated with the specified type.
-     * @param type type associated with an item
-     * @return {@code true}, if the item was registered and was successfully unregistered, otherwise {@code false}
+     * Unregisters an item by its type (key).
+     *
+     * @param type the type of the item to unregister
+     * @return {@code true} if the item was successfully unregistered, otherwise {@code false}
      */
     public boolean unregisterPacket(String type) {
         return registeredItems.remove(type) != null;
     }
 
     /**
-     * Unregisters all registered items.
+     * Unregisters all items.
      */
     public void clearPackets() {
         registeredItems.clear();

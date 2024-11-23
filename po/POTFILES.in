@@ -21,4 +21,4 @@ src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java
 
 # Metadata
 data/com.toxicstoxm.LEDSuite.desktop.in.in
-data/com.toxicstoxm.LEDSuite.metainfo.xml.in.in
+src/main/resources/com.toxicstoxm.LEDSuite.metainfo.xml.in.in

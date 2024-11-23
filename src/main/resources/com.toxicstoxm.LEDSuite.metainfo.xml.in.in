@@ -13,6 +13,8 @@
   <metadata_license>CC-BY-SA-4.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
 
+  <translation type="gettext">@ID@</translation>
+
   <!--WARNING: newest release MUST correspond to the maven version-->
   <releases>
     <release version="1.0.0-rc1" date="2024-11-23" type="development">

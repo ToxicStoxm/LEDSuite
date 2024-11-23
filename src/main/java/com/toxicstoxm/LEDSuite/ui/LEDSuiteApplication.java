@@ -728,13 +728,11 @@ public class LEDSuiteApplication extends Application {
     public static void handleError(String message, String heading, LogArea logArea) {
         ApplicationWindow parent = window.asApplicationWindow();
         if (parent != null) {
-            //GLib.idleAddOnce(() -> {
-                ErrorAlertDialog.builder()
-                        .errorMessage(message)
-                        .heading(heading)
-                        .build()
-                        .present(parent);
-            //});
+            ErrorAlertDialog.builder()
+                    .errorMessage(message)
+                    .heading(heading)
+                    .build()
+                    .present(parent);
         }
         logger.error(message, logArea);
     }

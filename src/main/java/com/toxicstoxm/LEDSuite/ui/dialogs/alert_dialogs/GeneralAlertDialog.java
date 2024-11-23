@@ -1,12 +1,15 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
+import com.toxicstoxm.LEDSuite.time.Action;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
+import java.util.HashMap;
 
 /**
  * A general-purpose alert dialog used to display messages and handle user responses in the LEDSuite application.
@@ -19,7 +22,7 @@ import java.lang.foreign.MemorySegment;
  * @since 1.0.0
  */
 @GtkTemplate(name = "GeneralAlertDialog", ui = "/com/toxicstoxm/LEDSuite/GeneralAlertDialog.ui")
-public class GeneralAlertDialog extends AlertDialog {
+public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> {
 
     // Register the GtkTemplate type for the dialog
     private static final Type gtype = TemplateTypes.register(GeneralAlertDialog.class);
@@ -75,5 +78,32 @@ public class GeneralAlertDialog extends AlertDialog {
         if (responseCallback != null) {
             responseCallback.run(response);
         }
+    }
+    
+    private final HashMap<String, Action> registeredResponses = new HashMap<>();
+
+    @Override
+    public com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> configure(@NotNull AlertDialogData data) {
+        setHeading(data.heading());
+        setBody(data.body());
+        
+        ResponseCallback responseCb = response -> {
+            
+            if (registeredResponses.containsKey(response)) {
+                registeredResponses.get(response).run();
+            }
+            
+        };
+
+        for (AlertDialogResponse response : data.responses()) {
+            registeredResponses.put(response.id(), response.responseCallback());
+            addResponse(response.id(), response.label());
+            setResponseAppearance(response.id(), response.appearance());
+            setResponseEnabled(response.id(), response.activated());
+        }
+        
+        onResponse(responseCb);
+
+        return this;
     }
 }

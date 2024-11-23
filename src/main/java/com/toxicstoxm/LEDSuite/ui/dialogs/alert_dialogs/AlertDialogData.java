@@ -1,6 +1,9 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import lombok.Builder;
+import lombok.Singular;
+
+import java.util.List;
 
 /**
  * A data class representing the content and responses for an alert dialog.
@@ -19,5 +22,5 @@ import lombok.Builder;
 public record AlertDialogData(
         String heading,
         String body,
-        AlertDialogResponse... responses
+        @Singular List<AlertDialogResponse> responses
 ) {}

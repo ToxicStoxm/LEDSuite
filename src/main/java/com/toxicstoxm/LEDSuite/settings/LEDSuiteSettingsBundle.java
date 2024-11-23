@@ -1,6 +1,5 @@
 package com.toxicstoxm.LEDSuite.settings;
 
-
 import com.toxicstoxm.YAJSI.api.settings.Setting;
 import com.toxicstoxm.YAJSI.api.settings.SettingsBundle;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISetting;
@@ -9,13 +8,17 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * YAJSI settings bundle for LEDSuite.
+ * Settings bundle for LEDSuite using YAJSI framework.
+ * This class provides access to application-specific settings, mapped to YAML configuration paths.
  * @since 1.0.0
  * @see YAJSISetting
  * @see SettingsBundle
  */
 public class LEDSuiteSettingsBundle implements SettingsBundle {
 
+    /**
+     * Setting to enable or disable logging of settings.
+     */
     @YAMLSetting(path = "LEDSuite.Debugging.Enable-Settings-Logging")
     public static class EnableSettingsLogging extends YAJSISetting<Boolean> {
 
@@ -28,6 +31,9 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         }
     }
 
+    /**
+     * Setting for the WebSocket URI used in LEDSuite network communication.
+     */
     @YAMLSetting(path = "LEDSuite.Network.Websocket-URI")
     public static class WebsocketURI extends YAJSISetting<String> {
 
@@ -40,6 +46,9 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         }
     }
 
+    /**
+     * Setting for the initial folder path used by the file picker in the UI.
+     */
     @YAMLSetting(path = "LEDSuite.UI.FilePicker-Initial-Folder")
     public static class FilePickerInitialFolder extends YAJSISetting<String> {
 
@@ -52,6 +61,9 @@ public class LEDSuiteSettingsBundle implements SettingsBundle {
         }
     }
 
+    /**
+     * Setting for the packet size in bytes used for network communication.
+     */
     @YAMLSetting(path = "LEDSuite.Network.Packet-Size-Bytes")
     public static class PacketSize extends YAJSISetting<Integer> {
 

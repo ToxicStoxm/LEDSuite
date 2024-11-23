@@ -21,7 +21,6 @@ jobs:
       # Install libadwaita dependencies
       - name: Install Dependencies
         run: |
-          sudo add-apt-repository 'deb https://launchpad.net/ubuntu oracular main'
           sudo apt-get update
           sudo apt-get install -y \
             libadwaita=1.6.0-1ubuntu2

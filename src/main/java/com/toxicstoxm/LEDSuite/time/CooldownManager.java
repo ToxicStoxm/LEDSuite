@@ -13,7 +13,7 @@ import java.util.HashMap;
  * The action will only be executed if the action is not on cooldown.
  * @since 1.0.0
  */
-public class CooldownManger {
+public class CooldownManager {
 
     private record CooldownAction(Action action, long cooldown, long lastCall, String actionGroup) {}
 

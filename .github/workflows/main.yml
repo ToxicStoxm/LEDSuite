@@ -24,7 +24,8 @@ jobs:
           sudo add-apt-repository 'deb https://ftp.uni-stuttgart.de/ubuntu/ oracular main'
           sudo apt-get update
           sudo apt-get install -y \
-            libadwaita-1-dev=1.6.0-1ubuntu2
+            libadwaita-1-dev=1.6.0-1ubuntu2 \
+            msgfmt
 
       # Set up JDK
       - name: Set up JDK 23

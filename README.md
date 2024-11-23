@@ -68,16 +68,16 @@
         - [X] Status reply
         - [X] Menu reply
       - [X] Error packets
-- [ ] Documentation
-  - [ ] Add Javadoc
+- [X] Documentation
+  - [X] Add Javadoc
     - [X] Classes
-    - [ ] Functions
-  - [ ] Add tons of comments to the code
+    - [X] Functions
+  - [X] Add tons of comments to the code
   - [ ] Create examples (?)
 - [ ] I18N
   - [ ] Languages
     - [X] English
-    - [ ] German
+    - [X] German
     - [ ] Italian
     - [ ] French (?)
     - [ ] Spanish (?)
@@ -89,13 +89,13 @@
     - [ ] Icon
     - [ ] Version
     - [ ] Patch notes
-  - [ ] Update dependencies
+  - [X] Update dependencies
 - [ ] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
   - [ ] Create log areas
   - [ ] add a lot of log messages
-- [ ] Settings
+- [X] Settings
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
-  - [ ] Implement all necessary settings
+  - [X] Implement all necessary settings
 - [ ] Other
   - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 

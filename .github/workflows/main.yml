@@ -42,6 +42,7 @@ jobs:
         uses: BSFishy/meson-build@v1.0.3
         with:
           action: install
+          setup-options: --prefix install
           directory: build
           meson-version: 1.6.0
           ninja-version: 1.11.1.2

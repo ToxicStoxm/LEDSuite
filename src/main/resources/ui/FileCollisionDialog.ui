@@ -5,7 +5,7 @@
   <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="FileCollisionDialog" parent="AdwAlertDialog">
-    <property name="body" translatable="yes">File Name collision</property>
+    <property name="body" translatable="yes">Animation with name '$' already exists.</property>
     <property name="close-response">cancel</property>
     <property name="default-response">rename</property>
     <property name="heading" translatable="yes">Duplicate Filename</property>

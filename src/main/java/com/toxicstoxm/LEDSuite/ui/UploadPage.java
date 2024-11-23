@@ -25,8 +25,12 @@ import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
 /**
- * Adw dialog for uploading files to the server. It includes a file picker, upload statistics and a toggle for automatically starting the file after the upload finished.
+ * Adw dialog for uploading files to the server.
+ * Includes a file picker, upload statistics, and a toggle for automatically starting the file after the upload finishes.
  * <br>Template file: {@code UploadPage.ui}
+ *
+ * <p>Responsible for file upload management, showing the progress of uploads, and interacting with WebSocket communication.</p>
+ *
  * @since 1.0.0
  */
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
@@ -43,9 +47,14 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     }
 
     private ApplicationWindow parent;
-
     private String selectedFile;
 
+    /**
+     * Creates a new instance of the UploadPage.
+     *
+     * @param parent The parent ApplicationWindow.
+     * @return A new instance of UploadPage.
+     */
     public static @NotNull UploadPage create(ApplicationWindow parent) {
         UploadPage uploadPage = GObject.newInstance(getType());
         uploadPage.parent = parent;
@@ -57,18 +66,25 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     @GtkChild(name = "start_animation_after_upload_switch")
     public SwitchRow startAnimationAfterUploadSwitch;
 
+    /**
+     * Callback for the "start animation after upload" switch.
+     * Logs the state of the switch (on/off).
+     */
     @GtkCallback(name = "start_animation_after_upload_switch_cb")
     public void startAnimationAfterUploadCb() {
-        boolean switch_state = startAnimationAfterUploadSwitch.getActive();
-        LEDSuiteApplication.getLogger().info("Start_animation_after_upload switch toggle -> " + switch_state, new LEDSuiteLogAreas.UI());
+        boolean switchState = startAnimationAfterUploadSwitch.getActive();
+        LEDSuiteApplication.getLogger().info("Start animation after upload switch toggled -> " + switchState, new LEDSuiteLogAreas.UI());
     }
 
     @GtkChild(name = "file_picker_button_row")
     public ActionRow filePickerRow;
 
+    /**
+     * Callback for the file picker button. Opens the file picker dialog and sets the selected file.
+     * The file picker only allows certain types of files (e.g., JAR, images, videos).
+     */
     @GtkCallback(name = "file_picker_button_cb")
     public void filePickerButtonClickedCb() {
-
         var filter = FileFilter.builder()
                 .setSuffixes(new String[]{"jar"})
                 .setMimeTypes(new String[]{"image/*", "video/*"})
@@ -76,7 +92,6 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 .build();
 
         String initialFolder = LEDSuiteSettingsBundle.FilePickerInitialFolder.getInstance().get();
-
         if (initialFolder.isBlank()) {
             initialFolder = System.getProperty("user.home");
         }
@@ -89,7 +104,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 .setInitialFolder(File.newForPath(initialFolder))
                 .build();
 
-        filePicker.open(parent, null, (_, result, _)  -> {
+        filePicker.open(parent, null, (_, result, _) -> {
             try {
                 var selectedFile = filePicker.openFinish(result);
                 if (selectedFile != null) {
@@ -110,7 +125,6 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 LEDSuiteApplication.getLogger().info("User canceled file picker! No file selected!", new LEDSuiteLogAreas.UI());
             }
         });
-
     }
 
     @GtkChild(name = "upload_button")
@@ -124,10 +138,20 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
     private boolean loading = false;
 
+    /**
+     * Updates the state of the upload button based on whether a file is selected.
+     *
+     * @param state If true, the upload button is enabled. Otherwise, it is disabled.
+     */
     public void setUploadButtonState(boolean state) {
         uploadButton.setSensitive(!filePickerRow.getSubtitle().isBlank() && !filePickerRow.getSubtitle().equals(Translations.getText("N/A")) && state);
     }
 
+    /**
+     * Sets the server connection state and updates the upload button's active state.
+     *
+     * @param serverConnected {@code true} if the server is connected, {@code false} otherwise.
+     */
     public void setServerConnected(boolean serverConnected) {
         GLib.idleAddOnce(() -> {
             WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
@@ -144,6 +168,11 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     @GtkChild(name = "upload_eta")
     public ActionRow uploadEta;
 
+    /**
+     * Updates the upload statistics (speed and ETA) in the UI.
+     *
+     * @param newUploadStats The updated upload statistics.
+     */
     public void setUploadStatistics(@NotNull UploadStatistics newUploadStats) {
         long eta = newUploadStats.millisecondsRemaining();
         long speed = newUploadStats.bytesPerSecond();
@@ -161,6 +190,9 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         });
     }
 
+    /**
+     * Resets the upload statistics display to its initial state.
+     */
     public void resetUploadStatistics() {
         GLib.idleAddOnce(() -> {
             uploadStatistics.setExpanded(false);
@@ -171,6 +203,11 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         });
     }
 
+    /**
+     * Updates the upload button's active state based on the upload status.
+     *
+     * @param uploading {@code true} if the upload is in progress, {@code false} otherwise.
+     */
     public void setUploadButtonActive(boolean uploading) {
         GLib.idleAddOnce(() -> {
             filePickerRow.setSensitive(!uploading);
@@ -199,6 +236,11 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         }.runTaskAsynchronously();
     }
 
+    /**
+     * Called when the upload is completed, updates the button style and resets the statistics.
+     *
+     * @param successfully {@code true} if the upload was successful, {@code false} otherwise.
+     */
     public void uploadCompleted(boolean successfully) {
         GLib.idleAddOnce(() -> {
             setUploadButtonActive(false);

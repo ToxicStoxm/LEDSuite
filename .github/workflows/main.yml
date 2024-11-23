@@ -32,26 +32,6 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
 
-      # Meson Build Setup
-      - name: Meson Setup
-        uses: BSFishy/meson-build@v1.0.3
-        with:
-          action: setup
-          directory: build
-          setup-options: '--buildtype=debug'
-          meson-version: latest
-          ninja-version: latest
-
-      # Meson Build with Ninja
-      - name: Meson Build
-        uses: BSFishy/meson-build@v1.0.3
-        with:
-          action: build
-          directory: build
-          options: '--verbose'
-          meson-version: latest
-          ninja-version: latest
-
       # Meson Install
       - name: Meson Install
         uses: BSFishy/meson-build@v1.0.3

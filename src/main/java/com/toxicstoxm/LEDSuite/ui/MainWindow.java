@@ -149,4 +149,11 @@ public interface MainWindow extends StatusDialogEndpoint, SettingsDialogEndpoint
      * @param sensitive {@code true} to enable the animation list, {@code false} to disable it.
      */
     void setAnimationListSensitive(boolean sensitive);
+
+    /**
+     * Sets the visibility of the animations control buttons to the provided boolean value.
+     *
+     * @param visible {@code true} to show the animation control buttons, {@code false} to hide them.
+     */
+    void setAnimationControlButtonsVisible(boolean visible);
 }

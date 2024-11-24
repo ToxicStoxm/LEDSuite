@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import jakarta.websocket.*;
@@ -77,8 +78,18 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
         LEDSuiteApplication.getLogger().verbose("----------------------< IN >----------------------" + "\n[Session] " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
-        LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
-        LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
+        if (message.length() < 10000) {
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
+                    LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
+                }
+            }.runTaskAsynchronously();
+        } else {
+            LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
+            LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
+        }
 
         // Deserialize the incoming message into a CommunicationPacket
         CommunicationPacket incomingPacket = LEDSuiteApplication.getPacketManager().deserialize(message);

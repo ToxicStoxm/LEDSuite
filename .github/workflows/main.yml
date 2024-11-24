@@ -13,7 +13,7 @@ jobs:
     name: Get Dependencies and Build
     runs-on: ubuntu-24.04
 
-    steps:      
+    steps:
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -35,6 +35,7 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
 
+      # Set up Python (for Meson)
       - uses: actions/setup-python@v1
 
       # Meson Install
@@ -47,8 +48,21 @@ jobs:
           meson-version: 1.6.0
           ninja-version: 1.11.1.2
 
+  flatpak-comparison:
+    name: Generate and Compare Flatpak Source JSON
+    runs-on: ubuntu-24.04
+    needs: build  # Ensures this job runs after 'build' job
+
+    steps:
+      # Checkout the repository (including all branches)
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      # Set up Gradle
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: latest
 
       # Generate flatpak-sources.json
       - name: Generate flatpak-sources.json
@@ -60,11 +74,12 @@ jobs:
         id: compare
         run: |
           git fetch origin main
-          diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || echo "Files are different"
+          diff_output=$(diff <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || echo "Files are different")
+          echo "diff_output=$diff_output" >> $GITHUB_ENV
 
-      # Create a Pull Request if files are different
+      # Create a Pull Request if Files are Different
       - name: Create Pull Request if Needed
-        if: steps.compare.outcome == 'failure'
+        if: contains(env.diff_output, "Files are different")
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
@@ -76,11 +91,8 @@ jobs:
           git add build/flatpak-sources.json
           git commit -m "Update flatpak-sources.json"
 
-          # Push the changes
+          # Push the changes to the new branch
           git push --set-upstream origin update-flatpak-sources
 
-          # Create a pull request
-          gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
-
-
-    
+          # Create a pull request using GitHub CLI
+          gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources --assignee @me

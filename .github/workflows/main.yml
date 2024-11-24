@@ -57,28 +57,26 @@ jobs:
         id: compare
         run: |
           git fetch origin main
-          diff_output=$(diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || echo "Files are different")
-          echo "diff_output=$diff_output" >> $GITHUB_ENV
-          if [[ "$diff_output" == *"Files are different"* ]]; then
-            echo "FILES_DIFFERS=true" >> $GITHUB_ENV
-          else
-            echo "FILES_DIFFERS=false" >> $GITHUB_ENV
+          if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
+              git config --global user.name "github-actions"
+              git config --global user.email "github-actions@github.com"
+              
+              # Create a new branch for the PR
+              git checkout -b update-flatpak-sources
+              
+              # Commit the changes
+              git add build/flatpak-sources.json
+              git commit -m "Update flatpak-sources.json"
+              
+              # Push the changes
+              git push --set-upstream origin update-flatpak-sources
+              
+              # Create a pull request
+              gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
           fi
-
+          
       # Create a Pull Request if files are different
       - name: Create Pull Request if Needed
         if: env.FILES_DIFFERS == 'true'
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          
-          # Create a new branch for the PR
-          git checkout -b update-flatpak-sources
-          
-          # Commit the changes
-          git add build/flatpak-sources.json
-          git commit -m "Update flatpak-sources.json"
-          # Push the changes
-          git push --set-upstream origin update-flatpak-sources
-          # Create a pull request
-          gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
+

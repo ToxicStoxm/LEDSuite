@@ -55,9 +55,6 @@ jobs:
       # Compare flatpak-sources.json with the one in the main branch
       - name: Compare flatpak-sources.json
         id: compare
-
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git fetch origin main
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
@@ -78,6 +75,8 @@ jobs:
               # Create a pull request
               gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       # Create a Pull Request if files are different
       - name: Create Pull Request if Needed

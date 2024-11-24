@@ -55,6 +55,9 @@ jobs:
       # Compare flatpak-sources.json with the one in the main branch
       - name: Compare flatpak-sources.json
         id: compare
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git fetch origin main
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then

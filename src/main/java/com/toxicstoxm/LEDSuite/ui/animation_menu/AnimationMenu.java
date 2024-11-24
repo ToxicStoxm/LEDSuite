@@ -29,7 +29,7 @@ import java.lang.foreign.MemorySegment;
 @Getter
 @Setter
 @GtkTemplate(name = "AnimationMenu", ui = "/com/toxicstoxm/LEDSuite/AnimationMenu.ui")
-public class AnimationMenu extends Box {
+public class AnimationMenu extends Box implements AnimationMenuReference {
 
     /**
      * Unique identifier for the menu instance.
@@ -116,4 +116,17 @@ public class AnimationMenu extends Box {
         return this;
     }
 
+    @Override
+    public void updateLabel(String label) {
+        if (label != null) {
+            animationLabel.setLabel(label);
+        }
+    }
+
+    @Override
+    public void updateIconName(String iconName) {
+        if (iconName != null) {
+            animationMenuImage.setFromIconName(iconName);
+        }
+    }
 }

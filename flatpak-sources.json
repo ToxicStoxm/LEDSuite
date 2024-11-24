@@ -64,10 +64,10 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/1.6.4/YAJSI-1.6.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/1.6.4/YAJSI-1.6.4.jar",
     "sha512": "44032cffbf96c00ec405320106c8c5a78c63091de5940caa1e513e36d041c4809ab5f508ac4e7c47cf9f84a02d5862d319265ad5625ce0424ae84dd4098e6d8a",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/1.6.3",
-    "dest-filename": "YAJSI-1.6.3.jar"
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/1.6.4",
+    "dest-filename": "YAJSI-1.6.4.jar"
   },
   {
     "type": "file",

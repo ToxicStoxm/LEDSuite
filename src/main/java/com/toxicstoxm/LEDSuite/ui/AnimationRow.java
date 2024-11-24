@@ -3,20 +3,19 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
-import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
+import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuReference;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
+import org.gnome.adw.Clamp;
+import org.gnome.adw.Spinner;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
-import org.gnome.gtk.Application;
-import org.gnome.gtk.Image;
-import org.gnome.gtk.Label;
-import org.gnome.gtk.ListBoxRow;
+import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
@@ -83,7 +82,7 @@ public class AnimationRow extends ListBoxRow {
     public Label animationRowLabel;
 
     @Setter
-    private AnimationMenu MenuReference; // Reference to the menu associated with this animation
+    private AnimationMenuReference animationMenuReference; // Reference to the menu associated with this animation
 
     /**
      * Sets the label for the animation row.
@@ -139,9 +138,9 @@ public class AnimationRow extends ListBoxRow {
         animationIcon.setFromIconName(iconName);
 
         // If the row is part of a menu, update the menu as well.
-        if (MenuReference != null) {
-            MenuReference.animationLabel.setLabel(label);
-            MenuReference.animationMenuImage.setFromIconName(iconName);
+        if (animationMenuReference != null) {
+            animationMenuReference.updateLabel(label);
+            animationMenuReference.updateIconName(iconName);
         }
     }
 
@@ -177,6 +176,18 @@ public class AnimationRow extends ListBoxRow {
                         "Requesting menu for animation '" + animationID + "'",
                         new LEDSuiteLogAreas.USER_INTERACTIONS()
                 );
+
+                LEDSuiteApplication.getWindow().changeMainContent(
+                        Clamp.builder()
+                                .setChild(Spinner.builder().build())
+                                .setMaximumSize(50)
+                                .setHalign(Align.CENTER)
+                                .setHexpand(true)
+                                .setTighteningThreshold(50)
+                                .build()
+                );
+
+                LEDSuiteApplication.getWindow().setAnimationControlButtonsVisible(false);
 
                 // Enqueue a request for the animation's menu.
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

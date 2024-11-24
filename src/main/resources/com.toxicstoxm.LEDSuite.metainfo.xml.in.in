@@ -15,8 +15,16 @@
 
   <translation type="gettext">@ID@</translation>
 
-  <!--WARNING: newest release MUST correspond to the maven version-->
+  <!--WARNING: newest release MUST correspond to the meson version-->
   <releases>
+    <release version="1.0.0-rc2" date="2024-11-24" type="development">
+      <description>
+        <p>Release Candidate #2</p>
+        <ul>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0-rc1" date="2024-11-23" type="development">
       <description>
         <p>Release Candidate #1</p>

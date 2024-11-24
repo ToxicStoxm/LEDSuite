@@ -61,6 +61,9 @@ jobs:
         run: |
           git fetch origin main
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
+
+             git config --global user.email "dominik@crafti-servi.com"
+             git config --global user.name "ToxicStoxm"
               
               # Create a new branch for the PR
               git checkout -b update-flatpak-sources

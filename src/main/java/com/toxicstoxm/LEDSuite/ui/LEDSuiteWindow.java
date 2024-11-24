@@ -150,7 +150,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * @see #clearMainContent()
      */
     public void changeMainContent(@NotNull Widget newChild) {
-        LEDSuiteApplication.getLogger().info("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()), new LEDSuiteLogAreas.UI());
+        LEDSuiteApplication.getLogger().verbose("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()), new LEDSuiteLogAreas.UI());
         clearMainContent();
         GLib.idleAddOnce(() -> contentBox.append(newChild));
     }
@@ -164,8 +164,16 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         GLib.idleAddOnce(() -> {
             Widget child = contentBox.getFirstChild();
             while (child != null) {
-                LEDSuiteApplication.getLogger().info("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!", new LEDSuiteLogAreas.UI());
+                LEDSuiteApplication.getLogger().verbose("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!", new LEDSuiteLogAreas.UI());
+
                 contentBox.remove(child);
+
+                if (child instanceof AnimationMenu menu && animations.get(menu.getMenuID()) != null) {
+                    animations.get(menu.getMenuID()).setAnimationMenuReference(null);
+                }
+                
+                child.runDispose();
+                child.emitDestroy();
                 child = contentBox.getFirstChild();
             }
         });
@@ -182,7 +190,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             AnimationRow selectedRow = (AnimationRow) animationList.getSelectedRow();
             if (selectedRow != null) {
                 AnimationMenu animationMenu = menu.init(selectedRow);
-                selectedRow.setMenuReference(animationMenu);
+                selectedRow.setAnimationMenuReference(animationMenu);
                 changeMainContent(animationMenu);
                 setAnimationControlButtonsVisible(true);
                 LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());

@@ -45,15 +45,8 @@ jobs:
           setup-options: --prefix /tmp/install
           directory: build
           meson-version: 1.6.0
-          ninja-version: 1.11.1.2
-          
-  flatpak-comparison:
-    name: Generate and Compare Flatpak Source JSON
-    runs-on: ubuntu-24.04
-    needs: build  # This ensures it runs after the 'build' job
+          ninja-version: 1.11.1.2+
 
-    steps:
-      # Checkout the repository (including all branches)
       - name: Checkout Code
         uses: actions/checkout@v4
 

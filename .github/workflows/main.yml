@@ -48,22 +48,6 @@ jobs:
           meson-version: 1.6.0
           ninja-version: 1.11.1.2
 
-  flatpak-comparison:
-    name: Generate and Compare Flatpak Source JSON
-    runs-on: ubuntu-24.04
-    needs: build  # Ensures this job runs after 'build' job
-
-    steps:
-      # Checkout the repository (including all branches)
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Set up Gradle
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: latest
-
       # Generate flatpak-sources.json
       - name: Generate flatpak-sources.json
         run: |

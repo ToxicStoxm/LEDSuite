@@ -79,7 +79,7 @@ jobs:
 
       # Create a Pull Request if Files are Different
       - name: Create Pull Request if Needed
-        if: contains(env.diff_output, "Files are different")
+        if: ${{ contains(env.diff_output, 'Files are different') }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"

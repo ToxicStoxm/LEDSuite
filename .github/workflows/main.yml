@@ -45,7 +45,7 @@ jobs:
           setup-options: --prefix /tmp/install
           directory: build
           meson-version: 1.6.0
-          ninja-version: 1.11.1.2+
+          ninja-version: 1.11.1.2
 
       - name: Checkout Code
         uses: actions/checkout@v4

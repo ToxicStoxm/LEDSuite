@@ -13,7 +13,7 @@ jobs:
     name: Get Dependencies and Build
     runs-on: ubuntu-24.04
 
-    steps:      
+    steps:
       # Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -27,6 +27,7 @@ jobs:
             libadwaita-1-dev=1.6.0-1ubuntu2 \
             gettext \
             desktop-file-utils
+
       # Set up JDK
       - name: Set up JDK 23
         uses: actions/setup-java@v3
@@ -46,36 +47,38 @@ jobs:
           meson-version: 1.6.0
           ninja-version: 1.11.1.2
 
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
       # Generate flatpak-sources.json
       - name: Generate flatpak-sources.json
         run: |
           ./gradlew flatpakGradleGenerator
-          
+
       # Compare flatpak-sources.json with the one in the main branch
       - name: Compare flatpak-sources.json
         id: compare
         run: |
           git fetch origin main
-          diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || (echo "Files are different" && export RESULT=1)
-          
+          diff_output=$(diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) || echo "Files are different")
+          echo "diff_output=$diff_output" >> $GITHUB_ENV
+          if [[ "$diff_output" == *"Files are different"* ]]; then
+            echo "FILES_DIFFERS=true" >> $GITHUB_ENV
+          else
+            echo "FILES_DIFFERS=false" >> $GITHUB_ENV
+          fi
+
       # Create a Pull Request if files are different
       - name: Create Pull Request if Needed
+        if: env.FILES_DIFFERS == 'true'
         run: |
-          if [[ $RESULT -eq 1 ]]; then
-            git config --global user.name "github-actions"
-            git config --global user.email "github-actions@github.com"
-            
-            # Create a new branch for the PR
-            git checkout -b update-flatpak-sources
-            
-            # Commit the changes
-            git add build/flatpak-sources.json
-            git commit -m "Update flatpak-sources.json"
-            # Push the changes
-            git push --set-upstream origin update-flatpak-sources
-            # Create a pull request
-            gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
-          fi
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          
+          # Create a new branch for the PR
+          git checkout -b update-flatpak-sources
+          
+          # Commit the changes
+          git add build/flatpak-sources.json
+          git commit -m "Update flatpak-sources.json"
+          # Push the changes
+          git push --set-upstream origin update-flatpak-sources
+          # Create a pull request
+          gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources

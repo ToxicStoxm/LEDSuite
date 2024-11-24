@@ -18,10 +18,7 @@ import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
-import org.gnome.adw.Clamp;
-import org.gnome.adw.Spinner;
 import org.gnome.glib.GLib;
-import org.gnome.gtk.Align;
 
 /**
  * <p>Represents a reply packet containing an animation menu. This packet is typically sent in response to a menu request,
@@ -110,16 +107,6 @@ public class MenuReplyPacket extends CommunicationPacket {
         long start = System.currentTimeMillis();
         GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(false));
 
-        LEDSuiteApplication.getWindow().changeMainContent(
-                Clamp.builder()
-                        .setChild(Spinner.builder().build())
-                        .setMaximumSize(50)
-                        .setHalign(Align.CENTER)
-                        .setHexpand(true)
-                        .setTighteningThreshold(50)
-                        .build()
-        );
-
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -145,7 +132,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                 }
 
                 if (errorCode == null) {
-                    LEDSuiteApplication.getLogger().info("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!", new LEDSuiteLogAreas.YAML());
+                    LEDSuiteApplication.getLogger().debug("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!", new LEDSuiteLogAreas.YAML());
                 } else {
                     String fileName = null;
 

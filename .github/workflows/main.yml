@@ -65,7 +65,7 @@ jobs:
               git checkout -b update-flatpak-sources
               
               # Commit the changes
-              git add build/flatpak-sources.json
+              git add flatpak-sources.json
               git commit -m "Update flatpak-sources.json"
               
               # Push the changes

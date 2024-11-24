@@ -59,8 +59,8 @@ jobs:
           git fetch origin main
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
 
-             git config --global user.email "dominik@crafti-servi.com"
-             git config --global user.name "ToxicStoxm"
+              git config --global user.email "dominik@crafti-servi.com"
+              git config --global user.name "ToxicStoxm"
               
               # Create a new branch for the PR
               git checkout -b update-flatpak-sources
@@ -71,12 +71,11 @@ jobs:
               
               # Push the changes
               git push --set-upstream origin update-flatpak-sources
-              
-              # Create a pull request
-              gh pr create --title "Update flatpak-sources.json" --body "This PR updates the flatpak-sources.json file." --base main --head update-flatpak-sources
+
+              gh pr create -B main -H update-flatpak-sources --title 'Merge update-flatpak-sources into main' --body 'Created by Github action'
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       # Create a Pull Request if files are different
       - name: Create Pull Request if Needed

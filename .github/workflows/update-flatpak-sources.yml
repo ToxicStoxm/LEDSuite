@@ -26,7 +26,7 @@ jobs:
       - name: Generate flatpak-sources.json
         run: ./gradlew flatpakGradleGenerator
 
-      # Step 4: Compare flatpak-sources.json and create pull request if necessary
+           # Step 4: Compare flatpak-sources.json and create pull request if necessary
       - name: Compare flatpak-sources.json and create pull request if necessary
         run: |
           git fetch origin main
@@ -36,14 +36,13 @@ jobs:
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
               git config --global user.email "dominik@crafti-servi.com"
               git config --global user.name "ToxicStoxm"
-              
+
               # Check if branch exists remotely
               if git ls-remote --heads origin $BRANCH | grep -q $BRANCH; then
-                  echo "Branch $BRANCH exists on remote. Checking out."
-                  git checkout $BRANCH
-                  git pull origin $BRANCH
+                  echo "Branch $BRANCH exists on remote. Creating a local tracking branch."
+                  git checkout -b $BRANCH origin/$BRANCH
               else
-                  echo "Branch $BRANCH does not exist. Creating it."
+                  echo "Branch $BRANCH does not exist. Creating a new branch."
                   git checkout -b $BRANCH
               fi
 
@@ -55,7 +54,7 @@ jobs:
               git push --set-upstream origin $BRANCH
 
               # Create a pull request
-              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Automatically created by update-flatpak-sources action."
+              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Created by Github action"
           else
               echo "No changes detected in flatpak-sources.json. Skipping PR creation."
           fi

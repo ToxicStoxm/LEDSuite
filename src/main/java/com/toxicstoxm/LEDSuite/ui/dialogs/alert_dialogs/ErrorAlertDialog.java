@@ -43,7 +43,7 @@ public class ErrorAlertDialog {
 
     private final AlertDialog<AlertDialogData> alertDialog;
     private static final AlertDialogResponse okResponse;
-    private static final AlertDialogResponse issuesResponse;
+    private static final AlertDialogResponse reportResponse;
 
     static {
         okResponse = AlertDialogResponse.builder()
@@ -53,7 +53,7 @@ public class ErrorAlertDialog {
                 .responseCallback(() -> LEDSuiteApplication.getLogger().verbose("Error acknowledged by the user!", new LEDSuiteLogAreas.USER_INTERACTIONS()))
                 .build();
 
-        issuesResponse = AlertDialogResponse.builder()
+        reportResponse = AlertDialogResponse.builder()
                 .id("report")
                 .label(Translations.getText("_Report"))
                 .activated(!disableReportResponse)
@@ -68,15 +68,22 @@ public class ErrorAlertDialog {
                     } catch (Exception e) {
                         ErrorAlertDialog.disableReportResponse = true;
                         ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.USER_INTERACTIONS()));
-                        LEDSuiteApplication.handleError("An error occurred during opening issue URL!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                        LEDSuiteApplication.handleError(
+                                ErrorData.builder()
+                                        .message("An error occurred during opening issue URL!")
+                                        .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
+                                        .build()
+                        );
+
                     }
                 })
                 .build();
     }
 
     @Builder
-    public ErrorAlertDialog(String errorMessage, String heading) {
+    public ErrorAlertDialog(String errorMessage, String heading, boolean enableReporting) {
         alertDialog = GeneralAlertDialog.create().configure(
+
                 AlertDialogData.builder()
                         .body(
                                 Objects.requireNonNullElse(
@@ -89,7 +96,7 @@ public class ErrorAlertDialog {
                                         Translations.getText("Error"))
                         )
                         .response(okResponse)
-                        .response(issuesResponse)
+                        .response(enableReporting ? reportResponse : null)
                         .build()
         );
     }

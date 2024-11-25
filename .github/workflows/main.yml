@@ -73,9 +73,4 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      # Create a Pull Request if files are different
-      - name: Create Pull Request if Needed
-        if: env.FILES_DIFFERS == 'true'
-        run: |
 

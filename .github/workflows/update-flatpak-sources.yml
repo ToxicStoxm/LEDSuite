@@ -42,9 +42,8 @@ jobs:
               git checkout -b $BRANCH
 
               git ls-remote --exit-code --heads origin $BRANCH >> /dev/null
-              EXIT_CODE=$?
 
-              if [[ $EXIT_CODE == '0' ]]; then
+              if [[ $? == '0' ]]; then
                 gh repo sync -b $BRANCH
               fi
               

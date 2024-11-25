@@ -5,7 +5,7 @@
 - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
 - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
-- V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
+- V2 is already in development check out the [development branch](https://github.com/ToxicStoxm/LEDSuite/tree/dev) for further details
 
 ## ToDo
 ###### (?) → planned but not final
@@ -33,20 +33,23 @@
   - [ ] Additional features (?)
     - [ ] Multiple servers
     - [ ] Authentication / Accounts
-- [ ] UI
-  - [ ] Elements
+      - [ ] Testing
+      - [ ] Save credentials
+      - [X] Basic implementation
+- [X] UI
+  - [X] Elements
     -  [X] Dialogs
       - [X] Settings dialog
       - [X] Status dialog
       - [X] Keyboard shortcuts dialog
       - [X] About dialog
-    - [ ] Main window
+    - [X] Main window
       - [X] Sidebar
       - [X] Main view
       - [X] Progress bar
       - [X] Animation control buttons
       - [X] Header bar
-      - [ ] Alert dialogs
+      - [X] Alert dialogs
 - [X] YAML
   - [X] Serialization
     - [X] Adwaita- & Gtk widgets
@@ -93,7 +96,12 @@
 - [ ] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
   - [X] Create log areas
+  - [ ] Add debug mode which saves the log to a logfile
   - [ ] add a lot of log messages
+    - [X] Main
+    - [X] LEDSuiteApplication
+    - [ ] UI classes
+    - [ ] User-Interaction related classes
 - [X] Settings
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
   - [X] Implement all necessary settings

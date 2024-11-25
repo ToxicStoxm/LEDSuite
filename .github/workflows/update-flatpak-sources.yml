@@ -41,7 +41,7 @@ jobs:
               # Create a new branch for the PR
               git checkout -b $BRANCH
 
-              git ls-remote --exit-code --heads origin $BRANCH
+              git ls-remote --exit-code --heads origin $BRANCH >/dev/null
               EXIT_CODE=$?
 
               if [[ $EXIT_CODE == '0' ]]; then

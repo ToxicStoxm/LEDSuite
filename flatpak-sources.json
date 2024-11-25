@@ -505,31 +505,31 @@
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.0.1/badass-jlink-plugin-3.0.1.jar",
-    "sha512": "6351bf91b26a7269e220ea6d36d72772b194637482bb0c94c521f89abd6151d7638f7ebf971fa3421e4b4a27fb756a94b4970ddd56cb327c1c9c91b39c6af785",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.0.1",
-    "dest-filename": "badass-jlink-plugin-3.0.1.jar"
+    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.jar",
+    "sha512": "2fc840a287e1504c830f352efb92e6797eba59cabdb1324650c4ea074ada4dae471381a19f186a72b07cd66364937c3f61bc2c42da3dfe39b2913dd8fa8fc623",
+    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
+    "dest-filename": "badass-jlink-plugin-3.1.1.jar"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.0.1/badass-jlink-plugin-3.0.1.module",
-    "sha512": "7bbffc2fe869b122aaa995b5b723ad99bcc1af085bb583bbbe10f33b2fed0b92a10a28327461b71bea121eba884f4684774664e1fa0a093eedde29725573572b",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.0.1",
-    "dest-filename": "badass-jlink-plugin-3.0.1.module"
+    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.module",
+    "sha512": "e443b75134188649721ddf93e00c5bfe940141884cd438cb0b2558ceb57df5bc7fc0fe7195540af8e8279558384e6cf39f16deace32e41adbb3a2d6c66cb396e",
+    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
+    "dest-filename": "badass-jlink-plugin-3.1.1.module"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.0.1/badass-jlink-plugin-3.0.1.pom",
-    "sha512": "6eafbe8c52ac7b39f980449634947734ff959e4b78985f8664c2bffa93d9621510df3bbe6aa7fc67383cc009aedff9639232e7ccfe9a186d8c118a197f499e91",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.0.1",
-    "dest-filename": "badass-jlink-plugin-3.0.1.pom"
+    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.pom",
+    "sha512": "cd7363fb36ee1a087c1bf232479d03a5a67beb04322866b0cb17512fafdbfbaeab69f5a0cda52a19556f7d1892a65d41aa21f6428c614240ac44b2d4b290488e",
+    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
+    "dest-filename": "badass-jlink-plugin-3.1.1.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.0.1/org.beryx.jlink.gradle.plugin-3.0.1.pom",
-    "sha512": "bb79b56491b21873b1bb192138b6fa10a53ad6c3129f8b698be3b66c6916750b7100dfb8c892a16f85e64620adcbab05967598e3c3b5d266da2e043d08c4e496",
-    "dest": "./offline-repository/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.0.1",
-    "dest-filename": "org.beryx.jlink.gradle.plugin-3.0.1.pom"
+    "url": "https://plugins.gradle.org/m2/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.1.1/org.beryx.jlink.gradle.plugin-3.1.1.pom",
+    "sha512": "d20d2fc87bffb5aaf42d80dd83d48235d4281f34dfc70a55a169591e5db979ed158720c180cba0e0f22f75da9c7b38d4fb1ff11a36ad270ad5fadaaaf2df9ac5",
+    "dest": "./offline-repository/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.1.1",
+    "dest-filename": "org.beryx.jlink.gradle.plugin-3.1.1.pom"
   },
   {
     "type": "file",

@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import jakarta.websocket.*;
 import lombok.Builder;
 import lombok.Setter;
@@ -75,8 +76,10 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
             session.getBasicRemote().sendText(sessionID);
         } catch (IOException e) {
             LEDSuiteApplication.handleError(
-                    "Failed to send sessionID to server, terminating file upload!",
-                    new LEDSuiteLogAreas.NETWORK()
+                    ErrorData.builder()
+                            .message("Failed to send sessionID to server, terminating file upload!")
+                            .logArea(new LEDSuiteLogAreas.NETWORK())
+                            .build()
             );
             throw new RuntimeException(e);
         }

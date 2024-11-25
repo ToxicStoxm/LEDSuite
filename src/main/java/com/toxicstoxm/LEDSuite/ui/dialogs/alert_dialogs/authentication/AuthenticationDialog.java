@@ -5,6 +5,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -114,8 +115,10 @@ public class AuthenticationDialog extends AlertDialog {
                 setCanClose(true);
                 close();
                 LEDSuiteApplication.handleError(
-                        "Authentication -> Username: " + username + " - Password hashing failed!",
-                        new LEDSuiteLogAreas.USER_INTERACTIONS()
+                        ErrorData.builder()
+                                .message("Authentication -> Username: " + username + " - Password hashing failed!")
+                                .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
+                                .build()
                 );
                 return;
             }

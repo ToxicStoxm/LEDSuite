@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -102,8 +103,10 @@ public abstract class WebSocketClientEndpoint {
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         LEDSuiteApplication.handleError(
-                "Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(),
-                new LEDSuiteLogAreas.NETWORK()
+                ErrorData.builder()
+                        .message("Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage())
+                        .logArea(new LEDSuiteLogAreas.NETWORK())
+                        .build()
         );
     }
 }

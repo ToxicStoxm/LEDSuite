@@ -7,8 +7,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -28,7 +30,7 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     private String source;        // guaranteed
     private ErrorCode code;       // guaranteed
-    private String name;          // guaranteed
+    private String message;          // guaranteed
     private int severity;         // guaranteed
 
     @Override
@@ -51,8 +53,8 @@ public class ServerErrorPacket extends CommunicationPacket {
             throw new DeserializationException("Invalid YAML format", e);
         }
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.NAME, yaml);
-        packet.name = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.NAME);
+        ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, yaml);
+        packet.message = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.CODE, yaml);
         packet.code = ErrorCode.fromInt(yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.CODE));
@@ -70,7 +72,7 @@ public class ServerErrorPacket extends CommunicationPacket {
     public String serialize() {
         YamlConfiguration yaml = saveYAML();
 
-        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.NAME, name);
+        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, message);
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.CODE, code.getCode());
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, severity);
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE, source);
@@ -81,9 +83,18 @@ public class ServerErrorPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
         LEDSuiteApplication.getLogger().warn("Server Error: " +
-                        "Source: " + source + ", " +
-                        "Code: " + code + ", " +
-                        "Severity: " + severity,
+        "Source: " + source + ", " +
+                "Code: " + code + ", " +
+                "Severity: " + severity,
                 new LEDSuiteLogAreas.COMMUNICATION());
+
+        LEDSuiteApplication.handleError(
+                ErrorData.builder()
+                        .message(message)
+                        .heading(Translations.getText("Server encountered problems"))
+                        .log(false)
+                        .enableReporting(false)
+                        .build()
+        );
     }
 }

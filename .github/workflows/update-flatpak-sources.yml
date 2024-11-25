@@ -26,7 +26,7 @@ jobs:
       - name: Generate flatpak-sources.json
         run: ./gradlew flatpakGradleGenerator
 
-           # Step 4: Compare flatpak-sources.json and create pull request if necessary
+      # Step 4: Compare flatpak-sources.json and create pull request if necessary
       - name: Compare flatpak-sources.json and create pull request if necessary
         run: |
           git fetch origin main
@@ -37,10 +37,13 @@ jobs:
               git config --global user.email "dominik@crafti-servi.com"
               git config --global user.name "ToxicStoxm"
 
-              # Check if branch exists remotely
+              # Fetch all branches from remote
+              git fetch origin
+
+              # Check if the branch exists remotely
               if git ls-remote --heads origin $BRANCH | grep -q $BRANCH; then
                   echo "Branch $BRANCH exists on remote. Creating a local tracking branch."
-                  git checkout -b $BRANCH origin/$BRANCH
+                  git checkout -t origin/$BRANCH
               else
                   echo "Branch $BRANCH does not exist. Creating a new branch."
                   git checkout -b $BRANCH

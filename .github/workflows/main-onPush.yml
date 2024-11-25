@@ -61,6 +61,8 @@ jobs:
               
               # Create a new branch for the PR
               git checkout -b update-flatpak-sources
+
+              gh repo sync -b update-flatpak-sources
               
               # Commit the changes
               git add flatpak-sources.json

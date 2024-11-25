@@ -1,5 +1,5 @@
 # LEDSuite
-[![Build](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/main-onPush.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/main-onPush.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
+[![Build](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
 
 - Front-End for any LED-Matrix with the matching backend
 - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)

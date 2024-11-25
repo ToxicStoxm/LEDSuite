@@ -43,7 +43,15 @@ jobs:
               # Check if the branch exists remotely
               if git ls-remote --heads origin $BRANCH | grep -q $BRANCH; then
                   echo "Branch $BRANCH exists on remote. Creating a local tracking branch."
+                  
+                  # Temporarily stash changes
+                  git stash --include-untracked
+                  
+                  # Create a local branch that tracks the remote branch
                   git checkout -t origin/$BRANCH
+                  
+                  # Restore stashed changes
+                  git stash pop
               else
                   echo "Branch $BRANCH does not exist. Creating a new branch."
                   git checkout -b $BRANCH
@@ -63,3 +71,4 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

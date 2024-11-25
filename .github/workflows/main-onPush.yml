@@ -1,4 +1,4 @@
-name: CI for LEDSuite
+name: CI for LEDSuite (build, dependency file check)
 
 on:
   push:

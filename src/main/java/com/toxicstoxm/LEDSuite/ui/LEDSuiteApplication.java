@@ -22,6 +22,7 @@ import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorAlertDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
@@ -30,7 +31,6 @@ import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.YAJLLogger;
-import com.toxicstoxm.YAJL.areas.LogArea;
 import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
 import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
@@ -448,8 +448,10 @@ public class LEDSuiteApplication extends Application {
             if (uploadSessionID == null) {
                 throw new UploadAbortException(() -> {
                     LEDSuiteApplication.handleError(
-                            "Cancelled file upload because upload session id was null! This should be reported!",
-                            new LEDSuiteLogAreas.NETWORK()
+                            ErrorData.builder()
+                                    .message("Cancelled file upload because upload session id was null! This should be reported!")
+                                    .logArea(new LEDSuiteLogAreas.NETWORK())
+                                    .build()
                     );
                 });
             }
@@ -750,52 +752,20 @@ public class LEDSuiteApplication extends Application {
      * If a parent application window is available, the error dialog will be presented to the user.
      * The error message will also be logged in the specified log area.
      *
-     * @param message  The error message to display and log. Must not be {@code null}.
-     * @param heading  The heading to display in the error dialog. Can be {@code null}.
-     * @param logArea  The log area to associate with this error in the log system. Can be {@code null}.
+     * @param errorData contains all necessary variables for displaying an error to the user.
      */
-    public static void handleError(@NotNull String message, String heading, LogArea logArea) {
+    public static void handleError(ErrorData errorData) {
         ApplicationWindow parent = window.asApplicationWindow();
+        String message = errorData.getMessage();
         if (parent != null) {
             ErrorAlertDialog.builder()
                     .errorMessage(message)
-                    .heading(heading)
+                    .heading(errorData.getHeading())
+                    .enableReporting(errorData.isEnableReporting())
                     .build()
                     .present(parent);
         }
-        logger.error(message, logArea);
-    }
-
-    /**
-     * Handles an error by displaying an error dialog with a custom message.
-     * Uses default values for the heading and log area.
-     *
-     * @param message  The error message to display and log. Must not be {@code null}.
-     */
-    public static void handleError(@NotNull String message) {
-        handleError(message, null, null);
-    }
-
-    /**
-     * Handles an error by displaying an error dialog with a custom message and heading.
-     * Uses a default value for the log area.
-     *
-     * @param message  The error message to display and log. Must not be {@code null}.
-     * @param heading  The heading to display in the error dialog. Can be {@code null}.
-     */
-    public static void handleError(@NotNull String message, String heading) {
-        handleError(message, heading, null);
-    }
-
-    /**
-     * Handles an error by displaying an error dialog with a custom message.
-     * Associates the error message with the specified log area.
-     *
-     * @param message  The error message to display and log. Must not be {@code null}.
-     * @param logArea  The log area to associate with this error in the log system. Can be {@code null}.
-     */
-    public static void handleError(@NotNull String message, LogArea logArea) {
-        handleError(message, null, logArea);
+        if (errorData.isLog() && message != null) logger.error(errorData.getMessage(), errorData.getLogArea());
     }
 
     /**

@@ -11,50 +11,53 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Set up JDK
+      # Step 2: Set up JDK
       - name: Set up JDK 23
         uses: actions/setup-java@v3
         with:
           java-version: '23'
           distribution: 'temurin'
 
-      # Generate flatpak-sources.json
+      # Step 3: Generate flatpak-sources.json
       - name: Generate flatpak-sources.json
-        run: |
-          ./gradlew flatpakGradleGenerator
+        run: ./gradlew flatpakGradleGenerator
 
-      # Compare flatpak-sources.json with the one in the main branch
+      # Step 4: Compare flatpak-sources.json and create pull request if necessary
       - name: Compare flatpak-sources.json and create pull request if necessary
         run: |
           git fetch origin main
+          
+          BRANCH='update-flatpak-sources'
+          
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
-
-              BRANCH='update-flatpak-sources'
-
               git config --global user.email "dominik@crafti-servi.com"
               git config --global user.name "ToxicStoxm"
               
-              # Create a new branch for the PR
-              git checkout -b $BRANCH
-
-              git ls-remote --exit-code --heads origin $BRANCH >> /dev/null
-
-              if [[ $? == '0' ]]; then
-                gh repo sync -b $BRANCH
+              # Check if branch exists remotely
+              if git ls-remote --heads origin $BRANCH | grep -q $BRANCH; then
+                  echo "Branch $BRANCH exists on remote. Checking out."
+                  git checkout $BRANCH
+                  git pull origin $BRANCH
+              else
+                  echo "Branch $BRANCH does not exist. Creating it."
+                  git checkout -b $BRANCH
               fi
-              
-              # Commit the changes
+
+              # Stage and commit changes
               git add flatpak-sources.json
               git commit -m "Update flatpak-sources.json"
-              
+
               # Push the changes
               git push --set-upstream origin $BRANCH
 
-              gh pr create -B main -H $BRANCH --title 'Merge $BRANCH into main' --body 'Created by Github action'
+              # Create a pull request
+              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Created by Github action"
+          else
+              echo "No changes detected in flatpak-sources.json. Skipping PR creation."
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

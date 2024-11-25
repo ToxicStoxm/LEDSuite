@@ -70,7 +70,7 @@ public class Constants {
                     public static final class ServerError {
                         public static final String SOURCE = "error_source";
                         public static final String CODE = "error_code";
-                        public static final String NAME = "error_name";
+                        public static final String MESSAGE = "error_name";
                         public static final String SEVERITY = "error_severity";
                     }
 

@@ -33,22 +33,29 @@ jobs:
           git fetch origin main
           if ! diff -u <(jq . flatpak-sources.json) <(git show origin/main:flatpak-sources.json) >/dev/null; then
 
+              BRANCH='update-flatpak-sources'
+
               git config --global user.email "dominik@crafti-servi.com"
               git config --global user.name "ToxicStoxm"
               
               # Create a new branch for the PR
-              git checkout -b update-flatpak-sources
+              git checkout -b $BRANCH
 
-              gh repo sync -b update-flatpak-sources
+              git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1
+              EXIT_CODE=$?
+
+              if [[ $EXIT_CODE == '0' ]]; then
+                gh repo sync -b $BRANCH
+              fi
               
               # Commit the changes
               git add flatpak-sources.json
               git commit -m "Update flatpak-sources.json"
               
               # Push the changes
-              git push --set-upstream origin update-flatpak-sources
+              git push --set-upstream origin $BRANCH
 
-              gh pr create -B main -H update-flatpak-sources --title 'Merge update-flatpak-sources into main' --body 'Created by Github action'
+              gh pr create -B main -H $BRANCH --title 'Merge $BRANCH into main' --body 'Created by Github action'
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

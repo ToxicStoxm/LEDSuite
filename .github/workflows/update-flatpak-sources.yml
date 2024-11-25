@@ -57,15 +57,20 @@ jobs:
                   git checkout -b $BRANCH
               fi
 
-              # Stage and commit changes
-              git add flatpak-sources.json
-              git commit -m "Update flatpak-sources.json"
+              # Check if there are any changes to commit
+              if git diff --quiet; then
+                  echo "No changes to commit, skipping commit and PR creation."
+              else
+                  # Stage and commit changes
+                  git add flatpak-sources.json
+                  git commit -m "Update flatpak-sources.json"
 
-              # Push the changes
-              git push --set-upstream origin $BRANCH
+                  # Push the changes
+                  git push --set-upstream origin $BRANCH
 
-              # Create a pull request
-              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Created by Github action"
+                  # Create a pull request
+                  gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Created by Github action"
+              fi
           else
               echo "No changes detected in flatpak-sources.json. Skipping PR creation."
           fi

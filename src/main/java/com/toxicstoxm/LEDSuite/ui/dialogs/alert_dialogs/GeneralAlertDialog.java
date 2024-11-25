@@ -106,16 +106,19 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
             };
 
             for (AlertDialogResponse response : data.responses()) {
-                String label = response.label();
-                if (label != null) {
-                    String id = Objects.requireNonNullElse(response.id(), String.valueOf(UUID.randomUUID()));
-                    Action cb = Objects.requireNonNullElse(response.responseCallback(), () -> {});
-                    ResponseAppearance appearance = Objects.requireNonNullElse(response.appearance(), ResponseAppearance.DEFAULT);
+                if (response != null) {
+                    String label = response.label();
+                    if (label != null) {
+                        String id = Objects.requireNonNullElse(response.id(), String.valueOf(UUID.randomUUID()));
+                        Action cb = Objects.requireNonNullElse(response.responseCallback(), () -> {
+                        });
+                        ResponseAppearance appearance = Objects.requireNonNullElse(response.appearance(), ResponseAppearance.DEFAULT);
 
-                    registeredResponses.put(id, cb);
-                    addResponse(id, response.label());
-                    setResponseAppearance(id, appearance);
-                    setResponseEnabled(id, response.activated());
+                        registeredResponses.put(id, cb);
+                        addResponse(id, response.label());
+                        setResponseAppearance(id, appearance);
+                        setResponseEnabled(id, response.activated());
+                    }
                 }
             }
 

@@ -55,7 +55,7 @@ jobs:
               git push --set-upstream origin $BRANCH
 
               # Create a pull request
-              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Created by Github action"
+              gh pr create -B main -H $BRANCH --title "Merge $BRANCH into main" --body "Automatically created by update-flatpak-sources action."
           else
               echo "No changes detected in flatpak-sources.json. Skipping PR creation."
           fi

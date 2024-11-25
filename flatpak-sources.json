@@ -484,17 +484,24 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.0/apiguardian-api-1.1.0.jar",
-    "sha512": "eb05878cf282e971a7fff0ff4a1b7b90d61e6405ea368b19832177269b21f66ad4de211f6abdd762165a72e1c19781a6df1187e6c1cce1ae2cbf0e913fc5f504",
-    "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.0",
-    "dest-filename": "apiguardian-api-1.1.0.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+    "sha512": "d7ccd0e7019f1a997de39d66dc0ad4efe150428fdd7f4c743c93884f1602a3e90135ad34baea96d5b6d925ad6c0c8487c8e78304f0a089a12383d4a62e2c9a61",
+    "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.2",
+    "dest-filename": "apiguardian-api-1.1.2.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.0/apiguardian-api-1.1.0.pom",
-    "sha512": "f3e80c4b33b5e75f1584cf48e3fa2aa9d9bf3cbafbcc7ec4a74e7b2ef661d32e7785d2d286c15fc47718a54b33ba899718abd8210b5997ab5ac26807b3df5389",
-    "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.0",
-    "dest-filename": "apiguardian-api-1.1.0.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.module",
+    "sha512": "b8f1e5623d4d146caf73a869e8ee719746831d67e0259ecff8dec276c0563b92c65ee6bf2dd40b6e80b309e5da805730a39869f8942321626f793f69b57f11ff",
+    "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.2",
+    "dest-filename": "apiguardian-api-1.1.2.module"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+    "sha512": "bb604d1103315784a2f56a43244434dbbd7edc97d0450dada21313463d230e00f2f23f6e7c2ca45be94e81304057e70c79c9f0fb84247f7244d0277110b5747e",
+    "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.2",
+    "dest-filename": "apiguardian-api-1.1.2.pom"
   },
   {
     "type": "file",
@@ -687,234 +694,262 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.2/junit-bom-5.7.2.module",
-    "sha512": "c14ac62c0c4af5e00ed85b1d5b555281089b9c277d5fd0276695ad2c803da99df1c14814623e3cf063d61fdd525fed545f21a9fb8a4b62735ab5e52afdfbf573",
-    "dest": "./offline-repository/org/junit/junit-bom/5.7.2",
-    "dest-filename": "junit-bom-5.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.3/junit-bom-5.11.3.module",
+    "sha512": "eae159e938c61ec8655207bdbe4d4b233a4a52a946cb8e8f58938d7f1da0573dfcf80eb63ed546064b59e1693212784ccec754aa16bedfe2f5272f4ed3ad7e4d",
+    "dest": "./offline-repository/org/junit/junit-bom/5.11.3",
+    "dest-filename": "junit-bom-5.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.2/junit-bom-5.7.2.pom",
-    "sha512": "36e117a92c8f5cd9f98b0cedda2fa7d191bf4778d80e299d89952c34a25101bdf402685c4436d5f0e580204ad6187a106799c1b17bcbb31617778bf3583a97ec",
-    "dest": "./offline-repository/org/junit/junit-bom/5.7.2",
-    "dest-filename": "junit-bom-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.3/junit-bom-5.11.3.pom",
+    "sha512": "4cb3a161c98ed7ea65148603dd12a5b992b69b7555a0e7174406b0cd6f7180cea5510fd259cab7739518c288f2430d03efbb6fd53d9d20765b7c0ad071f39e21",
+    "dest": "./offline-repository/org/junit/junit-bom/5.11.3",
+    "dest-filename": "junit-bom-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.7.2/junit-jupiter-api-5.7.2.jar",
-    "sha512": "52f696608fedc0063305603f791d54561110f2ec239572ae0e84747401621e069cabe693f5e23d675090c7eff80183310132586c9582a9195068d05eb781adf7",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.7.2",
-    "dest-filename": "junit-jupiter-api-5.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.3/junit-jupiter-api-5.11.3.jar",
+    "sha512": "9beec8b09e6ef8c0b0ca507bd755d40c42d9f8a9d1266e8fec71cd8b9072adc8c88b14d71976b50c6e03000573b9e5991c2fea41e192537e855fc076ff768261",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.11.3",
+    "dest-filename": "junit-jupiter-api-5.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.7.2/junit-jupiter-api-5.7.2.module",
-    "sha512": "796bc3a24fffb1357e82a1d1f74a80549422a7229af1152b5b9fb58e7c79d545c5cefafbcfe1ca455dcda4f3f923428a2a16818d27ab9c444fba30b671ea4fe2",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.7.2",
-    "dest-filename": "junit-jupiter-api-5.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.3/junit-jupiter-api-5.11.3.module",
+    "sha512": "2a87634050f145d2beded4c76b283206e6b2ce43dd8c537f8b094e1d592befbf78aaa27ebf3b66a64a8aa0392ddd057ff28309a2536c4e6e0895f26e70a9af5b",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.11.3",
+    "dest-filename": "junit-jupiter-api-5.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.7.2/junit-jupiter-api-5.7.2.pom",
-    "sha512": "e48bfd8f4f291cc9cc9a306a65abc0de98eda3147fd9582e7ee49d14338f42e5ff75f7f7bf01459a53ab76ffd69abdb7a9daff8492e59ca1d323de363567b2e2",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.7.2",
-    "dest-filename": "junit-jupiter-api-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.3/junit-jupiter-api-5.11.3.pom",
+    "sha512": "b9a09ce9eb072be2ce83d6c256fb4cc97d4033ff72a4b78d319220f851c3669f94e047409cb2a0703e8c9bff7b95cc6ac6037ee1e95cd9564cd4fc8a2dd0886a",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/5.11.3",
+    "dest-filename": "junit-jupiter-api-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.7.2/junit-jupiter-engine-5.7.2.jar",
-    "sha512": "652a2268d54ae1f1d0f1876962479c27be892b6ea17c62ccb04af184dd3d1db21a760e39c129b129a5f82e26f791d34e90b05e385cb83c38859cb13b36eb0851",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.7.2",
-    "dest-filename": "junit-jupiter-engine-5.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.11.3/junit-jupiter-engine-5.11.3.jar",
+    "sha512": "5816bc74bc2ea181ecd386af121eb5ceac1eca0527e6f466e69281c92cbca0f2878535114a979f9f30d9ad109677763554433c7a751c898becbb2c533d67a734",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.11.3",
+    "dest-filename": "junit-jupiter-engine-5.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.7.2/junit-jupiter-engine-5.7.2.module",
-    "sha512": "17815370bce963afc5ebb6c3fc7eaac0e44ce4fa2dc6b2dfb53e3b7111207f70205f75d80a2978abc40530a79bf8f32d24dd8585e74bba1ebb8bf9855395f348",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.7.2",
-    "dest-filename": "junit-jupiter-engine-5.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.11.3/junit-jupiter-engine-5.11.3.module",
+    "sha512": "4c427a70c58a72280cb17201e69a3180b7db59ab1d333d12a6a017c6bf2498f4681a8dfeef31023155b88217852bada3c258ad22251ac8471fb6e186324aecbf",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.11.3",
+    "dest-filename": "junit-jupiter-engine-5.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.7.2/junit-jupiter-engine-5.7.2.pom",
-    "sha512": "77940741204394ea2bd657d0bafdf725a3605566f3db023d344c69ece9c9d30cf8e2ee2bc70a26701fed1c413addfd5f927cf13ef1b3474f9b2d3a9d2857d1a3",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.7.2",
-    "dest-filename": "junit-jupiter-engine-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.11.3/junit-jupiter-engine-5.11.3.pom",
+    "sha512": "bcb02128d6dcddfdff0926cb41b23ca20edc31d017eac7e4943db892df9da426e29b414a03cb15d1eafb99f3e14c2e465ed3de338e7125b08c9d08f65f607dd6",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/5.11.3",
+    "dest-filename": "junit-jupiter-engine-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-migrationsupport/5.7.2/junit-jupiter-migrationsupport-5.7.2.pom",
-    "sha512": "e2f4834c0f26799fa080e4fd43520a2caa2bc858bf10e17d863648b6fcc5ce0a6fd99414d40bbb985d08f2f4db6ab3479b0c6f27fe55da585b31ad08590c316c",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-migrationsupport/5.7.2",
-    "dest-filename": "junit-jupiter-migrationsupport-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-migrationsupport/5.11.3/junit-jupiter-migrationsupport-5.11.3.pom",
+    "sha512": "4d982625286949654912f56097240eae2b63d464848311e855f70d8809294d051b91f1b71904a26a8bbc621d17ab443deac3fafb19918a5c785cf21d81875a0c",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-migrationsupport/5.11.3",
+    "dest-filename": "junit-jupiter-migrationsupport-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.7.2/junit-jupiter-params-5.7.2.jar",
-    "sha512": "b60e3cbb7bf480d5b8dc33f3fa103757837bd9c72aa83a96643e2d1b5d913b33c6c5b3dc356fc1c5f5d629862fb1186744fda6ce0591c3170e5802039889a1cf",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.7.2",
-    "dest-filename": "junit-jupiter-params-5.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.11.3/junit-jupiter-params-5.11.3.jar",
+    "sha512": "f3272fe421376e26dbea54d1500f20731abd9760aa001285b26fc00aad048bff1b94ccf5cd28e4738bf3b103d4921d300874481572b52c533b3e3f6e6ebe71e0",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.11.3",
+    "dest-filename": "junit-jupiter-params-5.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.7.2/junit-jupiter-params-5.7.2.module",
-    "sha512": "a5e041ae9cf970e88bbabd70fb0e511c686ef34b4262f928c245093d1a90b9a47f207bb45693dd4db154b1d7a77290c60e78d0ab839bad00d8f1c6461ef74f5a",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.7.2",
-    "dest-filename": "junit-jupiter-params-5.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.11.3/junit-jupiter-params-5.11.3.module",
+    "sha512": "4fe4eca527d122587ed1d8bfa983daa3b54144b0429fa07b2db02844136cdade7dc6453671b6bb72bbde22fa3d1d66c5145732b0f6d30b13c6de8b39296a5c6c",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.11.3",
+    "dest-filename": "junit-jupiter-params-5.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.7.2/junit-jupiter-params-5.7.2.pom",
-    "sha512": "45e6420a53abd3fe214824241c2856c68c6c0298699cc0a4ab2df5577d4cfee89d4d5628dc34efc2a4b7762bb185997e7862ff93b4f644316db8a4b9197421a3",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.7.2",
-    "dest-filename": "junit-jupiter-params-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.11.3/junit-jupiter-params-5.11.3.pom",
+    "sha512": "592fd0a3351833eb0963277a579717e78cfbbee32cde8ff9a5b7075dfe1a454681e0ab97635a92058b9a444f1c540120e33bbcef21500d2f93f9bec8d78a8131",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/5.11.3",
+    "dest-filename": "junit-jupiter-params-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.7.2/junit-jupiter-5.7.2.jar",
-    "sha512": "00b8fec44cbc333c57bf106ecb15ddffe953efdfcbc4b6c06df81010266db1f587ffa4017399969e25b78991bf061e4d66e81cba645e8f539d7f66c42dba0ad8",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.7.2",
-    "dest-filename": "junit-jupiter-5.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.11.3/junit-jupiter-5.11.3.jar",
+    "sha512": "0e81b4c2ac93804b2238783240ee5e578fb6fea720b111c57e3af07d53fe9a6fc5844c13dcb423bc71f08664fff0373c1d27972b8d71b2a1ffee75c06c224da2",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.11.3",
+    "dest-filename": "junit-jupiter-5.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.7.2/junit-jupiter-5.7.2.module",
-    "sha512": "1ebda20099138bde7290af1bbca298144976e0ac46c437c75ef7107dc31dc0b31616a925db7c5c0aed0c976d2fdaf607c2607336c01d4e5e21c5f557bd7e7a6a",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.7.2",
-    "dest-filename": "junit-jupiter-5.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.11.3/junit-jupiter-5.11.3.module",
+    "sha512": "95ab4d19aed7fa7bdbfddad7456285c622157c76e51ecd049e866bb8f016c64e6ca1c259f1468e100a9aa51865ee7cceac1206bcf95d74cdce0df7ef6868012f",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.11.3",
+    "dest-filename": "junit-jupiter-5.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.7.2/junit-jupiter-5.7.2.pom",
-    "sha512": "7625c03a1cc5f247866526441d1c35eaf3b1ca1c37869c6d3c6b7893d0acc3e318c89e9696b9942612cfbc75ce9ed29dc37a5d3c2e7c0ab60690e0aee3143d48",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.7.2",
-    "dest-filename": "junit-jupiter-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.11.3/junit-jupiter-5.11.3.pom",
+    "sha512": "bdd166322a7c8b0b1402f32f9ceef10bd97091ceaec31df19a7e85ca88266ffa75a8fa98c7fe5da0586b3cc258755d859404fa4a86ed9b74c64c5f4a0bad0c58",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/5.11.3",
+    "dest-filename": "junit-jupiter-5.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.7.2/junit-platform-commons-1.7.2.jar",
-    "sha512": "3b94c80d88f31e5645f0de99401eb3a79430fba6e5aafc1d3868978c5688fea3e23a2e66d973a6402f922c8a5d4dede835b34f55e0ef6b6844e710e86d47f68a",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.7.2",
-    "dest-filename": "junit-platform-commons-1.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.3/junit-platform-commons-1.11.3.jar",
+    "sha512": "fa68fd38d25bc7d1806e9ba3306d651071b33837611a4cad601a32d9711215fc82ac2889728468b42bf40cb1cc34d2421a56eb919dfde114fe78fdf844e78bb7",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.11.3",
+    "dest-filename": "junit-platform-commons-1.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.7.2/junit-platform-commons-1.7.2.module",
-    "sha512": "3732c0d321d4e2f2b54baad73ac95546f103d8388fb70d556ada6e6c19c070e882560c178cce9e52009d15f32f79dc694c4483a20802f17bf19dcd65a010c3c2",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.7.2",
-    "dest-filename": "junit-platform-commons-1.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.3/junit-platform-commons-1.11.3.module",
+    "sha512": "854e9a240f1505e11140def929ce84c7f0e7c6560b25ce9107da8c3c2484c73d13c3a2509352dec45e88c42837ae4ae681c6de34ef8aeeb935dd77c21b32e990",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.11.3",
+    "dest-filename": "junit-platform-commons-1.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.7.2/junit-platform-commons-1.7.2.pom",
-    "sha512": "bb96108382480e3f4f134640365367281978a8af1ced89784e920f4b679cd2b2426088cc80bfaf3a9c9a71fb940c498bad0aed26c1f31d8ba25a9db4f51ef01a",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.7.2",
-    "dest-filename": "junit-platform-commons-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.3/junit-platform-commons-1.11.3.pom",
+    "sha512": "0bf2121eb679ebbf4ac57114b4ba281d4a1c033bec58cf3c3deeb592d6ddf0218e78a0a673efa5535dc2e7190f920d393c8227e08aea9e3e574c034a53e559f9",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/1.11.3",
+    "dest-filename": "junit-platform-commons-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console/1.7.2/junit-platform-console-1.7.2.pom",
-    "sha512": "06c46df4130eca94a7e23550a897d6a741be5d818354b55bc3e240e8c0c69ac553a6f9df2890c20b606834c3056e127434984dc407fc5a9237027af8231c2396",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-console/1.7.2",
-    "dest-filename": "junit-platform-console-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console/1.11.3/junit-platform-console-1.11.3.pom",
+    "sha512": "4f7945f718f10c53315c6aad42399735390b4386e86aeb24324b2fa25ba73b44c8418a1010fb0334985e670e65febfa504ff4e8226d3f56434e17871e6423228",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-console/1.11.3",
+    "dest-filename": "junit-platform-console-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.7.2/junit-platform-engine-1.7.2.jar",
-    "sha512": "afb7595e2166be3d330795d1605d8baa12c2412fc7ea1c88433a60080113e4ba5fbe2561762c9a626e98686c6f318b99df1357351e5d7e473d22b53bf7681a2f",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.7.2",
-    "dest-filename": "junit-platform-engine-1.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.11.3/junit-platform-engine-1.11.3.jar",
+    "sha512": "7c76492db1592a3ad4c9cfe82e97a9867e43acc7832a5bdb8bcc23bb00ce0df2c6687b6e89f3407c297f0bad9e0c58e768b70ca88e46c12864d1e62672b4d0f8",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.11.3",
+    "dest-filename": "junit-platform-engine-1.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.7.2/junit-platform-engine-1.7.2.module",
-    "sha512": "ad5e68f2aedc23d7db785879f2751c99597148ddb133c95819ed5f8109117d643499596eba1491130377a2cdbf84709ede49ffc3c2a835b71a55fd39737c20ae",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.7.2",
-    "dest-filename": "junit-platform-engine-1.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.11.3/junit-platform-engine-1.11.3.module",
+    "sha512": "390b653da25948ba130f54ea6983fb740ee6a0f55a45885805740c17dc414b7f4b80ef4e0ffc4fa8cea31a1bd7fa2263caa55080093b52d248341da846fef105",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.11.3",
+    "dest-filename": "junit-platform-engine-1.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.7.2/junit-platform-engine-1.7.2.pom",
-    "sha512": "1fba6d10d6770216aac03d45d443958f26f5ba2137229daae8c33e54f4278adea84bd05bc3168bad3b632be24fbf79721dcef773f6b57478f4599cdbe68af4be",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.7.2",
-    "dest-filename": "junit-platform-engine-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.11.3/junit-platform-engine-1.11.3.pom",
+    "sha512": "854db8229e3c777535959f5d4ddccf3979104369bb46440f4381800d00195a5792e34f3f0147dd4a3a945d26ef615e75763d1a51220f2c2760e13832583f6814",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/1.11.3",
+    "dest-filename": "junit-platform-engine-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-jfr/1.7.2/junit-platform-jfr-1.7.2.pom",
-    "sha512": "13c2e52b84dc61afafdf9e715dea1e574a25d81b6b890b12e255f27efbe43218f58bfe0d0055ced97c58a18dd445c8a59871ccd9643cab156befdf1ed292be1b",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-jfr/1.7.2",
-    "dest-filename": "junit-platform-jfr-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-jfr/1.11.3/junit-platform-jfr-1.11.3.pom",
+    "sha512": "0f41b2afac0a28bc11aa24a05f70bb103f24f15f30375a761bf9a857f830960ad30901300e8d5b56ca8654ccfc847be07e025b8cef8a62fde11d410facb226a6",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-jfr/1.11.3",
+    "dest-filename": "junit-platform-jfr-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.7.2/junit-platform-launcher-1.7.2.jar",
-    "sha512": "45f058b78aff794fcff68e92ac1d8812accf2706c3382b36e84affae66b6f1cfe1f890b164e88a0a34ae120a220c16d9cceac157d25274e793ba16009aa30ab7",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.7.2",
-    "dest-filename": "junit-platform-launcher-1.7.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.11.3/junit-platform-launcher-1.11.3.jar",
+    "sha512": "46794f620b2569931d5c007c1026082e0027e14f18ac8a64d7e2dfd4d250d5964a1e13353265df9db4362e78c1c600b9894dc461c0380870abe11833fc156cbd",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.11.3",
+    "dest-filename": "junit-platform-launcher-1.11.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.7.2/junit-platform-launcher-1.7.2.module",
-    "sha512": "f03a1ae83b0cf335edbf6d8347dc4ee0988e445301f39152e00a875e11ed454c9abf588543a01786eee6f8e3b608ba0d349ac6e9c9676bd36e1541adf979d9a8",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.7.2",
-    "dest-filename": "junit-platform-launcher-1.7.2.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.11.3/junit-platform-launcher-1.11.3.module",
+    "sha512": "299b955ee10f1d5008e38b842825db8692d787b4942c456db05107a9c43fdfa4ef9062d52df8dce3e51a02f06b27450f3a2de4e9b6fc6110566b2ede10ef9e1d",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.11.3",
+    "dest-filename": "junit-platform-launcher-1.11.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.7.2/junit-platform-launcher-1.7.2.pom",
-    "sha512": "ba4b26d1b9b4f97d6fcd04836ec54194b5dbbe7f9fc09e98c17ab13ac7d5465f561490b9267992ae2e6ca35c4fa8703f4ab22f18662a4a41b4a8516b05f56a96",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.7.2",
-    "dest-filename": "junit-platform-launcher-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.11.3/junit-platform-launcher-1.11.3.pom",
+    "sha512": "75e4a3be3dd4db8b9d1e064cac7eb4b58d3389805b933458c616afa36ef912418060b052d3ac408f3fa01444674eb26c50e263a2af1c9271ebee82e43386df5d",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/1.11.3",
+    "dest-filename": "junit-platform-launcher-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-reporting/1.7.2/junit-platform-reporting-1.7.2.pom",
-    "sha512": "f5f2db33f0b3a88160fa2a6a6c5d7369a2510ba4e8cc331ea11121ac855ec5ed044f72e6a518d2e74144ce5094d121de6a9616b51f5aeece71ca038493405d39",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-reporting/1.7.2",
-    "dest-filename": "junit-platform-reporting-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-reporting/1.11.3/junit-platform-reporting-1.11.3.pom",
+    "sha512": "a9a7c684ff51042256079d258f063ab7009d218a077b82f342278eacc0eea67a076aa4bea01cb74880ffc1b7debb9524e4a6868f9d9673bd932743ceb0327e2e",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-reporting/1.11.3",
+    "dest-filename": "junit-platform-reporting-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-runner/1.7.2/junit-platform-runner-1.7.2.pom",
-    "sha512": "97de6881b75ee4fe2f5feea9e27e3eb1048868f6cdea726beec27129832f94afdae307195b30c2ea3f050582ba0fbfc05e4be6475f56355c9defb1a4b4038e5e",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-runner/1.7.2",
-    "dest-filename": "junit-platform-runner-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-runner/1.11.3/junit-platform-runner-1.11.3.pom",
+    "sha512": "d5fdf8d063a609b4531f5f82273ff66a1c5b8643ddd1a68fd63f8e428a7e99b6ca1b18646f1a3d84430bd252ca02d3c71a8c757c02e33fdcabcba01eae0f3c56",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-runner/1.11.3",
+    "dest-filename": "junit-platform-runner-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-api/1.7.2/junit-platform-suite-api-1.7.2.pom",
-    "sha512": "a57ba204a8369159c5fb4c2a6d5b264c4c1926dc6d7cd7d9ea7d80825d0a0c01d19d261d9f6cc7b62a4b479734c9e3d1877a2b90c187d3a06c5afa36deba841a",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-api/1.7.2",
-    "dest-filename": "junit-platform-suite-api-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-api/1.11.3/junit-platform-suite-api-1.11.3.pom",
+    "sha512": "20a05a7668f36af75f205a5d8a6be0d57e9e067a4282168b29500de4e2d9c1d8e7e62313aa00c639eb7a9032f854f9d37f21c57392bed8b535806a4c4fc470bc",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-api/1.11.3",
+    "dest-filename": "junit-platform-suite-api-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-testkit/1.7.2/junit-platform-testkit-1.7.2.pom",
-    "sha512": "e907251e766c51503b902fb8f9e8ae310b2a1ce16df7b5936b354b8c8d4f4bf58bfc2d47de1e7274b6863900255ae63e0e5888b5ef23753f35136557adc90035",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-testkit/1.7.2",
-    "dest-filename": "junit-platform-testkit-1.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-commons/1.11.3/junit-platform-suite-commons-1.11.3.pom",
+    "sha512": "76e0557307d52feb6b6e26ffb3229a2cbc2a2431bac0f021aef4eb6a7c206d4937c0230673ea6fb7a89d31654178d7de2aa0b416f2d2c0ddcfbda1312b1c976e",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-commons/1.11.3",
+    "dest-filename": "junit-platform-suite-commons-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/vintage/junit-vintage-engine/5.7.2/junit-vintage-engine-5.7.2.pom",
-    "sha512": "bea18ae0366fd37d899efa29690dccd7e873f5e203443c8e131efd0a543f007de504c1fc870ef736d69f9a3724e405ee91b1d6ab9692640b4ccd2d21c4576e02",
-    "dest": "./offline-repository/org/junit/vintage/junit-vintage-engine/5.7.2",
-    "dest-filename": "junit-vintage-engine-5.7.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-engine/1.11.3/junit-platform-suite-engine-1.11.3.pom",
+    "sha512": "7cc54bdbd0351b247beab54d1b15c68ef931df33302c0eff480c435a36c0df81d37bfaa241ed4b17b95a21623f2d51e6669a281463427ea2010528ad1593f4d8",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-engine/1.11.3",
+    "dest-filename": "junit-platform-suite-engine-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar",
-    "sha512": "17f77797a260eb2bd1666a90e25efc79a5413afa9df1c1cb6c4cd1949d61c38b241e3bb20956396b5f54d144720303d72a2ac00bc5bf245a260a3c3099e01c74",
-    "dest": "./offline-repository/org/opentest4j/opentest4j/1.2.0",
-    "dest-filename": "opentest4j-1.2.0.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite/1.11.3/junit-platform-suite-1.11.3.pom",
+    "sha512": "4027892bdf737ac09b9a37af3e32d29a0d2b71aa2b1789350107093247d76ac491b4e40e5f8d5ecd95fea1493924db0bc8a2ed8ac3457738249c97743c643865",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite/1.11.3",
+    "dest-filename": "junit-platform-suite-1.11.3.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.pom",
-    "sha512": "28ce0d0b5cceeac5adfcdd16ee6f5fbefd43eef8057b924993fb7a9f4b7a7085b980f3e808db5fb7750a53d0072b7fe7b118f5c0011e3ef0efe6c9a90a87b868",
-    "dest": "./offline-repository/org/opentest4j/opentest4j/1.2.0",
-    "dest-filename": "opentest4j-1.2.0.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-testkit/1.11.3/junit-platform-testkit-1.11.3.pom",
+    "sha512": "7cbe751714fae1629873113e0f716e3de13df4c5be1fa41e7ed415a2007754b98e0c79daf84509995cd94c8da674383f0a158a28c0533cd2f974037b1bef5834",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-testkit/1.11.3",
+    "dest-filename": "junit-platform-testkit-1.11.3.pom"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/junit/vintage/junit-vintage-engine/5.11.3/junit-vintage-engine-5.11.3.pom",
+    "sha512": "98d2a00be68452202a627ae566bbd8c104976bc8a8ecde36b448bfe5a08b81ddc1e6bf91734ca11a97d4acd2f72da37ace0ec5d641908dfd2935648325b1143d",
+    "dest": "./offline-repository/org/junit/vintage/junit-vintage-engine/5.11.3",
+    "dest-filename": "junit-vintage-engine-5.11.3.pom"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+    "sha512": "78fc698a7871bb50305e3657893c10500595f043348d875f57bc39ca4a6a51eda3967b7c8c8a7ec3e8f85f2171bca4aa98823e912e416e87e81c6ba5b70a37c3",
+    "dest": "./offline-repository/org/opentest4j/opentest4j/1.3.0",
+    "dest-filename": "opentest4j-1.3.0.jar"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.module",
+    "sha512": "a24e55ab4d77156b5cc60c4605357f8507758790e9d01c7198719070271ea43d887de97ab5e8eeeb929c2a4d4b54d2f16faf88623d1ad4fe3bcd179a3b7982e2",
+    "dest": "./offline-repository/org/opentest4j/opentest4j/1.3.0",
+    "dest-filename": "opentest4j-1.3.0.module"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+    "sha512": "9bda42d4ee45932f832ae01b3a3f23ad0b0927619db9576a8de2142f4c3b4afc4e94f1076951081af5963ab8cd4eeaa06a4bd5946cae321c6850b7fa36e3f175",
+    "dest": "./offline-repository/org/opentest4j/opentest4j/1.3.0",
+    "dest-filename": "opentest4j-1.3.0.pom"
   },
   {
     "type": "file",

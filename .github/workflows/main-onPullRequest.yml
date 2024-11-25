@@ -1,9 +1,6 @@
-name: CI for LEDSuite (build, dependency file check)
+name: CI for LEDSuite (build only)
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main

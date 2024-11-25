@@ -126,10 +126,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
-        LEDSuiteApplication.handleError(
-                "Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage(),
-                new LEDSuiteLogAreas.NETWORK()
-        );
+        super.onError(session, throwable);
 
         // Log each element of the stack trace for detailed error information
         for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {

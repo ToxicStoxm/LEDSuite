@@ -7,6 +7,7 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
  * It provides callbacks for transitioning between states such as authenticating and authenticated.
  * Implementing classes can use these methods to update the UI or other components that depend on authentication state.
  * </p>
+ * @since 1.0.0
  */
 public interface AuthStatus {
 

@@ -37,7 +37,7 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
         super.deserialize(deserializableWidget);
 
         widget.setText(
-                getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE)
+                getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE)
         );
 
         widget.setShowApplyButton(

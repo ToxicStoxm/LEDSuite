@@ -43,7 +43,7 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
         );
 
         widget.setEnableExpansion(
-                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.ExpanderRow.ENABLE_EXPANSION, true)
+                getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, true)
         );
 
         widget.setExpanded(

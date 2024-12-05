@@ -108,7 +108,7 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
                 }
             });
         } else {
-            widget.onChanged(() -> sendMenuChangeRequest(String.valueOf(widget.getValue())));
+            widget.onChanged(() -> sendMenuChangeRequest(widget.getValue()));
         }
 
         return widget;

@@ -78,7 +78,7 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
             }
         }
         if (widget.getShowEnableSwitch()) {
-            onChanged(() -> sendMenuChangeRequest(String.valueOf(widget.getEnableExpansion())));
+            onChanged(() -> sendMenuChangeRequest(widget.getEnableExpansion()));
         }
 
         return widget;

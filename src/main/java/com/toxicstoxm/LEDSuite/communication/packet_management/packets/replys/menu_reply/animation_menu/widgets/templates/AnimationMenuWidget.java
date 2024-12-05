@@ -62,7 +62,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
         );
     }
 
-    protected void sendMenuChangeRequest(String objectValue) {
+    protected void sendMenuChangeRequest(Object objectValue) {
         try {
             getChangeCallback().enqueueMessage(
                     MenuChangeRequestPacket.builder()

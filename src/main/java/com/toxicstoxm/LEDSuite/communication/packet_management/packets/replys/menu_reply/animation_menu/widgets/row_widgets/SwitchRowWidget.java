@@ -35,7 +35,7 @@ public class SwitchRowWidget extends AnimationMenuActionRowWidget<SwitchRow> {
                 getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, false)
         );
 
-        onChanged(() -> sendMenuChangeRequest(String.valueOf(widget.getActive())));
+        onChanged(() -> sendMenuChangeRequest(widget.getActive()));
 
         return widget;
     }

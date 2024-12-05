@@ -1,11 +1,13 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.row_widgets;
 
+import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuRowWidget;
 import org.gnome.adw.ActionRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
-public class PropertyRowWidget extends AnimationMenuActionRowWidget<ActionRow> {
+public class PropertyRowWidget extends AnimationMenuRowWidget<ActionRow> {
 
     @Override
     public String getType() {
@@ -32,6 +34,10 @@ public class PropertyRowWidget extends AnimationMenuActionRowWidget<ActionRow> {
 
         widget.setCssClasses(new String[]{"property"});
         widget.setSubtitleSelectable(true);
+
+        widget.setSubtitle(
+                getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, "")
+        );
 
         return widget;
     }

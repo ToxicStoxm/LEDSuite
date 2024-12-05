@@ -62,7 +62,7 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
      * or a string for text fields.
      * </p>
      */
-    private String objectValue;
+    private Object objectValue;
 
     /**
      * The name of the animation file associated with this menu change.
@@ -118,7 +118,7 @@ public class MenuChangeRequestPacket extends CommunicationPacket {
         packet.objectId = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_ID);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
-        packet.objectValue = yaml.getString(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
+        packet.objectValue = yaml.get(Constants.Communication.YAML.Keys.Request.MenuChangeRequest.OBJECT_VALUE);
 
         ensureKeyExists(Constants.Communication.YAML.Keys.General.FILE_NAME);
         packet.fileName = yaml.getString(Constants.Communication.YAML.Keys.General.FILE_NAME);

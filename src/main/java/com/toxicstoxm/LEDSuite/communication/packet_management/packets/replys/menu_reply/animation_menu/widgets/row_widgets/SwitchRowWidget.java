@@ -7,6 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
+import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import org.gnome.adw.SwitchRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,15 @@ public class SwitchRowWidget extends AnimationMenuActionRowWidget<SwitchRow> {
                 getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, false)
         );
 
-        onChanged(() -> sendMenuChangeRequest(widget.getActive()));
+        onChanged(() -> {
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    sendMenuChangeRequest(widget.getActive());
+                    System.out.println(widget.getActive());
+                }
+            }.runTaskLaterAsynchronously(100);
+        });
 
         return widget;
     }

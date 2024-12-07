@@ -50,6 +50,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
      * @see #deserializeAnimationMenuGroup(String, String, ConfigurationSection) 
      */
     public AnimationMenu deserializeAnimationMenu(String menuYAML) throws DeserializationException {
+
         // Try to load YAML string into a YAML object
         YamlConfiguration yaml = new YamlConfiguration();
         try {
@@ -112,8 +113,10 @@ public class AnimationMenuManager extends Registrable<Widget> {
         String topLevelWidgetType = menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
         if (topLevelWidgetType == null)
             throw new DeserializationException("Invalid widget type 'null' for top level group " + menuGroupKey + "'!", ErrorCode.WidgetMissingType);
-        if (!topLevelWidgetType.equals(WidgetType.GROUP.getName()))
+        if (!topLevelWidgetType.equals(WidgetType.GROUP.getName())) {
+            LEDSuiteApplication.getLogger().warn("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!");
             throw new DeserializationException("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!", ErrorCode.TopLevelWidgetIsNotGroup);
+        }
 
         PreferencesGroup menuGroup = PreferencesGroup.builder().build();
 

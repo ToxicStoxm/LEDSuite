@@ -88,7 +88,7 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
                 if (!onCooldown) {
                     if (timeSinceLastUpdate > cooldown) {
                         lastUpdate = System.currentTimeMillis();
-                        sendMenuChangeRequest(String.valueOf(widget.getValue()));
+                        sendMenuChangeRequest(widget.getValue());
                     } else {
                         onCooldown = true;
                         double lastKnownValue = widget.getValue();
@@ -97,9 +97,9 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
                             public void run() {
                                 lastUpdate = System.currentTimeMillis();
                                 if (widget != null) {
-                                    sendMenuChangeRequest(String.valueOf(widget.getValue()));
+                                    sendMenuChangeRequest(widget.getValue());
                                 } else {
-                                    sendMenuChangeRequest(String.valueOf(lastKnownValue));
+                                    sendMenuChangeRequest(lastKnownValue);
                                 }
                                 onCooldown = false;
                             }

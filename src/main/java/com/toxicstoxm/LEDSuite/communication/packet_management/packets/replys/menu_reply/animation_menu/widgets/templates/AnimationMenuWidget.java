@@ -15,7 +15,6 @@ import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.Getter;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
-import org.gnome.gtk.StateFlags;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
 
@@ -127,9 +126,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     }
 
     protected void onChanged(ChangedCallback changedCallback) {
-        widget.onStateFlagsChanged(flags -> {
-           if (flags.contains(StateFlags.ACTIVE)) changedCallback.onChanged();
-        });
+        widget.onNotify(null, _ -> changedCallback.onChanged());
     }
 
     protected String getStringIfAvailable(String key) {

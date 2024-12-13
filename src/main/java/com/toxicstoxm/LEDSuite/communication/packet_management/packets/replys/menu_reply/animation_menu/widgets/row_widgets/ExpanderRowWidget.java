@@ -9,7 +9,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuRowWidget;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import org.gnome.adw.ExpanderRow;
@@ -79,14 +78,7 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
             }
         }
         if (widget.getShowEnableSwitch()) {
-            onChanged(() -> {
-                new LEDSuiteRunnable() {
-                    @Override
-                    public void run() {
-                        sendMenuChangeRequest(widget.getEnableExpansion());
-                    }
-                }.runTaskLaterAsynchronously(100);
-            });
+            onChanged(() -> sendMenuChangeRequest(widget.getEnableExpansion()));
         }
 
         return widget;

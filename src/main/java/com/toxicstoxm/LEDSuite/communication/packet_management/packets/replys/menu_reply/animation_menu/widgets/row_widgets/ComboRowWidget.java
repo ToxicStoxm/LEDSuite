@@ -8,7 +8,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import org.gnome.adw.ComboRow;
 import org.gnome.glib.Type;
 import org.gnome.gtk.Gtk;
@@ -53,15 +52,7 @@ public class ComboRowWidget extends AnimationMenuActionRowWidget<ComboRow> {
                 getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, Gtk.INVALID_LIST_POSITION)
         );
 
-        onChanged(() -> {
-            new LEDSuiteRunnable() {
-                @Override
-                public void run() {
-                    sendMenuChangeRequest(String.valueOf(content.get(widget.getSelected())));
-                    System.out.println(content.get(widget.getSelected()));
-                }
-            }.runTaskLaterAsynchronously(100);
-        });
+        onChanged(() -> sendMenuChangeRequest(String.valueOf(content.get(widget.getSelected()))));
 
         return widget;
     }

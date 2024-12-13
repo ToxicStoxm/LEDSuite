@@ -100,6 +100,7 @@ public class LEDSuiteFuture<T> extends LEDSuiteTask implements Future<T> {
         long timestamp = timeout > 0 ? System.currentTimeMillis() : 0L;
         while (true) {
             if (period == -1L || period == -3L) {
+                Thread.onSpinWait();
                 this.wait(timeout);
                 period = this.getPeriod();
                 if (period == -1L || period == -3L) {

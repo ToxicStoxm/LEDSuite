@@ -721,6 +721,7 @@ public class LEDSuiteApplication extends Application {
             public void run() {
                 while (!finished.get()) {
                     try {
+                        Thread.onSpinWait();
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         logger.warn("Upload finish callback was interrupted!", new LEDSuiteLogAreas.NETWORK());

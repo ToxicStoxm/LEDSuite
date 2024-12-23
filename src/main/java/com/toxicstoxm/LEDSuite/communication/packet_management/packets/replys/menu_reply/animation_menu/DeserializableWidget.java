@@ -8,4 +8,4 @@ import lombok.Builder;
  * @since 1.0.0
  */
 @Builder
-public record DeserializableWidget(ConfigurationSection widgetSection, String widgetKey, String animationName) {}
+public record DeserializableWidget(ConfigurationSection widgetSection, String widgetKey, String animationName, String widgetType) {}

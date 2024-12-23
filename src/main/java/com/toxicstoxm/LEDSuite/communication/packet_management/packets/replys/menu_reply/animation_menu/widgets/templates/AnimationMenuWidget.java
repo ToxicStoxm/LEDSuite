@@ -53,11 +53,11 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
                         .build()
         );
         yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, getWidgetID());
-        return new DeserializableWidget(
-                yaml,
-                getWidgetID(),
-                getAnimationName()
-        );
+        return DeserializableWidget.builder()
+                .widgetSection(yaml)
+                .widgetKey(getWidgetID())
+                .animationName(getAnimationName())
+                .build();
     }
 
     protected void sendMenuChangeRequest(Object objectValue) {

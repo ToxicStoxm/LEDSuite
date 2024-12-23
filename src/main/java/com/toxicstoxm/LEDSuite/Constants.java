@@ -180,6 +180,7 @@ public class Constants {
                         public static final String FILENAME = "filename";
                         public static final String TYPE = "type";
                         public static final String VALUE = "value";
+                        public static final String INDEX = "index";
 
                         public static final class Groups {
                             public static final String SUFFIX = "suffix";

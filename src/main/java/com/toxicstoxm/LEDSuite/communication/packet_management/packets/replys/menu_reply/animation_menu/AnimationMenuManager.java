@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
+import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
@@ -15,6 +16,9 @@ import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import org.gnome.adw.PreferencesGroup;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.checkIfKeyExists;
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.ensureKeyExists;
@@ -80,6 +84,9 @@ public class AnimationMenuManager extends Registrable<Widget> {
         ConfigurationSection menuContentSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
         if (menuContentSection == null) throw new DeserializationException("Menu content section is empty!", ErrorCode.MenuContentKeyMissing);
 
+        List<PreferencesGroup> groups = new ArrayList<>();
+        List<PreferencesGroup> unsortedGroups = new ArrayList<>();
+
         // Loop through the content widgets and ensure they are groups, because all top level widgets need to be groups
         // If a type key exists check if it is a group
         for (String menuGroupKey : menuContentSection.getKeys(false)) {
@@ -88,10 +95,29 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (menuGroupSection == null)
                 throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!", ErrorCode.GroupSectionEmptyOrMissing);
 
-            try {
-                animationMenu.animationMenuContent.append(deserializeAnimationMenuGroup(animationMenu.getMenuID(), menuGroupKey, menuGroupSection));
-            } catch (DeserializationException e) {
-                throw new DeserializationException("Failed to deserialize animation menu group '" + menuGroupKey + "'!", e, e.getErrorCode());
+            int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, menuGroupSection);
+
+            PreferencesGroup group = deserializeAnimationMenuGroup(animationMenu.getMenuID(), menuGroupKey, menuGroupSection);
+
+            if (index < 0) {
+                unsortedGroups.add(group);
+            } else {
+                groups.set(index, group);
+            }
+        }
+
+        groups.addAll(unsortedGroups);
+
+        for (int i = 0; i < groups.size(); i++) {
+            PreferencesGroup group = groups.get(i);
+            if (group != null) {
+                try {
+                    animationMenu.animationMenuContent.append(group);
+                } catch (DeserializationException e) {
+                    throw new DeserializationException("Failed to deserialize animation menu group '" + group.getName() + "'!", e, e.getErrorCode());
+                }
+            } else {
+                LEDSuiteApplication.getLogger().warn("Skipping group index '" + i + "', because the group at that position is 'null'!", new LEDSuiteLogAreas.COMMUNICATION());
             }
         }
 
@@ -127,7 +153,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP, menuGroupSection)) {
             menuGroup.setTooltipText(menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TOOLTIP));
         }
-        
+
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.Groups.SUFFIX, menuGroupSection)) {
             ConfigurationSection groupHeaderSuffixSection = menuGroupSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.Groups.SUFFIX);
             if (groupHeaderSuffixSection == null)
@@ -159,7 +185,11 @@ public class AnimationMenuManager extends Registrable<Widget> {
             throw new DeserializationException("Group content section is missing!", ErrorCode.GroupContentKeyMissing);
 
         ConfigurationSection menuGroupContentSection = menuGroupSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
-        if (menuGroupContentSection == null) throw new DeserializationException("Group content section is empty!", ErrorCode.GroupContentSectionEmptyOrMissing);
+        if (menuGroupContentSection == null)
+            throw new DeserializationException("Group content section is empty!", ErrorCode.GroupContentSectionEmptyOrMissing);
+
+        List<DeserializableWidget> widgets = new ArrayList<>();
+        List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
 
         for (String widgetKey : menuGroupContentSection.getKeys(false)) {
             ConfigurationSection widgetSection = menuGroupContentSection.getConfigurationSection(widgetKey);
@@ -174,20 +204,42 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (!isRegistered(widgetType))
                 throw new DeserializationException("Invalid / Unknown widget type '" + widgetType + "' for widget '" + widgetKey + "'!", ErrorCode.WidgetInvalidOrUnknownType);
 
-            try {
-                menuGroup.add(
-                        get(widgetType).deserialize(
-                                DeserializableWidget.builder()
-                                        .animationName(animationName)
-                                        .widgetSection(widgetSection)
-                                        .widgetKey(widgetKey)
-                                        .build()
-                        )
-                );
-            } catch (DeserializationException e) {
-                throw new DeserializationException("Failed to deserialize widget '" + widgetKey + "' with type '" + widgetType + "'!", e, e.getErrorCode());
+            int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, widgetSection);
+
+            DeserializableWidget deserializableWidget =
+                    DeserializableWidget.builder()
+                            .animationName(animationName)
+                            .widgetSection(widgetSection)
+                            .widgetKey(widgetKey)
+                            .widgetType(widgetType)
+                            .build();
+
+            if (index < 0) {
+                unsortedWidgets.add(deserializableWidget);
+            } else {
+                widgets.set(index, deserializableWidget);
             }
         }
+
+        widgets.addAll(unsortedWidgets);
+
+        for (int i = 0; i < widgets.size(); i++) {
+            DeserializableWidget widget = widgets.get(i);
+            if (widget != null) {
+                try {
+                    menuGroup.add(
+                            get(widget.widgetType()).deserialize(
+                                    widget
+                            )
+                    );
+                } catch (DeserializationException e) {
+                    throw new DeserializationException("Failed to deserialize widget '" + widget.widgetKey() + "' with type '" + widget.widgetType() + "'!", e, e.getErrorCode());
+                }
+            } else {
+                LEDSuiteApplication.getLogger().warn("Skipping widget index '" + i + "', because the widget at that position is 'null'!", new LEDSuiteLogAreas.COMMUNICATION());
+            }
+        }
+
         return menuGroup;
     }
 }

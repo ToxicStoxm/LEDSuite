@@ -39,7 +39,7 @@ jobs:
 
       # Meson Install
       - name: Meson Install
-        uses: BSFishy/meson-build@v1.0.3
+        uses: BSFishy/meson-build@656b2a360964b249ac82905a52018921e01d875b
         with:
           action: install
           setup-options: --prefix /tmp/install

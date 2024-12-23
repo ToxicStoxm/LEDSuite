@@ -15,7 +15,6 @@ if ("@ID@".endsWith("@")) {
 }
 
 repositories {
-    maven { url './offline-repository/' }
     mavenCentral()
     mavenLocal()
 }
@@ -40,8 +39,8 @@ dependencies {
 
     implementation 'io.github.classgraph:classgraph:4.8.179'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
 }
 
 

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.92.2 -->
+<!-- Created with Cambalache 0.94.1 -->
 <interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name LEDSuiteWindow.ui -->
-  <requires lib="gio" version="2.82"/>
+  <requires lib="gio" version="2.44"/>
   <requires lib="gtk" version="4.16"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="LEDSuiteWindow" parent="AdwApplicationWindow">

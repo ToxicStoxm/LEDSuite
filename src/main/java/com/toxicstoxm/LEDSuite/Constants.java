@@ -66,6 +66,21 @@ public class Constants {
                     public static final String FILE_NAME = "filename";
                 }
 
+                public static final class Message {
+                    public static class ServerMessage {
+                        public static final String MESSAGE = "message";
+                        public static final String HEADING = "heading";
+                        public static final String SOURCE = "source";
+                        public static final String RESPONSES = "responses";
+
+                        public static class Responses {
+                            public static final String STYLE = "style";
+                            public static final String ACTIVE = "active";
+                            public static final String LABEL = "label";
+                        }
+                    }
+                }
+
                 public static final class Error {
                     public static final class ServerError {
                         public static final String SOURCE = "error_source";
@@ -114,6 +129,10 @@ public class Constants {
                     public static final class AuthenticationRequest {
                         public static final String USERNAME = "username";
                         public static final String PASSWORD_HASH = "password_hash";
+                    }
+
+                    public static final class ServerMessageResponseRequest {
+                        public static final String RESPONSE_ID = "response_id";
                     }
                 }
 
@@ -218,6 +237,13 @@ public class Constants {
                         public static final String ERROR = "error";
                         public static final String REPLY = "reply";
                         public static final String REQUEST = "request";
+                        public static final String MESSAGE = "message";
+                    }
+                }
+
+                public static final class Message {
+                    public static class Types {
+                        public static final String SERVER = "server";
                     }
                 }
 
@@ -266,6 +292,7 @@ public class Constants {
                         public static final String PASSWORD_CHANGE = "password_change";
                         public static final String CREATE_ACCOUNT = "create_account";
                         public static final String DELETE_ACCOUNT = "delete_account";
+                        public static final String MESSAGE_RESPONSE_REQUEST = "message_response_request";
                     }
                 }
 

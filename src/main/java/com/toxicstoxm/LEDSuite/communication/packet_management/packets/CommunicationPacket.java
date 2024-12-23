@@ -141,4 +141,44 @@ public abstract class CommunicationPacket implements Packet {
     protected void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) throws DeserializationException {
         YamlTools.ensureKeyExists(key, yaml);
     }
+
+    protected String getStringIfAvailable(String key) {
+        return YamlTools.getStringIfAvailable(key, yaml);
+    }
+
+    protected String getStringIfAvailable(String key, String defaultValue) {
+        return YamlTools.getStringIfAvailable(key, defaultValue, yaml);
+    }
+
+    protected boolean getBooleanIfAvailable(String key) {
+        return YamlTools.getBooleanIfAvailable(key, yaml);
+    }
+
+    protected boolean getBooleanIfAvailable(String key, boolean defaultValue) {
+        return YamlTools.getBooleanIfAvailable(key, defaultValue, yaml);
+    }
+
+    protected int getIntIfAvailable(String key) {
+        return YamlTools.getIntIfAvailable(key, yaml);
+    }
+
+    protected int getIntIfAvailable(String key, int defaultValue) {
+        return YamlTools.getIntIfAvailable(key, defaultValue, yaml);
+    }
+
+    protected double getDoubleIfAvailable(String key) {
+        return YamlTools.getDoubleIfAvailable(key, yaml);
+    }
+
+    protected double getDoubleIfAvailable(String key, double defaultValue) {
+        return YamlTools.getDoubleIfAvailable(key, defaultValue, yaml);
+    }
+
+    protected long getLongIfAvailable(String key) {
+        return YamlTools.getLongIfAvailable(key, yaml);
+    }
+
+    protected long getLongIfAvailable(String key, long defaultValue) {
+        return YamlTools.getLongIfAvailable(key, defaultValue, yaml);
+    }
 }

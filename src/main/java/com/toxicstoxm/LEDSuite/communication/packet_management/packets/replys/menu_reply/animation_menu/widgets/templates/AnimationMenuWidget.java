@@ -57,7 +57,6 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
                 yaml,
                 getWidgetID(),
                 getAnimationName()
-
         );
     }
 
@@ -130,72 +129,42 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     }
 
     protected String getStringIfAvailable(String key) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getString(key);
-        }
-        return "";
+        return YamlTools.getStringIfAvailable(key, widgetSection);
     }
 
     protected String getStringIfAvailable(String key, String defaultValue) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getString(key);
-        }
-        return defaultValue;
+        return YamlTools.getStringIfAvailable(key, defaultValue, widgetSection);
     }
 
     protected boolean getBooleanIfAvailable(String key) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getBoolean(key);
-        }
-        return false;
+        return YamlTools.getBooleanIfAvailable(key, widgetSection);
     }
 
     protected boolean getBooleanIfAvailable(String key, boolean defaultValue) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getBoolean(key);
-        }
-        return defaultValue;
+        return YamlTools.getBooleanIfAvailable(key, defaultValue, widgetSection);
     }
 
     protected int getIntIfAvailable(String key) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getInt(key);
-        }
-        return 0;
+        return YamlTools.getIntIfAvailable(key, widgetSection);
     }
 
     protected int getIntIfAvailable(String key, int defaultValue) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getInt(key);
-        }
-        return defaultValue;
+        return YamlTools.getIntIfAvailable(key, defaultValue, widgetSection);
     }
 
     protected double getDoubleIfAvailable(String key) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getDouble(key);
-        }
-        return 0;
+        return YamlTools.getDoubleIfAvailable(key, widgetSection);
     }
 
     protected double getDoubleIfAvailable(String key, double defaultValue) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getDouble(key);
-        }
-        return defaultValue;
+        return YamlTools.getDoubleIfAvailable(key, defaultValue, widgetSection);
     }
 
     protected long getLongIfAvailable(String key) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getLong(key);
-        }
-        return 0;
+        return YamlTools.getLongIfAvailable(key, widgetSection);
     }
 
     protected long getLongIfAvailable(String key, long defaultValue) {
-        if (checkIfKeyExists(key)) {
-            return widgetSection.getLong(key);
-        }
-        return defaultValue;
+        return YamlTools.getLongIfAvailable(key, defaultValue, widgetSection);
     }
 }

@@ -56,4 +56,74 @@ public class YamlTools {
             throw new DeserializationException("Deserialization failed! Required key '" + key + "' is missing.", errorCode);
         }
     }
+
+    public static String getStringIfAvailable(String key, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getString(key);
+        }
+        return "";
+    }
+
+    public static String getStringIfAvailable(String key, String defaultValue, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getString(key);
+        }
+        return defaultValue;
+    }
+
+    public static boolean getBooleanIfAvailable(String key, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getBoolean(key);
+        }
+        return false;
+    }
+
+    public static boolean getBooleanIfAvailable(String key, boolean defaultValue, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getBoolean(key);
+        }
+        return defaultValue;
+    }
+
+    public static int getIntIfAvailable(String key, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getInt(key);
+        }
+        return 0;
+    }
+
+    public static int getIntIfAvailable(String key, int defaultValue, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getInt(key);
+        }
+        return defaultValue;
+    }
+
+    public static double getDoubleIfAvailable(String key, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getDouble(key);
+        }
+        return 0;
+    }
+
+    public static double getDoubleIfAvailable(String key, double defaultValue, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getDouble(key);
+        }
+        return defaultValue;
+    }
+
+    public static long getLongIfAvailable(String key, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getLong(key);
+        }
+        return 0;
+    }
+
+    public static long getLongIfAvailable(String key, long defaultValue, @NotNull ConfigurationSection yaml) {
+        if (checkIfKeyExists(key, yaml)) {
+            return yaml.getLong(key);
+        }
+        return defaultValue;
+    }
 }

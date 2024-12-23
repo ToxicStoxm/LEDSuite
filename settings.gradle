@@ -1,14 +1,14 @@
 pluginManagement {
     repositories {
-        maven { url './offline-repository/' }
         gradlePluginPortal()
+        mavenLocal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        maven { url './offline-repository/' }
         mavenCentral()
+        mavenLocal()
     }
 }
 

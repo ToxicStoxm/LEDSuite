@@ -26,6 +26,7 @@ module com.toxicstoxm.LEDSuite {
     exports com.toxicstoxm.LEDSuite.auto_registration.modules;
     exports com.toxicstoxm.LEDSuite.communication.packet_management.packets;
     exports com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors;
+    exports com.toxicstoxm.LEDSuite.communication.packet_management.packets.message;
     opens com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication to org.gnome.gdk, org.gnome.glib, org.gnome.gobject, org.gnome.gtk;

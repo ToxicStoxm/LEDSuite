@@ -384,29 +384,34 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public Revealer animationControlButtonsRevealer;
 
     @GtkChild(name = "play_pause_button")
-    public Button playButton;
+    public Button playPauseButton;
+
+    @GtkChild(name = "stop_button")
+    public Button stopButton;
 
     private boolean playing = false;
 
     @GtkCallback(name = "play_pause_button_cb")
     public void playPauseButtonClicked() {
+        playPauseButton.setSensitive(false);
+        stopButton.setSensitive(false);
         if (playing) {
-            GLib.idleAddOnce(() -> {
-                playButton.setIconName("media-playback-start");
+           /* GLib.idleAddOnce(() -> {
+                playPauseButton.setIconName("media-playback-start");
                 stopButtonRevealer.setRevealChild(true);
                 playing = false;
-            });
+            });*/
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PauseRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
                             .build().serialize()
             );
         } else {
-            playing = true;
+            /*playing = true;
             GLib.idleAddOnce(() -> {
-                playButton.setIconName("media-playback-pause");
+                playPauseButton.setIconName("media-playback-pause");
                 stopButtonRevealer.setRevealChild(true);
-            });
+            });*/
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PlayRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
@@ -420,7 +425,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "stop_button_cb")
     public void stopButtonClicked() {
-        resetAnimationControlButtons(false);
+        //resetAnimationControlButtons(false);
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StopRequestPacket.builder()
                         .requestFile(getSelectedAnimation())
@@ -430,16 +435,18 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     public void setAnimationControlButtonsState(@NotNull FileState state) {
         if (selectedAnimation != null) {
+            playPauseButton.setSensitive(true);
+            stopButton.setSensitive(true);
             switch (state) {
                 case playing -> {
                     playing = true;
                     stopButtonRevealer.setRevealChild(true);
-                    playButton.setIconName("media-playback-pause");
+                    playPauseButton.setIconName("media-playback-pause");
                 }
                 case paused -> {
                     playing = false;
                     stopButtonRevealer.setRevealChild(true);
-                    playButton.setIconName("media-playback-start");
+                    playPauseButton.setIconName("media-playback-start");
                 }
                 case idle -> resetAnimationControlButtons(false);
             }
@@ -460,7 +467,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         GLib.idleAddOnce(() -> {
             if (hide) animationControlButtonsRevealer.setRevealChild(false);
             stopButtonRevealer.setRevealChild(false);
-            playButton.setIconName("media-playback-start");
+            playPauseButton.setIconName("media-playback-start");
         });
     }
 

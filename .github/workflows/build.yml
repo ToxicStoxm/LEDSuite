@@ -12,6 +12,8 @@ jobs:
   build:
     name: Get Dependencies and Build
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
 
     steps:
       # Checkout the repository

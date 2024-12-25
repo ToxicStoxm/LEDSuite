@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.checkIfKeyExists;
 import static com.toxicstoxm.LEDSuite.tools.YamlTools.ensureKeyExists;
@@ -84,7 +86,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         ConfigurationSection menuContentSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
         if (menuContentSection == null) throw new DeserializationException("Menu content section is empty!", ErrorCode.MenuContentKeyMissing);
 
-        List<PreferencesGroup> groups = new ArrayList<>();
+        TreeMap<Integer, PreferencesGroup> groups = new TreeMap<>();
         List<PreferencesGroup> unsortedGroups = new ArrayList<>();
 
         // Loop through the content widgets and ensure they are groups, because all top level widgets need to be groups
@@ -102,24 +104,26 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (index < 0) {
                 unsortedGroups.add(group);
             } else {
-                groups.set(index, group);
+                if (groups.containsKey(index)) {
+                    unsortedGroups.add(group);
+                } else {
+                    groups.put(index, group);
+                }
             }
         }
 
-        groups.addAll(unsortedGroups);
+        AtomicInteger highestIndex = new AtomicInteger(groups.lastKey());
+        unsortedGroups.forEach(entry -> {
+            groups.put(highestIndex.incrementAndGet(), entry);
+        });
 
-        for (int i = 0; i < groups.size(); i++) {
-            PreferencesGroup group = groups.get(i);
-            if (group != null) {
+        groups.forEach((index, group) -> {
                 try {
                     animationMenu.animationMenuContent.append(group);
                 } catch (DeserializationException e) {
-                    throw new DeserializationException("Failed to deserialize animation menu group '" + group.getName() + "'!", e, e.getErrorCode());
+                    throw new DeserializationException("Failed to deserialize animation menu group '" + group.getName() + "' at index '" + index + "!", e, e.getErrorCode());
                 }
-            } else {
-                LEDSuiteApplication.getLogger().warn("Skipping group index '" + i + "', because the group at that position is 'null'!", new LEDSuiteLogAreas.COMMUNICATION());
-            }
-        }
+        });
 
         return animationMenu;
     }
@@ -188,7 +192,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         if (menuGroupContentSection == null)
             throw new DeserializationException("Group content section is empty!", ErrorCode.GroupContentSectionEmptyOrMissing);
 
-        List<DeserializableWidget> widgets = new ArrayList<>();
+        TreeMap<Integer, DeserializableWidget> widgets = new TreeMap<>();
         List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
 
         for (String widgetKey : menuGroupContentSection.getKeys(false)) {
@@ -217,28 +221,30 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (index < 0) {
                 unsortedWidgets.add(deserializableWidget);
             } else {
-                widgets.set(index, deserializableWidget);
+                if (widgets.containsKey(index)) {
+                    unsortedWidgets.add(deserializableWidget);
+                } else {
+                    widgets.put(index, deserializableWidget);
+                }
             }
         }
 
-        widgets.addAll(unsortedWidgets);
+        AtomicInteger highestIndex = new AtomicInteger(widgets.lastKey());
+        unsortedWidgets.forEach(entry -> {
+            widgets.put(highestIndex.incrementAndGet(), entry);
+        });
 
-        for (int i = 0; i < widgets.size(); i++) {
-            DeserializableWidget widget = widgets.get(i);
-            if (widget != null) {
+        widgets.forEach((index, deserializableWidget) -> {
                 try {
                     menuGroup.add(
-                            get(widget.widgetType()).deserialize(
-                                    widget
+                            get(deserializableWidget.widgetType()).deserialize(
+                                    deserializableWidget
                             )
                     );
                 } catch (DeserializationException e) {
-                    throw new DeserializationException("Failed to deserialize widget '" + widget.widgetKey() + "' with type '" + widget.widgetType() + "'!", e, e.getErrorCode());
+                    throw new DeserializationException("Failed to deserialize widget '" + deserializableWidget.widgetKey() + "' with type '" + deserializableWidget.widgetType() + "' at index '" + index + "'!", e, e.getErrorCode());
                 }
-            } else {
-                LEDSuiteApplication.getLogger().warn("Skipping widget index '" + i + "', because the widget at that position is 'null'!", new LEDSuiteLogAreas.COMMUNICATION());
-            }
-        }
+        });
 
         return menuGroup;
     }

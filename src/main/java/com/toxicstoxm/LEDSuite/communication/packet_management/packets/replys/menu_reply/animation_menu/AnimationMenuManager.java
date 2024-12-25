@@ -47,7 +47,6 @@ public class AnimationMenuManager extends Registrable<Widget> {
                 .build();
     }
 
-
     /**
      * Attempts to deserialize the given menu YAML string and construct a new animation menu object from it.
      * @param menuYAML the YAML string to deserialize
@@ -97,10 +96,15 @@ public class AnimationMenuManager extends Registrable<Widget> {
             if (menuGroupSection == null)
                 throw new DeserializationException("Menu group '" + menuGroupKey + "' section is empty!", ErrorCode.GroupSectionEmptyOrMissing);
 
+            // Retrieve the groups index
+            // If non is present use -1
             int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, menuGroupSection);
 
+            // Store the group in a temporary object for sorting
             PreferencesGroup group = deserializeAnimationMenuGroup(animationMenu.getMenuID(), menuGroupKey, menuGroupSection);
 
+            // Add the group to the corresponding position in the groups tree map
+            // If no index is present store it in the unsorted groups list
             if (index < 0) {
                 unsortedGroups.add(group);
             } else {
@@ -112,11 +116,13 @@ public class AnimationMenuManager extends Registrable<Widget> {
             }
         }
 
+        // Append all unsorted groups to the end of the sorted groups map
         AtomicInteger highestIndex = new AtomicInteger(groups.lastKey());
         unsortedGroups.forEach(entry -> {
             groups.put(highestIndex.incrementAndGet(), entry);
         });
 
+        // Loop through the sorted groups tree map and add them to the menu in the correct order
         groups.forEach((index, group) -> {
                 try {
                     animationMenu.animationMenuContent.append(group);
@@ -138,7 +144,6 @@ public class AnimationMenuManager extends Registrable<Widget> {
      * @see #deserializeAnimationMenu(String)
      */
     private PreferencesGroup deserializeAnimationMenuGroup(@NotNull String animationName, @NotNull String menuGroupKey, @NotNull ConfigurationSection menuGroupSection) throws DeserializationException {
-
 
         String topLevelWidgetType = menuGroupSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
         if (topLevelWidgetType == null)
@@ -195,6 +200,8 @@ public class AnimationMenuManager extends Registrable<Widget> {
         TreeMap<Integer, DeserializableWidget> widgets = new TreeMap<>();
         List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
 
+        // Loop through all widgets and check if their type is supported.
+        // Sort the widgets by index and store them in temporary objects.
         for (String widgetKey : menuGroupContentSection.getKeys(false)) {
             ConfigurationSection widgetSection = menuGroupContentSection.getConfigurationSection(widgetKey);
             if (widgetSection == null)
@@ -210,6 +217,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
 
             int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, widgetSection);
 
+            // Store the widget temporarily for sorting
             DeserializableWidget deserializableWidget =
                     DeserializableWidget.builder()
                             .animationName(animationName)
@@ -218,6 +226,8 @@ public class AnimationMenuManager extends Registrable<Widget> {
                             .widgetType(widgetType)
                             .build();
 
+            // Add the widget to the corresponding position in the widgets tree map
+            // If no index is present store it in the unsorted widgets list
             if (index < 0) {
                 unsortedWidgets.add(deserializableWidget);
             } else {
@@ -229,11 +239,13 @@ public class AnimationMenuManager extends Registrable<Widget> {
             }
         }
 
+        // Append all unsorted widgets to the end of the sorted widgets map
         AtomicInteger highestIndex = new AtomicInteger(widgets.lastKey());
         unsortedWidgets.forEach(entry -> {
             widgets.put(highestIndex.incrementAndGet(), entry);
         });
 
+        // Loop through the sorted widgets and append them to the parent group in the correct order.
         widgets.forEach((index, deserializableWidget) -> {
                 try {
                     menuGroup.add(

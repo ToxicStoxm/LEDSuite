@@ -63,6 +63,8 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
         TreeMap<Integer, DeserializableWidget> widgets = new TreeMap<>();
         List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
 
+        // Loop through all widgets and check if their type is supported.
+        // Sort the widgets by index and store them in temporary objects.
         for (String widgetKey : contentSection.getKeys(false)) {
             ConfigurationSection widgetSection = contentSection.getConfigurationSection(widgetKey);
             if (widgetSection == null)
@@ -73,6 +75,7 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
 
             int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, widgetSection);
 
+            // Store the widget temporarily for sorting
             DeserializableWidget expanderRowChild =
                     DeserializableWidget.builder()
                             .widgetType(type)
@@ -81,6 +84,8 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
                             .animationName(animationName)
                             .build();
 
+            // Add the widget to the corresponding position in the widgets tree map
+            // If no index is present store it in the unsorted widgets list
             if (index < 0) {
                 unsortedWidgets.add(expanderRowChild);
             } else {
@@ -92,11 +97,13 @@ public class ExpanderRowWidget extends AnimationMenuRowWidget<ExpanderRow> {
             }
         }
 
+        // Append all unsorted widgets to the end of the sorted widgets map
         AtomicInteger highestIndex = new AtomicInteger(widgets.lastKey());
         unsortedWidgets.forEach(entry -> {
             widgets.put(highestIndex.incrementAndGet(), entry);
         });
 
+        // Loop through the sorted widgets and append them to the parent group in the correct order.
         widgets.forEach((index, expanderRowChild) -> {
                 try {
                     AnimationMenuManager animationMenuManager = getAnimationMenuManager(expanderRowChild.widgetKey(), expanderRowChild.widgetType());

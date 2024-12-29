@@ -1,8 +1,5 @@
 # LEDSuite
-[![Java CI with Gradle](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/gradle.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/gradle.yml) <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
+<img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
 
- - Front-End for any LED-Matrix with the matching backend
- - Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
-## Estimated time until official release:
- - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
- - V2 is already under development check out the [app-rework](https://github.com/ToxicStoxm/LEDSuite/tree/app-rework) branch for further details
+_This version of the app is **DEPRECATED**. Please use the [latest version](https://github.com/ToxicStoxm/LEDSuite/releases/latest) for the best experience._
+ - Back-End: [LEDSuiteBackend-Legacy](https://gitlab.com/hannescam/LEDSuiteBackend-legacy)

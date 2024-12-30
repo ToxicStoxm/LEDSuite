@@ -44,7 +44,7 @@ circular</property>
                                         <property name="height-request">50</property>
                                         <property name="icon-name">org.gnome.Settings-trash-file-history-symbolic</property>
                                         <property name="margin-bottom">10</property>
-                                        <property name="margin-end">10</property>
+                                        <property name="margin-end">5</property>
                                         <property name="margin-start">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="width-request">50</property>
@@ -65,6 +65,7 @@ circular</property>
                                         <property name="icon-name">document-edit-symbolic</property>
                                         <property name="margin-bottom">10</property>
                                         <property name="margin-end">10</property>
+                                        <property name="margin-start">5</property>
                                         <property name="margin-top">10</property>
                                         <property name="width-request">50</property>
                                         <signal name="clicked" handler="rename_button_cb"/>

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents user credentials used for authentication.
- * This record encapsulates a username and a hashed password, ensuring immutability and simplicity.
+ * This record encapsulates a username and a hashed password, ensuring immutability.
  *
  * @param username     the username of the user attempting to authenticate. Cannot be {@code null}.
  * @param passwordHash the hashed password for authentication. Cannot be {@code null}.

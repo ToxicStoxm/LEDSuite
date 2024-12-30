@@ -36,7 +36,8 @@ public class StatusReplyPacket extends CommunicationPacket {
     /**
      * Represents an animation with details like id, label, icon, and pauseable state.
      */
-    public record Animation(String id, String label, String iconName, boolean pauseable) {}
+    @Builder
+    public record Animation(String id, String label, String iconString, boolean pauseable, boolean iconIsName, long lastAccessed) {}
 
     private FileState fileState;                        // Guaranteed field representing the file's state.
     private String selectedFile;                        // Not guaranteed, representing the selected file name.
@@ -107,18 +108,39 @@ public class StatusReplyPacket extends CommunicationPacket {
 
             for (String key : animationsSection.getKeys(false)) {
                 String base = key + ".";
+                // By default, the icon string is assumed to be a gnome icon name
+                boolean iconIsName = true;
+                String iconString = null;
 
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animationsSection);
-                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection);
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.General.FILE_NAME, animationsSection);
                 ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animationsSection);
+                ensureKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LAST_ACCESSED, animationsSection);
 
-                packet.animations.add(new Animation(
-                        animationsSection.getString(base + Constants.Communication.YAML.Keys.General.FILE_NAME),
-                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL),
-                        animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON),
-                        animationsSection.getBoolean(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE)
-                ));
+                // Check if an icon name or icon string (base64 encoded image file) was provided,
+                // If yes load the according value into iconString and set iconIsName accordingly
+                if (checkIfKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON_NAME, animationsSection)) {
+                    iconString = animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON_NAME);
+                } else if (checkIfKeyExists(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animationsSection)) {
+                    iconString = animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON);
+                    iconIsName = false;
+                }
+
+                // Throw an error if no icon string or icon name was specified
+                if (iconString == null || iconString.isBlank()) {
+                    throw new DeserializationException("No icon name or icon string was specified for animation '" + key + "'!");
+                }
+
+                // Assemble animation from extracted values
+                packet.animations.add(Animation.builder()
+                        .id(animationsSection.getString(base + Constants.Communication.YAML.Keys.General.FILE_NAME))
+                        .label(animationsSection.getString(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL))
+                        .iconString(iconString)
+                        .pauseable(animationsSection.getBoolean(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE))
+                        .iconIsName(iconIsName)
+                        .lastAccessed(animationsSection.getLong(base + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LAST_ACCESSED))
+                        .build()
+                );
             }
         } else {
             packet.animationsAvailable = false;
@@ -157,7 +179,7 @@ public class StatusReplyPacket extends CommunicationPacket {
                 String baseKey = Constants.Communication.YAML.Keys.Reply.StatusReply.ANIMATIONS + "." + UUID.randomUUID() + ".";
 
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.LABEL, animation.label);
-                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animation.iconName);
+                yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.ICON, animation.iconString);
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.General.FILE_NAME, animation.id);
                 yaml.set(baseKey + Constants.Communication.YAML.Keys.Reply.StatusReply.AnimationList.PAUSEABLE, animation.pauseable);
             }

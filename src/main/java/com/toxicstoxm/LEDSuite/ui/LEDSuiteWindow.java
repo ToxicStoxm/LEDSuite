@@ -12,6 +12,7 @@ import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
@@ -55,6 +56,11 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public LEDSuiteWindow(MemorySegment address) {
         super(address);
         endpointProvider = EndpointProvider.builder().build();
+        // Sorts by last accessed
+        animationList.setSortFunc((row1, row2) ->
+                (row1 instanceof AnimationRow animationRow1 && row2 instanceof AnimationRow animationRow2) ?
+                        Long.compare(animationRow1.getLastAccessed(), animationRow2.getLastAccessed()) : 0
+        );
     }
 
     public static Type getType() {
@@ -296,7 +302,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
                 // Update the animation row with new data
                 GLib.idleAddOnce(() -> {
-                    animationRow.update(updatedAnimation.label(), updatedAnimation.iconName());
+                    animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.lastAccessed());
                     LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
                 });
 
@@ -313,10 +319,11 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 var newAnimationRow = AnimationRow.create(
                         AnimationRowData.builder()
                                 .app(getApplication())
-                                .iconName(updatedAnimation.iconName())
+                                .icon(YamlTools.constructIcon(updatedAnimation.iconString(), updatedAnimation.iconIsName()))
                                 .label(updatedAnimation.label())
                                 .animationID(updatedAnimation.id())
                                 .cooldown(500L)
+                                .lastAccessed(updatedAnimation.lastAccessed())
                                 .build()
                 );
                 animations.put(newAnimationName, newAnimationRow);
@@ -345,6 +352,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
                 LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
             }
+            animationList.invalidateSort();
         });
     }
 

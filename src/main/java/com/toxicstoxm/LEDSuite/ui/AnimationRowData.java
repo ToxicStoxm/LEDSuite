@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.time.Action;
 import lombok.Builder;
 import org.gnome.gtk.Application;
+import org.gnome.gtk.Image;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  *
  * @param app The main {@link Application} instance for the GTK application. This is used to associate the row with the application.
- * @param iconName The name of the icon to represent the animation. This is typically a string corresponding to an icon name that can be rendered by the GTK library.
+ * @param icon The GTK name or base64 encoded image file of the icon to represent the animation.
  * @param label The name or description of the animation. This text is displayed on the animation row.
  * @param animationID The unique identifier for the animation. This could be the animation's ID or the filename associated with it.
  * @param action The action associated with this animation, typically used to handle interactions like button clicks. This is typically a unique action name used to trigger specific behavior.
@@ -25,9 +26,10 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 public record AnimationRowData(
         @NotNull Application app,
-        String iconName,
+        Image icon,
         String label,
         String animationID,
         Action action,
-        Long cooldown
+        Long cooldown,
+        Long lastAccessed
 ) {}

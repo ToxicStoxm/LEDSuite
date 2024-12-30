@@ -2,8 +2,17 @@ package com.toxicstoxm.LEDSuite.tools;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
+import io.github.jwharm.javagi.base.GErrorException;
+import org.gnome.gdk.Paintable;
+import org.gnome.gdk.Texture;
+import org.gnome.glib.Bytes;
+import org.gnome.gtk.Image;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Base64;
 
 /**
  * A utility class providing methods for interacting with YAML configuration sections.
@@ -125,5 +134,32 @@ public class YamlTools {
             return yaml.getLong(key);
         }
         return defaultValue;
+    }
+
+    /**
+     * If {@code iconIsName} is {@code true} then a new {@link Image} will be constructed using {@link Image#fromIconName(String)}.
+     * <p>
+     * Otherwise, the string is treated as base64. This means that it is first decoded using {@link Base64#getDecoder()}
+     * and then a {@link Texture} will be created using {@link Texture#fromBytes(Bytes)}.
+     * Finally, an {@link Image} will be created using {@link Image#fromPaintable(Paintable)} and passing in the {@link Texture}.
+     * @param iconString the icon name or base64
+     * @param iconIsName true if {@code iconString} should be treated as name, otherwise {@code false}
+     * @return the constructed {@link Image} or a 'broken image' if something went wrong or the name/base64 was invalid.
+     */
+    public static Image constructIcon(String iconString, boolean iconIsName) {
+        Image finalImage = Image.fromIconName("");
+        if (iconIsName) {
+            finalImage = Image.fromIconName(iconString);
+        } else {
+            byte[] decodedBytes = Base64.getDecoder().decode(iconString);
+            try {
+                finalImage = Image.fromPaintable(Texture.fromBytes(Bytes.static_(decodedBytes)));
+            } catch (GErrorException e) {
+                LEDSuiteApplication.getLogger().warn("Failed to decode icon from base64! Error message: '" + e.getMessage() + "'!", new LEDSuiteLogAreas.YAML());
+                LEDSuiteApplication.getLogger().debug("Base64: " + iconString, new LEDSuiteLogAreas.YAML());
+            }
+        }
+
+        return finalImage;
     }
 }

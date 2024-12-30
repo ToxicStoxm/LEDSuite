@@ -148,8 +148,10 @@ public class Constants {
 
                         public static final class AnimationList {
                             public static final String ICON = "icon";
+                            public static final String ICON_NAME = "icon_name";
                             public static final String LABEL = "label";
                             public static final String PAUSEABLE = "pauseable";
+                            public static final String LAST_ACCESSED = "last_accessed";
                         }
                     }
 

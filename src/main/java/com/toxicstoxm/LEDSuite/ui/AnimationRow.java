@@ -59,6 +59,10 @@ public class AnimationRow extends ListBoxRow {
     @Getter
     private String animationID = "";  // Unique identifier for the animation
 
+    @Getter
+    @Setter
+    private Long lastAccessed = System.currentTimeMillis();
+
     /**
      * The {@link Image} widget used to display the animation's icon.
      */
@@ -66,13 +70,17 @@ public class AnimationRow extends ListBoxRow {
     public Image animationIcon;
 
     /**
-     * Sets the icon name for the animation's icon.
-     * This icon will be displayed in the row.
+     * Sets the animation icons paintable or icon name depending on the provided icons structure.
      *
-     * @param iconName The name of the icon to set.
+     * @param icon the new icon to use
      */
-    public final void setIconName(String iconName) {
-        animationIcon.setFromIconName(iconName);
+    public final void setIcon(@NotNull Image icon) {
+        ImageType storageType = icon.getStorageType();
+        if (storageType == ImageType.EMPTY || storageType == ImageType.ICON_NAME) {
+            animationIcon.setFromIconName(icon.getIconName());
+        } else {
+            animationIcon.setFromPaintable(icon.getPaintable());
+        }
     }
 
     /**
@@ -116,7 +124,8 @@ public class AnimationRow extends ListBoxRow {
         // Instantiate and configure the AnimationRow with the provided data.
         AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + animationRowData.animationID());
         row.animationID = animationRowData.animationID();
-        row.setIconName(animationRowData.iconName());
+        row.setIcon(animationRowData.icon());
+        row.setLastAccessed(animationRowData.lastAccessed());
         row.setAnimationLabel(animationRowData.label().strip());
         row.animationRowLabel.setWrap(true);  // Allow label to wrap if it's too long
         row.animationRowLabel.setWidthChars(10);  // Set a maximum width for the label
@@ -132,10 +141,12 @@ public class AnimationRow extends ListBoxRow {
      *
      * @param label The new label to display.
      * @param iconName The new icon name to display.
+     * @param lastAccessed The last time this animation was accessed
      */
-    public void update(String label, String iconName) {
+    public void update(String label, String iconName, Long lastAccessed) {
         animationRowLabel.setLabel(label);
         animationIcon.setFromIconName(iconName);
+        setLastAccessed(lastAccessed);
 
         // If the row is part of a menu, update the menu as well.
         if (animationMenuReference != null) {

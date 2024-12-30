@@ -266,7 +266,6 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             public void run() {
 
                 if (isServerConnected()) {
-
                     try {
                         Thread.sleep(Constants.UI.Intervals.MINIMUM_DELAY);
                     } catch (InterruptedException e) {

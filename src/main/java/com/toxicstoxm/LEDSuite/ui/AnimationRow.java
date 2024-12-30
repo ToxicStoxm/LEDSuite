@@ -117,7 +117,7 @@ public class AnimationRow extends ListBoxRow {
         AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + animationRowData.animationID());
         row.animationID = animationRowData.animationID();
         row.setIconName(animationRowData.iconName());
-        row.setAnimationLabel(animationRowData.label());
+        row.setAnimationLabel(animationRowData.label().strip());
         row.animationRowLabel.setWrap(true);  // Allow label to wrap if it's too long
         row.animationRowLabel.setWidthChars(10);  // Set a maximum width for the label
 

@@ -23,6 +23,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
+import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -56,11 +57,6 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public LEDSuiteWindow(MemorySegment address) {
         super(address);
         endpointProvider = EndpointProvider.builder().build();
-        // Sorts by last accessed
-        animationList.setSortFunc((row1, row2) ->
-                (row1 instanceof AnimationRow animationRow1 && row2 instanceof AnimationRow animationRow2) ?
-                        Long.compare(animationRow1.getLastAccessed(), animationRow2.getLastAccessed()) : 0
-        );
     }
 
     public static Type getType() {
@@ -70,6 +66,15 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public static LEDSuiteWindow create(Application app) {
         return GObject.newInstance(getType(),
                 "application", app);
+    }
+
+    @InstanceInit
+    public void init() {
+        // Sorts by last accessed
+        animationList.setSortFunc((row1, row2) ->
+                (row1 instanceof AnimationRow animationRow1 && row2 instanceof AnimationRow animationRow2) ?
+                        Long.compare(animationRow1.getLastAccessed(), animationRow2.getLastAccessed()) : 0
+        );
     }
 
     private final EndpointProvider endpointProvider;

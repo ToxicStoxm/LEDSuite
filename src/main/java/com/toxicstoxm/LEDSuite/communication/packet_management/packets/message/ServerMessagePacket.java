@@ -10,7 +10,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialogResponse;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ServerMessageDialog;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.*;
 import org.gnome.adw.ResponseAppearance;
@@ -115,6 +115,6 @@ public class ServerMessagePacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        MessageDialog.builder().packet(this).build().present(LEDSuiteApplication.getWindow().asApplicationWindow());
+        ServerMessageDialog.builder().packet(this).build().present(LEDSuiteApplication.getWindow().asApplicationWindow());
     }
 }

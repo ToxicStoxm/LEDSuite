@@ -61,6 +61,11 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
 
         widget.setAdjustment(adjustment);
 
+        // If the value is not set here too, it will be off by 10^digits
+        widget.setValue(
+                getDoubleIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, 0)
+        );
+
         widget.setWrap(
                 getBooleanIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.SpinRow.WRAP, false)
         );

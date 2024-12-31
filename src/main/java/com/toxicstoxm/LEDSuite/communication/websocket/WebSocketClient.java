@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageData;
 import jakarta.websocket.Session;
 import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
@@ -100,6 +101,15 @@ public class WebSocketClient {
                     LEDSuiteApplication.getLogger().verbose(" > " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
                     ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
                 } finally {
+                    if (!cancelled && !LEDSuiteApplication.isConnecting()) {
+                        LEDSuiteApplication.notifyUser(
+                                MessageData.builder()
+                                        .source("Communication")
+                                        .heading("Connection Lost")
+                                        .message("The connection to '" + path + "' timed out!")
+                                        .build()
+                        );
+                    }
                     connected = false;
                 }
             }

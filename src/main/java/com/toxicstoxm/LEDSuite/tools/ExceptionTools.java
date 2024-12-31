@@ -25,17 +25,17 @@ public class ExceptionTools {
      * the provided logger.
      * </p>
      *
-     * @param exception the exception whose message and stack trace will be logged
+     * @param throwable the exception whose message and stack trace will be logged
      * @param logger the logger interface used for logging the exception details
      * @throws NullPointerException if either the exception or logger is null
      */
-    public static void printStackTrace(@NotNull Exception exception, @NotNull Logger logger) {
+    public static void printStackTrace(@NotNull Throwable throwable, @NotNull Logger logger) {
         // Log the exception message, with a null check
-        String message = exception.getMessage();
+        String message = throwable.getMessage();
         logger.log("Error message: " + (message == null ? "No message was provided" : message));
 
         // Log the stack trace elements, with a null check for stack trace
-        StackTraceElement[] stackTraceElements = exception.getStackTrace();
+        StackTraceElement[] stackTraceElements = throwable.getStackTrace();
         if (stackTraceElements != null && stackTraceElements.length > 0) {
             for (StackTraceElement e : stackTraceElements) {
                 logger.log(e.toString());

@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import jakarta.websocket.*;
@@ -128,9 +129,6 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
 
-        // Log each element of the stack trace for detailed error information
-        for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
-            LEDSuiteApplication.getLogger().stacktrace(String.valueOf(stackTraceElement), new LEDSuiteLogAreas.NETWORK());
-        }
+        ExceptionTools.printStackTrace(throwable, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.NETWORK()));
     }
 }

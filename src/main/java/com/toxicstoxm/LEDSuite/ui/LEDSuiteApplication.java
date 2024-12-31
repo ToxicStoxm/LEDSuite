@@ -21,10 +21,7 @@ import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorAlertDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.RenameDialog;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
@@ -405,7 +402,17 @@ public class LEDSuiteApplication extends Application {
         try {
             if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
                 window.uploadPageSelect();
-                throw new UploadAbortException(() -> logger.warn("Cancelling file upload because communication websocket is not connected!", new LEDSuiteLogAreas.NETWORK()));
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelling file upload because communication websocket is not connected!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+
+                });
             }
 
             URI uploadEndpointPath;
@@ -416,7 +423,16 @@ public class LEDSuiteApplication extends Application {
                 baseAddress = baseAddress + "upload";
                 uploadEndpointPath = new URI(baseAddress);
             } catch (URISyntaxException e) {
-                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because file upload websocket endpoint is unreachable!", new LEDSuiteLogAreas.NETWORK()));
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelled file upload because file upload websocket endpoint is unreachable!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+                });
             }
 
             logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
@@ -426,11 +442,29 @@ public class LEDSuiteApplication extends Application {
             try {
                 fileToUpload = new File(filePath);
             } catch (NullPointerException e) {
-                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!", new LEDSuiteLogAreas.NETWORK()));
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+                });
             }
 
             if (!fileToUpload.exists() || !fileToUpload.isFile()) {
-                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!", new LEDSuiteLogAreas.NETWORK()));
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+                });
             }
 
             String checksum;
@@ -439,8 +473,28 @@ public class LEDSuiteApplication extends Application {
                 data = Files.readAllBytes(Path.of(fileToUpload.getAbsolutePath()));
                 byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
                 checksum = new BigInteger(1, hash).toString(16);
-            } catch (IOException | NoSuchAlgorithmException e) {
-                throw new UploadAbortException(() -> logger.warn("Cancelled file upload because file couldn't be loaded or checksum failed!", new LEDSuiteLogAreas.NETWORK()));
+            } catch (IOException | NoSuchAlgorithmException | SecurityException e) {
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelled file upload because file couldn't be loaded or checksum failed!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+                });
+            } catch (OutOfMemoryError e) {
+                throw new UploadAbortException(() -> {
+                    notifyUser(
+                            MessageData.builder()
+                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .message("Cancelled file upload because the specified file is too large!")
+                                    .heading("Abort")
+                                    .source("File Upload")
+                                    .build()
+                    );
+                });
             }
 
             String uploadSessionID = String.valueOf(UUID.randomUUID());
@@ -755,7 +809,7 @@ public class LEDSuiteApplication extends Application {
      *
      * @param errorData contains all necessary variables for displaying an error to the user.
      */
-    public static void handleError(ErrorData errorData) {
+    public static void handleError(@NotNull ErrorData errorData) {
         ApplicationWindow parent = window.asApplicationWindow();
         String message = errorData.getMessage();
         if (parent != null) {
@@ -767,6 +821,22 @@ public class LEDSuiteApplication extends Application {
                     .present(parent);
         }
         if (errorData.isLog() && message != null) logger.error(errorData.getMessage(), errorData.getLogArea());
+    }
+
+    /**
+     * Displays a message to the user using a {@link MessageDialog}.
+     * <p>
+     * If a logger interface is specified, the message gets also logged to the console.
+     *
+     * @param messageData contains all necessary variables for processing the message
+     */
+    public static void notifyUser(@NotNull MessageData messageData) {
+        MessageDialog.builder()
+                .messageData(messageData)
+                .build().present(getWindow().asApplicationWindow());
+        if (messageData.logger() != null) {
+            messageData.logger().log(messageData.message());
+        }
     }
 
     /**

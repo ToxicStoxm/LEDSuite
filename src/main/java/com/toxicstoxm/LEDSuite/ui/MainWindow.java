@@ -134,7 +134,7 @@ public interface MainWindow extends StatusDialogEndpoint, SettingsDialogEndpoint
      *
      * @param state The current state of the file, affecting the availability of control buttons.
      */
-    void setAnimationControlButtonsState(@NotNull FileState state);
+    void setAnimationControlButtonsState(@NotNull FileState state, String currentAnimation);
 
     /**
      * Changes the main content area of the window.

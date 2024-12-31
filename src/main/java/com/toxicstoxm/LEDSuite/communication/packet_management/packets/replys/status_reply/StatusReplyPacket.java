@@ -212,6 +212,6 @@ public class StatusReplyPacket extends CommunicationPacket {
         LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
 
         LEDSuiteApplication.getWindow().updateAnimations(animations);
-        LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState);
+        LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState, selectedFile);
     }
 }

@@ -5,6 +5,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.st
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.AnimationDeleteRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.RenameRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsChangeRequestPacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PauseRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.PlayRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
@@ -73,7 +74,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         // Sorts by last accessed
         animationList.setSortFunc((row1, row2) ->
                 (row1 instanceof AnimationRow animationRow1 && row2 instanceof AnimationRow animationRow2) ?
-                        Long.compare(animationRow1.getLastAccessed(), animationRow2.getLastAccessed()) : 0
+                        Long.compare(animationRow1.getLastAccessed(), animationRow2.getLastAccessed()) * -1 : 0
         );
     }
 
@@ -204,6 +205,10 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 selectedRow.setAnimationMenuReference(animationMenu);
                 changeMainContent(animationMenu);
                 setAnimationControlButtonsVisible(true);
+                setAnimationControlButtonsSensitive(false);
+                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                        StatusRequestPacket.builder().build().serialize()
+                );
                 LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
             }
         } else {
@@ -263,8 +268,11 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void setServerConnected(boolean serverConnected) {
-        if (!serverConnected) LEDSuiteApplication.getWindow().uploadPageSelect();
+        if (!serverConnected) {
+            LEDSuiteApplication.getWindow().uploadPageSelect();
+        }
         GLib.idleAddOnce(() -> {
+            animationList.removeAll();
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
             if (!serverConnected) showAnimationListSpinner(false);
@@ -329,6 +337,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                                 .animationID(updatedAnimation.id())
                                 .cooldown(500L)
                                 .lastAccessed(updatedAnimation.lastAccessed())
+                                .pauseable(updatedAnimation.pauseable())
                                 .build()
                 );
                 animations.put(newAnimationName, newAnimationRow);
@@ -340,7 +349,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             }
         }
 
-        // Remove any animations that are no longer in the updated list
+        // Remove any animations that are no longer in the updated list and resort animation rows
         GLib.idleAddOnce(() -> {
             for (String removedAnimation : removedAnimations) {
                 if (Objects.equals(removedAnimation, selectedAnimation)) {
@@ -396,6 +405,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     @GtkChild(name = "animation_control_buttons_revealer")
     public Revealer animationControlButtonsRevealer;
 
+    @GtkChild(name = "play_pause_button_revealer")
+    public Revealer playPauseButtonRevealer;
+
     @GtkChild(name = "play_pause_button")
     public Button playPauseButton;
 
@@ -409,22 +421,12 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         playPauseButton.setSensitive(false);
         stopButton.setSensitive(false);
         if (playing) {
-           /* GLib.idleAddOnce(() -> {
-                playPauseButton.setIconName("media-playback-start");
-                stopButtonRevealer.setRevealChild(true);
-                playing = false;
-            });*/
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PauseRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
                             .build().serialize()
             );
         } else {
-            /*playing = true;
-            GLib.idleAddOnce(() -> {
-                playPauseButton.setIconName("media-playback-pause");
-                stopButtonRevealer.setRevealChild(true);
-            });*/
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PlayRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
@@ -438,7 +440,6 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "stop_button_cb")
     public void stopButtonClicked() {
-        //resetAnimationControlButtons(false);
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StopRequestPacket.builder()
                         .requestFile(getSelectedAnimation())
@@ -446,22 +447,35 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         );
     }
 
-    public void setAnimationControlButtonsState(@NotNull FileState state) {
+    public void setAnimationControlButtonsState(@NotNull FileState state, String currentAnimation) {
         if (selectedAnimation != null) {
-            playPauseButton.setSensitive(true);
-            stopButton.setSensitive(true);
-            switch (state) {
-                case playing -> {
-                    playing = true;
-                    stopButtonRevealer.setRevealChild(true);
-                    playPauseButton.setIconName("media-playback-pause");
+            if (selectedAnimation.equals(currentAnimation)) {
+                playPauseButton.setSensitive(true);
+                stopButton.setSensitive(true);
+                switch (state) {
+                    case playing -> {
+                        playing = true;
+                        stopButtonRevealer.setRevealChild(true);
+                        if (animationList.getSelectedRow() instanceof AnimationRow row) {
+                            if (row.isPauseable()) {
+                                playPauseButton.setIconName("media-playback-pause");
+                            } else {
+                                playPauseButtonRevealer.setRevealChild(false);
+                            }
+                        } else {
+                            playPauseButton.setIconName("media-playback-pause");
+                        }
+                    }
+                    case paused -> {
+                        playing = false;
+                        stopButtonRevealer.setRevealChild(true);
+                        playPauseButton.setIconName("media-playback-start");
+                    }
+                    case idle -> resetAnimationControlButtons(false);
                 }
-                case paused -> {
-                    playing = false;
-                    stopButtonRevealer.setRevealChild(true);
-                    playPauseButton.setIconName("media-playback-start");
-                }
-                case idle -> resetAnimationControlButtons(false);
+            } else {
+                resetAnimationControlButtons(false);
+                setAnimationControlButtonsSensitive(true);
             }
         }
     }
@@ -480,8 +494,14 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         GLib.idleAddOnce(() -> {
             if (hide) animationControlButtonsRevealer.setRevealChild(false);
             stopButtonRevealer.setRevealChild(false);
+            playPauseButtonRevealer.setRevealChild(true);
             playPauseButton.setIconName("media-playback-start");
         });
+    }
+
+    public void setAnimationControlButtonsSensitive(boolean sensitive) {
+        stopButton.setSensitive(sensitive);
+        playPauseButton.setSensitive(sensitive);
     }
 
     public void displayFileCollisionDialog(AlertDialog.ResponseCallback cb, String body) {

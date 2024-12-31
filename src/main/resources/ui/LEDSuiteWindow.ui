@@ -96,7 +96,7 @@ circular</property>
                                         <property name="height-request">50</property>
                                         <property name="icon-name">media-playback-stop</property>
                                         <property name="margin-bottom">10</property>
-                                        <property name="margin-end">10</property>
+                                        <property name="margin-end">5</property>
                                         <property name="margin-start">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="width-request">50</property>
@@ -106,16 +106,23 @@ circular</property>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="play_pause_button">
-                                    <property name="css-classes">osd
+                                  <object class="GtkRevealer" id="play_pause_button_revealer">
+                                    <property name="reveal-child">True</property>
+                                    <property name="transition-type">crossfade</property>
+                                    <child>
+                                      <object class="GtkButton" id="play_pause_button">
+                                        <property name="css-classes">osd
 circular</property>
-                                    <property name="height-request">50</property>
-                                    <property name="icon-name">media-playback-start</property>
-                                    <property name="margin-bottom">10</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-top">10</property>
-                                    <property name="width-request">50</property>
-                                    <signal name="clicked" handler="play_pause_button_cb"/>
+                                        <property name="height-request">50</property>
+                                        <property name="icon-name">media-playback-start</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">5</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="width-request">50</property>
+                                        <signal name="clicked" handler="play_pause_button_cb"/>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>

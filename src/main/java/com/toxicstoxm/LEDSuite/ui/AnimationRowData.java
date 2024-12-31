@@ -31,5 +31,6 @@ public record AnimationRowData(
         String animationID,
         Action action,
         Long cooldown,
-        Long lastAccessed
+        Long lastAccessed,
+        boolean pauseable
 ) {}

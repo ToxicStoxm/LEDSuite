@@ -63,6 +63,9 @@ public class AnimationRow extends ListBoxRow {
     @Setter
     private Long lastAccessed = System.currentTimeMillis();
 
+    @Getter
+    private boolean pauseable = false;
+
     /**
      * The {@link Image} widget used to display the animation's icon.
      */
@@ -129,6 +132,7 @@ public class AnimationRow extends ListBoxRow {
         row.setAnimationLabel(animationRowData.label().strip());
         row.animationRowLabel.setWrap(true);  // Allow label to wrap if it's too long
         row.animationRowLabel.setWidthChars(10);  // Set a maximum width for the label
+        row.pauseable = animationRowData.pauseable();
 
         // Set the tooltip to show the animation ID when hovered.
         row.setTooltipText(animationRowData.animationID());

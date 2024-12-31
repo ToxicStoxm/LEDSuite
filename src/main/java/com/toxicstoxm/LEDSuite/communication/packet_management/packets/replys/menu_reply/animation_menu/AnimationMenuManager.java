@@ -190,63 +190,66 @@ public class AnimationMenuManager extends Registrable<Widget> {
 
         // TODO properties
 
-        if (!checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, menuGroupSection))
-            throw new DeserializationException("Group content section is missing!", ErrorCode.GroupContentKeyMissing);
+        // Disabled to allow groups without content
+        // if (!checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, menuGroupSection))
+        //     throw new DeserializationException("Group content section is missing!", ErrorCode.GroupContentKeyMissing);
 
-        ConfigurationSection menuGroupContentSection = menuGroupSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
-        if (menuGroupContentSection == null)
-            throw new DeserializationException("Group content section is empty!", ErrorCode.GroupContentSectionEmptyOrMissing);
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT, menuGroupSection)) {
 
-        TreeMap<Integer, DeserializableWidget> widgets = new TreeMap<>();
-        List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
+            ConfigurationSection menuGroupContentSection = menuGroupSection.getConfigurationSection(Constants.Communication.YAML.Keys.Reply.MenuReply.CONTENT);
+            if (menuGroupContentSection == null)
+                throw new DeserializationException("Group content section is empty!", ErrorCode.GroupContentSectionEmptyOrMissing);
 
-        // Loop through all widgets and check if their type is supported.
-        // Sort the widgets by index and store them in temporary objects.
-        for (String widgetKey : menuGroupContentSection.getKeys(false)) {
-            ConfigurationSection widgetSection = menuGroupContentSection.getConfigurationSection(widgetKey);
-            if (widgetSection == null)
-                throw new DeserializationException("Widget section for widget '" + widgetKey + "' was null!", ErrorCode.WidgetSectionEmptyOrMissing);
+            TreeMap<Integer, DeserializableWidget> widgets = new TreeMap<>();
+            List<DeserializableWidget> unsortedWidgets = new ArrayList<>();
 
-            if (!checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, widgetSection))
-                throw new DeserializationException("Widget type for widget '" + widgetKey + "' missing!", ErrorCode.WidgetMissingType);
+            // Loop through all widgets and check if their type is supported.
+            // Sort the widgets by index and store them in temporary objects.
+            for (String widgetKey : menuGroupContentSection.getKeys(false)) {
+                ConfigurationSection widgetSection = menuGroupContentSection.getConfigurationSection(widgetKey);
+                if (widgetSection == null)
+                    throw new DeserializationException("Widget section for widget '" + widgetKey + "' was null!", ErrorCode.WidgetSectionEmptyOrMissing);
 
-            String widgetType = widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
+                if (!checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, widgetSection))
+                    throw new DeserializationException("Widget type for widget '" + widgetKey + "' missing!", ErrorCode.WidgetMissingType);
 
-            if (!isRegistered(widgetType))
-                throw new DeserializationException("Invalid / Unknown widget type '" + widgetType + "' for widget '" + widgetKey + "'!", ErrorCode.WidgetInvalidOrUnknownType);
+                String widgetType = widgetSection.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE);
 
-            int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, widgetSection);
+                if (!isRegistered(widgetType))
+                    throw new DeserializationException("Invalid / Unknown widget type '" + widgetType + "' for widget '" + widgetKey + "'!", ErrorCode.WidgetInvalidOrUnknownType);
 
-            // Store the widget temporarily for sorting
-            DeserializableWidget deserializableWidget =
-                    DeserializableWidget.builder()
-                            .animationName(animationName)
-                            .widgetSection(widgetSection)
-                            .widgetKey(widgetKey)
-                            .widgetType(widgetType)
-                            .build();
+                int index = YamlTools.getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.INDEX, -1, widgetSection);
 
-            // Add the widget to the corresponding position in the widgets tree map
-            // If no index is present store it in the unsorted widgets list
-            if (index < 0) {
-                unsortedWidgets.add(deserializableWidget);
-            } else {
-                if (widgets.containsKey(index)) {
+                // Store the widget temporarily for sorting
+                DeserializableWidget deserializableWidget =
+                        DeserializableWidget.builder()
+                                .animationName(animationName)
+                                .widgetSection(widgetSection)
+                                .widgetKey(widgetKey)
+                                .widgetType(widgetType)
+                                .build();
+
+                // Add the widget to the corresponding position in the widgets tree map
+                // If no index is present store it in the unsorted widgets list
+                if (index < 0) {
                     unsortedWidgets.add(deserializableWidget);
                 } else {
-                    widgets.put(index, deserializableWidget);
+                    if (widgets.containsKey(index)) {
+                        unsortedWidgets.add(deserializableWidget);
+                    } else {
+                        widgets.put(index, deserializableWidget);
+                    }
                 }
             }
-        }
 
-        // Append all unsorted widgets to the end of the sorted widgets map
-        AtomicInteger highestIndex = new AtomicInteger(widgets.lastKey());
-        unsortedWidgets.forEach(entry -> {
-            widgets.put(highestIndex.incrementAndGet(), entry);
-        });
+            // Append all unsorted widgets to the end of the sorted widgets map
+            AtomicInteger highestIndex = new AtomicInteger(widgets.lastKey());
+            unsortedWidgets.forEach(entry -> {
+                widgets.put(highestIndex.incrementAndGet(), entry);
+            });
 
-        // Loop through the sorted widgets and append them to the parent group in the correct order.
-        widgets.forEach((index, deserializableWidget) -> {
+            // Loop through the sorted widgets and append them to the parent group in the correct order.
+            widgets.forEach((index, deserializableWidget) -> {
                 try {
                     menuGroup.add(
                             get(deserializableWidget.widgetType()).deserialize(
@@ -256,8 +259,9 @@ public class AnimationMenuManager extends Registrable<Widget> {
                 } catch (DeserializationException e) {
                     throw new DeserializationException("Failed to deserialize widget '" + deserializableWidget.widgetKey() + "' with type '" + deserializableWidget.widgetType() + "' at index '" + index + "'!", e, e.getErrorCode());
                 }
-        });
+            });
 
+        }
         return menuGroup;
     }
 }

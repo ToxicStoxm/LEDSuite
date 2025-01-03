@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication;
 
 import com.toxicstoxm.LEDSuite.authentication.Credentials;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
@@ -116,7 +117,7 @@ public class AuthenticationDialog extends AlertDialog {
                 close();
                 LEDSuiteApplication.handleError(
                         ErrorData.builder()
-                                .message("Authentication -> Username: " + username + " - Password hashing failed!")
+                                .message(Translations.getText("Authentication -> Username: $ - Password hashing failed!", username))
                                 .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
                                 .build()
                 );

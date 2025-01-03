@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -48,7 +49,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
         YamlConfiguration yaml = new YamlConfiguration();
         LEDSuiteApplication.handleError(
                 ErrorData.builder()
-                        .message("Serialization of animation menu widgets is not supported!")
+                        .message(Translations.getText("Serialization of animation menu widgets is not supported!"))
                         .logArea(new LEDSuiteLogAreas.UI())
                         .build()
         );

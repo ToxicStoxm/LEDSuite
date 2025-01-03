@@ -503,7 +503,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     LEDSuiteApplication.handleError(
                             ErrorData.builder()
-                                    .message("Cancelled file upload because upload session id was null! This should be reported!")
+                                    .message(Translations.getText("Cancelled file upload because upload session id was null! This should be reported!"))
                                     .logArea(new LEDSuiteLogAreas.NETWORK())
                                     .build()
                     );

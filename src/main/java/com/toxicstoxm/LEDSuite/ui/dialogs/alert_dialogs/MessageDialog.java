@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import lombok.Builder;
 import org.gnome.adw.ResponseAppearance;
@@ -26,7 +27,7 @@ public class MessageDialog {
         responses.add(
                 AlertDialogResponse.builder()
                         .id(String.valueOf(UUID.randomUUID()))
-                        .label("Ok")
+                        .label(Translations.getText("Ok"))
                         .activated(true)
                         .appearance(ResponseAppearance.SUGGESTED)
                         .responseCallback(() -> LEDSuiteApplication.getLogger().debug("User acknowledged notification dialog."))
@@ -59,7 +60,7 @@ public class MessageDialog {
         }
         if (heading != null && !heading.isBlank()) {
             sb.append(heading);
-        } else sb.append("Client Message");
+        } else sb.append(Translations.getText("Client Message"));
 
         return sb.toString();
     }

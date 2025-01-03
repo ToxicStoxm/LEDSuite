@@ -70,7 +70,7 @@ public class ErrorAlertDialog {
                         ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.USER_INTERACTIONS()));
                         LEDSuiteApplication.handleError(
                                 ErrorData.builder()
-                                        .message("An error occurred during opening issue URL!")
+                                        .message(Translations.getText("An error occurred during opening issue URL!"))
                                         .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
                                         .build()
                         );

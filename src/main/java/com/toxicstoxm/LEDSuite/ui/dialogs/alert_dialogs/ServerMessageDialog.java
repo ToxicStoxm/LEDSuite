@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.message.ServerMessagePacket;
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import lombok.Builder;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Widget;
@@ -38,7 +39,7 @@ public class ServerMessageDialog {
         }
         if (heading != null && !heading.isBlank()) {
             sb.append(heading);
-        } else sb.append("Server Message");
+        } else sb.append(Translations.getText("Server Message"));
 
         return sb.toString();
     }

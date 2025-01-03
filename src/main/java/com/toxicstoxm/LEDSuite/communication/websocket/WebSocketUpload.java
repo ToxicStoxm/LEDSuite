@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -77,7 +78,7 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
         } catch (IOException e) {
             LEDSuiteApplication.handleError(
                     ErrorData.builder()
-                            .message("Failed to send sessionID to server, terminating file upload!")
+                            .message(Translations.getText("Failed to send sessionID to server, terminating file upload!"))
                             .logArea(new LEDSuiteLogAreas.NETWORK())
                             .build()
             );

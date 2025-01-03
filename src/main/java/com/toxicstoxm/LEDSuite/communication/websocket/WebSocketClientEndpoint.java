@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
+import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
@@ -104,7 +105,7 @@ public abstract class WebSocketClientEndpoint {
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         LEDSuiteApplication.handleError(
                 ErrorData.builder()
-                        .message("Error in WebSocket session ID " + session.getId() + ": " + throwable.getMessage())
+                        .message(Translations.getText("Error in WebSocket session ID $: $", session.getId(), throwable.getMessage()))
                         .logArea(new LEDSuiteLogAreas.NETWORK())
                         .build()
         );

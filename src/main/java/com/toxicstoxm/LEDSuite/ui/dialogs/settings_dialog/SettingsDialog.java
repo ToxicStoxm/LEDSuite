@@ -309,7 +309,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @Contract(" -> new")
     public @NotNull SettingsData getData() {
-        String temp = ((StringList<?>) colorMode.getModel()).getString(colorMode.getSelected());
+        String temp = ((StringList) colorMode.getModel()).getString(colorMode.getSelected());
         return new SettingsData(
                 (int) brightness.getValue(),
                 temp == null || temp.equals(Translations.getText("N/A")) ? null : temp,

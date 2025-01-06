@@ -35,6 +35,7 @@ import org.gnome.adw.AboutDialog;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
+import org.gnome.adw.Dialog;
 import org.gnome.adw.*;
 import org.gnome.glib.GLib;
 import org.gnome.glib.Type;
@@ -100,7 +101,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void displayAboutDialog() {
-        AboutDialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.metainfo.xml", LEDSuiteApplication.version);
+        Dialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.metainfo.xml", LEDSuiteApplication.version);
         aboutDialog.present(this);
     }
 

@@ -3,7 +3,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 
 import java.lang.foreign.MemorySegment;
@@ -21,8 +20,9 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "FileCollisionDialog", ui = "/com/toxicstoxm/LEDSuite/FileCollisionDialog.ui")
 public class FileCollisionDialog extends AlertDialog {
 
-    // Register the GtkTemplate type for the dialog
-    private static final Type gtype = TemplateTypes.register(FileCollisionDialog.class);
+    static {
+        TemplateTypes.register(FileCollisionDialog.class);
+    }
 
     /**
      * Constructs a new instance of the dialog, using the provided memory address.
@@ -34,21 +34,12 @@ public class FileCollisionDialog extends AlertDialog {
     }
 
     /**
-     * Retrieves the GtkType for this dialog.
-     *
-     * @return the type associated with the FileCollisionDialog
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates a new instance of the FileCollisionDialog.
      *
      * @return a new FileCollisionDialog instance
      */
     public static FileCollisionDialog create() {
-        return GObject.newInstance(getType());
+        return GObject.newInstance(FileCollisionDialog.class);
     }
 
     // Callback to handle user response actions

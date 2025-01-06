@@ -17,7 +17,6 @@ import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.Spinner;
 import org.gnome.adw.*;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.Contract;
@@ -38,18 +37,16 @@ import java.util.Objects;
 @GtkTemplate(name = "SettingsDialog", ui = "/com/toxicstoxm/LEDSuite/SettingsDialog.ui")
 public class SettingsDialog extends PreferencesDialog implements SettingsDialogEndpoint {
 
-    private static final Type gtype = TemplateTypes.register(SettingsDialog.class);
+    static {
+        TemplateTypes.register(SettingsDialog.class);
+    }
 
     public SettingsDialog(MemorySegment address) {
         super(address);
     }
 
-    public static Type getType() {
-        return gtype;
-    }
-
     public static @NotNull SettingsDialog create() {
-        SettingsDialog settingsDialog = GObject.newInstance(getType());
+        SettingsDialog settingsDialog = GObject.newInstance(SettingsDialog.class);
         settingsDialog.initialize();
         settingsDialog.markServerSettingsUnavailable();
         return settingsDialog;

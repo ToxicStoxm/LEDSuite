@@ -12,7 +12,6 @@ import lombok.Getter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.EntryRow;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
@@ -37,8 +36,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @GtkTemplate(name = "RenameDialog", ui = "/com/toxicstoxm/LEDSuite/RenameDialog.ui")
 public class RenameDialog extends AlertDialog {
 
-    // Register the GtkTemplate type for the dialog
-    private static final Type gtype = TemplateTypes.register(RenameDialog.class);
+    static {
+        TemplateTypes.register(RenameDialog.class);
+    }
 
     /**
      * Constructs a new instance of the RenameDialog using the provided memory address.
@@ -47,15 +47,6 @@ public class RenameDialog extends AlertDialog {
      */
     public RenameDialog(MemorySegment address) {
         super(address);
-    }
-
-    /**
-     * Retrieves the GtkType for this dialog.
-     *
-     * @return the type associated with the RenameDialog
-     */
-    public static Type getType() {
-        return gtype;
     }
 
     /**
@@ -70,7 +61,7 @@ public class RenameDialog extends AlertDialog {
         if (fileName == null || fileName.isBlank()) {
             throw new IllegalArgumentException("Input filename can't be null or empty!");
         }
-        RenameDialog renameDialog = GObject.newInstance(getType());
+        RenameDialog renameDialog = GObject.newInstance(RenameDialog.class);
         renameDialog.init(fileName);
         return renameDialog;
     }

@@ -39,7 +39,6 @@ import org.gnome.adw.ApplicationWindow;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
 import org.jetbrains.annotations.Contract;
@@ -73,10 +72,8 @@ import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.WebsocketU
  */
 public class LEDSuiteApplication extends Application {
 
-    private static final Type gtype = TemplateTypes.register(LEDSuiteApplication.class);
-
-    public static Type getType() {
-        return gtype;
+    static {
+        TemplateTypes.register(LEDSuiteApplication.class);
     }
 
     public LEDSuiteApplication(MemorySegment address) {
@@ -122,7 +119,7 @@ public class LEDSuiteApplication extends Application {
      * @return the newly created LEDSuiteApplication instance
      */
     public static LEDSuiteApplication create() {
-        return GObject.newInstance(getType(),
+        return GObject.newInstance(LEDSuiteApplication.class,
                 "application-id", Constants.Application.ID,
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
     }

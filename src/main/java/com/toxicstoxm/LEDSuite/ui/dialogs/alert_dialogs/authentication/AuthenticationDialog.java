@@ -15,7 +15,6 @@ import org.gnome.adw.EntryRow;
 import org.gnome.adw.PasswordEntryRow;
 import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
@@ -43,7 +42,10 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "AuthenticationDialog", ui = "/com/toxicstoxm/LEDSuite/AuthenticationDialog.ui")
 public class AuthenticationDialog extends AlertDialog {
-    private static final Type gtype = TemplateTypes.register(AuthenticationDialog.class);
+
+    static {
+        TemplateTypes.register(AuthenticationDialog.class);
+    }
 
     // The task responsible for checking user credentials
     private LEDSuiteTask credentialCheckerTask;
@@ -72,21 +74,12 @@ public class AuthenticationDialog extends AlertDialog {
     }
 
     /**
-     * Returns the GTK type of the {@code AuthenticationDialog} widget.
-     *
-     * @return the type of the {@code AuthenticationDialog}
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates a new instance of the {@code AuthenticationDialog}.
      *
      * @return a newly created {@code AuthenticationDialog} instance
      */
     public static AuthenticationDialog create() {
-        return GObject.newInstance(getType());
+        return GObject.newInstance(AuthenticationDialog.class);
     }
 
     /**

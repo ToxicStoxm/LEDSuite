@@ -38,7 +38,6 @@ import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Dialog;
 import org.gnome.adw.*;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
@@ -54,19 +53,17 @@ import java.util.*;
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
-    private static final Type gtype = TemplateTypes.register(LEDSuiteWindow.class);
+    static {
+        TemplateTypes.register(LEDSuiteWindow.class);
+    }
 
     public LEDSuiteWindow(MemorySegment address) {
         super(address);
         endpointProvider = EndpointProvider.builder().build();
     }
 
-    public static Type getType() {
-        return gtype;
-    }
-
     public static LEDSuiteWindow create(Application app) {
-        return GObject.newInstance(getType(),
+        return GObject.newInstance(LEDSuiteWindow.class,
                 "application", app);
     }
 

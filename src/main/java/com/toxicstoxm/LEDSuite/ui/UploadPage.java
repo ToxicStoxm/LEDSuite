@@ -16,7 +16,6 @@ import org.gnome.adw.Spinner;
 import org.gnome.adw.*;
 import org.gnome.gio.File;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
@@ -36,14 +35,12 @@ import java.util.Objects;
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
-    private static final Type gtype = TemplateTypes.register(UploadPage.class);
+    static {
+        TemplateTypes.register(UploadPage.class);
+    }
 
     public UploadPage(MemorySegment address) {
         super(address);
-    }
-
-    public static Type getType() {
-        return gtype;
     }
 
     private ApplicationWindow parent;
@@ -56,7 +53,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      * @return A new instance of UploadPage.
      */
     public static @NotNull UploadPage create(ApplicationWindow parent) {
-        UploadPage uploadPage = GObject.newInstance(getType());
+        UploadPage uploadPage = GObject.newInstance(UploadPage.class);
         uploadPage.parent = parent;
         uploadPage.setUploadButtonState(false);
         uploadPage.uploadStatistics.setSensitive(false);

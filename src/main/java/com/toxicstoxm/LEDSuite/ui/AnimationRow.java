@@ -13,7 +13,6 @@ import org.gnome.adw.Clamp;
 import org.gnome.adw.Spinner;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +34,9 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
 
-    private static final Type gtype = TemplateTypes.register(AnimationRow.class);
+    static {
+        TemplateTypes.register(AnimationRow.class);
+    }
 
     /**
      * Constructs an instance of {@link AnimationRow}.
@@ -45,15 +46,6 @@ public class AnimationRow extends ListBoxRow {
      */
     public AnimationRow(MemorySegment address) {
         super(address);
-    }
-
-    /**
-     * Retrieves the GTK type for this class. This is used by GTK to identify the widget type.
-     *
-     * @return The GTK type for this class.
-     */
-    public static Type getType() {
-        return gtype;
     }
 
     @Getter
@@ -125,7 +117,7 @@ public class AnimationRow extends ListBoxRow {
         createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
 
         // Instantiate and configure the AnimationRow with the provided data.
-        AnimationRow row = GObject.newInstance(getType(), "action-name", "app." + animationRowData.animationID());
+        AnimationRow row = GObject.newInstance(AnimationRow.class, "action-name", "app." + animationRowData.animationID());
         row.animationID = animationRowData.animationID();
         row.setIcon(animationRowData.icon());
         row.setLastAccessed(animationRowData.lastAccessed());

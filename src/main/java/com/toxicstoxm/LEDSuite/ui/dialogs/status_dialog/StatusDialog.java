@@ -9,7 +9,6 @@ import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +28,9 @@ import java.util.List;
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
 public class StatusDialog extends Dialog implements StatusDialogEndpoint {
 
-    private static final Type gtype = TemplateTypes.register(StatusDialog.class);
+    static {
+        TemplateTypes.register(StatusDialog.class);
+    }
 
     /**
      * Constructs a new StatusDialog instance.
@@ -41,22 +42,13 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
     }
 
     /**
-     * Returns the {@link Type} associated with the {@code StatusDialog}.
-     *
-     * @return the GTK type of the dialog
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates a new instance of the {@link StatusDialog}.
      * <p>This method initializes the dialog and marks all rows as unavailable initially.</p>
      *
      * @return a new instance of {@link StatusDialog}
      */
     public static @NotNull StatusDialog create() {
-        StatusDialog dialog = GObject.newInstance(getType());
+        StatusDialog dialog = GObject.newInstance(StatusDialog.class);
         dialog.markAllUnavailable();
         return dialog;
     }

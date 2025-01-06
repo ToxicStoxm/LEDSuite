@@ -3,7 +3,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 
 import java.lang.foreign.MemorySegment;
@@ -21,8 +20,9 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "OverwriteConfirmationDialog", ui = "/com/toxicstoxm/LEDSuite/OverwriteConfirmationDialog.ui")
 public class OverwriteConfirmationDialog extends AlertDialog {
 
-    // Register the GtkTemplate type for the dialog
-    private static final Type gtype = TemplateTypes.register(OverwriteConfirmationDialog.class);
+    static {
+        TemplateTypes.register(OverwriteConfirmationDialog.class);
+    }
 
     /**
      * Constructs a new instance of the overwrite confirmation dialog using the provided memory address.
@@ -34,21 +34,12 @@ public class OverwriteConfirmationDialog extends AlertDialog {
     }
 
     /**
-     * Retrieves the GtkType for this dialog.
-     *
-     * @return the type associated with the OverwriteConfirmationDialog
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates and returns a new instance of the OverwriteConfirmationDialog.
      *
      * @return a new OverwriteConfirmationDialog instance
      */
     public static OverwriteConfirmationDialog create() {
-        return GObject.newInstance(getType());
+        return GObject.newInstance(OverwriteConfirmationDialog.class);
     }
 
     // Callback to handle user response actions

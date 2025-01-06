@@ -1,12 +1,12 @@
 package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
 import com.toxicstoxm.LEDSuite.ui.AnimationRow;
+import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Image;
@@ -26,10 +26,14 @@ import java.lang.foreign.MemorySegment;
  *
  * @since 1.0.0
  */
-@Getter
-@Setter
+@Getter(onMethod_ = @Property(skip = true))
+@Setter(onMethod_ = @Property(skip = true))
 @GtkTemplate(name = "AnimationMenu", ui = "/com/toxicstoxm/LEDSuite/AnimationMenu.ui")
 public class AnimationMenu extends Box implements AnimationMenuReference {
+
+    static {
+        TemplateTypes.register(AnimationMenu.class);
+    }
 
     /**
      * Unique identifier for the menu instance.
@@ -58,9 +62,6 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
     @GtkChild(name = "animation_menu_subtitle")
     public Label animationSubtitle;
 
-    // The GTK type for this class, used for type registration
-    private static final Type gtype = TemplateTypes.register(AnimationMenu.class);
-
     /**
      * Constructor that initializes the AnimationMenu using a memory address segment.
      *
@@ -71,15 +72,6 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
     }
 
     /**
-     * Retrieves the GTK type for this widget.
-     *
-     * @return the type of the AnimationMenu widget
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates a new instance of the {@code AnimationMenu} with the specified file name.
      * This method also sets the {@code menuID} to the provided file name.
      *
@@ -87,7 +79,7 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
      * @return a newly created {@code AnimationMenu} instance
      */
     public static @NotNull AnimationMenu create(String fileName) {
-        AnimationMenu menu = GObject.newInstance(getType());
+        AnimationMenu menu = GObject.newInstance(AnimationMenu.class);
         menu.setMenuID(fileName);
         return menu;
     }
@@ -107,7 +99,7 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
         animationLabel.setLabel(row.animationRowLabel.getLabel());
 
         // Determine the image storage type and set the image accordingly
-        var storageType = row.animationIcon.getStorageType();
+        ImageType storageType = row.animationIcon.getStorageType();
         if (storageType.equals(ImageType.EMPTY) || storageType.equals(ImageType.PAINTABLE)) {
             animationMenuImage.setFromPaintable(row.animationIcon.getPaintable());
         } else {

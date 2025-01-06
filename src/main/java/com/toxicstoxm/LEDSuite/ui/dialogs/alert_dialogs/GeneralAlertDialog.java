@@ -5,7 +5,6 @@ import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.ResponseAppearance;
-import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +27,9 @@ import java.util.UUID;
 @GtkTemplate(name = "GeneralAlertDialog", ui = "/com/toxicstoxm/LEDSuite/GeneralAlertDialog.ui")
 public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> {
 
-    // Register the GtkTemplate type for the dialog
-    private static final Type gtype = TemplateTypes.register(GeneralAlertDialog.class);
+    static {
+        TemplateTypes.register(GeneralAlertDialog.class);
+    }
 
     /**
      * Constructs a new instance of the dialog, using the provided memory address.
@@ -41,21 +41,12 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
     }
 
     /**
-     * Retrieves the GtkType for this dialog.
-     *
-     * @return the type associated with the GeneralAlertDialog
-     */
-    public static Type getType() {
-        return gtype;
-    }
-
-    /**
      * Creates and returns a new instance of the GeneralAlertDialog.
      *
      * @return a new GeneralAlertDialog instance
      */
     public static GeneralAlertDialog create() {
-        return GObject.newInstance(getType());
+        return GObject.newInstance(GeneralAlertDialog.class);
     }
 
     // Callback to handle user response actions

@@ -10,8 +10,8 @@ jobs:
     name: Get dependencies and update flatpak sources
     runs-on: ubuntu-24.04
     permissions:
-      contents: read # Only read access to repository contents
-      pull-requests: write # Write access for pull requests
+      contents: write
+      pull-requests: write
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Code

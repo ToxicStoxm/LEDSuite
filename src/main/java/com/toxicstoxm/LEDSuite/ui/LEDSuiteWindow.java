@@ -271,6 +271,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         }
         GLib.idleAddOnce(() -> {
             animationList.removeAll();
+            animations.clear();
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
             if (!serverConnected) showAnimationListSpinner(false);

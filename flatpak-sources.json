@@ -694,6 +694,27 @@
   },
   {
     "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.jar",
+    "sha512": "c7be38957318874b837d029dc7b2a1f8b009feaa5362a56cba4f4c8a7d502993b3c900ee338eb9c9ee9494d7fd946bd280403eee28b244d213edb0b145a9ebfd",
+    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
+    "dest-filename": "annotations-26.0.2.jar"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.module",
+    "sha512": "85a40b937bbdfdf56ff08a3d1819f4f1a132715ef914be703acc08c897217dee575afa87623d0e9e7899f4b737794833afb2f64e02a7fef4835a0b64c56035ac",
+    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
+    "dest-filename": "annotations-26.0.2.module"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.pom",
+    "sha512": "1f90c9b391686fc13a832eb2705b6b43691961654525828faede6f16ade5777800a8e6b10da0b6d6b8571adee33110a4bdb69be09a96ac53c8441d6215becae2",
+    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
+    "dest-filename": "annotations-26.0.2.pom"
+  },
+  {
+    "type": "file",
     "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.module",
     "sha512": "840956bacdb6bf81bb0ada8bb947eb772adb1e90328e04d8060cce07d431bcee5cc1f2ce075144043d5903c2db4900d056abe1772c2a0cd4365da0b47c206ea6",
     "dest": "./offline-repository/org/junit/junit-bom/5.11.4",

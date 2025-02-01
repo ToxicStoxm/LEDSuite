@@ -11,7 +11,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
@@ -24,6 +23,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -52,6 +52,8 @@ import java.util.*;
  */
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(LEDSuiteWindow.class);
@@ -118,9 +120,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             endpointProvider.connectStatusDialogEndpoint(statusDialog);
             statusDialog.onClosed(endpointProvider::disconnectStatusDialogEndpoint);
             statusDialog.present(this);
-            LEDSuiteApplication.getLogger().info("Opened new status dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Opened new status dialog!");
         } else {
-            LEDSuiteApplication.getLogger().info("Couldn't open status dialog because it is already open!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Couldn't open status dialog because it is already open!");
         }
     }
 
@@ -133,9 +135,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             endpointProvider.connectSettingsDialogEndpoint(settingsDialog);
             settingsDialog.onClosed(endpointProvider::disconnectSettingsDialogEndpoint);
             settingsDialog.present(this);
-            LEDSuiteApplication.getLogger().info("Opened new settings dialog!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Opened new settings dialog!");
         } else {
-            LEDSuiteApplication.getLogger().info("Couldn't open settings dialog because it is already open!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Couldn't open settings dialog because it is already open!");
         }
     }
 
@@ -160,7 +162,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * @see #clearMainContent()
      */
     public void changeMainContent(@NotNull Widget newChild) {
-        LEDSuiteApplication.getLogger().verbose("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()), new LEDSuiteLogAreas.UI());
+        logger.verbose("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()));
         clearMainContent();
         GLib.idleAddOnce(() -> contentBox.append(newChild));
     }
@@ -174,7 +176,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         GLib.idleAddOnce(() -> {
             Widget child = contentBox.getFirstChild();
             while (child != null) {
-                LEDSuiteApplication.getLogger().verbose("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!", new LEDSuiteLogAreas.UI());
+                logger.verbose("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!");
 
                 contentBox.remove(child);
 
@@ -207,10 +209,10 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                         StatusRequestPacket.builder().build().serialize()
                 );
-                LEDSuiteApplication.getLogger().verbose("Displaying animation menu with id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+                logger.verbose("Displaying animation menu with id '" + animationID + "'!");
             }
         } else {
-            LEDSuiteApplication.getLogger().debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!", new LEDSuiteLogAreas.UI());
+            logger.debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!");
         }
     }
 
@@ -242,7 +244,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     @GtkChild(name = "main_view_overlay")
     public Overlay mainViewOverlay;
     public void uploadPageSelect() {
-        LEDSuiteApplication.getLogger().info("Upload files page selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+        logger.info("Upload files page selected!");
         UploadPage uploadPage = UploadPage.create(this);
         endpointProvider.connectUploadPageEndpoint(uploadPage);
         setAnimationControlButtonsVisible(false);
@@ -300,7 +302,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * @param updatedAnimations new available animation list to display
      */
     public void updateAnimations(@NotNull Collection<StatusReplyPacket.Animation> updatedAnimations) {
-        LEDSuiteApplication.getLogger().verbose("Updating available animations. Count: " + updatedAnimations.size(), new LEDSuiteLogAreas.UI());
+        logger.verbose("Updating available animations. Count: " + updatedAnimations.size());
 
         List<String> removedAnimations = new ArrayList<>(animations.keySet());
 
@@ -315,7 +317,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 // Update the animation row with new data
                 GLib.idleAddOnce(() -> {
                     animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.lastAccessed());
-                    LEDSuiteApplication.getLogger().verbose("Updated animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                    logger.verbose("Updated animation: " + newAnimationName);
                 });
 
                 // Update the animation map to ensure consistency
@@ -324,7 +326,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 // Handle additional update if this row is selected
                 Widget selectedRow = animationList.getSelectedRow();
                 if (selectedRow != null && selectedRow.equals(animationRow)) {
-                    LEDSuiteApplication.getLogger().verbose("Animation is currently selected: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                    logger.verbose("Animation is currently selected: " + newAnimationName);
                 }
             } else {
                 // Add new animation row if it doesn't already exist
@@ -343,7 +345,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
                 GLib.idleAddOnce(() -> {
                     animationList.append(newAnimationRow);
-                    LEDSuiteApplication.getLogger().verbose("Added animation: " + newAnimationName, new LEDSuiteLogAreas.UI());
+                    logger.verbose("Added animation: " + newAnimationName);
                 });
             }
         }
@@ -363,7 +365,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     animationList.remove(widget);
                 }
 
-                LEDSuiteApplication.getLogger().verbose("Removed animation: " + removedAnimation, new LEDSuiteLogAreas.UI());
+                logger.verbose("Removed animation: " + removedAnimation);
             }
             animationList.invalidateSort();
         });
@@ -526,12 +528,12 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                                     .build().serialize()
                     );
                 } else {
-                    LEDSuiteApplication.getLogger().info("Cancelled animation deletion!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                    logger.info("Cancelled animation deletion!");
                 }
             });
             deleteConfirmDialog.present(this);
         } else {
-            LEDSuiteApplication.getLogger().warn("Can't delete animation, because no animation is currently selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.warn("Can't delete animation, because no animation is currently selected!");
         }
     }
 
@@ -552,12 +554,12 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                         );
                     }
                 } else {
-                    LEDSuiteApplication.getLogger().info("Cancelled animation rename!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                    logger.info("Cancelled animation rename!");
                 }
             });
             renameDialog.present(this);
         } else {
-            LEDSuiteApplication.getLogger().warn("Can't rename animation, because no animation is currently selected!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.warn("Can't rename animation, because no animation is currently selected!");
         }
     }
 

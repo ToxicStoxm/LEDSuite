@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
+import com.toxicstoxm.YAJL.Logger;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @ClientEndpoint
 public abstract class WebSocketClientEndpoint {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     /**
      * Returns {@code true} if this WebSocket endpoint communicates using binary data only.
@@ -62,7 +64,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+        logger.info("WebSocket connection opened with session ID: " + session.getId());
     }
 
     /**
@@ -76,7 +78,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
-        LEDSuiteApplication.getLogger().info("Received message from session ID " + session.getId() + ": " + message, new LEDSuiteLogAreas.COMMUNICATION());
+        logger.info("Received message from session ID " + session.getId() + ": " + message);
     }
 
     /**
@@ -89,7 +91,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnClose
     public void onClose(@NotNull Session session) {
-        LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+        logger.info("WebSocket connection closed with session ID: " + session.getId());
     }
 
     /**
@@ -106,7 +108,7 @@ public abstract class WebSocketClientEndpoint {
         LEDSuiteApplication.handleError(
                 ErrorData.builder()
                         .message(Translations.getText("Error in WebSocket session ID $: $", session.getId(), throwable.getMessage()))
-                        .logArea(new LEDSuiteLogAreas.NETWORK())
+                        .logger(logger)
                         .build()
         );
     }

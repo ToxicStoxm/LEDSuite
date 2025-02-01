@@ -4,8 +4,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -28,6 +27,8 @@ import java.util.Set;
  * @since 1.0.0
  */
 public abstract class Registrable<T extends AutoRegistrableItem> {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     private final HashMap<String, T> registeredItems = new HashMap<>();
 
@@ -79,7 +80,7 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
         AutoRegisterModule<T> module = autoRegisterModule();
 
         if (module == null) {
-            LEDSuiteApplication.getLogger().error(" > Tried to auto-register items for an unsupported module!", new LEDSuiteLogAreas.GENERAL());
+            logger.error(" > Tried to auto-register items for an unsupported module!");
             return;
         }
 
@@ -109,14 +110,13 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                             Class<T> typeClass = (Class<T>) loadedClass;
                             annotatedClasses.add(typeClass);
                         } else {
-                            LEDSuiteApplication.getLogger().error(" > Class " + classInfo.getName()
-                                    + " does not implement " + moduleTypeName + " interface!", new LEDSuiteLogAreas.COMMUNICATION());
+                            logger.error(" > Class " + classInfo.getName()
+                                    + " does not implement " + moduleTypeName + " interface!");
                         }
                     }
                 } catch (Exception e) {
-                    LEDSuiteApplication.getLogger().error(" > Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'",
-                            new LEDSuiteLogAreas.COMMUNICATION());
-                    LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
+                    logger.error(" > Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'");
+                    logger.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -131,16 +131,13 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
 
                 String id = item.getItemType();
                 if (registerItem(item)) {
-                    LEDSuiteApplication.getLogger().verbose(" > Successfully registered " + moduleTypeName + ": " + id,
-                            new LEDSuiteLogAreas.COMMUNICATION());
+                    logger.verbose(" > Successfully registered " + moduleTypeName + ": " + id);
                 } else {
-                    LEDSuiteApplication.getLogger().debug(" > Item " + id + " is already registered. Skipping it.",
-                            new LEDSuiteLogAreas.COMMUNICATION());
+                    logger.debug(" > Item " + id + " is already registered. Skipping it.");
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                LEDSuiteApplication.getLogger().error(" > Failed to auto-register " + moduleTypeName + ": " + itemClass.getName(),
-                        new LEDSuiteLogAreas.COMMUNICATION());
-                LEDSuiteApplication.getLogger().error(e.getMessage(), new LEDSuiteLogAreas.COMMUNICATION());
+                logger.error(" > Failed to auto-register " + moduleTypeName + ": " + itemClass.getName());
+                logger.error(e.getMessage());
                 throw new RuntimeException(e);
             }
         }

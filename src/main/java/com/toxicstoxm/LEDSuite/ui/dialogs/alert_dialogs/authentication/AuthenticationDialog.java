@@ -2,11 +2,11 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication;
 
 import com.toxicstoxm.LEDSuite.authentication.Credentials;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -42,6 +42,8 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "AuthenticationDialog", ui = "/com/toxicstoxm/LEDSuite/AuthenticationDialog.ui")
 public class AuthenticationDialog extends AlertDialog {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(AuthenticationDialog.class);
@@ -111,7 +113,6 @@ public class AuthenticationDialog extends AlertDialog {
                 LEDSuiteApplication.handleError(
                         ErrorData.builder()
                                 .message(Translations.getText("Authentication -> Username: $ - Password hashing failed!", username))
-                                .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
                                 .build()
                 );
                 return;
@@ -125,7 +126,7 @@ public class AuthenticationDialog extends AlertDialog {
             setResponseEnabled("authenticate", false);
             setResponseEnabled("cancel", false);
 
-            LEDSuiteApplication.getLogger().info("Authentication -> Username: " + username + " - Password Hash: " + passwordHash, new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Authentication -> Username: " + username + " - Password Hash: " + passwordHash);
 
             // Send the authentication request to the server
             LEDSuiteApplication.getAuthManager().requestAuth(
@@ -139,7 +140,7 @@ public class AuthenticationDialog extends AlertDialog {
                     })
             );
 
-            LEDSuiteApplication.getLogger().info("Authentication -> Waiting for server response...", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.info("Authentication -> Waiting for server response...");
 
             // Start a task to handle authentication timeout
             authenticationTimeoutTask = new LEDSuiteRunnable() {

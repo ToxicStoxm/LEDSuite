@@ -2,9 +2,9 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
 import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
@@ -39,6 +39,8 @@ import java.util.Objects;
  */
 public class ErrorAlertDialog {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     private static boolean disableReportResponse = false;
 
     private final AlertDialog<AlertDialogData> alertDialog;
@@ -50,7 +52,7 @@ public class ErrorAlertDialog {
                 .id("ok")
                 .label(Translations.getText("_OK"))
                 .activated(true)
-                .responseCallback(() -> LEDSuiteApplication.getLogger().verbose("Error acknowledged by the user!", new LEDSuiteLogAreas.USER_INTERACTIONS()))
+                .responseCallback(() -> logger.verbose("Error acknowledged by the user!"))
                 .build();
 
         reportResponse = AlertDialogResponse.builder()
@@ -64,14 +66,13 @@ public class ErrorAlertDialog {
                                 .setUri(Constants.Application.ISSUES)
                                 .build();
                         launcher.launch(LEDSuiteApplication.getWindow().asApplicationWindow(), null, (_, _, _) ->
-                                LEDSuiteApplication.getLogger().verbose("Error acknowledged and reported by the user!", new LEDSuiteLogAreas.USER_INTERACTIONS()));
+                                logger.verbose("Error acknowledged and reported by the user!"));
                     } catch (Exception e) {
                         ErrorAlertDialog.disableReportResponse = true;
-                        ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.USER_INTERACTIONS()));
+                        ExceptionTools.printStackTrace(e, logger::stacktrace);
                         LEDSuiteApplication.handleError(
                                 ErrorData.builder()
                                         .message(Translations.getText("An error occurred during opening issue URL!"))
-                                        .logArea(new LEDSuiteLogAreas.USER_INTERACTIONS())
                                         .build()
                         );
 

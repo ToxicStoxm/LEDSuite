@@ -6,8 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0.0
  */
 public class PacketManager extends Registrable<Packet> {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     private final String packetClassPath;
 
@@ -65,7 +66,7 @@ public class PacketManager extends Registrable<Packet> {
 
         // Validate if the packet type exists in the registered packets
         if (!isRegistered(packetIdentifier)) {
-            LEDSuiteApplication.getLogger().info("Error: Packet type not registered: " + packetIdentifier, new LEDSuiteLogAreas.YAML());
+            logger.info("Error: Packet type not registered: " + packetIdentifier);
             return null;
         }
 

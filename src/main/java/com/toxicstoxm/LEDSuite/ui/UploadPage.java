@@ -3,9 +3,8 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -21,7 +20,6 @@ import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
-import java.util.Objects;
 
 /**
  * Adw dialog for uploading files to the server.
@@ -34,6 +32,9 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
 
     static {
         TemplateTypes.register(UploadPage.class);
@@ -70,7 +71,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     @GtkCallback(name = "start_animation_after_upload_switch_cb")
     public void startAnimationAfterUploadCb() {
         boolean switchState = startAnimationAfterUploadSwitch.getActive();
-        LEDSuiteApplication.getLogger().info("Start animation after upload switch toggled -> " + switchState, new LEDSuiteLogAreas.UI());
+        logger.info("Start animation after upload switch toggled -> " + switchState);
     }
 
     @GtkChild(name = "file_picker_button_row")
@@ -88,7 +89,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 .setName(Translations.getText("Animations"))
                 .build();
 
-        String initialFolder = LEDSuiteSettingsBundle.FilePickerInitialFolder.getInstance().get();
+        String initialFolder = LEDSuiteApplication.getSettings().mainSection.uiSettings.filePickerInitialFolder;
         if (initialFolder.isBlank()) {
             initialFolder = System.getProperty("user.home");
         }
@@ -106,12 +107,12 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 var selectedFile = filePicker.openFinish(result);
                 if (selectedFile != null) {
                     String parentPath = selectedFile.getParent().getPath();
-                    if (!Objects.equals(parentPath, System.getProperty("user.home")) && new java.io.File(parentPath).exists()) {
-                        LEDSuiteApplication.getLogger().info("Changed initial folder for file picker to: " + parentPath, new LEDSuiteLogAreas.UI());
-                        LEDSuiteSettingsBundle.FilePickerInitialFolder.getInstance().set(parentPath);
+                    if (new java.io.File(parentPath).exists()) {
+                        logger.info("Changed initial folder for file picker to: " + parentPath);
+                        LEDSuiteApplication.getSettings().mainSection.uiSettings.filePickerInitialFolder = parentPath;
                     }
                     this.selectedFile = selectedFile.getPath();
-                    LEDSuiteApplication.getLogger().info("Selected file: " + this.selectedFile, new LEDSuiteLogAreas.UI());
+                    logger.info("Selected file: " + this.selectedFile);
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
                     WebSocketClient communication = LEDSuiteApplication.getWebSocketCommunication();
                     if (communication != null && communication.isConnected()) {
@@ -119,7 +120,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                     }
                 }
             } catch (GErrorException e) {
-                LEDSuiteApplication.getLogger().info("User canceled file picker! No file selected!", new LEDSuiteLogAreas.UI());
+                logger.info("User canceled file picker! No file selected!");
             }
         });
     }
@@ -223,7 +224,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         if (loading) return;
         loading = true;
         setUploadButtonActive(true);
-        LEDSuiteApplication.getLogger().info("Upload button clicked, starting upload!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+        logger.info("Upload button clicked, starting upload!");
 
         new LEDSuiteRunnable() {
             @Override

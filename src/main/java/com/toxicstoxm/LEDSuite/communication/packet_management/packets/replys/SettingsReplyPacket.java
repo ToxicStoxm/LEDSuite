@@ -7,9 +7,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.*;
 import org.gnome.gtk.Gtk;
 
@@ -32,6 +32,13 @@ import java.util.Collection;
 @NoArgsConstructor
 @Setter
 public class SettingsReplyPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * The brightness level of the system.
@@ -131,6 +138,6 @@ public class SettingsReplyPacket extends CommunicationPacket {
                         .build()
         );
 
-        LEDSuiteApplication.getLogger().info("Updated settings using the provided settings updater.", new LEDSuiteLogAreas.COMMUNICATION());
+        logger.info("Updated settings using the provided settings updater.");
     }
 }

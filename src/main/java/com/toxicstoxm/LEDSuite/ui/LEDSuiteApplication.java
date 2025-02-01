@@ -14,7 +14,6 @@ import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketUpload;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
@@ -27,9 +26,10 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
 import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJL.YAJLLogger;
-import com.toxicstoxm.YAJL.levels.YAJLLogLevels;
-import com.toxicstoxm.YAJSI.api.settings.YAJSISettingsManager;
+import com.toxicstoxm.YAJL.YAJLManager;
+import com.toxicstoxm.YAJL.config.YAJLManagerConfig;
+import com.toxicstoxm.YAJSI.api.settings.SettingsManager;
+import com.toxicstoxm.YAJSI.api.settings.YAMLUpdatingBehaviour;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
@@ -62,12 +62,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.EnableSettingsLogging;
-import static com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle.WebsocketURI;
-
 /**
  * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital elements like: <br>
- * {@link YAJLLogger} {@link LEDSuiteScheduler} {@link YAJSISettingsManager}
+ * {@link Logger} {@link LEDSuiteScheduler}
  * @since 1.0.0
  */
 public class LEDSuiteApplication extends Application {
@@ -82,10 +79,7 @@ public class LEDSuiteApplication extends Application {
 
     public static String version = "@version@";
 
-    @Getter
     private static Logger logger;
-
-    private static YAJSISettingsManager configMgr;
 
     @Getter
     private static MainWindow window;
@@ -114,6 +108,9 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static AuthManagerEndpoint authManager;
 
+    @Getter
+    private static LEDSuiteSettingsBundle settings;
+
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
      * @return the newly created LEDSuiteApplication instance
@@ -141,9 +138,9 @@ public class LEDSuiteApplication extends Application {
         initYAJL();
 
         logger.info("Initializing application...");
-        logger.verbose("Initializing UI...", new LEDSuiteLogAreas.UI());
-        logger.verbose("Initializing UI-Actions...", new LEDSuiteLogAreas.UI());
-        logger.verbose(" > create", new LEDSuiteLogAreas.UI());
+        logger.verbose("Initializing UI...");
+        logger.verbose("Initializing UI-Actions...");
+        logger.verbose(" > create");
 
         var quit = new SimpleAction("quit", null);
         var status = new SimpleAction("status", null);
@@ -154,7 +151,7 @@ public class LEDSuiteApplication extends Application {
         var sidebarFileManagementUploadPage = new SimpleAction("sidebar_file_management_upload_page", null);
         var settingsApply = new SimpleAction("settings_apply", null);
 
-        logger.verbose(" > add callbacks", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > add callbacks");
 
         quit.onActivate(_ -> quit());
         status.onActivate(_ -> window.displayStatusDialog());
@@ -166,19 +163,19 @@ public class LEDSuiteApplication extends Application {
         CooldownManager.addAction("sidebarFileManagementUploadPage", () -> window.uploadPageSelect(), 500);
         sidebarFileManagementUploadPage.onActivate(_ -> {
             if (!CooldownManager.call("sidebarFileManagementUploadPage"))
-                logger.info("Upload page select on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                logger.info("Upload page select on cooldown!");
         });
 
         CooldownManager.addAction("settingsApply", () -> window.settingsDialogApply(), 500);
         CooldownManager.addAction("settingsApplyFail", () -> window.applyButtonCooldown(), 600);
         settingsApply.onActivate(_ -> {
             if (!CooldownManager.call("settingsApply")) {
-                logger.info("Settings apply on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                logger.info("Settings apply on cooldown!");
                 CooldownManager.call("settingsApplyFail");
             }
         });
 
-        logger.verbose(" > register", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > register");
 
         addAction(quit);
         addAction(status);
@@ -189,7 +186,7 @@ public class LEDSuiteApplication extends Application {
         addAction(sidebarFileManagementUploadPage);
         addAction(settingsApply);
 
-        logger.verbose(" > set keyboard shortcuts", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > set keyboard shortcuts");
 
         setAccelsForAction("app.quit", new String[]{"<Control>q"});
         setAccelsForAction("app.status", new String[]{"<Alt>s"});
@@ -197,7 +194,7 @@ public class LEDSuiteApplication extends Application {
         setAccelsForAction("app.shortcuts", new String[]{"<Control>question"});
         setAccelsForAction("app.sidebar_toggle", new String[]{"F9"});
 
-        logger.verbose(" > DONE", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > DONE");
 
         this.onShutdown(this::exit);
 
@@ -247,38 +244,28 @@ public class LEDSuiteApplication extends Application {
     private void initYAJSI() {
         System.out.println(" > create");
         System.out.println(" > configure");
-        configMgr = YAJSISettingsManager.builder()
-                .buildWithConfigFile(
-                        new YAJSISettingsManager.ConfigFile(
-                                Constants.FileSystem.CONFIG_FILE_PATH,
-                                getClass().getClassLoader().getResource("config.yaml")
-                        ),
-                        LEDSuiteSettingsBundle.class
-                );
+        SettingsManager.configure()
+                .setAppName("LEDSuite")
+                .setConfigDirectory(Constants.FileSystem.getAppDir())
+                .setUpdatingBehaviour(YAMLUpdatingBehaviour.MARK_UNUSED)
+                .setUnusedSettingWarning("This setting is currently unused!")
+                .setEnableLogBuffer(true)
+                .setLogMessageBufferSize(500)
+                .setConfigClassesHaveNoArgsConstructor(true);
+        settings = new LEDSuiteSettingsBundle();
+        SettingsManager.getInstance().registerYAMLConfiguration(settings);
         System.out.println(" > DONE");
     }
 
     private void initYAJL() {
         System.out.println(" > create");
         System.out.println(" > configure");
-        logger = YAJLLogger.builder()
-                // share settingsManager with the logger to use the same settings log implementation
-                .setSettingsManager(configMgr)
-                .buildWithArea(
-                        Constants.FileSystem.getAppDir(),
-                        System.out,
-                        new LEDSuiteLogAreas.GENERAL(),
-                        new LEDSuiteLogAreas(),
-                        true
-                )
-                // configure how the log should be displayed
-                .configureYajsiLog(
-                        EnableSettingsLogging.getInstance().get(),
-                        new YAJLLogger.LogMeta(
-                                new YAJLLogLevels.Info(),
-                                new LEDSuiteLogAreas.YAML()
-                        )
-                );
+        YAJLManager.configure(
+                YAJLManagerConfig.builder()
+                        .enableYAMLConfig(true)
+                        .build()
+        );
+        logger = Logger.autoConfigureLogger();
         System.out.println(" > DONE");
     }
 
@@ -292,12 +279,12 @@ public class LEDSuiteApplication extends Application {
      * Creates a new websocket client instance and connects it with the websocket server.
      */
     public static boolean startCommunicationSocket() {
-        logger.verbose("Starting communication websocket...", new LEDSuiteLogAreas.NETWORK());
-        logger.verbose(" > Computing server address...", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose("Starting communication websocket...");
+        logger.verbose(" > Computing server address...");
         URI serverAddress;
         try {
-            String baseAddress = WebsocketURI.getInstance().get();
-            logger.debug("Provided server address: " + baseAddress, new LEDSuiteLogAreas.NETWORK());
+            String baseAddress = settings.mainSection.networkSettings.websocketURI;
+            logger.debug("Provided server address: " + baseAddress);
             if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
             baseAddress = baseAddress + "communication";
             serverAddress = new URI(baseAddress);
@@ -306,12 +293,12 @@ public class LEDSuiteApplication extends Application {
         }
         logger.verbose(" > > DONE");
 
-        logger.debug("Final server address: " + serverAddress, new LEDSuiteLogAreas.NETWORK());
+        logger.debug("Final server address: " + serverAddress);
 
         connecting = true;
         connectionAttempt = System.currentTimeMillis();
         
-        logger.verbose(" > Updating UI to reflect changes...", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > Updating UI to reflect changes...");
 
         long start = System.currentTimeMillis();
         long timeElapsed = System.currentTimeMillis() - start;
@@ -322,36 +309,36 @@ public class LEDSuiteApplication extends Application {
         window.setServerState(ServerState.CONNECTING);
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(true));
 
-        logger.verbose(" > > DONE", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > > DONE");
 
         if (webSocketCommunication != null) {
-            logger.verbose(" > Shutting down previous communication websocket...", new LEDSuiteLogAreas.NETWORK());
+            logger.verbose(" > Shutting down previous communication websocket...");
             webSocketCommunication.shutdown();
-            logger.verbose(" > > DONE", new LEDSuiteLogAreas.NETWORK());
+            logger.verbose(" > > DONE");
 
         }
         
-        logger.verbose(" > Creating new websocket instance...", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > Creating new websocket instance...");
         webSocketCommunication = new WebSocketClient(new WebSocketCommunication(), serverAddress);
-        logger.verbose(" > > DONE", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > > DONE");
 
-        logger.verbose(" > Starting connection loop...", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > Starting connection loop...");
         while (timeElapsed < Constants.UI.Intervals.CONNECTION_TIMEOUT) {
 
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
-                    logger.verbose(" > Server connected!", new LEDSuiteLogAreas.NETWORK());
+                    logger.verbose(" > Server connected!");
                     GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window.asApplicationWindow()));
                     result = true;
                     break;
                 } else if (retry) {
-                    logger.verbose(" > Connection: Stopping current instance", new LEDSuiteLogAreas.NETWORK());
-                    logger.verbose(" > Shutting down communication websocket...", new LEDSuiteLogAreas.NETWORK());
+                    logger.verbose(" > Connection: Stopping current instance");
+                    logger.verbose(" > Shutting down communication websocket...");
                     webSocketCommunication.shutdown();
-                    logger.verbose(" > Connection retrying...", new LEDSuiteLogAreas.NETWORK());
-                    logger.verbose(" > Creating new websocket instance...", new LEDSuiteLogAreas.NETWORK());
+                    logger.verbose(" > Connection retrying...");
+                    logger.verbose(" > Creating new websocket instance...");
                     webSocketCommunication = new WebSocketClient(new WebSocketCommunication(), serverAddress);
-                    logger.verbose(" > Waiting for timeout...", new LEDSuiteLogAreas.NETWORK());
+                    logger.verbose(" > Waiting for timeout...");
 
                     try {
                         Thread.sleep(1000);
@@ -359,14 +346,14 @@ public class LEDSuiteApplication extends Application {
                         result = false;
                         break;
                     }
-                    logger.verbose(" > Timeout reached!", new LEDSuiteLogAreas.NETWORK());
+                    logger.verbose(" > Timeout reached!");
                 }
             }
 
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                logger.verbose(" > Connection loop was interrupted!", new LEDSuiteLogAreas.NETWORK());
+                logger.verbose(" > Connection loop was interrupted!");
                 result = false;
                 break;
             }
@@ -376,11 +363,11 @@ public class LEDSuiteApplication extends Application {
             retry = timeElapsed > Constants.UI.Intervals.RETRY_DELAY;
         }
         
-        logger.verbose(" > DONE", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > DONE");
 
-        logger.verbose(" > Updating UI to reflect changes...", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > Updating UI to reflect changes...");
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(false));
-        logger.verbose(" > DONE", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > DONE");
         
         connecting = false;
 
@@ -389,20 +376,20 @@ public class LEDSuiteApplication extends Application {
             return result;
         }
 
-        logger.verbose("Network connection timed out!", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose("Network connection timed out!");
 
         return false;
     }
 
     public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload) {
-        logger.verbose("File upload triggered. File: '" + filePath + "'; Autostart Animation: " + startAnimationAfterUpload + ";", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose("File upload triggered. File: '" + filePath + "'; Autostart Animation: " + startAnimationAfterUpload + ";");
         try {
             if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
                 window.uploadPageSelect();
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelling file upload because communication websocket is not connected!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -415,7 +402,7 @@ public class LEDSuiteApplication extends Application {
             URI uploadEndpointPath;
 
             try {
-                String baseAddress = WebsocketURI.getInstance().get();
+                String baseAddress = settings.mainSection.networkSettings.websocketURI;
                 if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
                 baseAddress = baseAddress + "upload";
                 uploadEndpointPath = new URI(baseAddress);
@@ -423,7 +410,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelled file upload because file upload websocket endpoint is unreachable!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -432,7 +419,7 @@ public class LEDSuiteApplication extends Application {
                 });
             }
 
-            logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
+            logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath());
 
             File fileToUpload;
 
@@ -442,7 +429,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -455,7 +442,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -474,7 +461,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelled file upload because file couldn't be loaded or checksum failed!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -485,7 +472,7 @@ public class LEDSuiteApplication extends Application {
                 throw new UploadAbortException(() -> {
                     notifyUser(
                             MessageData.builder()
-                                    .logger(message -> logger.warn(message, new LEDSuiteLogAreas.NETWORK()))
+                                    .logger(logger::warn)
                                     .message("Cancelled file upload because the specified file is too large!")
                                     .heading("Abort")
                                     .source("File Upload")
@@ -501,7 +488,6 @@ public class LEDSuiteApplication extends Application {
                     LEDSuiteApplication.handleError(
                             ErrorData.builder()
                                     .message(Translations.getText("Cancelled file upload because upload session id was null! This should be reported!"))
-                                    .logArea(new LEDSuiteLogAreas.NETWORK())
                                     .build()
                     );
                 });
@@ -560,12 +546,12 @@ public class LEDSuiteApplication extends Application {
     private static AlertDialog.@NotNull ResponseCallback getResponseCallback(AtomicReference<String> fileName, String uploadSessionID, String checksum, UpdateCallback<Boolean> uploadFinishCallback) {
         return response -> {
             try {
-                logger.info("File collision dialog response result: " + response, new LEDSuiteLogAreas.USER_INTERACTIONS());
+                logger.info("File collision dialog response result: " + response);
 
                 switch (response) {
-                    case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!", new LEDSuiteLogAreas.USER_INTERACTIONS()));
+                    case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!"));
                     case "rename" -> {
-                        logger.info("Rename selected.", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                        logger.info("Rename selected.");
                         var renameDialog = RenameDialog.create(fileName.get());
 
                         renameDialog.onResponse(renameResponse -> GLib.idleAddOnce(() -> {
@@ -637,12 +623,12 @@ public class LEDSuiteApplication extends Application {
      */
     public static void uploadFile(@NotNull File fileToUpload, boolean startAnimationAfterUpload, String uploadSessionID, URI uploadEndpointPath, String checksum) {
 
-        logger.info("Uploading file '" + fileToUpload.getAbsolutePath() + " to '" + uploadEndpointPath + "'!", new LEDSuiteLogAreas.NETWORK());
+        logger.info("Uploading file '" + fileToUpload.getAbsolutePath() + " to '" + uploadEndpointPath + "'!");
 
         String filePath = fileToUpload.getAbsolutePath();
 
         final long fileSize = fileToUpload.length();
-        final int packet_size = LEDSuiteSettingsBundle.PacketSize.getInstance().get();
+        final int packet_size = settings.mainSection.networkSettings.packetSizeBytes;
         final long startTime = System.currentTimeMillis();
 
         AtomicLong transferredSize = new AtomicLong(0);
@@ -658,11 +644,11 @@ public class LEDSuiteApplication extends Application {
                         .ready(true)
                         .sessionID(uploadSessionID)
                         .connectionNotifyCallback(() -> {
-                            logger.verbose("Connected to upload websocket endpoint at: " + uploadEndpointPath.getPath(), new LEDSuiteLogAreas.NETWORK());
-                            logger.verbose("Metadata:", new LEDSuiteLogAreas.NETWORK());
-                            logger.verbose(" > Upload session ID: " + uploadSessionID, new LEDSuiteLogAreas.NETWORK());
-                            logger.verbose(" > Filename: " + animationName, new LEDSuiteLogAreas.NETWORK());
-                            logger.verbose(" > Checksum: " + checksum, new LEDSuiteLogAreas.NETWORK());
+                            logger.verbose("Connected to upload websocket endpoint at: " + uploadEndpointPath.getPath());
+                            logger.verbose("Metadata:");
+                            logger.verbose(" > Upload session ID: " + uploadSessionID);
+                            logger.verbose(" > Filename: " + animationName);
+                            logger.verbose(" > Checksum: " + checksum);
                         })
                         .progressUpdateUpdateCallback(progressUpdate -> {
                             int transferredBytes = progressUpdate.data().array().length;
@@ -683,7 +669,7 @@ public class LEDSuiteApplication extends Application {
 
                             boolean isLastPacket = progressUpdate.lastPacket();
 
-                            logger.debug("Sent packet to server. [ID: " + speedMeasurementCount.get() + "; Size: " + transferredBytes + "; Last-Packet: " + isLastPacket + "]", new LEDSuiteLogAreas.NETWORK());
+                            logger.debug("Sent packet to server. [ID: " + speedMeasurementCount.get() + "; Size: " + transferredBytes + "; Last-Packet: " + isLastPacket + "]");
 
                             long now = System.currentTimeMillis();
                             long timeSinceLastStatsUpdate = now - lastUploadStatisticsUpdate.get();
@@ -705,12 +691,12 @@ public class LEDSuiteApplication extends Application {
                             if (isLastPacket) {
                                 long totalTimeElapsed = System.currentTimeMillis() - startTime;
 
-                                logger.verbose("File upload finished:", new LEDSuiteLogAreas.NETWORK());
-                                logger.verbose(" > File: " + animationName, new LEDSuiteLogAreas.NETWORK());
-                                logger.verbose(" > Transferred Bytes: " + transferredSize.get(), new LEDSuiteLogAreas.NETWORK());
-                                logger.verbose(" > Transferred Packets (<=" + packet_size / 1024 + "KB): " + speedMeasurementCount.get(), new LEDSuiteLogAreas.NETWORK());
-                                logger.verbose(" > Average Speed: " + StringFormatter.formatSpeed(speedAverage.get()), new LEDSuiteLogAreas.NETWORK());
-                                logger.verbose(" > Total time elapsed: " + StringFormatter.formatDuration(totalTimeElapsed), new LEDSuiteLogAreas.NETWORK());
+                                logger.verbose("File upload finished:");
+                                logger.verbose(" > File: " + animationName);
+                                logger.verbose(" > Transferred Bytes: " + transferredSize.get());
+                                logger.verbose(" > Transferred Packets (<=" + packet_size / 1024 + "KB): " + speedMeasurementCount.get());
+                                logger.verbose(" > Average Speed: " + StringFormatter.formatSpeed(speedAverage.get()));
+                                logger.verbose(" > Total time elapsed: " + StringFormatter.formatDuration(totalTimeElapsed));
 
                                 finished.set(true);
                             }
@@ -718,7 +704,7 @@ public class LEDSuiteApplication extends Application {
                         .build(), uploadEndpointPath
         );
 
-        logger.debug("Splitting file into chunks:", new LEDSuiteLogAreas.NETWORK());
+        logger.debug("Splitting file into chunks:");
         try (FileInputStream fis = new FileInputStream(filePath)) {
             byte[] buffer = new byte[packet_size];
             int bytesRead;
@@ -746,7 +732,7 @@ public class LEDSuiteApplication extends Application {
                 cnt++;
 
                 logger.debug("Enqueueing BinaryPacket [ID: " + cnt + "; isLast: " + isLastChunk +
-                        "; Data Hash: " + Arrays.hashCode(chunk) + "]", new LEDSuiteLogAreas.NETWORK());
+                        "; Data Hash: " + Arrays.hashCode(chunk) + "]");
 
                 // Send the chunk with the isLast flag
                 uploadEndpoint.enqueueBinaryMessage(
@@ -760,9 +746,9 @@ public class LEDSuiteApplication extends Application {
                 isLastChunk = false;
             }
 
-            logger.verbose("Upload preparation complete!", new LEDSuiteLogAreas.NETWORK());
+            logger.verbose("Upload preparation complete!");
         } catch (IOException e) {
-            logger.warn("Error during upload preparation: " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
+            logger.warn("Error during upload preparation: " + e.getMessage());
             window.uploadCompleted(false);
             return;
         }
@@ -775,18 +761,18 @@ public class LEDSuiteApplication extends Application {
                         Thread.onSpinWait();
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
-                        logger.warn("Upload finish callback was interrupted!", new LEDSuiteLogAreas.NETWORK());
+                        logger.warn("Upload finish callback was interrupted!");
                         window.uploadCompleted(false);
                         cancel();
                     }
                 }
 
-                logger.info("New animation was successfully created from upload file '" + animationName + "'!", new LEDSuiteLogAreas.NETWORK());
+                logger.info("New animation was successfully created from upload file '" + animationName + "'!");
 
-                logger.verbose("Updating UI to reflect changes...", new LEDSuiteLogAreas.UI());
+                logger.verbose("Updating UI to reflect changes...");
                 window.uploadCompleted(true);
                 window.uploadFinished();
-                logger.verbose(" > DONE", new LEDSuiteLogAreas.UI());
+                logger.verbose(" > DONE");
 
                 if (startAnimationAfterUpload) {
                     webSocketCommunication.enqueueMessage(
@@ -817,7 +803,7 @@ public class LEDSuiteApplication extends Application {
                     .build()
                     .present(parent);
         }
-        if (errorData.isLog() && message != null) logger.error(errorData.getMessage(), errorData.getLogArea());
+        if (errorData.isLog() && message != null) logger.error(errorData.getMessage());
     }
 
     /**
@@ -843,7 +829,7 @@ public class LEDSuiteApplication extends Application {
     public void exit() {
         logger.info("Application: EXIT");
         logger.info("Goodbye!");
-        configMgr.save();
+        SettingsManager.getInstance().save();
         System.exit(0);
     }
 
@@ -853,26 +839,26 @@ public class LEDSuiteApplication extends Application {
      */
     @Override
     public void activate() {
-        logger.verbose("Initializing application window...", new LEDSuiteLogAreas.UI());
-        logger.verbose(" > create", new LEDSuiteLogAreas.UI());
+        logger.verbose("Initializing application window...");
+        logger.verbose(" > create");
         Window win = this.getActiveWindow();
         if (win == null)
             win = LEDSuiteWindow.create(this);
         window = (LEDSuiteWindow) win;
-        logger.verbose(" > present", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > present");
         win.present();
-        logger.verbose(" > DONE", new LEDSuiteLogAreas.UI());
+        logger.verbose(" > DONE");
 
-        logger.verbose("Initializing websocket connection (async)...", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose("Initializing websocket connection (async)...");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-                logger.verbose("Initializing websocket connection (sync)...", new LEDSuiteLogAreas.NETWORK());
+                logger.verbose("Initializing websocket connection (sync)...");
                 startCommunicationSocket();
-                logger.verbose("Initialized websocket connection!", new LEDSuiteLogAreas.NETWORK());
-                logger.verbose(" > DONE (sync)", new LEDSuiteLogAreas.NETWORK());
+                logger.verbose("Initialized websocket connection!");
+                logger.verbose(" > DONE (sync)");
             }
         }.runTaskAsynchronously();
-        logger.verbose(" > DONE (not sync)", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > DONE (not sync)");
     }
 }

@@ -4,8 +4,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
 import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Serializable;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -24,6 +23,8 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  * @since 1.0.0
  */
 public interface Packet extends Serializable<String, Packet>, AutoRegistrableItem {
+
+    Logger getLogger();
 
     /**
      * Returns the type of the packet item (e.g., request, reply, error).
@@ -103,7 +104,7 @@ public interface Packet extends Serializable<String, Packet>, AutoRegistrableIte
      * @since 1.0.0
      */
     default void handlePacket() {
-        LEDSuiteApplication.getLogger().warn("Implementation for handling packet type '" + getIdentifier() + "' wasn't found!", new LEDSuiteLogAreas.COMMUNICATION());
-        LEDSuiteApplication.getLogger().debug("Using default implementation to display packet:\n " + serialize(), new LEDSuiteLogAreas.COMMUNICATION());
+        getLogger().warn("Implementation for handling packet type '" + getIdentifier() + "' wasn't found!");
+        getLogger().debug("Using default implementation to display packet:\n " + serialize());
     }
 }

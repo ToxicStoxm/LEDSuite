@@ -1,8 +1,0 @@
-LEDSuite:
-  UI:
-    FilePicker-Initial-Folder: ""
-  Network:
-    Websocket-URI: "wss://www.yourWebsocket.com/yourWebsocketEndpoint/"
-    Packet-Size-Bytes: 131072
-  Debugging:
-    Enable-Settings-Logging: false

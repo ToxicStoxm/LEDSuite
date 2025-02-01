@@ -7,6 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.MenuReplyPacket;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.*;
 
 /**
@@ -45,6 +46,13 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class MenuRequestPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * The name of the animation file for which the menu is being requested.

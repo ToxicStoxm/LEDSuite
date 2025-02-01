@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.time;
 
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -14,6 +13,8 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 public class CooldownManager {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     private record CooldownAction(Action action, long cooldown, long lastCall, String actionGroup) {}
 
@@ -76,7 +77,7 @@ public class CooldownManager {
                 if (cooldownAction.action != null) {
                     cooldownAction.action.run();
                 } else {
-                    LEDSuiteApplication.getLogger().debug("Action for '" + name + "' was null!", new LEDSuiteLogAreas.GENERAL());
+                    logger.debug("Action for '" + name + "' was null!");
                 }
                 actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis(), null));
                 return true;
@@ -98,7 +99,7 @@ public class CooldownManager {
                 if (cooldownAction.action != null) {
                     cooldownAction.action.run();
                 } else {
-                    LEDSuiteApplication.getLogger().debug("Action (Group = " + cooldownActionGroupName + ") for '" + name + "' was null!", new LEDSuiteLogAreas.GENERAL());
+                    logger.debug("Action (Group = " + cooldownActionGroupName + ") for '" + name + "' was null!");
                 }
                 actions.put(name, cooldownAction);
                 actionGroups.put(cooldownActionGroupName, new CooldownActionGroup(actionGroup.cooldown, System.currentTimeMillis()));

@@ -8,6 +8,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadReplyPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.upload_reply.UploadSuccessReplyPacket;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.*;
 
 /**
@@ -57,6 +58,13 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class FileUploadRequestPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * The name of the file being uploaded.

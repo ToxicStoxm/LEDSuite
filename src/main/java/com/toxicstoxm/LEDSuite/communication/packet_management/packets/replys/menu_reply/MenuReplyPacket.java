@@ -10,11 +10,11 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -36,6 +36,13 @@ import org.gnome.glib.GLib;
 @NoArgsConstructor
 @Setter
 public class MenuReplyPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * A serialized YAML string representing the animation menu.
@@ -99,7 +106,7 @@ public class MenuReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
         if (lock) {
-            LEDSuiteApplication.getLogger().warn("Voiding menu reply because another one is currently being handled!", new LEDSuiteLogAreas.COMMUNICATION());
+            logger.warn("Voiding menu reply because another one is currently being handled!");
             return;
         }
         lock = true;
@@ -121,18 +128,18 @@ public class MenuReplyPacket extends CommunicationPacket {
                         AnimationMenu menu = animationMenuManager.deserializeAnimationMenu(menuYAML);
                         GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationMenu(menu));
                     } catch (DeserializationException e) {
-                        LEDSuiteApplication.getLogger().warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
+                        logger.warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
                         errorCode = e.getErrorCode();
                         errorMessage = e.getMessage();
-                        e.printStackTrace(message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
+                        e.printStackTrace(message -> logger.stacktrace(message));
                     }
                 } else {
-                    LEDSuiteApplication.getLogger().warn("Couldn't handle menu reply packet because animation menu manager is not available!", new LEDSuiteLogAreas.COMMUNICATION());
+                    logger.warn("Couldn't handle menu reply packet because animation menu manager is not available!");
                     errorCode = ErrorCode.GenericClientError;
                 }
 
                 if (errorCode == null) {
-                    LEDSuiteApplication.getLogger().debug("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!", new LEDSuiteLogAreas.YAML());
+                    logger.debug("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!");
                 } else {
                     String fileName = null;
 
@@ -143,8 +150,8 @@ public class MenuReplyPacket extends CommunicationPacket {
                             fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
                         }
                     } catch (InvalidConfigurationException ex) {
-                        LEDSuiteApplication.getLogger().warn("Failed to get file name for error reporting menu deserialization failure!", new LEDSuiteLogAreas.COMMUNICATION());
-                        ExceptionTools.printStackTrace(ex, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
+                        logger.warn("Failed to get file name for error reporting menu deserialization failure!");
+                        ExceptionTools.printStackTrace(ex, message -> logger.stacktrace(message));
                     }
 
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

@@ -11,6 +11,7 @@ import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialogResponse;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ServerMessageDialog;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.*;
 import org.gnome.adw.ResponseAppearance;
@@ -29,6 +30,13 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 public class ServerMessagePacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     private String message;
     private String heading;

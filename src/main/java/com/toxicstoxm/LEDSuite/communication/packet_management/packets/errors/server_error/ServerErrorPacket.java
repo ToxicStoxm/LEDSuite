@@ -8,9 +8,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
 import lombok.*;
@@ -27,6 +27,13 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class ServerErrorPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     private String source;        // guaranteed
     private ErrorCode code;       // guaranteed
@@ -82,11 +89,10 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        LEDSuiteApplication.getLogger().warn("Server Error: " +
+        logger.warn("Server Error: " +
         "Source: " + source + ", " +
                 "Code: " + code + ", " +
-                "Severity: " + severity,
-                new LEDSuiteLogAreas.COMMUNICATION());
+                "Severity: " + severity);
 
         LEDSuiteApplication.handleError(
                 ErrorData.builder()

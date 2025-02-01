@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuReference;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -33,6 +33,8 @@ import java.lang.foreign.MemorySegment;
  */
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(AnimationRow.class);
@@ -168,9 +170,8 @@ public class AnimationRow extends ListBoxRow {
         simpleAction.onActivate(_ -> {
             // Check if the animation is on cooldown.
             if (!CooldownManager.call(String.valueOf(animationID))) {
-                LEDSuiteApplication.getLogger().info(
-                        "The animation row " + animationLabel + " (" + animationID + ") is on cooldown!",
-                        new LEDSuiteLogAreas.USER_INTERACTIONS()
+                logger.info(
+                        "The animation row " + animationLabel + " (" + animationID + ") is on cooldown!"
                 );
             } else {
                 // If the cooldown has passed, update the selection and request the menu.
@@ -179,9 +180,8 @@ public class AnimationRow extends ListBoxRow {
                     window.setSelectedAnimation(animationID);  // Select the current animation
                 });
 
-                LEDSuiteApplication.getLogger().verbose(
-                        "Requesting menu for animation '" + animationID + "'",
-                        new LEDSuiteLogAreas.USER_INTERACTIONS()
+                logger.verbose(
+                        "Requesting menu for animation '" + animationID + "'"
                 );
 
                 LEDSuiteApplication.getWindow().changeMainContent(

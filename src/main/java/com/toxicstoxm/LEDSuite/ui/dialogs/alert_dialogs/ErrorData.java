@@ -1,8 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJL.areas.LogArea;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,10 +17,10 @@ public class ErrorData {
     private String heading;
 
     @Builder.Default
-    private LogArea logArea = new LEDSuiteLogAreas.GENERAL();
+    private boolean log = true;
 
     @Builder.Default
-    private boolean log = true;
+    private Logger logger = Logger.autoConfigureLogger();
 
     @Builder.Default
     private boolean enableReporting = true;

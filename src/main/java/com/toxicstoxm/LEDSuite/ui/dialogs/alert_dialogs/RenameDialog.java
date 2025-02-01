@@ -1,10 +1,9 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -35,6 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @GtkTemplate(name = "RenameDialog", ui = "/com/toxicstoxm/LEDSuite/RenameDialog.ui")
 public class RenameDialog extends AlertDialog {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(RenameDialog.class);
@@ -112,7 +113,7 @@ public class RenameDialog extends AlertDialog {
     protected void response(@NotNull String response) {
         nameCheckerTask.cancel();
         if (response.equals("rename") && newName.equals(currentName)) {
-            LEDSuiteApplication.getLogger().warn("New name equals current name after rename response!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.warn("New name equals current name after rename response!");
             var dialog = create(currentName);
             dialog.onResponse(responseCallback);
             dialog.present(getParent());

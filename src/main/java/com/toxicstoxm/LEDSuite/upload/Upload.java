@@ -11,7 +11,7 @@ public interface Upload {
     /**
      * Callback method for handling server responses regarding upload permission.
      *
-     * @param uploadPermitted a boolean indicating whether the upload is permitted by the server
+     * @param uploadPermitted a boolean indicating whether the server permits the upload
      */
     void onServerResponse(boolean uploadPermitted);
 }

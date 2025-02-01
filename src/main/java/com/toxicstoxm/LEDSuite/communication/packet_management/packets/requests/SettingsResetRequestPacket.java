@@ -7,6 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.SettingsReplyPacket;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SettingsResetRequestPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * Gets the packet type. This is used to identify the overall category of the packet (e.g., "REQUEST").

@@ -6,11 +6,10 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -31,6 +30,8 @@ import static com.toxicstoxm.LEDSuite.tools.YamlTools.ensureKeyExists;
  * @see #deserializeAnimationMenu(String)
  */
 public class AnimationMenuManager extends Registrable<Widget> {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     private final String widgetClassPath;
 
@@ -61,7 +62,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         try {
             yaml.loadFromString(menuYAML);
         } catch (InvalidConfigurationException e) {
-            ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.YAML()));
+            ExceptionTools.printStackTrace(e, message -> logger.stacktrace(message));
             throw new DeserializationException("Failed to deserialize YAML from string!", ErrorCode.FailedToParseYAML);
         }
 
@@ -149,7 +150,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         if (topLevelWidgetType == null)
             throw new DeserializationException("Invalid widget type 'null' for top level group " + menuGroupKey + "'!", ErrorCode.WidgetMissingType);
         if (!topLevelWidgetType.equals(WidgetType.GROUP.getName())) {
-            LEDSuiteApplication.getLogger().warn("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!");
+            logger.warn("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!");
             throw new DeserializationException("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!", ErrorCode.TopLevelWidgetIsNotGroup);
         }
 

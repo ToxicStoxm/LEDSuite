@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,6 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 1.0.0
  */
 public class LEDSuiteScheduler implements TaskScheduler {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     /**
      * Counter for IDs. Order doesn't matter, only uniqueness.
@@ -353,7 +356,7 @@ public class LEDSuiteScheduler implements TaskScheduler {
                 try {
                     task.run();
                 } catch (final Throwable throwable) {
-                    LEDSuiteApplication.getLogger().warn(String.format(
+                    logger.warn(String.format(
                             "Task #%s for %s generated an exception",
                             task.getTaskId(),
                             LEDSuiteApplication.class.getName()));

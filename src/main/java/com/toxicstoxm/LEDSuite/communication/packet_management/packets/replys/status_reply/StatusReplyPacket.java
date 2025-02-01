@@ -8,9 +8,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Communica
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.*;
 
@@ -32,6 +32,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Setter
 public class StatusReplyPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * Represents an animation with details like id, label, icon, and pauseable state.
@@ -209,7 +216,7 @@ public class StatusReplyPacket extends CommunicationPacket {
             animations = new ArrayList<>();
         }
 
-        LEDSuiteApplication.getLogger().verbose("Updated status using provided status updater!", new LEDSuiteLogAreas.COMMUNICATION());
+        logger.verbose("Updated status using provided status updater!");
 
         LEDSuiteApplication.getWindow().updateAnimations(animations);
         LEDSuiteApplication.getWindow().setAnimationControlButtonsState(fileState, selectedFile);

@@ -7,10 +7,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import lombok.Getter;
@@ -26,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 public abstract class AnimationMenuWidget<T extends Widget> implements com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.Widget {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     protected String widgetID;
 
@@ -50,7 +52,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
         LEDSuiteApplication.handleError(
                 ErrorData.builder()
                         .message(Translations.getText("Serialization of animation menu widgets is not supported!"))
-                        .logArea(new LEDSuiteLogAreas.UI())
+                        .logger(logger)
                         .build()
         );
         yaml.set(Constants.Communication.YAML.Keys.Reply.MenuReply.TYPE, getWidgetID());
@@ -71,7 +73,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
                             .build().serialize()
             );
         } catch (NullPointerException e) {
-            LEDSuiteApplication.getLogger().warn(e.getMessage());
+            logger.warn(e.getMessage());
         }
     }
 
@@ -84,7 +86,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
                             .build().serialize()
             );
         } catch (NullPointerException e) {
-            LEDSuiteApplication.getLogger().warn(e.getMessage());
+            logger.warn(e.getMessage());
         }
     }
 

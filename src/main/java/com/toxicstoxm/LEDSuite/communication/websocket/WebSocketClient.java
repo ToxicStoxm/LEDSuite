@@ -2,11 +2,11 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageData;
+import com.toxicstoxm.YAJL.Logger;
 import jakarta.websocket.Session;
 import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 public class WebSocketClient {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     private final LinkedBlockingDeque<String> sendQueue = new LinkedBlockingDeque<>();
     private final LinkedBlockingDeque<BinaryPacket> sendQueueBinary = new LinkedBlockingDeque<>();
@@ -82,7 +84,7 @@ public class WebSocketClient {
      * @param path The URI of the server to connect to.
      */
     private void run(WebSocketClientEndpoint clientEndpoint, URI path) {
-        LEDSuiteApplication.getLogger().verbose(" > Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path, new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path);
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -98,8 +100,8 @@ public class WebSocketClient {
                         textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
-                    LEDSuiteApplication.getLogger().verbose(" > " + e.getMessage(), new LEDSuiteLogAreas.NETWORK());
-                    ExceptionTools.printStackTrace(e, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.COMMUNICATION()));
+                    logger.verbose(" > " + e.getMessage());
+                    ExceptionTools.printStackTrace(e, logger::stacktrace);
                 } finally {
                     if (!cancelled && !LEDSuiteApplication.isConnecting()) {
                         LEDSuiteApplication.notifyUser(
@@ -170,7 +172,7 @@ public class WebSocketClient {
             );
 
             if (isLast) {
-                LEDSuiteApplication.getLogger().verbose(" > Last packet was successfully transferred to the server. Closing session: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+                logger.verbose(" > Last packet was successfully transferred to the server. Closing session: " + session.getId());
                 shutdown();
             }
         }
@@ -180,7 +182,7 @@ public class WebSocketClient {
      * Shuts down the WebSocket client, closing the connection and stopping further communication.
      */
     public void shutdown() {
-        LEDSuiteApplication.getLogger().verbose(" > " + StringFormatter.getClassName(getClass()) + ": Shutdown triggered!", new LEDSuiteLogAreas.NETWORK());
+        logger.verbose(" > " + StringFormatter.getClassName(getClass()) + ": Shutdown triggered!");
         cancelled = true;
     }
 

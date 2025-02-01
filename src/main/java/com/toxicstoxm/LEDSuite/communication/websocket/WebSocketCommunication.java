@@ -2,11 +2,11 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
+import com.toxicstoxm.YAJL.Logger;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     /**
      * Specifies that this WebSocket endpoint operates in text mode rather than binary mode.
@@ -55,7 +57,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        LEDSuiteApplication.getLogger().info("WebSocket connection opened with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+        logger.info("WebSocket connection opened with session ID: " + session.getId());
 
         // Send a status request to the server
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
@@ -78,18 +80,18 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
-        LEDSuiteApplication.getLogger().verbose("----------------------< IN >----------------------" + "\n[Session] " + session.getId(), new LEDSuiteLogAreas.COMMUNICATION());
+        logger.verbose("----------------------< IN >----------------------" + "\n[Session] " + session.getId());
         if (message.length() < 10000) {
             new LEDSuiteRunnable() {
                 @Override
                 public void run() {
-                    LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
-                    LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
+                    logger.verbose(message);
+                    logger.verbose("--------------------------------------------------");
                 }
             }.runTaskAsynchronously();
         } else {
-            LEDSuiteApplication.getLogger().verbose(message, new LEDSuiteLogAreas.COMMUNICATION());
-            LEDSuiteApplication.getLogger().verbose("--------------------------------------------------", new LEDSuiteLogAreas.COMMUNICATION());
+            logger.verbose(message);
+            logger.verbose("--------------------------------------------------");
         }
 
         // Deserialize the incoming message into a CommunicationPacket
@@ -109,7 +111,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnClose
     public void onClose(@NotNull Session session) {
-        LEDSuiteApplication.getLogger().info("WebSocket connection closed with session ID: " + session.getId(), new LEDSuiteLogAreas.NETWORK());
+        logger.info("WebSocket connection closed with session ID: " + session.getId());
 
         // Update the UI to reflect the server state
         LEDSuiteApplication.getWindow().setServerState(ServerState.DISCONNECTED);
@@ -129,6 +131,6 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
 
-        ExceptionTools.printStackTrace(throwable, message -> LEDSuiteApplication.getLogger().stacktrace(message, new LEDSuiteLogAreas.NETWORK()));
+        ExceptionTools.printStackTrace(throwable, logger::stacktrace);
     }
 }

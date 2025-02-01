@@ -4,12 +4,11 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -36,6 +35,8 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "SettingsDialog", ui = "/com/toxicstoxm/LEDSuite/SettingsDialog.ui")
 public class SettingsDialog extends PreferencesDialog implements SettingsDialogEndpoint {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(SettingsDialog.class);
@@ -144,9 +145,9 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         }, 500, true);
 
         markServerSettingsUnavailable();
-        serverAddress.setText(LEDSuiteSettingsBundle.WebsocketURI.getInstance().get());
+        serverAddress.setText(LEDSuiteApplication.getSettings().mainSection.networkSettings.websocketURI);
         serverAddress.setShowApplyButton(true);
-        serverAddress.onApply(() -> LEDSuiteSettingsBundle.WebsocketURI.getInstance().set(serverAddress.getText()));
+        serverAddress.onApply(() -> LEDSuiteApplication.getSettings().mainSection.networkSettings.websocketURI = serverAddress.getText());
         serverAddress.setSensitive(false);
 
         updateServerState();
@@ -266,12 +267,12 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                     try {
                         Thread.sleep(Constants.UI.Intervals.MINIMUM_DELAY);
                     } catch (InterruptedException e) {
-                        LEDSuiteApplication.getLogger().warn("Minimum delay sleeper was interrupted!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+                        logger.warn("Minimum delay sleeper was interrupted!");
                     }
 
                     LEDSuiteApplication.getWebSocketCommunication().shutdown();
                 } else {
-                    LEDSuiteApplication.getLogger().info("Skipping disconnect attempt because communication websocket is already disconnected!", new LEDSuiteLogAreas.NETWORK());
+                    logger.info("Skipping disconnect attempt because communication websocket is already disconnected!");
                 }
             }
         }.runTaskLaterAsynchronously(100);
@@ -289,7 +290,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         SettingsDialog.this.setServerStateDisconnected();
                     }
                 } else {
-                    LEDSuiteApplication.getLogger().info("Skipping connect attempt because communication websocket is already connected!", new LEDSuiteLogAreas.NETWORK());
+                    logger.info("Skipping connect attempt because communication websocket is already connected!");
                     SettingsDialog.this.setServerStateConnected();
                     requestSettings();
                 }
@@ -300,7 +301,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     @GtkCallback(name = "settings_server_cnct_button_clicked")
     public void serverCnctButtonClicked() {
         if (!CooldownManager.call("serverConnectivityButtonCb")) {
-            LEDSuiteApplication.getLogger().verbose("Connectivity button on cooldown!", new LEDSuiteLogAreas.USER_INTERACTIONS());
+            logger.verbose("Connectivity button on cooldown!");
         }
     }
 

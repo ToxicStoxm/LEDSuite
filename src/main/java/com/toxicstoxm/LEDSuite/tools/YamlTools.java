@@ -2,8 +2,7 @@ package com.toxicstoxm.LEDSuite.tools;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.gdk.Paintable;
@@ -24,6 +23,8 @@ import java.util.Base64;
  * @since 1.0.0
  */
 public class YamlTools {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     /**
      * Checks if the specified key exists in the given configuration section.
@@ -155,8 +156,8 @@ public class YamlTools {
             try {
                 finalImage = Image.fromPaintable(Texture.fromBytes(Bytes.static_(decodedBytes)));
             } catch (GErrorException e) {
-                LEDSuiteApplication.getLogger().warn("Failed to decode icon from base64! Error message: '" + e.getMessage() + "'!", new LEDSuiteLogAreas.YAML());
-                LEDSuiteApplication.getLogger().debug("Base64: " + iconString, new LEDSuiteLogAreas.YAML());
+                logger.warn("Failed to decode icon from base64! Error message: '" + e.getMessage() + "'!");
+                logger.debug("Base64: " + iconString);
             }
         }
 

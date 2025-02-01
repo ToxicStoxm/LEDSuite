@@ -7,8 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.FileUploadRequestPacket;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.*;
 
 /**
@@ -28,6 +27,13 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class UploadSuccessReplyPacket extends CommunicationPacket {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     /**
      * The name of the successfully uploaded file.
@@ -90,7 +96,7 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
      */
     @Override
     public void handlePacket() {
-        LEDSuiteApplication.getLogger().info("File upload completed successfully. Server confirmation received.", new LEDSuiteLogAreas.COMMUNICATION());
-        LEDSuiteApplication.getLogger().info(" > Filename: " + fileName, new LEDSuiteLogAreas.COMMUNICATION());
+        logger.info("File upload completed successfully. Server confirmation received.");
+        logger.info(" > Filename: " + fileName);
     }
 }

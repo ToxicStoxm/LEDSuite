@@ -2,8 +2,7 @@ package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogAreas;
-import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PacketReceivedHandler {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     /**
      * Handles an incoming communication packet by calling the {@link Packet#handlePacket()} method.
      * This method is responsible for processing the packet once it's received,
@@ -45,7 +46,7 @@ public class PacketReceivedHandler {
      */
     public void handleIncomingPacket(@NotNull CommunicationPacket packet) {
         // Log the packet handling attempt for debugging
-        LEDSuiteApplication.getLogger().debug("Handling communication packet " + packet.getIdentifier() + "!", new LEDSuiteLogAreas.COMMUNICATION());
+        logger.debug("Handling communication packet " + packet.getIdentifier() + "!");
 
         // Delegate the actual handling of the packet to the packet's handlePacket method
         packet.handlePacket();

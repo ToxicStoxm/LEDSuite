@@ -1,78 +1,49 @@
 package com.toxicstoxm.LEDSuite.settings;
 
-import com.toxicstoxm.YAJSI.api.settings.Setting;
-import com.toxicstoxm.YAJSI.api.settings.SettingsBundle;
-import com.toxicstoxm.YAJSI.api.settings.YAJSISetting;
+import com.toxicstoxm.YAJSI.api.settings.YAMLConfiguration;
 import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Settings bundle for LEDSuite using YAJSI framework.
  * This class provides access to application-specific settings, mapped to YAML configuration paths.
  * @since 1.0.0
- * @see YAJSISetting
- * @see SettingsBundle
  */
-public class LEDSuiteSettingsBundle implements SettingsBundle {
+@YAMLConfiguration(name = "config.yaml")
+public class LEDSuiteSettingsBundle {
 
-    /**
-     * Setting to enable or disable logging of settings.
-     */
-    @YAMLSetting(path = "LEDSuite.Debugging.Enable-Settings-Logging")
-    public static class EnableSettingsLogging extends YAJSISetting<Boolean> {
+    public LEDSuiteSettingsBundle() {
 
-        @Getter
-        private static EnableSettingsLogging instance;
-
-        public EnableSettingsLogging(Setting<Object> setting) {
-            super(setting, Boolean.class);
-            instance = this;
-        }
     }
 
-    /**
-     * Setting for the WebSocket URI used in LEDSuite network communication.
-     */
-    @YAMLSetting(path = "LEDSuite.Network.Websocket-URI")
-    public static class WebsocketURI extends YAJSISetting<String> {
+    @YAMLSetting(name = "LEDSuite")
+    public DefaultSettings mainSection = new DefaultSettings();
 
-        @Getter
-        private static WebsocketURI instance;
+    public static class DefaultSettings {
 
-        public WebsocketURI(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
+        @YAMLSetting(name = "UI")
+        public DefaultUISettings uiSettings = new DefaultUISettings();
+
+        @YAMLSetting(name = "Network")
+        public DefaultNetworkSettings networkSettings = new DefaultNetworkSettings();
+
+        @YAMLSetting(name = "Debugging")
+        public DefaultDebuggingSettings debuggingSettings = new DefaultDebuggingSettings();
+
+        public static class DefaultUISettings {
+            @YAMLSetting(name = "FilePicker-Initial-Folder")
+            public String filePickerInitialFolder = "";
         }
-    }
 
-    /**
-     * Setting for the initial folder path used by the file picker in the UI.
-     */
-    @YAMLSetting(path = "LEDSuite.UI.FilePicker-Initial-Folder")
-    public static class FilePickerInitialFolder extends YAJSISetting<String> {
-
-        @Getter
-        private static FilePickerInitialFolder instance;
-
-        public FilePickerInitialFolder(Setting<Object> setting) {
-            super(setting, String.class);
-            instance = this;
+        public static class DefaultNetworkSettings {
+            @YAMLSetting(name = "Websocket-URI")
+            public String websocketURI = "wss://www.yourWebsocket.com/yourWebsocketEndpoint/";
+            @YAMLSetting(name = "Packet-Size-Bytes")
+            public int packetSizeBytes = 131072;
         }
-    }
 
-    /**
-     * Setting for the packet size in bytes used for network communication.
-     */
-    @YAMLSetting(path = "LEDSuite.Network.Packet-Size-Bytes")
-    public static class PacketSize extends YAJSISetting<Integer> {
-
-        @Getter
-        private static PacketSize instance;
-
-        public PacketSize(@NotNull Setting<Object> setting) {
-            super(setting, Integer.class);
-            instance = this;
+        public static class DefaultDebuggingSettings {
+            @YAMLSetting(name = "Enable-Settings-Logging")
+            public boolean enableSettingsDebugLogging = false;
         }
     }
 }

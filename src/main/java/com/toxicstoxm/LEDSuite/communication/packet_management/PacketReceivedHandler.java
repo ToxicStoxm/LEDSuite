@@ -46,7 +46,7 @@ public class PacketReceivedHandler {
      */
     public void handleIncomingPacket(@NotNull CommunicationPacket packet) {
         // Log the packet handling attempt for debugging
-        logger.debug("Handling communication packet " + packet.getIdentifier() + "!");
+        logger.debug("Handling communication packet {}!", packet.getIdentifier());
 
         // Delegate the actual handling of the packet to the packet's handlePacket method
         packet.handlePacket();

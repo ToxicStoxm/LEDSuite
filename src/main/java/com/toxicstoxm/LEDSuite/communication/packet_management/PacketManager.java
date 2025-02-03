@@ -66,7 +66,7 @@ public class PacketManager extends Registrable<Packet> {
 
         // Validate if the packet type exists in the registered packets
         if (!isRegistered(packetIdentifier)) {
-            logger.info("Error: Packet type not registered: " + packetIdentifier);
+            logger.info("Error: Packet type not registered: {}", packetIdentifier);
             return null;
         }
 

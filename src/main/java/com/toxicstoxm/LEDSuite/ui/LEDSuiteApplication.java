@@ -284,7 +284,7 @@ public class LEDSuiteApplication extends Application {
         URI serverAddress;
         try {
             String baseAddress = settings.mainSection.networkSettings.websocketURI;
-            logger.debug("Provided server address: " + baseAddress);
+            logger.debug("Provided server address: {}", baseAddress);
             if (!baseAddress.endsWith("/")) baseAddress = baseAddress + "/";
             baseAddress = baseAddress + "communication";
             serverAddress = new URI(baseAddress);
@@ -293,7 +293,7 @@ public class LEDSuiteApplication extends Application {
         }
         logger.verbose(" > > DONE");
 
-        logger.debug("Final server address: " + serverAddress);
+        logger.debug("Final server address: {}", serverAddress);
 
         connecting = true;
         connectionAttempt = System.currentTimeMillis();
@@ -372,7 +372,7 @@ public class LEDSuiteApplication extends Application {
         connecting = false;
 
         if (result != null) {
-            logger.verbose("Connection: " + (result ? " success" : " failed"));
+            logger.verbose("Connection: {}", (result ? " success" : " failed"));
             return result;
         }
 
@@ -382,7 +382,7 @@ public class LEDSuiteApplication extends Application {
     }
 
     public static void triggerFileUpload(String filePath, boolean startAnimationAfterUpload) {
-        logger.verbose("File upload triggered. File: '" + filePath + "'; Autostart Animation: " + startAnimationAfterUpload + ";");
+        logger.verbose("File upload triggered. File: '{}'; Autostart Animation: {};", filePath, startAnimationAfterUpload);
         try {
             if (webSocketCommunication == null || !webSocketCommunication.isConnected()) {
                 window.uploadPageSelect();
@@ -546,7 +546,7 @@ public class LEDSuiteApplication extends Application {
     private static AlertDialog.@NotNull ResponseCallback getResponseCallback(AtomicReference<String> fileName, String uploadSessionID, String checksum, UpdateCallback<Boolean> uploadFinishCallback) {
         return response -> {
             try {
-                logger.info("File collision dialog response result: " + response);
+                logger.info("File collision dialog response result: {}", response);
 
                 switch (response) {
                     case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!"));
@@ -623,7 +623,7 @@ public class LEDSuiteApplication extends Application {
      */
     public static void uploadFile(@NotNull File fileToUpload, boolean startAnimationAfterUpload, String uploadSessionID, URI uploadEndpointPath, String checksum) {
 
-        logger.info("Uploading file '" + fileToUpload.getAbsolutePath() + " to '" + uploadEndpointPath + "'!");
+        logger.info("Uploading file '{} to '{}'!", fileToUpload.getAbsolutePath(), uploadEndpointPath);
 
         String filePath = fileToUpload.getAbsolutePath();
 
@@ -644,11 +644,11 @@ public class LEDSuiteApplication extends Application {
                         .ready(true)
                         .sessionID(uploadSessionID)
                         .connectionNotifyCallback(() -> {
-                            logger.verbose("Connected to upload websocket endpoint at: " + uploadEndpointPath.getPath());
+                            logger.verbose("Connected to upload websocket endpoint at: {}", uploadEndpointPath.getPath());
                             logger.verbose("Metadata:");
-                            logger.verbose(" > Upload session ID: " + uploadSessionID);
-                            logger.verbose(" > Filename: " + animationName);
-                            logger.verbose(" > Checksum: " + checksum);
+                            logger.verbose(" > Upload session ID: {}", uploadSessionID);
+                            logger.verbose(" > Filename: {}", animationName);
+                            logger.verbose(" > Checksum: {}", checksum);
                         })
                         .progressUpdateUpdateCallback(progressUpdate -> {
                             int transferredBytes = progressUpdate.data().array().length;
@@ -669,7 +669,7 @@ public class LEDSuiteApplication extends Application {
 
                             boolean isLastPacket = progressUpdate.lastPacket();
 
-                            logger.debug("Sent packet to server. [ID: " + speedMeasurementCount.get() + "; Size: " + transferredBytes + "; Last-Packet: " + isLastPacket + "]");
+                            logger.debug("Sent packet to server. [ID: {}; Size: {}; Last-Packet: {}]", speedMeasurementCount.get(), transferredBytes, isLastPacket);
 
                             long now = System.currentTimeMillis();
                             long timeSinceLastStatsUpdate = now - lastUploadStatisticsUpdate.get();
@@ -692,11 +692,11 @@ public class LEDSuiteApplication extends Application {
                                 long totalTimeElapsed = System.currentTimeMillis() - startTime;
 
                                 logger.verbose("File upload finished:");
-                                logger.verbose(" > File: " + animationName);
-                                logger.verbose(" > Transferred Bytes: " + transferredSize.get());
-                                logger.verbose(" > Transferred Packets (<=" + packet_size / 1024 + "KB): " + speedMeasurementCount.get());
-                                logger.verbose(" > Average Speed: " + StringFormatter.formatSpeed(speedAverage.get()));
-                                logger.verbose(" > Total time elapsed: " + StringFormatter.formatDuration(totalTimeElapsed));
+                                logger.verbose(" > File: {}", animationName);
+                                logger.verbose(" > Transferred Bytes: {}", transferredSize.get());
+                                logger.verbose(" > Transferred Packets (<={}KB): {}", packet_size / 1024, speedMeasurementCount.get());
+                                logger.verbose(" > Average Speed: {}", StringFormatter.formatSpeed(speedAverage.get()));
+                                logger.verbose(" > Total time elapsed: {}", StringFormatter.formatDuration(totalTimeElapsed));
 
                                 finished.set(true);
                             }
@@ -731,8 +731,7 @@ public class LEDSuiteApplication extends Application {
 
                 cnt++;
 
-                logger.debug("Enqueueing BinaryPacket [ID: " + cnt + "; isLast: " + isLastChunk +
-                        "; Data Hash: " + Arrays.hashCode(chunk) + "]");
+                logger.debug("Enqueueing BinaryPacket [ID: {}; isLast: {}; Data Hash: {}]", cnt, isLastChunk, Arrays.hashCode(chunk));
 
                 // Send the chunk with the isLast flag
                 uploadEndpoint.enqueueBinaryMessage(
@@ -748,7 +747,7 @@ public class LEDSuiteApplication extends Application {
 
             logger.verbose("Upload preparation complete!");
         } catch (IOException e) {
-            logger.warn("Error during upload preparation: " + e.getMessage());
+            logger.warn("Error during upload preparation: {}", e.getMessage());
             window.uploadCompleted(false);
             return;
         }
@@ -767,7 +766,7 @@ public class LEDSuiteApplication extends Application {
                     }
                 }
 
-                logger.info("New animation was successfully created from upload file '" + animationName + "'!");
+                logger.info("New animation was successfully created from upload file '{}'!", animationName);
 
                 logger.verbose("Updating UI to reflect changes...");
                 window.uploadCompleted(true);
@@ -800,8 +799,8 @@ public class LEDSuiteApplication extends Application {
                     .errorMessage(message)
                     .heading(errorData.getHeading())
                     .enableReporting(errorData.isEnableReporting())
-                    .build()
-                    .present(parent);
+                    .build();
+                    //.present(parent);
         }
         if (errorData.isLog() && message != null) logger.error(errorData.getMessage());
     }
@@ -827,6 +826,7 @@ public class LEDSuiteApplication extends Application {
      * Saves all settings and exits.
      */
     public void exit() {
+        webSocketCommunication.shutdown();
         logger.info("Application: EXIT");
         logger.info("Goodbye!");
         SettingsManager.getInstance().save();

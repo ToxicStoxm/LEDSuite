@@ -89,10 +89,7 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        logger.warn("Server Error: " +
-        "Source: " + source + ", " +
-                "Code: " + code + ", " +
-                "Severity: " + severity);
+        logger.warn("Server Error: Source: {}, Code: {}, Severity: {}", severity, source, code, severity);
 
         LEDSuiteApplication.handleError(
                 ErrorData.builder()

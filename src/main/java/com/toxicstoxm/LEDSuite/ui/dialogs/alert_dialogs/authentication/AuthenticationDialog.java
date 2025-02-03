@@ -126,7 +126,7 @@ public class AuthenticationDialog extends AlertDialog {
             setResponseEnabled("authenticate", false);
             setResponseEnabled("cancel", false);
 
-            logger.info("Authentication -> Username: " + username + " - Password Hash: " + passwordHash);
+            logger.info("Authentication -> Username: {} - Password Hash: {}", username, passwordHash);
 
             // Send the authentication request to the server
             LEDSuiteApplication.getAuthManager().requestAuth(

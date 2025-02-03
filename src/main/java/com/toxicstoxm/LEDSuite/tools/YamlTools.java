@@ -156,8 +156,8 @@ public class YamlTools {
             try {
                 finalImage = Image.fromPaintable(Texture.fromBytes(Bytes.static_(decodedBytes)));
             } catch (GErrorException e) {
-                logger.warn("Failed to decode icon from base64! Error message: '" + e.getMessage() + "'!");
-                logger.debug("Base64: " + iconString);
+                logger.warn("Failed to decode icon from base64! Error message: '{}'!", e.getMessage());
+                logger.debug("Base64: {}", iconString);
             }
         }
 

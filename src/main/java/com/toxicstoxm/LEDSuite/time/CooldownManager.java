@@ -77,7 +77,7 @@ public class CooldownManager {
                 if (cooldownAction.action != null) {
                     cooldownAction.action.run();
                 } else {
-                    logger.debug("Action for '" + name + "' was null!");
+                    logger.debug("Action for '{}' was null!", name);
                 }
                 actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis(), null));
                 return true;
@@ -99,7 +99,7 @@ public class CooldownManager {
                 if (cooldownAction.action != null) {
                     cooldownAction.action.run();
                 } else {
-                    logger.debug("Action (Group = " + cooldownActionGroupName + ") for '" + name + "' was null!");
+                    logger.debug("Action (Group = {}) for '{}' was null!", cooldownActionGroupName, name);
                 }
                 actions.put(name, cooldownAction);
                 actionGroups.put(cooldownActionGroupName, new CooldownActionGroup(actionGroup.cooldown, System.currentTimeMillis()));

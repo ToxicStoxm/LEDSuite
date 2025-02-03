@@ -162,7 +162,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * @see #clearMainContent()
      */
     public void changeMainContent(@NotNull Widget newChild) {
-        logger.verbose("Changing main view to: " + StringFormatter.getClassName(newChild.getClass()));
+        logger.verbose("Changing main view to: {}", StringFormatter.getClassName(newChild.getClass()));
         clearMainContent();
         GLib.idleAddOnce(() -> contentBox.append(newChild));
     }
@@ -176,7 +176,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         GLib.idleAddOnce(() -> {
             Widget child = contentBox.getFirstChild();
             while (child != null) {
-                logger.verbose("Removed " + StringFormatter.getClassName(child.getClass()) + " from main view!");
+                logger.verbose("Removed {} from main view!", StringFormatter.getClassName(child.getClass()));
 
                 contentBox.remove(child);
 
@@ -209,10 +209,10 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                         StatusRequestPacket.builder().build().serialize()
                 );
-                logger.verbose("Displaying animation menu with id '" + animationID + "'!");
+                logger.verbose("Displaying animation menu with id '{}'!", animationID);
             }
         } else {
-            logger.debug("Canceled display attempt for animation menu with animation id '" + animationID + "'!");
+            logger.debug("Canceled display attempt for animation menu with animation id '{}'!", animationID);
         }
     }
 
@@ -302,7 +302,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * @param updatedAnimations new available animation list to display
      */
     public void updateAnimations(@NotNull Collection<StatusReplyPacket.Animation> updatedAnimations) {
-        logger.verbose("Updating available animations. Count: " + updatedAnimations.size());
+        logger.verbose("Updating available animations. Count: {}", updatedAnimations.size());
 
         List<String> removedAnimations = new ArrayList<>(animations.keySet());
 
@@ -317,7 +317,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 // Update the animation row with new data
                 GLib.idleAddOnce(() -> {
                     animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.lastAccessed());
-                    logger.verbose("Updated animation: " + newAnimationName);
+                    logger.verbose("Updated animation: {}", newAnimationName);
                 });
 
                 // Update the animation map to ensure consistency
@@ -326,7 +326,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 // Handle additional update if this row is selected
                 Widget selectedRow = animationList.getSelectedRow();
                 if (selectedRow != null && selectedRow.equals(animationRow)) {
-                    logger.verbose("Animation is currently selected: " + newAnimationName);
+                    logger.verbose("Animation is currently selected: {}", newAnimationName);
                 }
             } else {
                 // Add new animation row if it doesn't already exist
@@ -345,7 +345,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
                 GLib.idleAddOnce(() -> {
                     animationList.append(newAnimationRow);
-                    logger.verbose("Added animation: " + newAnimationName);
+                    logger.verbose("Added animation: {}", newAnimationName);
                 });
             }
         }
@@ -365,7 +365,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     animationList.remove(widget);
                 }
 
-                logger.verbose("Removed animation: " + removedAnimation);
+                logger.verbose("Removed animation: {}", removedAnimation);
             }
             animationList.invalidateSort();
         });

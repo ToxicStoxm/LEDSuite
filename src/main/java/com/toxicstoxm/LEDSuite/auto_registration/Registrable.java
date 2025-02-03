@@ -110,12 +110,11 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                             Class<T> typeClass = (Class<T>) loadedClass;
                             annotatedClasses.add(typeClass);
                         } else {
-                            logger.error(" > Class " + classInfo.getName()
-                                    + " does not implement " + moduleTypeName + " interface!");
+                            logger.error(" > Class {} does not implement {} interface!", classInfo.getName(), moduleTypeName);
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(" > Failed to load class: '" + classInfo.getName() + "' for module '" + moduleName + "'");
+                    logger.error(" > Failed to load class: '{}' for module '{}'", classInfo.getName(), moduleName);
                     logger.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
@@ -131,12 +130,12 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
 
                 String id = item.getItemType();
                 if (registerItem(item)) {
-                    logger.verbose(" > Successfully registered " + moduleTypeName + ": " + id);
+                    logger.verbose(" > Successfully registered {}: {}", moduleTypeName, id);
                 } else {
-                    logger.debug(" > Item " + id + " is already registered. Skipping it.");
+                    logger.debug(" > Item {} is already registered. Skipping it.", id);
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                logger.error(" > Failed to auto-register " + moduleTypeName + ": " + itemClass.getName());
+                logger.error(" > Failed to auto-register {}: {}", moduleTypeName, itemClass.getName());
                 logger.error(e.getMessage());
                 throw new RuntimeException(e);
             }

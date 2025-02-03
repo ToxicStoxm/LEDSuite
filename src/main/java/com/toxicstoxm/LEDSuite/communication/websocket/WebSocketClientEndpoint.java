@@ -64,7 +64,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        logger.info("WebSocket connection opened with session ID: " + session.getId());
+        logger.info("WebSocket connection opened with session ID: {}", session.getId());
     }
 
     /**
@@ -78,7 +78,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
-        logger.info("Received message from session ID " + session.getId() + ": " + message);
+        logger.info("Received message from session ID {}: {}", session.getId(), message);
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnClose
     public void onClose(@NotNull Session session) {
-        logger.info("WebSocket connection closed with session ID: " + session.getId());
+        logger.info("WebSocket connection closed with session ID: {}", session.getId());
     }
 
     /**

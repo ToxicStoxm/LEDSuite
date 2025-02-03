@@ -97,6 +97,6 @@ public class UploadSuccessReplyPacket extends CommunicationPacket {
     @Override
     public void handlePacket() {
         logger.info("File upload completed successfully. Server confirmation received.");
-        logger.info(" > Filename: " + fileName);
+        logger.info(" > Filename: {}", fileName);
     }
 }

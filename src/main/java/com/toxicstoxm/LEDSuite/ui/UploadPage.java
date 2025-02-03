@@ -71,7 +71,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     @GtkCallback(name = "start_animation_after_upload_switch_cb")
     public void startAnimationAfterUploadCb() {
         boolean switchState = startAnimationAfterUploadSwitch.getActive();
-        logger.info("Start animation after upload switch toggled -> " + switchState);
+        logger.info("Start animation after upload switch toggled -> {}", switchState);
     }
 
     @GtkChild(name = "file_picker_button_row")
@@ -108,11 +108,11 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 if (selectedFile != null) {
                     String parentPath = selectedFile.getParent().getPath();
                     if (new java.io.File(parentPath).exists()) {
-                        logger.info("Changed initial folder for file picker to: " + parentPath);
+                        logger.info("Changed initial folder for file picker to: {}", parentPath);
                         LEDSuiteApplication.getSettings().mainSection.uiSettings.filePickerInitialFolder = parentPath;
                     }
                     this.selectedFile = selectedFile.getPath();
-                    logger.info("Selected file: " + this.selectedFile);
+                    logger.info("Selected file: {}", this.selectedFile);
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
                     WebSocketClient communication = LEDSuiteApplication.getWebSocketCommunication();
                     if (communication != null && communication.isConnected()) {

@@ -84,7 +84,7 @@ public class WebSocketClient {
      * @param path The URI of the server to connect to.
      */
     private void run(WebSocketClientEndpoint clientEndpoint, URI path) {
-        logger.verbose(" > Deploying new websocket client: Endpoint = " + StringFormatter.getClassName(getClass()) + " URI = " + path);
+        logger.verbose(" > Deploying new websocket client: Endpoint = {} URI = {}", StringFormatter.getClassName(getClass()), path);
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -100,7 +100,7 @@ public class WebSocketClient {
                         textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
-                    logger.verbose(" > " + e.getMessage());
+                    logger.verbose(" > {}", e.getMessage());
                     ExceptionTools.printStackTrace(e, logger::stacktrace);
                 } finally {
                     if (!cancelled && !LEDSuiteApplication.isConnecting()) {
@@ -172,7 +172,7 @@ public class WebSocketClient {
             );
 
             if (isLast) {
-                logger.verbose(" > Last packet was successfully transferred to the server. Closing session: " + session.getId());
+                logger.verbose(" > Last packet was successfully transferred to the server. Closing session: {}", session.getId());
                 shutdown();
             }
         }
@@ -182,7 +182,7 @@ public class WebSocketClient {
      * Shuts down the WebSocket client, closing the connection and stopping further communication.
      */
     public void shutdown() {
-        logger.verbose(" > " + StringFormatter.getClassName(getClass()) + ": Shutdown triggered!");
+        logger.verbose(" > {}: Shutdown triggered!", StringFormatter.getClassName(getClass()));
         cancelled = true;
     }
 

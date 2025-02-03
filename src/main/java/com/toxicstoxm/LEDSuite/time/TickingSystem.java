@@ -102,7 +102,7 @@ public class TickingSystem {
                 try {
                     Thread.sleep(TICK_DELAY_MS - elapsedTime);
                 } catch (InterruptedException e) {
-                    logger.fatal("Ticking System was interrupted! " + e.getMessage());
+                    logger.fatal("Ticking System was interrupted! {}", e.getMessage());
                 }
             }
         }

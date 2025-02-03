@@ -128,10 +128,10 @@ public class MenuReplyPacket extends CommunicationPacket {
                         AnimationMenu menu = animationMenuManager.deserializeAnimationMenu(menuYAML);
                         GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationMenu(menu));
                     } catch (DeserializationException e) {
-                        logger.warn("Failed to handle menu reply! Deserialization failed: " + e.getMessage());
+                        logger.warn("Failed to handle menu reply! Deserialization failed: {}", e.getMessage());
                         errorCode = e.getErrorCode();
                         errorMessage = e.getMessage();
-                        e.printStackTrace(message -> logger.stacktrace(message));
+                        e.printStackTrace(logger::stacktrace);
                     }
                 } else {
                     logger.warn("Couldn't handle menu reply packet because animation menu manager is not available!");
@@ -139,7 +139,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                 }
 
                 if (errorCode == null) {
-                    logger.debug("Animation menu reply was handled in " + (System.currentTimeMillis() - start) + "ms!");
+                    logger.debug("Animation menu reply was handled in {}ms!", (System.currentTimeMillis() - start));
                 } else {
                     String fileName = null;
 
@@ -151,7 +151,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                         }
                     } catch (InvalidConfigurationException ex) {
                         logger.warn("Failed to get file name for error reporting menu deserialization failure!");
-                        ExceptionTools.printStackTrace(ex, message -> logger.stacktrace(message));
+                        ExceptionTools.printStackTrace(ex, logger::stacktrace);
                     }
 
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

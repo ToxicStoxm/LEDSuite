@@ -356,10 +356,10 @@ public class LEDSuiteScheduler implements TaskScheduler {
                 try {
                     task.run();
                 } catch (final Throwable throwable) {
-                    logger.warn(String.format(
-                            "Task #%s for %s generated an exception",
+                    logger.warn("Task #{} for {} generated an exception",
                             task.getTaskId(),
-                            LEDSuiteApplication.class.getName()));
+                            LEDSuiteApplication.class.getName()
+                    );
                 }
                 parsePending();
             } else {

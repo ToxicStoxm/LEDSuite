@@ -57,7 +57,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        logger.info("WebSocket connection opened with session ID: " + session.getId());
+        logger.info("WebSocket connection opened with session ID: {}", session.getId());
 
         // Send a status request to the server
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
@@ -80,7 +80,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnMessage
     public void onMessage(String message, @NotNull Session session) {
-        logger.verbose("----------------------< IN >----------------------" + "\n[Session] " + session.getId());
+        logger.verbose("----------------------< IN >----------------------" + "\n[Session] {}", session.getId());
         if (message.length() < 10000) {
             new LEDSuiteRunnable() {
                 @Override
@@ -111,7 +111,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnClose
     public void onClose(@NotNull Session session) {
-        logger.info("WebSocket connection closed with session ID: " + session.getId());
+        logger.info("WebSocket connection closed with session ID: {}", session.getId());
 
         // Update the UI to reflect the server state
         LEDSuiteApplication.getWindow().setServerState(ServerState.DISCONNECTED);

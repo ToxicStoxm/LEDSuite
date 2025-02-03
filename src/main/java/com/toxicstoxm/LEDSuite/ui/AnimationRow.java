@@ -170,9 +170,7 @@ public class AnimationRow extends ListBoxRow {
         simpleAction.onActivate(_ -> {
             // Check if the animation is on cooldown.
             if (!CooldownManager.call(String.valueOf(animationID))) {
-                logger.info(
-                        "The animation row " + animationLabel + " (" + animationID + ") is on cooldown!"
-                );
+                logger.info("The animation row {} ({}) is on cooldown!", animationLabel, animationID);
             } else {
                 // If the cooldown has passed, update the selection and request the menu.
                 GLib.idleAddOnce(() -> {
@@ -180,9 +178,7 @@ public class AnimationRow extends ListBoxRow {
                     window.setSelectedAnimation(animationID);  // Select the current animation
                 });
 
-                logger.verbose(
-                        "Requesting menu for animation '" + animationID + "'"
-                );
+                logger.verbose("Requesting menu for animation '{}'", animationID);
 
                 LEDSuiteApplication.getWindow().changeMainContent(
                         Clamp.builder()

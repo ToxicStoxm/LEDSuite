@@ -62,7 +62,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         try {
             yaml.loadFromString(menuYAML);
         } catch (InvalidConfigurationException e) {
-            ExceptionTools.printStackTrace(e, message -> logger.stacktrace(message));
+            ExceptionTools.printStackTrace(e, logger::stacktrace);
             throw new DeserializationException("Failed to deserialize YAML from string!", ErrorCode.FailedToParseYAML);
         }
 
@@ -150,7 +150,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         if (topLevelWidgetType == null)
             throw new DeserializationException("Invalid widget type 'null' for top level group " + menuGroupKey + "'!", ErrorCode.WidgetMissingType);
         if (!topLevelWidgetType.equals(WidgetType.GROUP.getName())) {
-            logger.warn("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!");
+            logger.warn("Invalid top level widget type '{}' for '{}' isn't a group! Top level widgets must be groups!", topLevelWidgetType, menuGroupKey);
             throw new DeserializationException("Invalid top level widget type '" + topLevelWidgetType + "' for '" + menuGroupKey + "' isn't a group! Top level widgets must be groups!", ErrorCode.TopLevelWidgetIsNotGroup);
         }
 

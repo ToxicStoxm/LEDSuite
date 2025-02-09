@@ -197,6 +197,12 @@ public class LEDSuiteApplication extends Application {
         logger.verbose(" > DONE");
 
         this.onShutdown(this::exit);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.verbose("Processing shutdown handles...");
+            logger.verbose("Shutting down websocket communication...");
+            webSocketCommunication.shutdown();
+            logger.verbose("Successfully processed shutdown handles.");
+        }));
 
         logger.verbose("Initializing core managers...");
 
@@ -826,7 +832,7 @@ public class LEDSuiteApplication extends Application {
      * Saves all settings and exits.
      */
     public void exit() {
-        webSocketCommunication.shutdown();
+        if (!webSocketCommunication.isClosed()) webSocketCommunication.shutdown();
         logger.info("Application: EXIT");
         logger.info("Goodbye!");
         SettingsManager.getInstance().save();

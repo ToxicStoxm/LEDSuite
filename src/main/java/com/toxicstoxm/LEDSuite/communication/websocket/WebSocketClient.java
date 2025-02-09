@@ -44,6 +44,15 @@ public class WebSocketClient {
     private final LinkedBlockingDeque<BinaryPacket> sendQueueBinary = new LinkedBlockingDeque<>();
     private boolean cancelled = false;
 
+    /**
+     * Check if this WebSocketClient instance has already been closed using {@link #shutdown()}.
+     *
+     * @return {@code true} if {@link #shutdown()} was already called for this instance, otherwise {@code false}.
+     */
+    public boolean isClosed() {
+        return cancelled;
+    }
+
     @Getter
     private boolean connected = false;
 

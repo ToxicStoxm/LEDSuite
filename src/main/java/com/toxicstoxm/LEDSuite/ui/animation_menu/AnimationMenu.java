@@ -7,6 +7,7 @@ import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
+import org.gnome.glib.GLib;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Image;
@@ -95,30 +96,36 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
      * @return the initialized {@code AnimationMenu} instance
      */
     public AnimationMenu init(@NotNull AnimationRow row) {
-        // Set the label of the animation menu
-        animationLabel.setLabel(row.animationRowLabel.getLabel());
+        GLib.idleAddOnce(() -> {
+            // Set the label of the animation menu
+            animationLabel.setLabel(row.animationRowLabel.getLabel());
 
-        // Determine the image storage type and set the image accordingly
-        ImageType storageType = row.animationIcon.getStorageType();
-        if (storageType.equals(ImageType.EMPTY) || storageType.equals(ImageType.PAINTABLE)) {
-            animationMenuImage.setFromPaintable(row.animationIcon.getPaintable());
-        } else {
-            animationMenuImage.setFromIconName(row.animationIcon.getIconName());
-        }
+            // Determine the image storage type and set the image accordingly
+            ImageType storageType = row.animationIcon.getStorageType();
+            if (storageType.equals(ImageType.EMPTY) || storageType.equals(ImageType.PAINTABLE)) {
+                animationMenuImage.setFromPaintable(row.animationIcon.getPaintable());
+            } else {
+                animationMenuImage.setFromIconName(row.animationIcon.getIconName());
+            }
+        });
         return this;
     }
 
     @Override
     public void updateLabel(String label) {
-        if (label != null) {
-            animationLabel.setLabel(label);
-        }
+        GLib.idleAddOnce(() -> {
+            if (label != null) {
+                animationLabel.setLabel(label);
+            }
+        });
     }
 
     @Override
     public void updateIconName(String iconName) {
-        if (iconName != null) {
-            animationMenuImage.setFromIconName(iconName);
-        }
+        GLib.idleAddOnce(() -> {
+            if (iconName != null) {
+                animationMenuImage.setFromIconName(iconName);
+            }
+        });
     }
 }

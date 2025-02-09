@@ -176,8 +176,8 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
      * @param row   the row to mark as available
      * @param value the value to display in the row
      */
-    private void markAvailableWithValue(@NotNull ActionRow row, String value) {
-        row.setSubtitle(value);
+    private void markAvailableWithValue(@NotNull ActionRow row, @NotNull String value) {
+        row.setSubtitle(value.replaceAll("&", "&amp;")); // escape ampersand as '&amp;' for libadwaita
         row.setSensitive(true);
     }
 

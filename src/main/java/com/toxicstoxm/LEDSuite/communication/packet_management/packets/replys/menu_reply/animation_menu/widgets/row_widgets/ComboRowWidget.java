@@ -10,7 +10,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
 import org.gnome.adw.ComboRow;
 import org.gnome.glib.Type;
-import org.gnome.gtk.Gtk;
 import org.gnome.gtk.StringList;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +48,7 @@ public class ComboRowWidget extends AnimationMenuActionRowWidget<ComboRow> {
         );
 
         widget.setSelected(
-                getIntIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, Gtk.INVALID_LIST_POSITION)
+                content.indexOf(getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.MenuReply.VALUE, ""))
         );
 
         onChanged(() -> sendMenuChangeRequest(String.valueOf(content.get(widget.getSelected()))));

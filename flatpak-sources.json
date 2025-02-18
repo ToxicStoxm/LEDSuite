@@ -64,24 +64,24 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.2/YAJSI-2.1.2.jar",
-    "sha512": "d248e538ba49dc481de830a322080d4e40478c29946c39cce5a6cce31841b3f3d4a3f42e30c65d3685f4f11fe50294315b76f5cb369c3e3d6dafce6b6770b29b",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.2",
-    "dest-filename": "YAJSI-2.1.2.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.3/YAJSI-2.1.3.jar",
+    "sha512": "68b25addc2f4162934c003e5999c4597c99812faf61387fe8caf32d5174ac196b27ba56707e67493b6813b938e1f2300b34c4a6c2c4cfce0b7e70e96d2501d98",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.3",
+    "dest-filename": "YAJSI-2.1.3.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.2/YAJSI-2.1.2.module",
-    "sha512": "35349f6a14f72f232ee859822d7af923ecdeabdca49179d6786ddbb0f0c9c854cec700e26ee34ee5ff906d4fdcde0106b3eded7507e83f778e99c1e080e91887",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.2",
-    "dest-filename": "YAJSI-2.1.2.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.3/YAJSI-2.1.3.module",
+    "sha512": "bec98193ac5d9c6ec86274b026e3c5ead21fe34242f4737dc592666cacd98e63eab878f9ba2487fec5caa46a2a07668515ebc195c33eee3bc0b9fe9e0a522fbc",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.3",
+    "dest-filename": "YAJSI-2.1.3.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.2/YAJSI-2.1.2.pom",
-    "sha512": "a5cbe8c509f2b321e271a4710e57c1bf484886ae58b263d8ee6f6df23b7230c2dd0ee1f6660ee1e50732b48b48c1274c7abdd6ca5164d238bf222c3850ec54a1",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.2",
-    "dest-filename": "YAJSI-2.1.2.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.3/YAJSI-2.1.3.pom",
+    "sha512": "6e80db2cf051ad08b872a29067080d652056df93a864c4ae81adb089329ea65477566057a6e86836c4f37b97ecc98fd4f0d15652664aa0021fe51760f52bd78c",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.3",
+    "dest-filename": "YAJSI-2.1.3.pom"
   },
   {
     "type": "file",

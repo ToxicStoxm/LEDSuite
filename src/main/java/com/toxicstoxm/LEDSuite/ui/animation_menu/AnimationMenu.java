@@ -121,10 +121,15 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
     }
 
     @Override
-    public void updateIconName(String iconName) {
+    public void updateIcon(Image icon) {
         GLib.idleAddOnce(() -> {
-            if (iconName != null) {
-                animationMenuImage.setFromIconName(iconName);
+            if (icon != null) {
+                ImageType storageType = icon.getStorageType();
+                if (storageType == ImageType.EMPTY || storageType == ImageType.ICON_NAME) {
+                    animationMenuImage.setFromIconName(icon.getIconName());
+                } else {
+                    animationMenuImage.setFromPaintable(icon.getPaintable());
+                }
             }
         });
     }

@@ -2,7 +2,9 @@ package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
+import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuReference;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -18,6 +20,10 @@ import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Represents a row in the sidebar of the application, displaying information about a single animation.
@@ -66,19 +72,7 @@ public class AnimationRow extends ListBoxRow {
     @GtkChild(name = "animation_icon")
     public Image animationIcon;
 
-    /**
-     * Sets the animation icons paintable or icon name depending on the provided icons structure.
-     *
-     * @param icon the new icon to use
-     */
-    public final void setIcon(@NotNull Image icon) {
-        ImageType storageType = icon.getStorageType();
-        if (storageType == ImageType.EMPTY || storageType == ImageType.ICON_NAME) {
-            animationIcon.setFromIconName(icon.getIconName());
-        } else {
-            animationIcon.setFromPaintable(icon.getPaintable());
-        }
-    }
+    private String iconHash = "";
 
     /**
      * The {@link Label} widget used to display the animation's label.
@@ -121,7 +115,7 @@ public class AnimationRow extends ListBoxRow {
         // Instantiate and configure the AnimationRow with the provided data.
         AnimationRow row = GObject.newInstance(AnimationRow.class, "action-name", "app." + animationRowData.animationID());
         row.animationID = animationRowData.animationID();
-        row.setIcon(animationRowData.icon());
+        row.update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
         row.setLastAccessed(animationRowData.lastAccessed());
         row.setAnimationLabel(animationRowData.label().strip());
         row.animationRowLabel.setWrap(true);  // Allow label to wrap if it's too long
@@ -138,18 +132,38 @@ public class AnimationRow extends ListBoxRow {
      * This method can be called to refresh the row's display.
      *
      * @param label The new label to display.
-     * @param iconName The new icon name to display.
+     * @param iconString The new icon string.
      * @param lastAccessed The last time this animation was accessed
      */
-    public void update(String label, String iconName, Long lastAccessed) {
-        animationRowLabel.setLabel(label);
-        animationIcon.setFromIconName(iconName);
-        setLastAccessed(lastAccessed);
+    public void update(String label, String iconString, boolean isName, Long lastAccessed) {
+        if (label != null) animationRowLabel.setLabel(label);
+        AtomicReference<String> newIconHash = new AtomicReference<>("");
+        Image newIcon = YamlTools.constructIcon(iconString, isName, iconHash, () -> {
+            try {
+                newIconHash.set(new String(MessageDigest.getInstance("md5").digest(iconString.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+            } catch (NoSuchAlgorithmException e) {
+                LEDSuiteApplication.handleError(ErrorData.builder()
+                                .logger(logger)
+                                .message(logger.format("Failed to get hashSum algorithm 'md5' for computing icon hashSum within {}(ID:{})", getClass().getSimpleName(), getAnimationID()))
+                                .heading("Error while receiving status update")
+                        .build());
+            }
+            return newIconHash.get();
+        });
+        if (newIcon != null) {
+            if (isName) {
+                animationIcon.setFromIconName(newIcon.getIconName());
+            } else {
+                animationIcon.setFromPaintable(newIcon.getPaintable());
+            }
+            iconHash = newIconHash.get();
+        }
+        if (lastAccessed != null) setLastAccessed(lastAccessed);
 
         // If the row is part of a menu, update the menu as well.
         if (animationMenuReference != null) {
             animationMenuReference.updateLabel(label);
-            animationMenuReference.updateIconName(iconName);
+            animationMenuReference.updateIcon(newIcon);
         }
     }
 

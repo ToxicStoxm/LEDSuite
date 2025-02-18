@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.tools;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
+import com.toxicstoxm.LEDSuite.ui.HashSumCallable;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import io.github.jwharm.javagi.base.GErrorException;
@@ -12,6 +13,7 @@ import org.gnome.gtk.Image;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;
+import java.util.Objects;
 
 /**
  * A utility class providing methods for interacting with YAML configuration sections.
@@ -147,13 +149,16 @@ public class YamlTools {
      * @param iconIsName true if {@code iconString} should be treated as name, otherwise {@code false}
      * @return the constructed {@link Image} or a 'broken image' if something went wrong or the name/base64 was invalid.
      */
-    public static Image constructIcon(String iconString, boolean iconIsName) {
+    public static Image constructIcon(String iconString, boolean iconIsName, String iconHash, HashSumCallable newIcon) {
         Image finalImage = Image.fromIconName("");
         if (iconIsName) {
             finalImage = Image.fromIconName(iconString);
         } else {
-            byte[] decodedBytes = Base64.getDecoder().decode(iconString);
             try {
+                if (Objects.equals(newIcon.getHashSum(), iconHash)) return null;
+
+                byte[] decodedBytes = Base64.getDecoder().decode(iconString);
+
                 finalImage = Image.fromPaintable(Texture.fromBytes(Bytes.static_(decodedBytes)));
             } catch (GErrorException e) {
                 logger.warn("Failed to decode icon from base64! Error message: '{}'!", e.getMessage());

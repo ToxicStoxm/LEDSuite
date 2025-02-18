@@ -12,7 +12,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
@@ -316,7 +315,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
                 // Update the animation row with new data
                 GLib.idleAddOnce(() -> {
-                    animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.lastAccessed());
+                    animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.iconIsName(), updatedAnimation.lastAccessed());
                     logger.verbose("Updated animation: {}", newAnimationName);
                 });
 
@@ -333,7 +332,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 var newAnimationRow = AnimationRow.create(
                         AnimationRowData.builder()
                                 .app(getApplication())
-                                .icon(YamlTools.constructIcon(updatedAnimation.iconString(), updatedAnimation.iconIsName()))
+                                .iconString(updatedAnimation.iconString())
+                                .iconIsName(updatedAnimation.iconIsName())
                                 .label(updatedAnimation.label())
                                 .animationID(updatedAnimation.id())
                                 .cooldown(500L)

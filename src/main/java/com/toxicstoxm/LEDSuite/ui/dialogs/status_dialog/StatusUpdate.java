@@ -1,8 +1,11 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 
+import com.toxicstoxm.LEDSuite.authentication.Permissions;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import lombok.Builder;
+
+import java.util.List;
 
 /**
  * A data structure used to hold the status information for updating the status dialog.
@@ -24,5 +27,7 @@ public record StatusUpdate(
         String currentFile,
         LidState lidState,
         Double voltage,
-        Double currentDraw
+        Double currentDraw,
+        String username,
+        List<Permissions> permissions
 ) {}

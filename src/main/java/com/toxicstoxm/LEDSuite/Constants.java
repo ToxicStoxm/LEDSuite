@@ -145,6 +145,7 @@ public class Constants {
                         public static final String LID_STATE = "lid_state";
                         public static final String ANIMATIONS = "available_animations";
                         public static final String USERNAME = "username";
+                        public static final String USER_PERMISSIONS = "user_permissions";
 
                         public static final class AnimationList {
                             public static final String ICON = "icon";

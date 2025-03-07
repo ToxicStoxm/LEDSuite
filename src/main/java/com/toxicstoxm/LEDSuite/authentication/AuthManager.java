@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Handles user authentication by managing authentication requests and responses.
@@ -30,6 +31,8 @@ public class AuthManager implements AuthManagerEndpoint {
      * If no user is authenticated, this value is {@code null}.
      */
     private String username;
+
+    private List<Permissions> userPermissions;
 
     /**
      * Initiates an authentication request for the provided credentials.
@@ -54,8 +57,7 @@ public class AuthManager implements AuthManagerEndpoint {
             if (result) {
                 username = newUsername;
             }
-            LEDSuiteApplication.getWindow().setAuthenticated(true, username);
-            finishCb.run();
+            LEDSuiteApplication.getWindow().setAuthenticated(false, username);
         });
 
         // Send the authentication request packet to the server
@@ -72,20 +74,35 @@ public class AuthManager implements AuthManagerEndpoint {
      * Updates the authentication state and invokes the associated callback.
      *
      * @param username the username associated with the authentication attempt. Can be {@code null}.
-     * @param result   {@code true} if the authentication was successful, otherwise {@code false}.
      */
     @Override
-    public void authResult(String username, boolean result) {
-        // Handle unsuccessful authentication without a specific username
-        if ((username == null || username.isBlank()) && !result) {
-            LEDSuiteApplication.getWindow().setAuthenticated(false);
-            return;
+    public void authResult(@NotNull String username, List<Permissions> userPermissions) {
+        if (userPermissions == null) {
+            awaitingResponse.clear();
+            if (!username.isEmpty()) {
+                LEDSuiteApplication.getWindow().setAuthenticated(true);
+            } else {
+                this.username = username;
+                LEDSuiteApplication.getWindow().setAuthenticated(true, username);
+            }
+        } else {
+            if (userPermissions.isEmpty() && username.isBlank()) {
+                if (awaitingResponse.containsKey(username)) {
+                    // Remove the pending request and invoke the callback with the result
+                    awaitingResponse.remove(username).update(false);
+                }
+            } else {
+                if (awaitingResponse.containsKey(username)) {
+                    // Remove the pending request and invoke the callback with the result
+                    awaitingResponse.remove(username).update(true);
+                }
+                this.userPermissions = userPermissions;
+            }
         }
+    }
 
-        // Check if there's a pending request for the username
-        if (awaitingResponse.containsKey(username)) {
-            // Remove the pending request and invoke the callback with the result
-            awaitingResponse.remove(username).update(result);
-        }
+    public void fullPermissionAuth() {
+        awaitingResponse.clear();
+        LEDSuiteApplication.getWindow().setAuthenticated(true);
     }
 }

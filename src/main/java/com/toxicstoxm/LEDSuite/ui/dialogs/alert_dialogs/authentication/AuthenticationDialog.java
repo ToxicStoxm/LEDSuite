@@ -158,11 +158,7 @@ public class AuthenticationDialog extends AlertDialog {
                         throw new RuntimeException(e);
                     }
 
-                    GLib.idleAddOnce(() -> {
-                        setCanClose(true);
-                        close();
-                        LEDSuiteApplication.getAuthManager().authResult(username, false);
-                    });
+                    GLib.idleAddOnce(() -> LEDSuiteApplication.getAuthManager().authResult(username, false));
                 }
             }.runTaskLaterAsynchronously(10000); // 10-second timeout
 

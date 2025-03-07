@@ -1,6 +1,9 @@
 package com.toxicstoxm.LEDSuite.authentication;
 
 import com.toxicstoxm.LEDSuite.time.Action;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Wrapper interface for API endpoints of {@link AuthManager}.
@@ -38,9 +41,7 @@ public interface AuthManagerEndpoint {
      *
      * @param username the username associated with the authentication request.
      *                 This is the username provided in the original {@link Credentials}.
-     * @param result   a {@code boolean} indicating the success or failure of the authentication
-     *                 attempt.
-     *                 if authentication was successful; otherwise {@code false}.
      */
-    void authResult(String username, boolean result);
+    void authResult(@NotNull String username, List<Permissions> userPermissions);
+
 }

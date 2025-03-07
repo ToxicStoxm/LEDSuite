@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply;
 
 import com.toxicstoxm.LEDSuite.Constants;
+import com.toxicstoxm.LEDSuite.authentication.Permissions;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
@@ -54,6 +55,9 @@ public class StatusReplyPacket extends CommunicationPacket {
     private List<Animation> animations;                 // Optional list of animations, only available if the key exists.
     private boolean animationsAvailable;                // Flag indicating whether animations are available.
     private String username;                            // Not guaranteed, represents the username.
+    private List<Permissions> userPermissions;          // Not guaranteed, represents the users' permissions.
+    @Builder.Default
+    private boolean isAdmin = false;
 
     @Override
     public String getType() {
@@ -85,10 +89,10 @@ public class StatusReplyPacket extends CommunicationPacket {
         }
 
         // Handle optional fields (file state specific)
-        if (!packet.fileState.equals(FileState.idle)) {
-            packet.selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE);
-        } else {
+        if (packet.fileState.equals(FileState.idle)) {
             packet.selectedFile = "";
+        } else {
+            packet.selectedFile = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.SELECTED_FILE);
         }
 
         // Deserialize other optional fields
@@ -156,6 +160,22 @@ public class StatusReplyPacket extends CommunicationPacket {
         // Deserialize username if present
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME)) {
             packet.username = yaml.getString(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME);
+        }
+        packet.username = getStringIfAvailable(Constants.Communication.YAML.Keys.Reply.StatusReply.USERNAME, "");
+
+        if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.StatusReply.USER_PERMISSIONS)) {
+            packet.userPermissions = new ArrayList<>();
+            for (String permission : yaml.getStringList(Constants.Communication.YAML.Keys.Reply.StatusReply.USER_PERMISSIONS)) {
+                try {
+                    userPermissions.add(Permissions.valueOf(permission.toUpperCase()));
+                    logger.debug("Recognized permission '{}' for user '{}'.", permission, username);
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Received unknown permission '{}' for user '{}', ignoring.", permission, username);
+                }
+            }
+        } else {
+            logger.debug("Received no permission specification for user '{}', assuming admin.", username);
+            packet.setAdmin(true);
         }
 
         return packet;

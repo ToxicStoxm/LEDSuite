@@ -187,7 +187,7 @@ public class EndpointProvider {
      */
     @Contract(value = "_ -> new", pure = true)
     private static <T> @NotNull NullSaveGetter<T> generateDefaultGetterFor(T defaultImplementation) {
-        return new NullSaveGetter<T>() {
+        return new NullSaveGetter<>() {
             @Override
             public T value() {
                 return null;

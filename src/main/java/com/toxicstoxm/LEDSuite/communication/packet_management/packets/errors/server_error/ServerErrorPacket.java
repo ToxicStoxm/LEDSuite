@@ -6,7 +6,6 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
@@ -36,7 +35,6 @@ public class ServerErrorPacket extends CommunicationPacket {
     }
 
     private String source;        // guaranteed
-    private ErrorCode code;       // guaranteed
     private String message;          // guaranteed
     private int severity;         // guaranteed
 
@@ -63,9 +61,6 @@ public class ServerErrorPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, yaml);
         packet.message = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.CODE, yaml);
-        packet.code = ErrorCode.fromInt(yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.CODE));
-
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, yaml);
         packet.severity = yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY);
 
@@ -80,7 +75,6 @@ public class ServerErrorPacket extends CommunicationPacket {
         YamlConfiguration yaml = saveYAML();
 
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, message);
-        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.CODE, code.getCode());
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, severity);
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE, source);
 
@@ -89,7 +83,7 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        logger.warn("Server Error: Source: {}, Code: {}, Severity: {}", severity, source, code, severity);
+        logger.warn("Server Error: Source: {}, Severity: {}", severity, source, severity);
 
         LEDSuiteApplication.handleError(
                 ErrorData.builder()

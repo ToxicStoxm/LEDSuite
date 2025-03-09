@@ -7,14 +7,13 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import org.gnome.adw.Spinner;
 import org.gnome.adw.*;
+import org.gnome.adw.Spinner;
 import org.gnome.glib.GLib;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
@@ -391,11 +390,11 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     public Revealer serverAuthButtonSpinnerRevealer;
 
     public void setAuthenticated(boolean authenticated, String username) {
-       setAuthenticated(authenticated, username, false);
+       //setAuthenticated(authenticated, username, false);
     }
 
     public void setAuthenticated(boolean authenticated, String username, boolean setAuthenticating) {
-        GLib.idleAddOnce(() -> {
+        /*GLib.idleAddOnce(() -> {
             if (authenticated) {
                 if (username != null) {
                     serverAuthButtonLabel.setLabel(Translations.getText("Authenticated as $", username));
@@ -415,24 +414,24 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
             serverAuthButtonBox.setSpacing(0);
             if (setAuthenticating) setAuthenticating();
-        });
+        });*/
     }
 
 
     public void setAuthenticating() {
-        serverAuthButtonLabel.setLabel(Translations.getText("Authenticating"));
+        /*serverAuthButtonLabel.setLabel(Translations.getText("Authenticating"));
         serverAuthButtonSpinnerRevealer.setRevealChild(true);
         serverAuthButtonBox.setSpacing(8);
-        serverAuthButton.setSensitive(false);
+        serverAuthButton.setSensitive(false);*/
     }
 
     @GtkCallback(name = "settings_server_auth_button_clicked")
     public void serverAuthButtonClicked() {
-        if (LEDSuiteApplication.getWebSocketCommunication().isConnected()) {
+        /*if (LEDSuiteApplication.getWebSocketCommunication().isConnected()) {
             setAuthenticated(false, null, true);
             AuthenticationDialog dialog = AuthenticationDialog.create();
             dialog.present(getParent());
-        }
+        }*/
     }
 
 }

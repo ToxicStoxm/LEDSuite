@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui;
 
 import com.toxicstoxm.LEDSuite.Constants;
-import com.toxicstoxm.LEDSuite.authentication.AuthManager;
 import com.toxicstoxm.LEDSuite.authentication.AuthManagerEndpoint;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketManager;
 import com.toxicstoxm.LEDSuite.communication.packet_management.PacketReceivedHandler;
@@ -21,7 +20,6 @@ import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.*;
-import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication.AuthenticationDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
@@ -240,10 +238,12 @@ public class LEDSuiteApplication extends Application {
         uploadManager = new UploadManager();
         logger.verbose(" > DONE");
 
-        logger.verbose("Initializing authentication manager...");
+        // Work in progress
+        /*logger.verbose("Initializing authentication manager...");
         logger.verbose(" > create");
         authManager = new AuthManager();
-        logger.verbose(" > DONE");
+        logger.verbose(" > DONE");*/
+
         logger.info("Application was successfully initialized!");
     }
 
@@ -334,7 +334,7 @@ public class LEDSuiteApplication extends Application {
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
                     logger.verbose(" > Server connected!");
-                    GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window.asApplicationWindow()));
+                    //GLib.idleAddOnce(() -> AuthenticationDialog.create().present(window.asApplicationWindow()));
                     result = true;
                     break;
                 } else if (retry) {

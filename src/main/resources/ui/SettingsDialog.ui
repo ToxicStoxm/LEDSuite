@@ -77,7 +77,8 @@ Format: protcol://domain:port/folder/</property>
                       </object>
                     </property>
                     <property name="css-classes">suggested-action</property>
-                    <property name="sensitive" bind-source="settings_brightness" bind-property="sensitive" bind-flags="default">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="tooltip-text" translatable="yes">Work in Progress</property>
                     <signal name="clicked" handler="settings_server_auth_button_clicked"/>
                   </object>
                 </child>

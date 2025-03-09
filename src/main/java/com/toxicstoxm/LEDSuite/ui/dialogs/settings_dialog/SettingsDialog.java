@@ -151,9 +151,9 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
         updateServerState();
 
-        if (isServerConnected()) {
+        /*if (isServerConnected()) {
             setAuthenticated(true, LEDSuiteApplication.getAuthManager().getUsername());
-        }
+        }*/
     }
 
     public void update(@NotNull SettingsUpdate settingsUpdate) {

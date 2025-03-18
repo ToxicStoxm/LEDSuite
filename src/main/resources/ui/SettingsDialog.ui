@@ -127,6 +127,7 @@ Format: protcol://domain:port/folder/</property>
                     <property name="css-classes">suggested-action
 pill</property>
                     <property name="label" translatable="yes">Apply</property>
+                    <property name="sensitive">False</property>
                   </object>
                 </property>
                 <property name="maximum-size">120</property>

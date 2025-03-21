@@ -23,7 +23,7 @@ public class TickingSystem {
     private static final int CONVERSION_NUMBER = 1000;
 
     // Number of ticks per second
-    private static final int TICKS_PER_SECOND = 1000;
+    private static final int TICKS_PER_SECOND = 500;
 
     // Delay between ticks in milliseconds
     private static final long TICK_DELAY_MS = CONVERSION_NUMBER / TICKS_PER_SECOND;

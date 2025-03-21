@@ -23,6 +23,7 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
 import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.placeholders.LogMessagePlaceholder;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -141,6 +142,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void settingsDialogApply() {
+        logger.debug("Requesting settings change.");
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 SettingsChangeRequestPacket
                         .fromSettingsData(getData())
@@ -378,6 +380,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public ProgressBar uploadProgressBar;
 
     public void setUploadProgress(double fraction) {
+        logger.verbose("Updating UI to -> Upload progress: {}", (LogMessagePlaceholder) () -> Math.round(fraction * 100000) / 1000);
         GLib.idleAddOnce(() -> {
             if (!uploadProgressBarRevealer.getChildRevealed()) {
                 resetUploadProgress();
@@ -388,6 +391,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void uploadFinished() {
+        logger.debug("Updating UI to -> Upload progress finished.");
         GLib.idleAddOnce(() -> uploadProgressBar.setFraction(1.0));
 
         new LEDSuiteRunnable() {
@@ -400,6 +404,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void resetUploadProgress() {
+        logger.debug("Updating UI to -> Upload progress reset.");
         uploadProgressBar.setFraction(0.0);
     }
 
@@ -419,15 +424,18 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "play_pause_button_cb")
     public void playPauseButtonClicked() {
+        logger.debug("{}-button clicked.", playing ? "Pause" : "Play");
         playPauseButton.setSensitive(false);
         stopButton.setSensitive(false);
         if (playing) {
+            logger.debug("Requesting animation-pause.");
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PauseRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
                             .build().serialize()
             );
         } else {
+            logger.debug("Requesting animation-play.");
             LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                     PlayRequestPacket.builder()
                             .requestFile(getSelectedAnimation())
@@ -441,6 +449,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "stop_button_cb")
     public void stopButtonClicked() {
+        logger.debug("Stop-button clicked.");
+        logger.debug("Requesting animation-stop.");
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StopRequestPacket.builder()
                         .requestFile(getSelectedAnimation())
@@ -457,6 +467,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     case playing -> {
                         playing = true;
                         stopButtonRevealer.setRevealChild(true);
+                        logger.debug("Updating UI to -> animation-playing.");
                         if (animationList.getSelectedRow() instanceof AnimationRow row) {
                             if (row.isPauseable()) {
                                 playPauseButton.setIconName("media-playback-pause");
@@ -468,13 +479,18 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                         }
                     }
                     case paused -> {
+                        logger.debug("Updating UI to -> animation-paused.");
                         playing = false;
                         stopButtonRevealer.setRevealChild(true);
                         playPauseButton.setIconName("media-playback-start");
                     }
-                    case idle -> resetAnimationControlButtons(false);
+                    case idle -> {
+                        logger.debug("Updating UI to -> animation-idle.");
+                        resetAnimationControlButtons(false);
+                    }
                 }
             } else {
+                logger.debug("Cancelled -> Updating UI to: current animation is not selected.");
                 resetAnimationControlButtons(false);
                 setAnimationControlButtonsSensitive(true);
             }
@@ -482,6 +498,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void setAnimationControlButtonsVisible(boolean visible) {
+        logger.debug("Updating UI to -> animation-ctrl-buttons-visible: '{}'", visible);
         if (visible) {
             resetAnimationControlButtons(false);
             GLib.idleAddOnce(() -> animationControlButtonsRevealer.setRevealChild(true));
@@ -491,6 +508,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void resetAnimationControlButtons(boolean hide) {
+        logger.debug("Resetting animation control buttons");
         playing = false;
         GLib.idleAddOnce(() -> {
             if (hide) animationControlButtonsRevealer.setRevealChild(false);
@@ -501,11 +519,13 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void setAnimationControlButtonsSensitive(boolean sensitive) {
+        logger.debug("Updating UI to -> animation-ctrl-buttons-sensitive: '{}'", sensitive);
         stopButton.setSensitive(sensitive);
         playPauseButton.setSensitive(sensitive);
     }
 
     public void displayFileCollisionDialog(AlertDialog.ResponseCallback cb, String body) {
+        logger.debug("Updating UI to -> file-collision-dialog-display.");
         var fileCollisionDialog = FileCollisionDialog.create();
         fileCollisionDialog.onResponse(cb);
         fileCollisionDialog.setBody(body);
@@ -514,6 +534,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "delete_button_cb")
     public void deleteButtonClicked() {
+        logger.debug("Delete-button clicked.");
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
             var deleteConfirmDialog = OverwriteConfirmationDialog.create();
@@ -522,6 +543,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             deleteConfirmDialog.setResponseLabel("overwrite", Translations.getText("Delete"));
             deleteConfirmDialog.onResponse(response -> {
                 if (Objects.equals(response, "overwrite")) {
+                    logger.debug("Sending delete-request for current animation '{}'.", animation);
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                             AnimationDeleteRequestPacket.builder()
                                     .fileName(animation)
@@ -539,6 +561,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     @GtkCallback(name = "rename_button_cb")
     public void renameButtonClicked() {
+        logger.debug("Rename-button clicked.");
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
             var renameDialog = RenameDialog.create(animation);
@@ -546,6 +569,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 if (Objects.equals(response, "rename")) {
                     String newName = renameDialog.getNewName();
                     if (newName != null && !newName.isBlank()) {
+                        logger.debug("Sending rename-request for current animation '{}'", animation);
                         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                                 RenameRequestPacket.builder()
                                         .requestFile(animation)

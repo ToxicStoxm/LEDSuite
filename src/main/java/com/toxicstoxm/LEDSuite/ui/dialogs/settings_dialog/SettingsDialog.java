@@ -48,7 +48,6 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     public static @NotNull SettingsDialog create() {
         SettingsDialog settingsDialog = GObject.newInstance(SettingsDialog.class);
         settingsDialog.initialize();
-        settingsDialog.markServerSettingsUnavailable();
         return settingsDialog;
     }
 
@@ -188,12 +187,12 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     private void setServerStateConnected() {
         serverStateNormal();
 
-        applyButton.setSensitive(true);
-
         String connectedString = Translations.getText("Connected");
         setServerGroupSuffixStyle(Constants.UI.CSS.CONNECTED_CSS);
-        serverConnectivityButtonLabel.setLabel(connectedString);
-        serverConnectivityButton.setTooltipText(connectedString);
+        GLib.idleAddOnce(() -> {
+            serverConnectivityButtonLabel.setLabel(connectedString);
+            serverConnectivityButton.setTooltipText(connectedString);
+        });
 
         markServerSettingsAvailable();
     }
@@ -205,16 +204,20 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
         String disconnectedString = Translations.getText("Disconnected");
         setServerGroupSuffixStyle(Constants.UI.CSS.DISCONNECTED_CSS);
-        serverConnectivityButtonLabel.setLabel(disconnectedString);
-        serverConnectivityButton.setTooltipText(disconnectedString);
+        GLib.idleAddOnce(() -> {
+            serverConnectivityButtonLabel.setLabel(disconnectedString);
+            serverConnectivityButton.setTooltipText(disconnectedString);
+        });
 
         markServerSettingsUnavailable();
     }
 
     public void serverStateNormal() {
-        serverConnectivityButton.setSensitive(true);
-        serverConnectivityButtonBox.setSpacing(0);
-        serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
+        GLib.idleAddOnce(() -> {
+            serverConnectivityButton.setSensitive(true);
+            serverConnectivityButtonBox.setSpacing(0);
+            serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
+        });
     }
 
     private void markServerSettingsUnavailable() {
@@ -222,39 +225,49 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void markServerSettingsAvailable() {
-       changeServerSettingsAvailability(true);
+        changeServerSettingsAvailability(true);
     }
 
     private void changeServerSettingsAvailability(boolean available) {
-        colorMode.setSensitive(available);
-        brightness.setSensitive(available);
-        applyButton.setSensitive(available);
-        restorePreviousState.setSensitive(available);
+        GLib.idleAddOnce(() -> {
+            colorMode.setSensitive(available);
+            brightness.setSensitive(available);
+            applyButton.setSensitive(available);
+            restorePreviousState.setSensitive(available);
+        });
     }
 
     private void setServerStateConnecting() {
-        serverStateChanging();
-        serverConnectivityButtonLabel.setLabel(Translations.getText("Connecting"));
+        GLib.idleAddOnce(() -> {
+            serverStateChanging();
+            serverConnectivityButtonLabel.setLabel(Translations.getText("Connecting"));
+        });
     }
 
     private void setServerStateDisconnecting() {
-        serverStateChanging();
-        serverConnectivityButtonLabel.setLabel(Translations.getText("Disconnecting"));
+        GLib.idleAddOnce(() -> {
+            serverStateChanging();
+            serverConnectivityButtonLabel.setLabel(Translations.getText("Disconnecting"));
+        });
     }
 
     private void serverStateChanging() {
-        markServerSettingsUnavailable();
-        serverConnectivityButton.setSensitive(false);
-        serverConnectivityButton.setTooltipText(null);
-        serverConnectivityButtonBox.setSpacing(8);
-        serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
-        setServerGroupSuffixStyle(Constants.UI.CSS.CHANGING_CSS);
-        serverAddress.setSensitive(false);
+        GLib.idleAddOnce(() -> {
+            markServerSettingsUnavailable();
+            serverConnectivityButton.setSensitive(false);
+            serverConnectivityButton.setTooltipText(null);
+            serverConnectivityButtonBox.setSpacing(8);
+            serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
+            setServerGroupSuffixStyle(Constants.UI.CSS.CHANGING_CSS);
+            serverAddress.setSensitive(false);
+        });
     }
 
     private void setServerGroupSuffixStyle(String[] css) {
-        serverConnectivityButton.setCssClasses(css);
-        serverConnectivityButtonLabel.setCssClasses(css);
+        GLib.idleAddOnce(() -> {
+            serverConnectivityButton.setCssClasses(css);
+            serverConnectivityButtonLabel.setCssClasses(css);
+        });
     }
 
     private void triggerDisconnect() {
@@ -315,25 +328,28 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     public void applyButtonCooldown() {
-        String[] defaultCSS = applyButton.getCssClasses();
-        List<String> cssFail = new java.util.ArrayList<>(Arrays.stream(defaultCSS).toList());
-        cssFail.remove("suggested-action");
-        cssFail.add("regular");
-        applyButton.setCssClasses(cssFail.toArray(new String[]{}));
-        String defaultLabel = applyButton.getLabel();
-        applyButton.setLabel(Translations.getText("Slow down!"));
-        applyButton.setSensitive(false);
+        GLib.idleAddOnce(() -> {
+            String[] defaultCSS = applyButton.getCssClasses();
+            List<String> cssFail = new java.util.ArrayList<>(Arrays.stream(defaultCSS).toList());
+            cssFail.remove("suggested-action");
+            cssFail.add("regular");
+            applyButton.setCssClasses(cssFail.toArray(new String[]{}));
+            String defaultLabel = applyButton.getLabel();
+            applyButton.setLabel(Translations.getText("Slow down!"));
+            applyButton.setSensitive(false);
 
-        new LEDSuiteRunnable() {
-            @Override
-            public void run() {
-                GLib.idleAddOnce(() -> {
-                    applyButton.setCssClasses(defaultCSS);
-                    applyButton.setLabel(defaultLabel);
-                    applyButton.setSensitive(true);
-                });
-            }
-        }.runTaskLaterAsynchronously(500);
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    GLib.idleAddOnce(() -> {
+                        applyButton.setCssClasses(defaultCSS);
+                        applyButton.setLabel(defaultLabel);
+                        applyButton.setSensitive(true);
+                        //System.out.println("set to true");
+                    });
+                }
+            }.runTaskLaterAsynchronously(500);
+        });
     }
 
     private void requestSettings() {

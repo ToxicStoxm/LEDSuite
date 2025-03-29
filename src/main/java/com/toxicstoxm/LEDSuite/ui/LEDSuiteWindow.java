@@ -31,12 +31,12 @@ import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
+import org.gnome.adw.*;
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Dialog;
-import org.gnome.adw.*;
 import org.gnome.glib.GLib;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
@@ -44,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main application window class. Holds and manages all UI related elements.
@@ -172,8 +173,10 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      * Clears the main window content box.
      *
      * @see #changeMainContent(Widget)
+     * @return atomic boolean reference which will remain {@code false} until clear is complete.
      */
-    public void clearMainContent() {
+    public AtomicBoolean clearMainContent() {
+        AtomicBoolean awaitClear = new AtomicBoolean(false);
         GLib.idleAddOnce(() -> {
             Widget child = contentBox.getFirstChild();
             while (child != null) {
@@ -189,7 +192,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 child.emitDestroy();
                 child = contentBox.getFirstChild();
             }
+            awaitClear.set(true);
         });
+        return awaitClear;
     }
 
     /**
@@ -307,56 +312,58 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
         List<String> removedAnimations = new ArrayList<>(animations.keySet());
 
-        for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
-            String newAnimationName = updatedAnimation.id();
-            removedAnimations.remove(newAnimationName);
+        GLib.idleAddOnce(() -> {
+            for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
+                String newAnimationName = updatedAnimation.id();
+                removedAnimations.remove(newAnimationName);
 
-            // Check if this animation already exists
-            if (animations.containsKey(newAnimationName)) {
-                AnimationRow animationRow = animations.get(newAnimationName);
+                // Check if this animation already exists
+                if (animations.containsKey(newAnimationName)) {
+                    AnimationRow animationRow = animations.get(newAnimationName);
 
-                // Update the animation row with new data
-                GLib.idleAddOnce(() -> {
+                    // Update the animation row with new data
                     animationRow.update(updatedAnimation.label(), updatedAnimation.iconString(), updatedAnimation.iconIsName(), updatedAnimation.lastAccessed());
                     logger.verbose("Updated animation: {}", newAnimationName);
-                });
 
-                // Update the animation map to ensure consistency
-                animations.put(newAnimationName, animationRow);
+                    // Update the animation map to ensure consistency
+                    animations.put(newAnimationName, animationRow);
 
-                // Handle additional update if this row is selected
-                Widget selectedRow = animationList.getSelectedRow();
-                if (selectedRow != null && selectedRow.equals(animationRow)) {
-                    logger.verbose("Animation is currently selected: {}", newAnimationName);
-                }
-            } else {
-                // Add new animation row if it doesn't already exist
-                var newAnimationRow = AnimationRow.create(
-                        AnimationRowData.builder()
-                                .app(getApplication())
-                                .iconString(updatedAnimation.iconString())
-                                .iconIsName(updatedAnimation.iconIsName())
-                                .label(updatedAnimation.label())
-                                .animationID(updatedAnimation.id())
-                                .cooldown(500L)
-                                .lastAccessed(updatedAnimation.lastAccessed())
-                                .pauseable(updatedAnimation.pauseable())
-                                .build()
-                );
-                animations.put(newAnimationName, newAnimationRow);
+                    // Handle additional update if this row is selected
+                    Widget selectedRow = animationList.getSelectedRow();
+                    if (selectedRow != null && selectedRow.equals(animationRow)) {
+                        logger.verbose("Animation is currently selected: {}", newAnimationName);
+                    }
+                } else {
+                    // Add new animation row if it doesn't already exist
+                    var newAnimationRow = AnimationRow.create(
+                            AnimationRowData.builder()
+                                    .app(getApplication())
+                                    .iconString(updatedAnimation.iconString())
+                                    .iconIsName(updatedAnimation.iconIsName())
+                                    .label(updatedAnimation.label())
+                                    .animationID(updatedAnimation.id())
+                                    .cooldown(500L)
+                                    .lastAccessed(updatedAnimation.lastAccessed())
+                                    .pauseable(updatedAnimation.pauseable())
+                                    .build()
+                    );
+                    animations.put(newAnimationName, newAnimationRow);
 
-                GLib.idleAddOnce(() -> {
+
                     animationList.append(newAnimationRow);
                     logger.verbose("Added animation: {}", newAnimationName);
-                });
+                }
             }
-        }
+        });
 
         // Remove any animations that are no longer in the updated list and resort animation rows
         GLib.idleAddOnce(() -> {
             for (String removedAnimation : removedAnimations) {
                 if (Objects.equals(removedAnimation, selectedAnimation)) {
-                    animationList.unselectRow(animations.get(removedAnimation));
+                    AnimationRow animationRow = animations.get(removedAnimation);
+                    if (animationRow != null && animationRow.isAncestor(animationList)) {
+                        animationList.unselectRow(animationRow);
+                    }
                     uploadPageSelect();
                 }
 

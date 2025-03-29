@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.beryx.jlink' version '3.1.1'
-    id 'io.github.jwharm.flatpak-gradle-generator' version '1.3.0'
+    id 'io.github.jwharm.flatpak-gradle-generator' version '1.5.0'
     id 'io.github.crimix.replace-placeholders' version '2.0'
 }
 
@@ -39,8 +39,8 @@ dependencies {
 
     implementation 'io.github.classgraph:classgraph:4.8.179'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
 }
 
 

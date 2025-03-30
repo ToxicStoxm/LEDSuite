@@ -349,22 +349,19 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     );
                     animations.put(newAnimationName, newAnimationRow);
 
-
                     animationList.append(newAnimationRow);
                     logger.verbose("Added animation: {}", newAnimationName);
                 }
             }
-        });
 
-        // Remove any animations that are no longer in the updated list and resort animation rows
-        GLib.idleAddOnce(() -> {
+            // Remove any animations that are no longer in the updated list and resort animation rows
             for (String removedAnimation : removedAnimations) {
                 if (Objects.equals(removedAnimation, selectedAnimation)) {
                     AnimationRow animationRow = animations.get(removedAnimation);
                     if (animationRow != null && animationRow.isAncestor(animationList)) {
                         animationList.unselectRow(animationRow);
+                        uploadPageSelect();
                     }
-                    uploadPageSelect();
                 }
 
                 removeAction(removedAnimation);

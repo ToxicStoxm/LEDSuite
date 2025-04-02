@@ -790,6 +790,8 @@ public class LEDSuiteApplication extends Application {
         }.runTaskAsynchronously();
     }
 
+    public static final AtomicBoolean errorFlag = new AtomicBoolean(false);
+
     /**
      * Handles an error by displaying an error dialog with a custom message, heading, and log area.
      * If a parent application window is available, the error dialog will be presented to the user.
@@ -800,13 +802,14 @@ public class LEDSuiteApplication extends Application {
     public static void handleError(@NotNull ErrorData errorData) {
         ApplicationWindow parent = window.asApplicationWindow();
         String message = errorData.getMessage();
-        if (parent != null) {
+        if (parent != null && !errorFlag.get()) {
+            errorFlag.set(true);
             ErrorAlertDialog.builder()
                     .errorMessage(message)
                     .heading(errorData.getHeading())
                     .enableReporting(errorData.isEnableReporting())
-                    .build();
-                    //.present(parent);
+                    .build()
+                    .present(parent);
         }
         if (errorData.isLog() && message != null) logger.error(errorData.getMessage());
     }

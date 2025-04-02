@@ -52,7 +52,10 @@ public class ErrorAlertDialog {
                 .id("ok")
                 .label(Translations.getText("_OK"))
                 .activated(true)
-                .responseCallback(() -> logger.verbose("Error acknowledged by the user!"))
+                .responseCallback(() -> {
+                    LEDSuiteApplication.errorFlag.set(false);
+                    logger.verbose("Error acknowledged by the user!");
+                })
                 .build();
 
         reportResponse = AlertDialogResponse.builder()
@@ -61,6 +64,7 @@ public class ErrorAlertDialog {
                 .activated(!disableReportResponse)
                 .appearance(ResponseAppearance.SUGGESTED)
                 .responseCallback(() -> {
+                    LEDSuiteApplication.errorFlag.set(false);
                     try {
                         UriLauncher launcher = UriLauncher.builder()
                                 .setUri(Constants.Application.ISSUES)

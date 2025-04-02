@@ -56,4 +56,10 @@ public interface Widget extends Serializable<DeserializableWidget, org.gnome.gtk
     default String getItemType() {
         return getType();
     }
+
+    /**
+     * @return copy of widget wrapper
+     */
+    @Deprecated(forRemoval = true)
+    Widget cpy();
 }

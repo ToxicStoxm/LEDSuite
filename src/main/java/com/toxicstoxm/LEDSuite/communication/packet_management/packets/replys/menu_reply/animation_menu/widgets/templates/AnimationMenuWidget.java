@@ -4,6 +4,9 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.row_widgets.*;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.special_widgets.ButtonWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuChangeRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
@@ -63,6 +66,21 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
                 .build();
     }
 
+    public AnimationMenuWidget<?> cpy() {
+        String type = getType();
+        return switch (WidgetType.valueOf(type.toUpperCase())) {
+            case GROUP -> null;
+            case BUTTON_ROW -> new ButtonRowWidget();
+            case BUTTON -> new ButtonWidget();
+            case ENTRY_ROW -> new EntryRowWidget();
+            case PROPERTY_ROW -> new PropertyRowWidget();
+            case COMBO_ROW -> new ComboRowWidget();
+            case SWITCH_ROW -> new SwitchRowWidget();
+            case SPIN_ROW -> new SpinRowWidget();
+            case EXPANDER_ROW -> new ExpanderRowWidget();
+        };
+    }
+
     protected void sendMenuChangeRequest(Object objectValue) {
         try {
             getChangeCallback().enqueueMessage(
@@ -107,7 +125,6 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
         widget = GObject.newInstance(getWidgetType());
 
         this.animationName = deserializableWidget.animationName();
-
         return widget;
     }
 

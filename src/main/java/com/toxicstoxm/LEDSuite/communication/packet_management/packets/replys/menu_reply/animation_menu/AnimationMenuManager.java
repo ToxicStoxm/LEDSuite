@@ -253,7 +253,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
             widgets.forEach((index, deserializableWidget) -> {
                 try {
                     menuGroup.add(
-                            get(deserializableWidget.widgetType()).deserialize(
+                            get(deserializableWidget.widgetType()).cpy().deserialize(
                                     deserializableWidget
                             )
                     );

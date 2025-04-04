@@ -13,7 +13,7 @@ public class Constants {
         public static @NotNull String getAppDir() {
             String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything
-                    java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not, it uses the java home with '.config/LED-Cube-Control-Panel/' appended as a path
+                    java.lang.System.getProperty("user.home") + "/.config/" + Application.NAME + "/" : // If not, it uses the java home with '.config/<APPNAME>/' appended as a path
                     confHome + "/"; // else it gets the environment variable and appends / because, if it's missing, it will error, but when there are two it will still work
         }
 

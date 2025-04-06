@@ -625,4 +625,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public void update(StatusUpdate statusUpdate) {
         endpointProvider.getStatusDialogInstance().update(statusUpdate);
     }
+
+    @Override
+    public boolean checkRenamePending(String fileName) {
+        return !animations.containsKey(fileName) || animations.get(fileName).getRenamePending();
+    }
 }

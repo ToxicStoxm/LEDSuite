@@ -156,4 +156,10 @@ public interface MainWindow extends StatusDialogEndpoint, SettingsDialogEndpoint
      * @param visible {@code true} to show the animation control buttons, {@code false} to hide them.
      */
     void setAnimationControlButtonsVisible(boolean visible);
+
+    /**
+     * Checks if a rename request for the provided animation is pending.
+     * @return {@code true} if a rename request is pending, otherwise {@code false}
+     */
+    boolean checkRenamePending(String fileName);
 }

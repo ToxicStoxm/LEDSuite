@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.time;
 import com.toxicstoxm.YAJL.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.HashMap;
 
 /**
@@ -53,12 +54,28 @@ public class CooldownManager {
 
     public static void addAction(@NotNull String name, @NotNull Action action, long cooldown, boolean force, String actionGroupName) {
         CooldownAction cooldownAction = new CooldownAction(action, cooldown, System.currentTimeMillis(), actionGroupName);
+        logger.debug("Adding new action '{}': {}", name, cooldownAction);
         if (!force) actions.putIfAbsent(name, cooldownAction);
         else actions.put(name, cooldownAction);
     }
 
     public static void createActionGroup(@NotNull String groupName, long cooldown) {
         actionGroups.put(groupName, new CooldownActionGroup(cooldown, System.currentTimeMillis()));
+    }
+
+    /**
+     * Sets the 'last call'-value to about one year ago, to ensure this action is no longer on cooldown.
+     * @param name the action to reset the cooldown for
+     * @return {@code true} if the cooldown for the specified action was successfully reset, otherwise {@code false}
+     */
+    public static boolean clearCooldown(String name) {
+        if (name == null || !actions.containsKey(name)) return false;
+        CooldownAction cooldownAction = actions.remove(name);
+        if (cooldownAction.actionGroup == null) {
+            actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis() - Duration.ofDays(365).toMillis(), null));
+        }
+        logger.debug("Successfully cleared cooldown for action '{}'.", name);
+        return true;
     }
 
     /**
@@ -77,7 +94,7 @@ public class CooldownManager {
                 if (cooldownAction.action != null) {
                     cooldownAction.action.run();
                 } else {
-                    logger.debug("Action for '{}' was null!", name);
+                    logger.debug("Action for '{}' is null!", name);
                 }
                 actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis(), null));
                 return true;

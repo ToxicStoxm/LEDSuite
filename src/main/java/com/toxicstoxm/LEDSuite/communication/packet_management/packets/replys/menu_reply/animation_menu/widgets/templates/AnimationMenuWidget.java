@@ -82,6 +82,10 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     }
 
     protected void sendMenuChangeRequest(Object objectValue) {
+        if (LEDSuiteApplication.getWindow().checkRenamePending(getAnimationName())) {
+            logger.debug("Denied menu change request from '{}', because a rename request for that animation is pending!", getAnimationName());
+            return;
+        }
         try {
             getChangeCallback().enqueueMessage(
                     MenuChangeRequestPacket.builder()
@@ -96,6 +100,10 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     }
 
     protected void sendMenuChangeRequestWithoutValue() {
+        if (LEDSuiteApplication.getWindow().checkRenamePending(getAnimationName())) {
+            logger.debug("Denied menu change request from '{}', because a rename request for that animation is pending!", getAnimationName());
+            return;
+        }
         try {
             getChangeCallback().enqueueMessage(
                     MenuChangeRequestPacket.builder()

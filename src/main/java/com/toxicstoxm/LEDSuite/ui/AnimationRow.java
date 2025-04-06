@@ -23,6 +23,7 @@ import java.lang.foreign.MemorySegment;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -66,6 +67,16 @@ public class AnimationRow extends ListBoxRow {
     @Getter
     private boolean pauseable = false;
 
+    public void setRenamePending(boolean renamePending) {
+        this.renamePending.set(renamePending);
+    }
+
+    public boolean getRenamePending() {
+        return renamePending.get();
+    }
+
+    private final AtomicBoolean renamePending = new AtomicBoolean(false);
+
     /**
      * The {@link Image} widget used to display the animation's icon.
      */
@@ -105,15 +116,13 @@ public class AnimationRow extends ListBoxRow {
         CooldownManager.addAction(
                 animationRowData.animationID(),
                 animationRowData.action(),
-                animationRowData.cooldown() != null ? animationRowData.cooldown() : 0,
-                null
+                animationRowData.cooldown() != null ? animationRowData.cooldown() : 0
         );
-
-        // Create the action for the application and bind it to the animation row.
-        createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
 
         // Instantiate and configure the AnimationRow with the provided data.
         AnimationRow row = GObject.newInstance(AnimationRow.class, "action-name", "app." + animationRowData.animationID());
+        // Create the action for the application and bind it to the animation row.
+        row.createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
         row.animationID = animationRowData.animationID();
         row.update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
         row.setLastAccessed(animationRowData.lastAccessed());
@@ -176,7 +185,7 @@ public class AnimationRow extends ListBoxRow {
      * @param animationID The unique ID of the animation.
      * @param animationLabel The label to be displayed for the animation.
      */
-    private static void createAction(@NotNull Application app, String animationID, String animationLabel) {
+    private void createAction(@NotNull Application app, String animationID, String animationLabel) {
         LEDSuiteWindow window = (LEDSuiteWindow) app.getActiveWindow();
         var simpleAction = new SimpleAction(String.valueOf(animationID), null);
 
@@ -186,6 +195,10 @@ public class AnimationRow extends ListBoxRow {
             if (!CooldownManager.call(String.valueOf(animationID))) {
                 logger.info("The animation row {} ({}) is on cooldown!", animationLabel, animationID);
             } else {
+                if (renamePending.get()) {
+                    logger.debug("Menu request for animation '{}' was denied because a rename request for this animation is pending!", animationID);
+                    return;
+                }
                 // If the cooldown has passed, update the selection and request the menu.
                 GLib.idleAddOnce(() -> {
                     window.fileManagementList.unselectAll();  // Unselect all items in the file management list

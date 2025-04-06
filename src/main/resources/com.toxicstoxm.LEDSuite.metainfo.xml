@@ -4,7 +4,7 @@
 
     <name>LEDSuite</name>
 
-    <summary>Control an LED-Matrix with style</summary>
+    <summary>Control LED/display installations</summary>
 
     <developer id="com.toxicstoxm">
         <name>ToxicStoxm</name>
@@ -15,6 +15,19 @@
 
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
+        <release version="1.0.0-rc3" date="2025-04-06" type="development">
+            <description>
+                <p>Release Candidate #3</p>
+                <ul>
+                    <li>Bug fixes</li>
+                    <li>Update dependencies</li>
+                    <li>Half clock speed for scheduler to improve performance</li>
+                    <li>Cleanup and general polish</li>
+                    <li>Fixed a few fatal flaws, including race conditions and un-save multithreading</li>
+                    <li>Update Translations</li>
+                </ul>
+            </description>
+        </release>
         <release version="1.0.0-rc2" date="2024-11-24" type="development">
             <description>
                 <p>Release Candidate #2</p>
@@ -137,7 +150,7 @@
     <url type="contribute">https://github.com/ToxicStoxm/LEDSuite/tree/dev</url>
 
     <recommends>
-        <display_length compare="ge">300</display_length>
+        <display_length compare="ge">360</display_length>
     </recommends>
 
     <supports>
@@ -147,15 +160,21 @@
     </supports>
 
     <description>
-        <p>Program for controlling any HDMI LCD/OLED/Plasma/CRT, LED-Matrix or an LED-Cube with the proper backend.</p>
-        <p>With the following features:</p>
+        <p>Client for LEDSuiteBackend. Learn how to set up the backend <b href="https://gitlab.com/hannescam/LEDSuiteBackend">here</b></p>
 
+        <p>Create custom animations using Java, simple videos or images.</p>
+        <p>Tweak the rendering pipeline to your liking using YAML.</p>
+
+        <p>Currently supported hardware:</p>
         <ul>
-            <li>Uploading files to the server</li>
-            <li>Receiving status and errors from the server</li>
-            <li>Changing and adjusting server-side settings</li>
-            <li>Setting up and controlling interactive animations that are on the server</li>
-            <li>Playing back MP4, JPEG and many other files on the server's LED-Matrix</li>
+            <li>PC-Monitors and TVs using HDMI</li>
+            <li>NeoPixels (RGB and RGBW)</li>
+            <li>Debugging/development preview window</li>
+        </ul>
+
+        <p>Future hardware support:</p>
+        <ul>
+            <li>HUB75 LED matrix panels</li>
         </ul>
     </description>
 
@@ -171,16 +190,24 @@
 
     <screenshots>
         <screenshot type="default">
-            <caption>LEDSuite add file dialog, used to upload files to the backend</caption>
-            <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-AddFileDialog.png</image>
+            <caption>Main page, after launching the app</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Main-Page.png</image>
         </screenshot>
         <screenshot>
-            <caption>Example of what the settings menu of an animation can look like</caption>
-            <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-AnimationSettingsDialog.png</image>
+            <caption>Upload page, used for uploading animations to the backend</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-Page.png</image>
         </screenshot>
         <screenshot>
-            <caption>LEDSuite settings menu</caption>
-            <image>https://www.toxicstoxm.com/LEDSuite/metadata/screenshots/LEDSuite-SettingsDialog.png</image>
+            <caption>Upload page while uploading an animation with progress bar</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Settings Dialog, connect to backend, configure behaviour</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Settings-Dialog.png</image>
         </screenshot>
     </screenshots>
 </component>

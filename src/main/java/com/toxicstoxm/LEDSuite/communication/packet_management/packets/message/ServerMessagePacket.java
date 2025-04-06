@@ -41,6 +41,7 @@ public class ServerMessagePacket extends CommunicationPacket {
     private String message;
     private String heading;
     private String source;
+
     @Singular
     private List<AlertDialogResponse> responses;
 
@@ -56,32 +57,36 @@ public class ServerMessagePacket extends CommunicationPacket {
 
     @Override
     public Packet deserialize(String yamlString) throws DeserializationException {
+        super.deserialize(yamlString);
+        ServerMessagePacket packet = ServerMessagePacket.builder().build();
 
-        setMessage(getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.MESSAGE));
-        heading = yaml.getString(Constants.Communication.YAML.Keys.Message.ServerMessage.HEADING);
-        source =  yaml.getString(Constants.Communication.YAML.Keys.Message.ServerMessage.SOURCE);
+        packet.message = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.MESSAGE);
+        packet.heading = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.HEADING);
+        packet.source = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.SOURCE);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Message.ServerMessage.RESPONSES)) {
             ConfigurationSection responsesSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Message.ServerMessage.RESPONSES);
             if (responsesSection != null) {
-                responses = new ArrayList<>();
+                packet.responses = new ArrayList<>();
                 for (String key : responsesSection.getKeys(false)) {
-                    responses.add(
+                    ConfigurationSection responseSection = responsesSection.getConfigurationSection(key);
+                    if (responseSection == null) continue;
+                    packet.responses.add(
                             AlertDialogResponse.builder()
                                     .id(key)
                                     .label(YamlTools.getStringIfAvailable(
                                             Constants.Communication.YAML.Keys.Message.ServerMessage.Responses.LABEL,
-                                            responsesSection
+                                            responseSection
                                     ))
                                     .activated(YamlTools.getBooleanIfAvailable(
                                             Constants.Communication.YAML.Keys.Message.ServerMessage.Responses.ACTIVE,
-                                            responsesSection
+                                            responseSection
                                     ))
                                     .appearance(ResponseAppearance.valueOf(
                                             YamlTools.getStringIfAvailable(
                                                     Constants.Communication.YAML.Keys.Message.ServerMessage.Responses.STYLE,
                                                     "default",
-                                                    responsesSection
+                                                    responseSection
                                             ).toUpperCase()
                                     ))
                                     .responseCallback(() -> {
@@ -97,7 +102,7 @@ public class ServerMessagePacket extends CommunicationPacket {
             }
         }
 
-        return super.deserialize(yamlString);
+        return packet;
     }
 
     @Override

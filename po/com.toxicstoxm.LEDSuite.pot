@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.toxicstoxm.LEDSuite\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-03 01:14+0100\n"
+"POT-Creation-Date: 2025-04-06 23:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,9 +45,9 @@ msgid "_Cancel"
 msgstr ""
 
 #: src/main/resources/ui/FileCollisionDialog.ui:8
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:523
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:580
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:608
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:515
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:572
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:600
 msgid "Animation with name '$' already exists."
 msgstr ""
 
@@ -65,78 +65,94 @@ msgstr ""
 msgid "_Overwrite"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:194
+#: src/main/resources/ui/LEDSuiteWindow.ui:50
+msgid "Delete animation"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:71
+msgid "Rename animation"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:104
+msgid "Stop animation"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:125
+msgid "Play/pause animation"
+msgstr ""
+
+#: src/main/resources/ui/LEDSuiteWindow.ui:198
 msgid "Upload Files"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:209
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:91
+#: src/main/resources/ui/LEDSuiteWindow.ui:213
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:89
 msgid "Animations"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:245
+#: src/main/resources/ui/LEDSuiteWindow.ui:249
 msgid "File Management"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:291
+#: src/main/resources/ui/LEDSuiteWindow.ui:295
 msgid "_Status Menu"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:295
+#: src/main/resources/ui/LEDSuiteWindow.ui:299
 msgid "_Settings Menu"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:299
+#: src/main/resources/ui/LEDSuiteWindow.ui:303
 msgid "_Shortcuts Menu"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:303
+#: src/main/resources/ui/LEDSuiteWindow.ui:307
 msgid "_About LEDSuite"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:307
+#: src/main/resources/ui/LEDSuiteWindow.ui:311
 msgid "_Quit"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:319
-#: src/main/resources/ui/LEDSuiteWindow.ui:341
+#: src/main/resources/ui/LEDSuiteWindow.ui:323
+#: src/main/resources/ui/LEDSuiteWindow.ui:345
 #: src/main/resources/ui/ShortcutsDialog.ui:14
 #: src/main/resources/ui/ShortcutsDialog.ui:36
 msgid "Shortcuts"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:322
+#: src/main/resources/ui/LEDSuiteWindow.ui:326
 #: src/main/resources/ui/ShortcutsDialog.ui:17
 #: src/main/resources/ui/StatusDialog.ui:23
 msgid "General"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:327
+#: src/main/resources/ui/LEDSuiteWindow.ui:331
 #: src/main/resources/ui/ShortcutsDialog.ui:22
 msgid "Show Status"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:334
+#: src/main/resources/ui/LEDSuiteWindow.ui:338
 #: src/main/resources/ui/ShortcutsDialog.ui:29
 msgid "Show Settings"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:348
+#: src/main/resources/ui/LEDSuiteWindow.ui:352
 #: src/main/resources/ui/ShortcutsDialog.ui:43
 msgid "About LEDSuite"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:356
+#: src/main/resources/ui/LEDSuiteWindow.ui:360
 #: src/main/resources/ui/ShortcutsDialog.ui:51
 msgid "Quit"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:363
+#: src/main/resources/ui/LEDSuiteWindow.ui:367
 #: src/main/resources/ui/ShortcutsDialog.ui:58
 msgid "UI"
 msgstr ""
 
-#: src/main/resources/ui/LEDSuiteWindow.ui:368
+#: src/main/resources/ui/LEDSuiteWindow.ui:372
 #: src/main/resources/ui/ShortcutsDialog.ui:63
 msgid "Toggle Sidebar"
 msgstr ""
@@ -162,7 +178,7 @@ msgid "Rename file"
 msgstr ""
 
 #: src/main/resources/ui/SettingsDialog.ui:23
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:209
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:205
 msgid "Disconnected"
 msgstr ""
 
@@ -185,19 +201,23 @@ msgid ""
 "Format: protcol://domain:port/folder/"
 msgstr ""
 
-#: src/main/resources/ui/SettingsDialog.ui:98
+#: src/main/resources/ui/SettingsDialog.ui:81
+msgid "Work in Progress"
+msgstr ""
+
+#: src/main/resources/ui/SettingsDialog.ui:99
 msgid "Brightness"
 msgstr ""
 
-#: src/main/resources/ui/SettingsDialog.ui:109
+#: src/main/resources/ui/SettingsDialog.ui:110
 msgid "Conversion Mode"
 msgstr ""
 
-#: src/main/resources/ui/SettingsDialog.ui:114
+#: src/main/resources/ui/SettingsDialog.ui:115
 msgid "Restore previous state on boot"
 msgstr ""
 
-#: src/main/resources/ui/SettingsDialog.ui:128
+#: src/main/resources/ui/SettingsDialog.ui:129
 msgid "Apply"
 msgstr ""
 
@@ -265,109 +285,97 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:519
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:573
 msgid "Confirm deletion"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:520
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:574
 msgid "Are you sure that you want to delete '$'?"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:521
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteWindow.java:575
 msgid "Delete"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:506
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/LEDSuiteApplication.java:499
 msgid ""
 "Cancelled file upload because upload session id was null! This should be "
 "reported!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:100
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:98
 msgid "Pick a file"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:147
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:200
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:222
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:315
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java:177
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:145
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:198
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/UploadPage.java:220
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:325
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/status_dialog/StatusDialog.java:169
 msgid "N/A"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java:97
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/RenameDialog.java:89
 msgid "Rename"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:196
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:190
 msgid "Connected"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:240
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:243
 msgid "Connecting"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:245
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:250
 msgid "Disconnecting"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:327
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:338
 msgid "Slow down!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:403
-msgid "Authenticated as $"
-msgstr ""
-
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:410
-msgid "Authenticate"
-msgstr ""
-
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:425
-msgid "Authenticating"
-msgstr ""
-
-#: src/main/java/com/toxicstoxm/LEDSuite/communication/packet_management/packets/replys/menu_reply/animation_menu/widgets/templates/AnimationMenuWidget.java:52
+#: src/main/java/com/toxicstoxm/LEDSuite/communication/packet_management/packets/replys/menu_reply/animation_menu/widgets/templates/AnimationMenuWidget.java:57
 msgid "Serialization of animation menu widgets is not supported!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/communication/websocket/WebSocketClientEndpoint.java:108
+#: src/main/java/com/toxicstoxm/LEDSuite/communication/websocket/WebSocketClientEndpoint.java:110
 msgid "Error in WebSocket session ID $: $"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/communication/websocket/WebSocketUpload.java:81
+#: src/main/java/com/toxicstoxm/LEDSuite/communication/websocket/WebSocketUpload.java:83
 msgid "Failed to send sessionID to server, terminating file upload!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/authentication/AuthenticationDialog.java:120
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/authentication/AuthenticationDialog.java:115
 msgid "Authentication -> Username: $ - Password hashing failed!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:51
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:53
 msgid "_OK"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:58
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:63
 msgid "_Report"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:73
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:79
 msgid "An error occurred during opening issue URL!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:91
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:96
 msgid "An error occurred!"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:96
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/ErrorAlertDialog.java:101
 msgid "Error"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/MessageDialog.java:30
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/MessageDialog.java:32
 msgid "Ok"
 msgstr ""
 
-#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/MessageDialog.java:63
+#: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/alert_dialogs/MessageDialog.java:65
 msgid "Client Message"
 msgstr ""
 

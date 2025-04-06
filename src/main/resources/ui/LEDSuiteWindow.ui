@@ -47,6 +47,7 @@ circular</property>
                                         <property name="margin-end">5</property>
                                         <property name="margin-start">10</property>
                                         <property name="margin-top">10</property>
+                                        <property name="tooltip-text" translatable="yes">Delete animation</property>
                                         <property name="width-request">50</property>
                                         <signal name="clicked" handler="delete_button_cb"/>
                                       </object>
@@ -67,6 +68,7 @@ circular</property>
                                         <property name="margin-end">10</property>
                                         <property name="margin-start">5</property>
                                         <property name="margin-top">10</property>
+                                        <property name="tooltip-text" translatable="yes">Rename animation</property>
                                         <property name="width-request">50</property>
                                         <signal name="clicked" handler="rename_button_cb"/>
                                       </object>
@@ -99,6 +101,7 @@ circular</property>
                                         <property name="margin-end">5</property>
                                         <property name="margin-start">10</property>
                                         <property name="margin-top">10</property>
+                                        <property name="tooltip-text" translatable="yes">Stop animation</property>
                                         <property name="width-request">50</property>
                                         <signal name="clicked" handler="stop_button_cb"/>
                                       </object>
@@ -119,6 +122,7 @@ circular</property>
                                         <property name="margin-end">10</property>
                                         <property name="margin-start">5</property>
                                         <property name="margin-top">10</property>
+                                        <property name="tooltip-text" translatable="yes">Play/pause animation</property>
                                         <property name="width-request">50</property>
                                         <signal name="clicked" handler="play_pause_button_cb"/>
                                       </object>

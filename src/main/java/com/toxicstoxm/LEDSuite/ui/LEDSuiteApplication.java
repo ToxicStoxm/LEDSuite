@@ -151,7 +151,10 @@ public class LEDSuiteApplication extends Application {
 
         logger.verbose(" > add callbacks");
 
-        quit.onActivate(_ -> quit());
+        quit.onActivate(_ -> GLib.idleAddOnce(() -> {
+            window.asApplicationWindow().close();
+            this.quit();
+        }));
         status.onActivate(_ -> window.displayStatusDialog());
         settings.onActivate(_ -> window.displayPreferencesDialog());
         shortcuts.onActivate(_ -> window.displayShortcutsWindow());

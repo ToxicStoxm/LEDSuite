@@ -12,6 +12,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.OverwriteConfirmationDialog;
@@ -45,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.foreign.MemorySegment;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Main application window class. Holds and manages all UI related elements.
@@ -231,6 +233,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     private final HashMap<String, AnimationRow> animations = new HashMap<>();
 
+    private final HashMap<String, String> renamedAnimations = new HashMap<>();
+
     @Getter
     @Setter
     private String selectedAnimation;
@@ -311,6 +315,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         logger.verbose("Updating available animations. Count: {}", updatedAnimations.size());
 
         List<String> removedAnimations = new ArrayList<>(animations.keySet());
+        AtomicReference<String> recognized = new AtomicReference<>("");
 
         GLib.idleAddOnce(() -> {
             for (StatusReplyPacket.Animation updatedAnimation : updatedAnimations) {
@@ -372,8 +377,29 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 }
 
                 logger.verbose("Removed animation: {}", removedAnimation);
+
+                // Checks if the removed animation is the old name of a renamed animation
+                if (removedAnimations.contains(removedAnimation)) {
+                    recognized.set(removedAnimation);
+                }
             }
             animationList.invalidateSort();
+
+            // If any old, renamed animations were recognized tries to find the new renamed animation and selects it.
+            if (!recognized.get().isBlank()) {
+                logger.debug("Recognized old animation a rename was requested for, searching for renamed animation.");
+                String toSelect = renamedAnimations.remove(recognized.get());
+                if (selectedAnimation == null || selectedAnimation.isBlank() || selectedAnimation.equals(recognized.get())) {
+                    logger.debug("Found renamed animation '{}'! Selecting it...", toSelect);
+                    AnimationRow animationRow = animations.get(toSelect);
+                    if (animationRow != null) {
+                        GLib.idleAddOnce(() -> {
+                            CooldownManager.clearCooldown(toSelect);
+                            animationRow.emitActivate();
+                        });
+                    }
+                }
+            }
         });
     }
 
@@ -580,11 +606,14 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                                         .newName(newName)
                                         .build().serialize()
                         );
+                        renamedAnimations.put(animation, newName);
                     }
                 } else {
+                    animations.get(selectedAnimation).setRenamePending(false);
                     logger.info("Cancelled animation rename!");
                 }
             });
+            animations.get(selectedAnimation).setRenamePending(true);
             renameDialog.present(this);
         } else {
             logger.warn("Can't rename animation, because no animation is currently selected!");

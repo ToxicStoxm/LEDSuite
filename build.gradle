@@ -43,7 +43,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
 }
 
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(23)
@@ -62,7 +61,7 @@ tasks.named('test', Test) {
 
 tasks.register('glibCompileResources') {
     doLast {
-        exec {
+        providers.exec {
             workingDir 'src/main/resources'
             commandLine 'glib-compile-resources', 'LEDSuite.gresource.xml'
         }
@@ -76,16 +75,10 @@ tasks.named('classes') {
 application {
     mainClass = 'com.toxicstoxm.LEDSuite.Main'
     mainModule = 'com.toxicstoxm.LEDSuite'
-    applicationDefaultJvmArgs = [
-            '--enable-native-access=org.gnome.glib',
-            '--enable-native-access=org.gnome.gobject',
-            '--enable-native-access=org.gnome.gio',
-            '--enable-native-access=org.gnome.gdk',
-            '--enable-native-access=org.gnome.gtk',
-            '--enable-native-access=org.gnome.adw',
-            '--enable-native-access=org.freedesktop.cairo',
-            '--enable-native-access=com.toxicstoxm.LEDSuite'
-    ]
+}
+
+tasks.named('run') {
+    jvmArgs += '--enable-native-access=ALL-UNNAMED'
 }
 
 jlink {

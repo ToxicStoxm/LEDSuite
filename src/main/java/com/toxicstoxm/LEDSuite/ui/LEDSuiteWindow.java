@@ -383,6 +383,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     recognized.set(removedAnimation);
                 }
             }
+
+            // Resort the animation list
             animationList.invalidateSort();
 
             // If any old, renamed animations were recognized tries to find the new renamed animation and selects it.

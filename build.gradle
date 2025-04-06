@@ -8,7 +8,7 @@ plugins {
 
 if ("@ID@".endsWith("@")) {
     group = 'com.toxicstoxm.LEDSuite'
-    version = '1.0.0-rc2'
+    version = '1.0.0-rc3'
 } else {
     group = '@ID@'
     version = '@VERSION@'
@@ -61,7 +61,7 @@ tasks.named('test', Test) {
 
 tasks.register('glibCompileResources') {
     doLast {
-        providers.exec {
+        exec {
             workingDir 'src/main/resources'
             commandLine 'glib-compile-resources', 'LEDSuite.gresource.xml'
         }

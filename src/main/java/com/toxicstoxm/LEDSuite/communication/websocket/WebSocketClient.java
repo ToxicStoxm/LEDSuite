@@ -205,6 +205,9 @@ public class WebSocketClient {
      * @return {@code true} if the message was successfully added to the queue, otherwise {@code false}.
      */
     public boolean enqueueMessage(String message) {
+        if (message == null) {
+            logger.warn("Refused null message!");
+        }
         return sendQueue.offer(message);
     }
 

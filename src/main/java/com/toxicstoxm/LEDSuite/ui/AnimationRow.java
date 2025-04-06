@@ -127,8 +127,6 @@ public class AnimationRow extends ListBoxRow {
         row.update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
         row.setLastAccessed(animationRowData.lastAccessed());
         row.setAnimationLabel(animationRowData.label().strip());
-        row.animationRowLabel.setWrap(true);  // Allow label to wrap if it's too long
-        row.animationRowLabel.setWidthChars(10);  // Set a maximum width for the label
         row.pauseable = animationRowData.pauseable();
 
         // Set the tooltip to show the animation ID when hovered.

@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
 <interface domain="com.toxicstoxm.LEDSuite">
+  <!-- interface-name AnimationRow.ui -->
   <requires lib="gtk" version="4.16"/>
   <template class="AnimationRow" parent="GtkListBoxRow">
     <property name="child">
@@ -10,7 +12,12 @@
           <object class="GtkImage" id="animation_icon"/>
         </child>
         <child>
-          <object class="GtkLabel" id="animation_label"/>
+          <object class="GtkLabel" id="animation_label">
+            <property name="halign">start</property>
+            <property name="max-width-chars">10</property>
+            <property name="wrap">True</property>
+            <property name="wrap-mode">word-char</property>
+          </object>
         </child>
       </object>
     </property>

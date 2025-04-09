@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>com.toxicstoxm.LEDSuite</id>
+    <id>@ID@</id>
 
     <name>LEDSuite</name>
 
     <summary>Control LED/display installations</summary>
 
-    <developer id="com.toxicstoxm">
-        <name>ToxicStoxm</name>
+    <developer id="@DEVELOPER_ID@">
+        <name>@DEVELOPER_NAME@</name>
     </developer>
 
     <metadata_license>CC-BY-SA-4.0</metadata_license>

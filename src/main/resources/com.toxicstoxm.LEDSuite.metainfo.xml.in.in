@@ -151,6 +151,7 @@
   </content_rating>
 
   <url type="homepage">https://github.com/ToxicStoxm/LEDSuite</url>
+  <url type="vcs-browser">https://github.com/ToxicStoxm/LEDSuite</url>
   <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
   <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
   <url type="contribute">https://github.com/ToxicStoxm/LEDSuite</url>
@@ -190,12 +191,16 @@
     <keyword>matrix</keyword>
     <keyword>LCCP</keyword>
     <keyword>Cube</keyword>
-    <keyword>LEDSuite</keyword>
+    <keyword>HUB75</keyword>
   </keywords>
 
   <launchable type="desktop-id">@DESKTOP_FILE@</launchable>
 
     <screenshots>
+        <screenshot type="default">
+            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
+        </screenshot>
         <screenshot>
             <caption>Main page, after launching the app</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Main-Page.png</image>
@@ -207,10 +212,6 @@
         <screenshot>
             <caption>Upload page while uploading an animation with progress bar</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
-        </screenshot>
-        <screenshot type="default">
-            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings Dialog, connect to backend, configure behaviour</caption>

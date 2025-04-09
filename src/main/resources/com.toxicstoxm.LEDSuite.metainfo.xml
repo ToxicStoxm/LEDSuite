@@ -147,7 +147,8 @@
     <url type="homepage">https://github.com/ToxicStoxm/LEDSuite</url>
     <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
     <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
-    <url type="contribute">https://github.com/ToxicStoxm/LEDSuite/tree/dev</url>
+    <url type="contribute">https://github.com/ToxicStoxm/LEDSuite</url>
+    <url type="backend-setup">https://gitlab.com/hannescam/LEDSuiteBackend"</url>
 
     <recommends>
         <display_length compare="ge">360</display_length>
@@ -160,7 +161,7 @@
     </supports>
 
     <description>
-        <p>Client for LEDSuiteBackend. Learn how to set up the backend <b href="https://gitlab.com/hannescam/LEDSuiteBackend">here</b></p>
+        <p>Client for LEDSuiteBackend. Learn how to set up the backend by checking out the link below.</p>
 
         <p>Create custom animations using Java, simple videos or images.</p>
         <p>Tweak the rendering pipeline to your liking using YAML.</p>
@@ -189,7 +190,7 @@
     <launchable type="desktop-id">@DESKTOP_FILE@</launchable>
 
     <screenshots>
-        <screenshot type="default">
+        <screenshot>
             <caption>Main page, after launching the app</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Main-Page.png</image>
         </screenshot>
@@ -202,7 +203,7 @@
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
         </screenshot>
         <screenshot>
-            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
+            <caption type="default">Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
         </screenshot>
         <screenshot>

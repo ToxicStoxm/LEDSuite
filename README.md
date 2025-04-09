@@ -1,13 +1,14 @@
 # LEDSuite
 [![Build](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml) <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FToxicStoxm%2FLEDSuite%2Fbadge?format=human"> <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
-- Front-End for any LED-Matrix with the matching backend
-- Back-End: [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
+- Graphical Front-End using [Java-GI](https://github.com/jwharm/java-gi) 
+- Control LED/display installations
+- **Back-End:** [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
-- Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend<a>)
-- V2 is already in development check out the [development branch](https://github.com/ToxicStoxm/LEDSuite/tree/dev) for further details
+- Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend</a>)
+- See latest [RC-Version](https://github.com/ToxicStoxm/LEDSuite/releases)
 
 ## ToDo
-###### (?) → planned but not final
+###### (?) → planned for post v1.0.0
 - [X] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
@@ -34,7 +35,7 @@
     - [ ] Authentication / Accounts
       - [ ] Testing
       - [ ] Save credentials
-      - [X] Basic implementation
+      - [X] Basic implementation **(postponed to after v1.0.0)**
 - [X] UI
   - [X] Elements
     -  [X] Dialogs
@@ -86,11 +87,11 @@
     - [ ] Chinese (?)
 - [ ] Flathub Release
   - [ ] Update metadata
-    - [ ] Description
-    - [ ] Screenshots
+    - [X] Description
+    - [X] Screenshots
     - [ ] Icon
     - [X] Version
-    - [ ] Patch notes
+    - [X] Patch notes
   - [X] Update dependencies
 - [ ] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)

@@ -2,6 +2,8 @@ package com.toxicstoxm.LEDSuite.task_scheduler;
 
 import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.YAJL.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The `LEDSuiteRunnable` class is an abstract class that provides a base implementation
@@ -13,6 +15,8 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
  * @since 1.0.0
  */
 public abstract class LEDSuiteRunnable implements Runnable {
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     private int taskId = -1;
 
     /**
@@ -138,8 +142,9 @@ public abstract class LEDSuiteRunnable implements Runnable {
      * @return The scheduled task.
      * @since 1.0.0
      */
-    protected LEDSuiteTask setupId(final LEDSuiteTask task) {
+    protected LEDSuiteTask setupId(final @NotNull LEDSuiteTask task) {
         this.taskId = task.getTaskId();
+        logger.verbose("Running task with id -> '{}'", taskId);
         return task;
     }
 }

@@ -138,6 +138,6 @@ public class SettingsReplyPacket extends CommunicationPacket {
                         .build()
         );
 
-        logger.info("Updated settings using the provided settings updater.");
+        logger.verbose("Updated settings using the provided settings updater");
     }
 }

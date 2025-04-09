@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.message.ServerMessagePacket;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
+import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Widget;
@@ -13,10 +14,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ServerMessageDialog {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     private final AlertDialog<AlertDialogData> alertDialog;
 
     @Builder
     public ServerMessageDialog(@NotNull ServerMessagePacket packet) {
+        logger.verbose("Creating server message dialog from message packet -> {}", packet);
         alertDialog = GeneralAlertDialog.create().configure(
                 AlertDialogData.builder()
                         .heading(generateHeading(packet.getHeading(), packet.getSource()))
@@ -33,6 +37,7 @@ public class ServerMessageDialog {
      * @return the generated heading
      */
     private @NotNull String generateHeading(String heading, String source) {
+        logger.verbose("Generating message dialog heading from -> '{}' and '{}'", heading, source);
         StringBuilder sb = new StringBuilder();
         if (source != null && !source.isBlank()) {
             sb.append(source).append(" - ");
@@ -41,6 +46,7 @@ public class ServerMessageDialog {
             sb.append(heading);
         } else sb.append(Translations.getText("Server Message"));
 
+        logger.verbose("Generated message dialog heading -> '{}'", sb.toString());
         return sb.toString();
     }
 

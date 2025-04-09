@@ -2,6 +2,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
@@ -66,11 +67,13 @@ public class WebSocketClient {
      * @param path The URI of the server to connect to.
      */
     public WebSocketClient(WebSocketClientEndpoint clientEndpoint, URI path) {
+        logger.verbose("Initializing new Websocket Client with URI: '{}'", path);
         run(clientEndpoint, path);
         if (clientEndpoint instanceof WebSocketCommunication) startStatusRequestClockTask();
     }
 
     private void startStatusRequestClockTask() {
+        logger.verbose("Starting status request loop");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -139,6 +142,25 @@ public class WebSocketClient {
      */
     private void textEndpointHeartBeat(@NotNull Session session) throws InterruptedException, IOException {
         String toSend = sendQueue.poll(Long.MAX_VALUE, TimeUnit.DAYS);
+        if (toSend == null) {
+            logger.error("Tried to send null message to server! Session: '{}' URI: '{}'", session.getId(), session.getRequestURI());
+            return;
+        }
+
+        logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT,"----------------------< OUT >----------------------" + "\n[Session] {}", session.getId());
+        if (toSend.length() < 10000) {
+            new LEDSuiteRunnable() {
+                @Override
+                public void run() {
+                    logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, toSend);
+                    logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, "--------------------------------------------------");
+                }
+            }.runTaskAsynchronously();
+        } else {
+            logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, toSend);
+            logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, "--------------------------------------------------");
+
+        }
         session.getBasicRemote().sendText(toSend);
     }
 
@@ -221,6 +243,9 @@ public class WebSocketClient {
      * @return {@code true} if the packet was successfully added to the queue, otherwise {@code false}.
      */
     public boolean enqueueBinaryMessage(BinaryPacket binaryPacket) {
+        if (binaryPacket == null) {
+            logger.warn("Refused null packet!");
+        }
         return sendQueueBinary.offer(binaryPacket);
     }
 }

@@ -5,14 +5,15 @@ import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
+import org.gnome.adw.*;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Spinner;
-import org.gnome.adw.*;
 import org.gnome.gio.File;
 import org.gnome.glib.GLib;
 import org.gnome.gobject.GObject;
@@ -83,6 +84,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      */
     @GtkCallback(name = "file_picker_button_cb")
     public void filePickerButtonClickedCb() {
+        logger.verbose("File picker button clicked");
         var filter = FileFilter.builder()
                 .setSuffixes(new String[]{"jar"})
                 .setMimeTypes(new String[]{"image/*", "video/*"})
@@ -112,7 +114,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                         LEDSuiteApplication.getSettings().mainSection.uiSettings.filePickerInitialFolder = parentPath;
                     }
                     this.selectedFile = selectedFile.getPath();
-                    logger.info("Selected file: {}", this.selectedFile);
+                    logger.debug("Selected file: {}", this.selectedFile);
                     filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
                     WebSocketClient communication = LEDSuiteApplication.getWebSocketCommunication();
                     if (communication != null && communication.isConnected()) {
@@ -120,7 +122,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                     }
                 }
             } catch (GErrorException e) {
-                logger.info("User canceled file picker! No file selected!");
+                logger.debug("User canceled file picker! No file selected!");
             }
         });
     }
@@ -175,6 +177,11 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         long eta = newUploadStats.millisecondsRemaining();
         long speed = newUploadStats.bytesPerSecond();
 
+        logger.verbose("Upload Statistics: ETA: '{}' Speed: '{}'",
+                (StringPlaceholder) () -> StringFormatter.formatDuration(eta),
+                (StringPlaceholder) () -> StringFormatter.formatSpeed(speed)
+        );
+
         if (!this.uploadStatistics.getExpanded()) {
             GLib.idleAddOnce(() -> {
                 uploadStatistics.setExpanded(true);
@@ -192,6 +199,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      * Resets the upload statistics display to its initial state.
      */
     public void resetUploadStatistics() {
+        logger.verbose("Resetting upload statistics");
         GLib.idleAddOnce(() -> {
             uploadStatistics.setExpanded(false);
             uploadStatistics.setSensitive(false);
@@ -217,14 +225,16 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
     @GtkCallback(name = "upload_button_cb")
     public void uploadButtonClickedCb() {
+        logger.verbose("Upload button clicked");
         if (filePickerRow.getSubtitle().isBlank() || filePickerRow.getSubtitle().equals(Translations.getText("N/A"))) {
             setUploadButtonState(false);
+            logger.warn("Upload button click ignored, button should be insensitive!");
             return;
         }
         if (loading) return;
         loading = true;
         setUploadButtonActive(true);
-        logger.info("Upload button clicked, starting upload!");
+        logger.debug("Upload button click accepted, starting upload!");
 
         new LEDSuiteRunnable() {
             @Override
@@ -240,6 +250,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      * @param successfully {@code true} if the upload was successful, {@code false} otherwise.
      */
     public void uploadCompleted(boolean successfully) {
+        logger.verbose("Updating UI state -> upload-complete");
         GLib.idleAddOnce(() -> {
             setUploadButtonActive(false);
             uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});

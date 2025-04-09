@@ -103,6 +103,7 @@ public class UploadReplyPacket extends CommunicationPacket {
      */
     @Override
     public void handlePacket() {
+
         LEDSuiteApplication.getUploadManager().call(fileName, uploadPermitted);
     }
 }

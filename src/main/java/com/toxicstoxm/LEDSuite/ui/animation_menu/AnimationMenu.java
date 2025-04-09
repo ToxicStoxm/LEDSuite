@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
 import com.toxicstoxm.LEDSuite.ui.AnimationRow;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -31,6 +32,8 @@ import java.lang.foreign.MemorySegment;
 @Setter(onMethod_ = @Property(skip = true))
 @GtkTemplate(name = "AnimationMenu", ui = "/com/toxicstoxm/LEDSuite/AnimationMenu.ui")
 public class AnimationMenu extends Box implements AnimationMenuReference {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(AnimationMenu.class);
@@ -80,6 +83,7 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
      * @return a newly created {@code AnimationMenu} instance
      */
     public static @NotNull AnimationMenu create(String fileName) {
+        logger.verbose("Creating new animation menu");
         AnimationMenu menu = GObject.newInstance(AnimationMenu.class);
         menu.setMenuID(fileName);
         return menu;
@@ -96,6 +100,7 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
      * @return the initialized {@code AnimationMenu} instance
      */
     public AnimationMenu init(@NotNull AnimationRow row) {
+        logger.verbose("Instance init");
         GLib.idleAddOnce(() -> {
             // Set the label of the animation menu
             animationLabel.setLabel(row.animationRowLabel.getLabel());
@@ -107,12 +112,14 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
             } else {
                 animationMenuImage.setFromIconName(row.animationIcon.getIconName());
             }
+            logger.verbose("Instance initialized, ready");
         });
         return this;
     }
 
     @Override
     public void updateLabel(String label) {
+        logger.verbose("Updating label to -> '{}'", label);
         GLib.idleAddOnce(() -> {
             if (label != null) {
                 animationLabel.setLabel(label);
@@ -127,8 +134,10 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
                 ImageType storageType = icon.getStorageType();
                 if (storageType == ImageType.EMPTY || storageType == ImageType.ICON_NAME) {
                     animationMenuImage.setFromIconName(icon.getIconName());
+                    logger.verbose("Updating icon to -> '{}'", icon.getIconName());
                 } else {
                     animationMenuImage.setFromPaintable(icon.getPaintable());
+                    logger.verbose("Updating icon");
                 }
             }
         });

@@ -29,7 +29,7 @@ import java.util.Objects;
  * Typical usage:
  * <pre>
  *     ErrorAlertDialog dialog = ErrorAlertDialog.builder()
- *          .errorMessage("An unexpected error occurred.")
+ *          .errorMessage("An unexpected error occurred")
  *          .heading("Critical Error")
  *          .build();
  *     dialog.present(parentWidget);
@@ -87,6 +87,8 @@ public class ErrorAlertDialog {
 
     @Builder
     public ErrorAlertDialog(String errorMessage, String heading, boolean enableReporting) {
+        logger.verbose("Creating new error alert dialog");
+        logger.verbose("Configuring behaviour");
         alertDialog = GeneralAlertDialog.create().configure(
 
                 AlertDialogData.builder()
@@ -107,6 +109,7 @@ public class ErrorAlertDialog {
     }
 
     public void present(Widget parent) {
+        logger.verbose("Display request received");
         GLib.idleAddOnce(() -> alertDialog.present(parent));
     }
 

@@ -63,7 +63,7 @@ public class MenuErrorPacket extends CommunicationPacket {
         try {
             yaml = loadYAML(yamlString);
         } catch (InvalidConfigurationException e) {
-            throw new DeserializationException("Failed to load YAML configuration.", e);
+            throw new DeserializationException("Failed to load YAML configuration", e);
         }
 
         // Optional: check for and load the file name if it exists

@@ -37,7 +37,7 @@ public class Main {
         // Ensure the app's directory exists, creating it if necessary
         File appDirectory = new File(Constants.FileSystem.getAppDir());
         if (!appDirectory.isDirectory()) {
-            System.out.println("App directory wasn't found, creating it...");
+            System.out.println("App directory wasn't found, creating it..");
             if (!appDirectory.mkdirs()) {
                 System.err.println("Failed to create app dir at: '" + appDirectory + "'!");
                 return;
@@ -64,7 +64,7 @@ public class Main {
 
         // Load UI templates from a bundled resource (LEDSuite.gresource) and register them using Java-GI
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {
-            Objects.requireNonNull(stream, "Resource stream is null, failed to load gresource.");
+            Objects.requireNonNull(stream, "Resource stream is null, failed to load gresource");
             byte[] bytes = stream.readAllBytes();
             Resource resource = Resource.fromData(Bytes.static_(bytes));
             resource.resourcesRegister();

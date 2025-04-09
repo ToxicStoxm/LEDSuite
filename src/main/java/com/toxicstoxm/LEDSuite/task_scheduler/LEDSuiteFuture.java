@@ -1,5 +1,7 @@
 package com.toxicstoxm.LEDSuite.task_scheduler;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.*;
 
 /**
@@ -94,7 +96,7 @@ public class LEDSuiteFuture<T> extends LEDSuiteTask implements Future<T> {
      * @throws TimeoutException      If the wait timed out.
      * @since 1.0.0
      */
-    public synchronized T get(long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public synchronized T get(long timeout, final @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         timeout = unit.toMillis(timeout);
         long period = this.getPeriod();
         long timestamp = timeout > 0 ? System.currentTimeMillis() : 0L;

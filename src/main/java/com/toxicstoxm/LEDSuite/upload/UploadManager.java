@@ -1,5 +1,7 @@
 package com.toxicstoxm.LEDSuite.upload;
 
+import com.toxicstoxm.YAJL.Logger;
+
 import java.util.HashMap;
 
 /**
@@ -13,6 +15,8 @@ import java.util.HashMap;
  */
 public class UploadManager {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     /** A map holding pending uploads where the key is the file name and the value is the corresponding upload action. */
     private final HashMap<String, Upload> pendingUploads;
 
@@ -20,7 +24,9 @@ public class UploadManager {
      * Constructs a new {@code UploadManager} with an empty set of pending uploads.
      */
     public UploadManager() {
+        logger.verbose("Initializing");
         pendingUploads = new HashMap<>();
+        logger.verbose("Instance initialized, ready");
     }
 
     /**
@@ -30,6 +36,7 @@ public class UploadManager {
      * @param upload The {@link Upload} instance that will be called when the server responds.
      */
     public void setPending(String fileName, Upload upload) {
+        logger.debug("Add pending upload request '{}'", fileName);
         // If the file is not already pending, add it to the map
         pendingUploads.putIfAbsent(fileName, upload);
     }
@@ -41,6 +48,7 @@ public class UploadManager {
      * @return {@code true} if the upload was removed, {@code false} if no upload with the given file name existed.
      */
     public boolean removePending(String fileName) {
+        logger.debug("Remove pending upload request '{}'",fileName);
         // Remove and return true if the file was in the map
         return pendingUploads.remove(fileName) != null;
     }
@@ -52,6 +60,7 @@ public class UploadManager {
      * @param newName The new file name to be associated with the upload.
      */
     public void changePendingName(String oldName, String newName) {
+        logger.debug("Changing upload request name from '{}' -> '{}'", oldName, newName);
         // Remove the old entry and add the new entry with the same upload action
         Upload associated = pendingUploads.remove(oldName);
         if (associated != null) {
@@ -66,9 +75,13 @@ public class UploadManager {
      * @param uploadPermitted The permission status from the server (whether the upload is permitted).
      */
     public void call(String name, boolean uploadPermitted) {
+        logger.debug("Received response for upload request '{}' upload permitted -> '{}'", name, uploadPermitted);
         // If the file exists in pending uploads, trigger the associated upload's server response
         if (pendingUploads.containsKey(name)) {
+            logger.debug("Notifying handler '{}' -> permitted: '{}'", name, uploadPermitted);
             pendingUploads.get(name).onServerResponse(uploadPermitted);
+        } else {
+            logger.debug("Ignoring response for upload request '{}', handler not found!", name);
         }
     }
 }

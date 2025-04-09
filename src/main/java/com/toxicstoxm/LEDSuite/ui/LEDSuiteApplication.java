@@ -512,7 +512,7 @@ public class LEDSuiteApplication extends Application {
                             GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().uploadCompleted(result));
                         });
 
-                        window.displayFileCollisionDialog(cb, Translations.getText("Animation with name '$' already exists.", fileName.get()));
+                        window.displayFileCollisionDialog(cb, Translations.getText("Animation with name '$' already exists", fileName.get()));
                     });
                 }
             });
@@ -560,7 +560,7 @@ public class LEDSuiteApplication extends Application {
                 switch (response) {
                     case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!"));
                     case "rename" -> {
-                        logger.info("Rename selected.");
+                        logger.info("Rename selected");
                         var renameDialog = RenameDialog.create(fileName.get());
 
                         renameDialog.onResponse(renameResponse -> GLib.idleAddOnce(() -> {
@@ -569,7 +569,7 @@ public class LEDSuiteApplication extends Application {
                             if (renameResponse.equals("cancel")) {
                                 window.displayFileCollisionDialog(
                                         getResponseCallback(fileName, uploadSessionID, checksum, uploadFinishCallback),
-                                        Translations.getText("Animation with name '$' already exists.", fileName.get())
+                                        Translations.getText("Animation with name '$' already exists", fileName.get())
                                 );
                             } else if (renameResponse.equals("rename")) {
                                 if (newName == null || newName.isBlank() || newName.equals(fileName.get()))
@@ -597,7 +597,7 @@ public class LEDSuiteApplication extends Application {
                             if (confirmationResponse.equals("cancel")) {
                                 window.displayFileCollisionDialog(
                                         getResponseCallback(fileName, uploadSessionID, checksum, uploadFinishCallback),
-                                        Translations.getText("Animation with name '$' already exists.", fileName.get())
+                                        Translations.getText("Animation with name '$' already exists", fileName.get())
                                 );
                             } else if (confirmationResponse.equals("overwrite")) {
                                 webSocketCommunication.enqueueMessage(
@@ -777,7 +777,7 @@ public class LEDSuiteApplication extends Application {
 
                 logger.info("New animation was successfully created from upload file '{}'!", animationName);
 
-                logger.verbose("Updating UI to reflect changes...");
+                logger.verbose("Updating UI to reflect changes..");
                 window.uploadCompleted(true);
                 window.uploadFinished();
                 logger.verbose(" > DONE");
@@ -851,7 +851,7 @@ public class LEDSuiteApplication extends Application {
      */
     @Override
     public void activate() {
-        logger.verbose("Initializing application window...");
+        logger.verbose("Initializing application window..");
         logger.verbose(" > create");
         Window win = this.getActiveWindow();
         if (win == null)

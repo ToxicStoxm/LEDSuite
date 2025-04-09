@@ -6,6 +6,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
 import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
@@ -44,6 +45,7 @@ public class PacketManager extends Registrable<Packet> {
 
     @Override
     protected AutoRegisterModule<Packet> autoRegisterModule() {
+        logger.verbose("Auto-registering packets within module -> '{}'", packetClassPath);
         return AutoRegisterModule.<Packet>builder()
                 .moduleType(Packet.class)
                 .module(AutoRegisterModules.PACKETS)
@@ -53,7 +55,7 @@ public class PacketManager extends Registrable<Packet> {
 
     /**
      * Serializes a packet into a YAML string using the packet's {@link Packet#serialize()} method.
-     *
+     * <br><br>
      * <strong>Note:</strong><br>
      * This method first checks if the packet type is registered. If not, it logs an error and returns {@code null}.
      *
@@ -62,6 +64,7 @@ public class PacketManager extends Registrable<Packet> {
      * @see #deserialize(Class, String)
      */
     public @Nullable String serialize(@NotNull Packet packet) {
+        logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, "Serializing packet -> '{}.{}'", packet.getType(), packet.getSubType());
         String packetIdentifier = packet.getIdentifier();
 
         // Validate if the packet type exists in the registered packets
@@ -110,6 +113,8 @@ public class PacketManager extends Registrable<Packet> {
         if (!isRegistered(packetIdentifier)) {
             throw new DeserializationException("Invalid packet type: '" + packetIdentifier + "'!");
         }
+
+        logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, "Deserializing packet -> '{}'", packetIdentifier);
 
         // Retrieve the packet type and perform the deserialization
         try {

@@ -7,6 +7,7 @@ import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class MessageDialog {
                         .label(Translations.getText("Ok"))
                         .activated(true)
                         .appearance(ResponseAppearance.SUGGESTED)
-                        .responseCallback(() -> logger.debug("User acknowledged notification dialog."))
+                        .responseCallback(() -> logger.debug("User acknowledged notification dialog"))
                         .build()
         );
     }
@@ -40,11 +41,12 @@ public class MessageDialog {
 
     @Builder
     public MessageDialog(@NotNull MessageData messageData) {
+        logger.verbose("Creating new message dialog from message data -> '{}'", messageData);
         alertDialog = GeneralAlertDialog.create().configure(
                 AlertDialogData.builder()
                         .heading(generateHeading(messageData.heading(), messageData.source()))
                         .body(messageData.message())
-                        .responses(computeResponses(messageData.responses()))
+                        .responses(providedOrDefaultResponses(messageData.responses()))
                         .build()
         );
     }
@@ -56,6 +58,7 @@ public class MessageDialog {
      * @return the generated heading
      */
     private @NotNull String generateHeading(String heading, String source) {
+        logger.verbose("Generating message dialog heading from -> '{}' and '{}'", heading, source);
         StringBuilder sb = new StringBuilder();
         if (source != null && !source.isBlank()) {
             sb.append(source).append(" - ");
@@ -64,15 +67,26 @@ public class MessageDialog {
             sb.append(heading);
         } else sb.append(Translations.getText("Client Message"));
 
+        logger.verbose("Generated message dialog heading -> '{}'", sb.toString());
         return sb.toString();
     }
 
-    private List<AlertDialogResponse> computeResponses(List<AlertDialogResponse> responses) {
-        if (responses != null && !responses.isEmpty()) return responses;
+    /**
+     * Checks if responses are provided, if not returns the default responses.
+     * @param responses response handlers to use, or {@code null} to use the default ones
+     * @return the response handlers to use to handle responses from the user via the dialog
+     */
+    private List<AlertDialogResponse> providedOrDefaultResponses(@Nullable List<AlertDialogResponse> responses) {
+        if (responses != null && !responses.isEmpty()) {
+            logger.verbose("Custom responses provided");
+            return responses;
+        }
+        logger.verbose("Using default responses");
         return MessageDialog.responses;
     }
 
     public void present(Widget parent) {
+        logger.verbose("Received display request");
         GLib.idleAddOnce(() -> alertDialog.present(parent));
     }
 }

@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
@@ -20,6 +21,8 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "FileCollisionDialog", ui = "/com/toxicstoxm/LEDSuite/FileCollisionDialog.ui")
 public class FileCollisionDialog extends AlertDialog {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     static {
         TemplateTypes.register(FileCollisionDialog.class);
     }
@@ -39,6 +42,7 @@ public class FileCollisionDialog extends AlertDialog {
      * @return a new FileCollisionDialog instance
      */
     public static FileCollisionDialog create() {
+        logger.verbose("Creating new file collision dialog");
         return GObject.newInstance(FileCollisionDialog.class);
     }
 
@@ -63,8 +67,12 @@ public class FileCollisionDialog extends AlertDialog {
      */
     @Override
     protected void response(String response) {
+        logger.verbose("Received response -> '{}'", response);
         if (responseCallback != null) {
+            logger.verbose("Calling response handler");
             responseCallback.run(response);
+        } else {
+            logger.warn("Ignoring response, no response handler found or specified!");
         }
     }
 }

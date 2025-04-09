@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.gettext;
 
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.interop.Interop;
 import org.gnome.glib.GLib;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,8 @@ import java.lang.invoke.MethodHandle;
  */
 public class Translations {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     // Default translation domain is the application name or module
     private static final String defaultTranslationDomain = "LED_Suite";
 
@@ -47,6 +50,7 @@ public class Translations {
      * @throws AssertionError if there is an issue initializing the domain or the path.
      */
     public static void init(String translationDomain, String directory) throws AssertionError {
+        logger.verbose("Initializing instance -> TranslationDomain: '{}' Directory: '{}'", translationDomain, directory);
         if (directory != null) {
             try (var _arena = Arena.ofConfined()) {
                 try {

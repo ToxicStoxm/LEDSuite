@@ -1,9 +1,9 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.time.Action;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
-import org.gnome.adw.AlertDialog;
 import org.gnome.adw.ResponseAppearance;
 import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,9 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @GtkTemplate(name = "GeneralAlertDialog", ui = "/com/toxicstoxm/LEDSuite/GeneralAlertDialog.ui")
-public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> {
+public class GeneralAlertDialog extends org.gnome.adw.AlertDialog implements AlertDialog<AlertDialogData> {
+
+    private static final Logger logger = Logger.autoConfigureLogger();
 
     static {
         TemplateTypes.register(GeneralAlertDialog.class);
@@ -46,6 +48,7 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
      * @return a new GeneralAlertDialog instance
      */
     public static GeneralAlertDialog create() {
+        logger.verbose("Creating new general alert dialog");
         return GObject.newInstance(GeneralAlertDialog.class);
     }
 
@@ -70,15 +73,20 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
      */
     @Override
     protected void response(String response) {
+        logger.verbose("Received response -> '{}'", response);
         if (responseCallback != null) {
+            logger.verbose("Calling response handler");
             responseCallback.run(response);
+        } else {
+            logger.warn("Ignoring response, no response handler found or specified!");
         }
     }
     
     private final HashMap<String, Action> registeredResponses = new HashMap<>();
 
     @Override
-    public com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.AlertDialog<AlertDialogData> configure(@NotNull AlertDialogData data) {
+    public AlertDialog<AlertDialogData> configure(@NotNull AlertDialogData data) {
+        logger.verbose("Configuring alert dialog -> '{}'", data);
         String heading = data.heading();
         if (heading != null) setHeading(heading);
 
@@ -89,11 +97,9 @@ public class GeneralAlertDialog extends AlertDialog implements com.toxicstoxm.LE
 
         if (responses != null) {
             ResponseCallback responseCb = response -> {
-
                 if (registeredResponses.containsKey(response)) {
                     registeredResponses.get(response).run();
                 }
-
             };
 
             for (AlertDialogResponse response : data.responses()) {

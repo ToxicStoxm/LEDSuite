@@ -64,7 +64,7 @@ public abstract class WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        logger.info("WebSocket connection opened with session ID: {}", session.getId());
+        logger.debug("Opened new session -> SocketID: '{}' URI: '{}'", session.getId(), session.getRequestURI());
     }
 
     /**

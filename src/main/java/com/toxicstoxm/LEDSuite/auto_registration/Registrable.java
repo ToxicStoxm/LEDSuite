@@ -89,6 +89,7 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
         String moduleClassPath = module.classPath();
 
         String moduleTypeName = StringFormatter.getClassName(moduleType);
+        logger.debug(" > Auto-registering module '{}', type '{}', scanning path '{}'.", moduleName, moduleTypeName, moduleClassPath);
 
         Set<Class<T>> annotatedClasses = new HashSet<>();
 
@@ -98,6 +99,8 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                 .enableAnnotationInfo()
                 .acceptPackages(moduleClassPath)
                 .scan()) {
+
+            logger.debug(" > Scanning for classes annotated with @AutoRegister...");
 
             for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(AutoRegister.class.getName())) {
                 try {
@@ -109,17 +112,22 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                             @SuppressWarnings("unchecked")
                             Class<T> typeClass = (Class<T>) loadedClass;
                             annotatedClasses.add(typeClass);
+                            logger.debug(" > Found valid auto-registerable class: {}", classInfo.getName());
                         } else {
                             logger.error(" > Class {} does not implement {} interface!", classInfo.getName(), moduleTypeName);
                         }
+                    } else {
+                        logger.debug(" > Skipping class {} — annotation missing or module mismatch.", classInfo.getName());
                     }
                 } catch (Exception e) {
-                    logger.error(" > Failed to load class: '{}' for module '{}'", classInfo.getName(), moduleName);
+                    logger.error(" > Failed to load class '{}' for module '{}'", classInfo.getName(), moduleName);
                     logger.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
         }
+
+        logger.debug(" > Found {} valid class(es) to register for module '{}'.", annotatedClasses.size(), moduleName);
 
         // Register the valid items found in the previous step
         for (Class<T> itemClass : annotatedClasses) {
@@ -136,10 +144,12 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 logger.error(" > Failed to auto-register {}: {}", moduleTypeName, itemClass.getName());
-                logger.error(e.getMessage());
+                logger.error("   Reason: {}", e.getMessage());
                 throw new RuntimeException(e);
             }
         }
+
+        logger.debug(" > Finished auto-registering module '{}'.", moduleName);
     }
 
     /**
@@ -149,13 +159,21 @@ public abstract class Registrable<T extends AutoRegistrableItem> {
      * @return {@code true} if the item was successfully unregistered, otherwise {@code false}
      */
     public boolean unregisterPacket(String type) {
-        return registeredItems.remove(type) != null;
+        boolean removed = registeredItems.remove(type) != null;
+        if (removed) {
+            logger.debug(" > Unregistered packet: {}", type);
+        } else {
+            logger.debug(" > Tried to unregister unknown packet: {}", type);
+        }
+        return removed;
     }
 
     /**
      * Unregisters all items.
      */
     public void clearPackets() {
+        int count = registeredItems.size();
         registeredItems.clear();
+        logger.debug(" > Cleared all packets ({} removed).", count);
     }
 }

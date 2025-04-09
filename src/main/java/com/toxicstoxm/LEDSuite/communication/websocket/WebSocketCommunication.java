@@ -2,8 +2,8 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
+import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.YAJL.Logger;
@@ -57,8 +57,6 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
-        logger.info("WebSocket connection opened with session ID: {}", session.getId());
-
         // Send a status request to the server
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 StatusRequestPacket.builder().build().serialize()
@@ -66,6 +64,8 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
 
         // Update the UI to reflect the server is connected
         LEDSuiteApplication.getWindow().setServerConnected(true);
+
+        super.onOpen(session);
     }
 
     /**
@@ -79,19 +79,19 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
      * @param session The WebSocket session from which the message was received.
      */
     @OnMessage
-    public void onMessage(String message, @NotNull Session session) {
-        logger.verbose("----------------------< IN >----------------------" + "\n[Session] {}", session.getId());
+    public void onMessage(@NotNull String message, @NotNull Session session) {
+        logger.log(LEDSuiteLogLevels.COMMUNICATION_IN,"----------------------< IN >----------------------" + "\n[Session] {}", session.getId());
         if (message.length() < 10000) {
             new LEDSuiteRunnable() {
                 @Override
                 public void run() {
-                    logger.verbose(message);
-                    logger.verbose("--------------------------------------------------");
+                    logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, message);
+                    logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, "--------------------------------------------------");
                 }
             }.runTaskAsynchronously();
         } else {
-            logger.verbose(message);
-            logger.verbose("--------------------------------------------------");
+            logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, message);
+            logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, "--------------------------------------------------");
         }
 
         // Deserialize the incoming message into a CommunicationPacket
@@ -130,7 +130,6 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
-
-        ExceptionTools.printStackTrace(throwable, logger::stacktrace);
+        logger.debug(throwable);
     }
 }

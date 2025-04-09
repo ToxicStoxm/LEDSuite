@@ -18,11 +18,9 @@ public class CooldownManager {
     private static final Logger logger = Logger.autoConfigureLogger();
 
     private record CooldownAction(Action action, long cooldown, long lastCall, String actionGroup) {}
-
     private record CooldownActionGroup(long cooldown, long lastCall) {}
 
     private static final HashMap<String, CooldownAction> actions = new HashMap<>();
-
     private static final HashMap<String, CooldownActionGroup> actionGroups = new HashMap<>();
 
     /**
@@ -74,7 +72,7 @@ public class CooldownManager {
         if (cooldownAction.actionGroup == null) {
             actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis() - Duration.ofDays(365).toMillis(), null));
         }
-        logger.debug("Successfully cleared cooldown for action '{}'.", name);
+        logger.debug("Successfully cleared cooldown for action '{}'", name);
         return true;
     }
 
@@ -85,10 +83,12 @@ public class CooldownManager {
      *         {@code true} if the action was successfully executed
      */
     public static boolean call(String name) {
+        logger.verbose("Received call for -> '{}'", name);
         if (name == null || !actions.containsKey(name)) return false;
         CooldownAction cooldownAction = actions.remove(name);
 
         if (cooldownAction.actionGroup == null) {
+            logger.verbose("Processing '{}' call as single action", name);
             long timeElapsed = System.currentTimeMillis() - cooldownAction.lastCall;
             if (timeElapsed >= cooldownAction.cooldown) {
                 if (cooldownAction.action != null) {
@@ -103,6 +103,7 @@ public class CooldownManager {
                 return false;
             }
         } else {
+            logger.verbose("Processing '{}' call as action group", name);
             String cooldownActionGroupName = cooldownAction.actionGroup;
             CooldownActionGroup actionGroup = actionGroups.remove(cooldownActionGroupName);
 
@@ -135,6 +136,7 @@ public class CooldownManager {
      * @return {@code true} if the action was successfully deregistered, else {@code false}
      */
     public static boolean remove(String name) {
+        logger.verbose("Removing action -> '{}'", name);
         return actions.remove(name) != null;
     }
 

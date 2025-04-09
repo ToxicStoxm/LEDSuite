@@ -114,6 +114,7 @@ public class MenuReplyPacket extends CommunicationPacket {
         long start = System.currentTimeMillis();
         GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(false));
 
+        logger.verbose("Received menu reply, handling async.");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -126,7 +127,11 @@ public class MenuReplyPacket extends CommunicationPacket {
                 if (animationMenuManager != null) {
                     try {
                         AnimationMenu menu = animationMenuManager.deserializeAnimationMenu(menuYAML);
-                        GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().displayAnimationMenu(menu));
+                        logger.verbose("Received and deserialized menu reply for menu '{}'", menu.getMenuID());
+                        GLib.idleAddOnce(() -> {
+                            LEDSuiteApplication.getWindow().displayAnimationMenu(menu);
+                            logger.verbose("UI updated");
+                        });
                     } catch (DeserializationException e) {
                         logger.warn("Failed to handle menu reply! Deserialization failed: {}", e.getMessage());
                         errorCode = e.getErrorCode();

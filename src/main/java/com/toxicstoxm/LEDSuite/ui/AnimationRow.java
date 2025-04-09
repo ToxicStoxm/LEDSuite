@@ -101,6 +101,7 @@ public class AnimationRow extends ListBoxRow {
      * @param animationLabel The label to set for the animation.
      */
     public final void setAnimationLabel(String animationLabel) {
+        logger.verbose("'{}' -> Updating label to '{}'", animationID, animationLabel);
         this.animationRowLabel.setLabel(animationLabel);
     }
 
@@ -112,6 +113,9 @@ public class AnimationRow extends ListBoxRow {
      * @return The newly created {@link AnimationRow}.
      */
     public static @NotNull AnimationRow create(@NotNull AnimationRowData animationRowData) {
+        logger.verbose("'{}' -> Creating new animation row from animation", animationRowData.animationID());
+
+        logger.verbose("'{}' -> Registering click trigger with cooldown", animationRowData.animationID());
         // Add the action to the cooldown manager with the associated cooldown, if provided.
         CooldownManager.addAction(
                 animationRowData.animationID(),
@@ -119,10 +123,15 @@ public class AnimationRow extends ListBoxRow {
                 animationRowData.cooldown() != null ? animationRowData.cooldown() : 0
         );
 
+        logger.verbose("'{}' -> Creating instance of UI element", animationRowData.animationID());
         // Instantiate and configure the AnimationRow with the provided data.
         AnimationRow row = GObject.newInstance(AnimationRow.class, "action-name", "app." + animationRowData.animationID());
+
+        logger.verbose("'{}' -> Creating click trigger action", animationRowData.animationID());
         // Create the action for the application and bind it to the animation row.
         row.createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
+
+        logger.verbose("'{}' -> Configuring UI state", animationRowData.animationID());
         row.animationID = animationRowData.animationID();
         row.update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
         row.setLastAccessed(animationRowData.lastAccessed());
@@ -131,6 +140,8 @@ public class AnimationRow extends ListBoxRow {
 
         // Set the tooltip to show the animation ID when hovered.
         row.setTooltipText(animationRowData.animationID());
+
+        logger.verbose("'{}' -> Instance configured and ready for usage", animationRowData.animationID());
         return row;
     }
 
@@ -143,7 +154,11 @@ public class AnimationRow extends ListBoxRow {
      * @param lastAccessed The last time this animation was accessed
      */
     public void update(String label, String iconString, boolean isName, Long lastAccessed) {
-        if (label != null) animationRowLabel.setLabel(label);
+        logger.verbose("'{}' -> Update triggered", animationID);
+        if (label != null) {
+            animationRowLabel.setLabel(label);
+        }
+        logger.verbose("'{}' -> Updating icon: getting updated icon", animationID);
         AtomicReference<String> newIconHash = new AtomicReference<>("");
         Image newIcon = YamlTools.constructIcon(iconString, isName, iconHash, () -> {
             try {
@@ -157,18 +172,25 @@ public class AnimationRow extends ListBoxRow {
             }
             return newIconHash.get();
         });
+
         if (newIcon != null) {
             if (isName) {
+                logger.verbose("'{}' -> Updating icon: by name '{}'", animationID, newIcon.getIconName());
                 animationIcon.setFromIconName(newIcon.getIconName());
             } else {
+                logger.verbose("'{}' -> Updating icon: by base64 encoded image", animationID);
                 animationIcon.setFromPaintable(newIcon.getPaintable());
             }
+            logger.verbose("'{}' -> Updating icon: saving hash '{}'", animationID, newIconHash.get());
             iconHash = newIconHash.get();
+        } else {
+            logger.verbose("'{}' -> Updating icon: cancelled update because hash matches current icon", animationID);
         }
         if (lastAccessed != null) setLastAccessed(lastAccessed);
 
         // If the row is part of a menu, update the menu as well.
         if (animationMenuReference != null) {
+            logger.verbose("'{}' -> Updating icon: menu reference found, updating it", animationID);
             animationMenuReference.updateLabel(label);
             animationMenuReference.updateIcon(newIcon);
         }
@@ -184,6 +206,7 @@ public class AnimationRow extends ListBoxRow {
      * @param animationLabel The label to be displayed for the animation.
      */
     private void createAction(@NotNull Application app, String animationID, String animationLabel) {
+        logger.verbose("'{}' -> Creating trigger action", animationID);
         LEDSuiteWindow window = (LEDSuiteWindow) app.getActiveWindow();
         var simpleAction = new SimpleAction(String.valueOf(animationID), null);
 
@@ -191,7 +214,7 @@ public class AnimationRow extends ListBoxRow {
         simpleAction.onActivate(_ -> {
             // Check if the animation is on cooldown.
             if (!CooldownManager.call(String.valueOf(animationID))) {
-                logger.info("The animation row {} ({}) is on cooldown!", animationLabel, animationID);
+                logger.warn("The animation row {} ({}) is on cooldown!", animationLabel, animationID);
             } else {
                 if (renamePending.get()) {
                     logger.debug("Menu request for animation '{}' was denied because a rename request for this animation is pending!", animationID);
@@ -225,6 +248,8 @@ public class AnimationRow extends ListBoxRow {
                 );
             }
         });
+
+        logger.verbose("'{}' -> Registering trigger action within app", animationID);
 
         // Add the action to the application.
         app.addAction(simpleAction);

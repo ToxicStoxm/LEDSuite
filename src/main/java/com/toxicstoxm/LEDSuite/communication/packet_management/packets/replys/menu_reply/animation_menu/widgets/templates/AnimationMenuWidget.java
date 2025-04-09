@@ -119,7 +119,7 @@ public abstract class AnimationMenuWidget<T extends Widget> implements com.toxic
     protected WebSocketClient getChangeCallback() {
         WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
         if (webSocketClient == null) {
-            throw new NullPointerException("Wasn't able to send menu change request. Not connected to server.");
+            throw new NullPointerException("Wasn't able to send menu change request. Not connected to server");
         }
         return webSocketClient;
     }

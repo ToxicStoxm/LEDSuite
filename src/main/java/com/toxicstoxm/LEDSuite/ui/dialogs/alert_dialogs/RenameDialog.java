@@ -4,6 +4,7 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
 import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -59,6 +60,7 @@ public class RenameDialog extends AlertDialog {
      */
     @Contract("null -> fail")
     public static @NotNull RenameDialog create(String fileName) {
+        logger.verbose("Creating new rename dialog from file name -> '{}'", fileName);
         if (fileName == null || fileName.isBlank()) {
             throw new IllegalArgumentException("Input filename can't be null or empty!");
         }
@@ -84,10 +86,13 @@ public class RenameDialog extends AlertDialog {
      * @param fileName the name of the file to rename
      */
     protected void init(String fileName) {
+        logger.verbose("Initializing instance with file name -> '{}'", fileName);
+        logger.verbose("Configuring UI state");
         currentName = fileName;
         this.fileNameRow.setText(currentName);
         this.setHeading(Translations.getText("Rename") + " " + currentName);
         newName = fileName;
+        logger.verbose("Instance initialized, ready");
     }
 
     // Callback to handle user response actions
@@ -111,13 +116,17 @@ public class RenameDialog extends AlertDialog {
      */
     @Override
     protected void response(@NotNull String response) {
+        logger.verbose("Received rename response -> '{}'", response);
         nameCheckerTask.cancel();
+        logger.verbose("Cancelled name checker task");
         if (response.equals("rename") && newName.equals(currentName)) {
             logger.warn("New name equals current name after rename response!");
+            logger.verbose("Calling parent dialog to handle the duplicate name");
             var dialog = create(currentName);
             dialog.onResponse(responseCallback);
             dialog.present(getParent());
         } else {
+            logger.verbose("Calling response handler");
             if (responseCallback != null) {
                 responseCallback.run(response);
             }
@@ -140,8 +149,12 @@ public class RenameDialog extends AlertDialog {
      */
     @Override
     public void present(@Nullable Widget parent) {
-        AtomicReference<String> last = new AtomicReference<>(newName);
+        logger.verbose("Received display request with parent widget -> '{}'",
+                (StringPlaceholder) () -> parent == null ? "unknown" : parent.getName()
+        );
 
+        logger.verbose("Starting name checker task");
+        AtomicReference<String> last = new AtomicReference<>(newName);
         // Task to periodically check the validity of the file name
         nameCheckerTask = new LEDSuiteRunnable() {
             @Override
@@ -159,6 +172,7 @@ public class RenameDialog extends AlertDialog {
             }
         }.runTaskTimerAsynchronously(10, 1);
 
+        logger.verbose("Displaying rename dialog");
         super.present(parent);
     }
 }

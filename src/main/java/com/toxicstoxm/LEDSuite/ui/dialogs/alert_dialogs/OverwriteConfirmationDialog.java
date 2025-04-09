@@ -1,5 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
@@ -20,6 +21,8 @@ import java.lang.foreign.MemorySegment;
 @GtkTemplate(name = "OverwriteConfirmationDialog", ui = "/com/toxicstoxm/LEDSuite/OverwriteConfirmationDialog.ui")
 public class OverwriteConfirmationDialog extends AlertDialog {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     static {
         TemplateTypes.register(OverwriteConfirmationDialog.class);
     }
@@ -39,6 +42,7 @@ public class OverwriteConfirmationDialog extends AlertDialog {
      * @return a new OverwriteConfirmationDialog instance
      */
     public static OverwriteConfirmationDialog create() {
+        logger.verbose("Creating new overwrite confirmation dialog");
         return GObject.newInstance(OverwriteConfirmationDialog.class);
     }
 
@@ -63,8 +67,12 @@ public class OverwriteConfirmationDialog extends AlertDialog {
      */
     @Override
     protected void response(String response) {
+        logger.verbose("Received rename response -> '{}'", response);
         if (responseCallback != null) {
+            logger.verbose("Calling response handler");
             responseCallback.run(response);
+        } else {
+            logger.warn("Ignoring response, no response handler found or specified!");
         }
     }
 }

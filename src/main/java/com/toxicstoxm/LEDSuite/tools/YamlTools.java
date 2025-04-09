@@ -49,7 +49,7 @@ public class YamlTools {
      */
     public static void ensureKeyExists(String key, @NotNull ConfigurationSection yaml) throws DeserializationException {
         if (!yaml.contains(key)) {
-            throw new DeserializationException("Deserialization failed! Required key '" + key + "' is missing.", ErrorCode.RequiredKeyIsMissing);
+            throw new DeserializationException("Deserialization failed! Required key '" + key + "' is missing", ErrorCode.RequiredKeyIsMissing);
         }
     }
 
@@ -65,7 +65,7 @@ public class YamlTools {
      */
     public static void ensureKeyExists(String key, @NotNull ConfigurationSection yaml, ErrorCode errorCode) throws DeserializationException {
         if (!yaml.contains(key)) {
-            throw new DeserializationException("Deserialization failed! Required key '" + key + "' is missing.", errorCode);
+            throw new DeserializationException("Deserialization failed! Required key '" + key + "' is missing", errorCode);
         }
     }
 

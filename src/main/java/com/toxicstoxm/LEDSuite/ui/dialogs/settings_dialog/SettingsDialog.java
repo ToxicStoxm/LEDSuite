@@ -46,6 +46,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     public static @NotNull SettingsDialog create() {
+        logger.verbose("Creating new instance");
         SettingsDialog settingsDialog = GObject.newInstance(SettingsDialog.class);
         settingsDialog.initialize();
         return settingsDialog;
@@ -132,7 +133,9 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void initialize() {
+        logger.verbose("Initializing instance");
         CooldownManager.addAction("serverConnectivityButtonCb", () -> {
+            logger.verbose("Server connectivity button clicked");
             if (isServerConnected()) {
                 setServerStateDisconnecting();
                 triggerDisconnect();
@@ -142,6 +145,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             }
         }, 500, true);
 
+        logger.verbose("Configuring UI state");
         markServerSettingsUnavailable();
         serverAddress.setText(LEDSuiteApplication.getSettings().mainSection.networkSettings.websocketURI);
         serverAddress.setShowApplyButton(true);
@@ -150,12 +154,15 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
         updateServerState();
 
+        logger.verbose("Instance initialized, ready");
+
         /*if (isServerConnected()) {
             setAuthenticated(true, LEDSuiteApplication.getAuthManager().getUsername());
         }*/
     }
 
     public void update(@NotNull SettingsUpdate settingsUpdate) {
+        logger.verbose("Updating current settings -> {}", settingsUpdate);
         GLib.idleAddOnce(() -> {
             setSupportedColorModes(settingsUpdate.supportedColorModes(), settingsUpdate.selectedColorMode());
             setBrightness(settingsUpdate.brightness());
@@ -166,6 +173,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void updateServerState() {
+        logger.verbose("Updating server state");
         if (!serverConnectivityButton.isSensitive()) return;
         if (isServerConnected()) {
             this.setServerStateConnected();
@@ -175,6 +183,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     public void setServerState(@NotNull ServerState serverState) {
+        logger.verbose("Server state -> {}", serverState);
         switch (serverState) {
             case CONNECTED -> setServerStateConnected();
             case CONNECTING -> setServerStateConnecting();
@@ -229,6 +238,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void changeServerSettingsAvailability(boolean available) {
+        logger.verbose("Mark settings {}available", available ? "" : "not ");
         GLib.idleAddOnce(() -> {
             colorMode.setSensitive(available);
             brightness.setSensitive(available);
@@ -271,6 +281,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void triggerDisconnect() {
+        logger.verbose("Triggered disconnect");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -291,6 +302,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void triggerConnect() {
+        logger.verbose("Triggered connect");
         new LEDSuiteRunnable() {
             @Override
             public void run() {
@@ -302,7 +314,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         SettingsDialog.this.setServerStateDisconnected();
                     }
                 } else {
-                    logger.info("Skipping connect attempt because communication websocket is already connected!");
+                    logger.debug("Skipping connect attempt because communication websocket is already connected!");
                     SettingsDialog.this.setServerStateConnected();
                     requestSettings();
                 }
@@ -312,6 +324,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @GtkCallback(name = "settings_server_cnct_button_clicked")
     public void serverCnctButtonClicked() {
+        logger.verbose("Server connect button clicked");
         if (!CooldownManager.call("serverConnectivityButtonCb")) {
             logger.verbose("Connectivity button on cooldown!");
         }
@@ -328,6 +341,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     public void applyButtonCooldown() {
+        logger.verbose("Settings apply button clicked");
         GLib.idleAddOnce(() -> {
             String[] defaultCSS = applyButton.getCssClasses();
             List<String> cssFail = new java.util.ArrayList<>(Arrays.stream(defaultCSS).toList());
@@ -345,7 +359,6 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         applyButton.setCssClasses(defaultCSS);
                         applyButton.setLabel(defaultLabel);
                         applyButton.setSensitive(true);
-                        //System.out.println("set to true");
                     });
                 }
             }.runTaskLaterAsynchronously(500);
@@ -353,6 +366,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void requestSettings() {
+        logger.verbose("Requesting current settings from server");
         LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
                 SettingsRequestPacket.builder().build().serialize()
         );
@@ -360,6 +374,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @Override
     public void present(@Nullable Widget parent) {
+        logger.verbose("Received display request");
         if (isServerConnected()) requestSettings();
 
         updateServerState();

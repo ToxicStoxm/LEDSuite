@@ -74,6 +74,7 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
      */
     @OnOpen
     public void onOpen(@NotNull Session session) {
+        logger.debug("Opened new session -> SocketID: '{}' SessionID: '{}' URI: '{}'", session.getId(), sessionID, session.getRequestURI());
         try {
             // Send the session ID to the server to initiate the upload session
             session.getBasicRemote().sendText(sessionID);
@@ -89,9 +90,6 @@ public class WebSocketUpload extends WebSocketClientEndpoint {
 
         // Notify that the connection is established
         connect();
-
-        // Call the superclass onOpen method
-        super.onOpen(session);
     }
 
     /**

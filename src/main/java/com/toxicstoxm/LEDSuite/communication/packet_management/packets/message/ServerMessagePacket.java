@@ -128,6 +128,7 @@ public class ServerMessagePacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
+        logger.verbose("Displaying received server message packet.");
         ServerMessageDialog.builder().packet(this).build().present(LEDSuiteApplication.getWindow().asApplicationWindow());
     }
 }

@@ -3,6 +3,7 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
+import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import io.github.jwharm.javagi.gtk.types.TemplateTypes;
@@ -28,6 +29,8 @@ import java.util.List;
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
 public class StatusDialog extends Dialog implements StatusDialogEndpoint {
 
+    private static final Logger logger = Logger.autoConfigureLogger();
+
     static {
         TemplateTypes.register(StatusDialog.class);
     }
@@ -48,7 +51,9 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
      * @return a new instance of {@link StatusDialog}
      */
     public static @NotNull StatusDialog create() {
+        logger.verbose("Creating new status dialog");
         StatusDialog dialog = GObject.newInstance(StatusDialog.class);
+        logger.verbose("Configuring UI state");
         dialog.markAllUnavailable();
         return dialog;
     }
@@ -189,6 +194,7 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
      * @param statusUpdate the new status information to display in the dialog
      */
     public void update(@NotNull StatusUpdate statusUpdate) {
+        logger.verbose("Updating status -> {}", statusUpdate);
         GLib.idleAddOnce(() -> {
             setVoltage(statusUpdate.voltage());
             setCurrentDraw(statusUpdate.currentDraw());

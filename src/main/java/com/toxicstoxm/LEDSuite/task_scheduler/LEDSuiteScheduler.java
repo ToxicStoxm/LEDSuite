@@ -2,6 +2,8 @@ package com.toxicstoxm.LEDSuite.task_scheduler;
 
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJL.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -163,6 +165,7 @@ public class LEDSuiteScheduler implements TaskScheduler {
      */
     @Override
     public void cancelTask(final int taskId) {
+        logger.verbose("Cancelling task with id '{}'", taskId);
         if (taskId <= 0) {
             return;
         }
@@ -178,7 +181,7 @@ public class LEDSuiteScheduler implements TaskScheduler {
                         }
                     }
 
-                    private boolean check(final Iterable<LEDSuiteTask> collection) {
+                    private boolean check(final @NotNull Iterable<LEDSuiteTask> collection) {
                         final Iterator<LEDSuiteTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
                             final LEDSuiteTask task = tasks.next();
@@ -212,20 +215,19 @@ public class LEDSuiteScheduler implements TaskScheduler {
      */
     @Override
     public void cancelAllTasks() {
+        logger.verbose("Cancelling all tasks");
         final LEDSuiteTask task = new LEDSuiteTask(
-                new Runnable() {
-                    public void run() {
-                        Iterator<LEDSuiteTask> it = LEDSuiteScheduler.this.runners.values().iterator();
-                        while (it.hasNext()) {
-                            LEDSuiteTask task = it.next();
-                            task.cancel0();
-                            if (task.isSync()) {
-                                it.remove();
-                            }
+                () -> {
+                    Iterator<LEDSuiteTask> it = LEDSuiteScheduler.this.runners.values().iterator();
+                    while (it.hasNext()) {
+                        LEDSuiteTask task1 = it.next();
+                        task1.cancel0();
+                        if (task1.isSync()) {
+                            it.remove();
                         }
-                        LEDSuiteScheduler.this.pending.clear();
-                        LEDSuiteScheduler.this.temp.clear();
                     }
+                    LEDSuiteScheduler.this.pending.clear();
+                    LEDSuiteScheduler.this.temp.clear();
                 });
         handle(task, 0);
         for (LEDSuiteTask taskPending = head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
@@ -379,7 +381,8 @@ public class LEDSuiteScheduler implements TaskScheduler {
         temp.clear();
     }
 
-    private void addTask(final LEDSuiteTask task) {
+    private void addTask(final @NotNull LEDSuiteTask task) {
+        logger.verbose("Add task -> '{}'", task.getTaskId());
         final AtomicReference<LEDSuiteTask> tail = this.tail;
         LEDSuiteTask tailTask = tail.get();
         while (!tail.compareAndSet(tailTask, task)) {
@@ -388,7 +391,8 @@ public class LEDSuiteScheduler implements TaskScheduler {
         tailTask.setNext(task);
     }
 
-    private LEDSuiteTask handle(final LEDSuiteTask task, final long delay) {
+    @Contract("_, _ -> param1")
+    private @NotNull LEDSuiteTask handle(final @NotNull LEDSuiteTask task, final long delay) {
         task.setNextRun(currentTick + delay);
         addTask(task);
         return task;
@@ -432,7 +436,6 @@ public class LEDSuiteScheduler implements TaskScheduler {
     @Override
     public String toString() {
         int debugTick = currentTick;
-        StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
-        return string.append('}').toString();
+        return "Recent tasks from " + (debugTick - RECENT_TICKS) + '-' + debugTick + '{' + '}';
     }
 }

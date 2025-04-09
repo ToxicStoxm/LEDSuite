@@ -127,14 +127,6 @@ public class LEDSuiteApplication extends Application {
 
         System.out.println("Initializing...");
 
-        // init settings manager
-        System.out.println("Initializing YAJSI (settings manager)...");
-        initYAJSI();
-
-        // init logger
-        System.out.println("Initializing YAJL (logger)...");
-        initYAJL();
-
         logger.info("Initializing application...");
         logger.verbose("Initializing UI...");
         logger.verbose("Initializing UI-Actions...");
@@ -250,7 +242,7 @@ public class LEDSuiteApplication extends Application {
         logger.info("Application was successfully initialized!");
     }
 
-    private void initYAJSI() {
+    public static void initYAJSI() {
         System.out.println(" > create");
         System.out.println(" > configure");
         SettingsManager.configure()
@@ -266,7 +258,7 @@ public class LEDSuiteApplication extends Application {
         System.out.println(" > DONE");
     }
 
-    private void initYAJL() {
+    public static void initYAJL() {
         System.out.println(" > create");
         System.out.println(" > configure");
         YAJLManager.configure(

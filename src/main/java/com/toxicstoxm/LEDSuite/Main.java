@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication.initYAJL;
+import static com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication.initYAJSI;
+
 /**
  * Main entry point for the LEDSuite application.
  * This class is responsible for initializing the necessary resources, setting up translations,
@@ -44,6 +47,14 @@ public class Main {
             }
             System.out.println("Successfully created app dir at: '" + appDirectory + "'!");
         }
+
+        // init settings manager
+        System.out.println("Initializing YAJSI (settings manager)...");
+        initYAJSI();
+
+        // init logger
+        System.out.println("Initializing YAJL (logger)...");
+        initYAJL();
 
         // Attempt to extract a translation directory from the command-line arguments
         List<String> argsList = new java.util.ArrayList<>(Arrays.stream(args).toList());

@@ -2,7 +2,7 @@
 <component type="desktop-application">
     <id>@ID@</id>
 
-    <name>LEDSuite</name>
+    <name>@NAME@e</name>
 
     <summary>Control LED/display installations</summary>
 
@@ -12,6 +12,8 @@
 
     <metadata_license>CC-BY-SA-4.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
+
+    <translation type="gettext">@ID@</translation>
 
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>

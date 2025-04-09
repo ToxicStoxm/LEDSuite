@@ -93,15 +93,14 @@
     - [X] Version
     - [X] Patch notes
   - [X] Update dependencies
-- [ ] Logging
+- [X] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
   - [X] Create log areas
-  - [ ] Add debug mode which saves the log to a logfile
-  - [ ] add a lot of log messages
+  ~~- [ ] Add debug mode which saves the log to a logfile~~ (Handled by YAJL)
+  - [X] add a lot of log messages
     - [X] Main
     - [X] LEDSuiteApplication
-    - [ ] UI classes
-    - [ ] User-Interaction related classes
+    - [X] UI classes
 - [X] Settings
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
   - [X] Implement all necessary settings

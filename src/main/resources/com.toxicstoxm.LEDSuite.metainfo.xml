@@ -148,7 +148,7 @@
     <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
     <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
     <url type="contribute">https://github.com/ToxicStoxm/LEDSuite</url>
-    <url type="backend-setup">https://gitlab.com/hannescam/LEDSuiteBackend"</url>
+    <url type="faq">https://gitlab.com/hannescam/LEDSuiteBackend"</url>
 
     <recommends>
         <display_length compare="ge">360</display_length>
@@ -202,8 +202,8 @@
             <caption>Upload page while uploading an animation with progress bar</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
         </screenshot>
-        <screenshot>
-            <caption type="default">Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
+        <screenshot type="default">
+            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
         </screenshot>
         <screenshot>

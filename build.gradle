@@ -17,7 +17,7 @@ if ("@ID@".endsWith("@")) {
 repositories {
     mavenCentral()
     mavenLocal()
-    // DO NOT REMOVE, NEEDED FOR FLATHUB OFFLINE BUILD  (!= to mavenLocal)
+    // DO NOT REMOVE, NEEDED FOR FLATHUB OFFLINE BUILD (!= to mavenLocal)
     maven { url './offline-repository' }
 }
 

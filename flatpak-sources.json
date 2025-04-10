@@ -43,24 +43,24 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.4/YAJL-2.0.4.jar",
-    "sha512": "0784c4518ed79bf575aa2ca60df6100f31a3d1f99aadfcdbecd55926662ec589d885a466c0086983ecf7e0fdfd765cee8439573c0cc8df75fc9be4c53334d26e",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.4",
-    "dest-filename": "YAJL-2.0.4.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.jar",
+    "sha512": "fde007812eb5fa537a63d64823076c11cea194fae5b8093f0c93ea82f0f7d459511bf810dc0e3820313e2694ba92f5eff17ce0a29b068b45a84ed3cf30e819ae",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
+    "dest-filename": "YAJL-2.0.5.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.4/YAJL-2.0.4.module",
-    "sha512": "0372f1664562b33b998b173fbd296bf86d719069c63b7d333d9ca50deee6698a026086e63abee78e2e2b5f18e707278c8f359fe584748b9a85d21bbc545ad98d",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.4",
-    "dest-filename": "YAJL-2.0.4.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.module",
+    "sha512": "c5ce8353e7892a69417d854b1ce39924e297b5e2b81b6b2fdf297e691bd176186cdca694e8a79b65477d45910d6fbbecf2cc719d6379c2b022f7579690614125",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
+    "dest-filename": "YAJL-2.0.5.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.4/YAJL-2.0.4.pom",
-    "sha512": "0513e8723e05c54307b68b4e80a77501c2c1608c541f795f2518f808eb7a247777709ba39296736eec2cb924b56af2056d26829b8a8bd1400ce5192a0fe3a340",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.4",
-    "dest-filename": "YAJL-2.0.4.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.pom",
+    "sha512": "36fb55fd15e78995ab27ff0950f7daf7f0a381074efefc0bfd63de7efacec8515af6d00f02c47993d9e130ad4ece4ee0dde884cd5ecf5657542e6409d2f60061",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
+    "dest-filename": "YAJL-2.0.5.pom"
   },
   {
     "type": "file",

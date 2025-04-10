@@ -96,7 +96,7 @@
 - [X] Logging
   - [X] Use [YAJL](https://github.com/ToxicStoxm/YAJL) (Yet Another Java Logger)
   - [X] Create log areas
-  ~~- [ ] Add debug mode which saves the log to a logfile~~ (Handled by YAJL)
+  - ~~[ ] Add debug mode which saves the log to a logfile~~ (Handled by YAJL)
   - [X] add a lot of log messages
     - [X] Main
     - [X] LEDSuiteApplication

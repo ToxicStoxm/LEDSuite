@@ -316,7 +316,6 @@ public class LEDSuiteApplication extends Application {
             logger.verbose(" > Shutting down previous communication websocket...");
             webSocketCommunication.shutdown();
             logger.verbose(" > > DONE");
-
         }
         
         logger.verbose(" > Creating new websocket instance...");

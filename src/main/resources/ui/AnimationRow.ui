@@ -7,6 +7,8 @@
     <property name="child">
       <object class="GtkBox" id="animation_box">
         <property name="halign">start</property>
+        <property name="margin-bottom">3</property>
+        <property name="margin-top">3</property>
         <property name="spacing">5</property>
         <child>
           <object class="GtkImage" id="animation_icon"/>
@@ -14,9 +16,13 @@
         <child>
           <object class="GtkLabel" id="animation_label">
             <property name="halign">start</property>
-            <property name="max-width-chars">10</property>
+            <property name="max-width-chars">50</property>
+            <property name="natural-wrap-mode">none</property>
             <property name="wrap">True</property>
             <property name="wrap-mode">word-char</property>
+            <!-- REMOVES / DISABLES AUTO-CENTERING -->
+            <property name="xalign">0.0</property>
+            <property name="yalign">0.5</property>
           </object>
         </child>
       </object>

@@ -150,7 +150,7 @@
     <content_attribute id="money-gambling">none</content_attribute>
   </content_rating>
 
-  <url type="homepage">https://github.com/ToxicStoxm/LEDSuite</url>
+  <url type="homepage">https://toxicstoxm.com/LEDSuite</url>
   <url type="vcs-browser">https://github.com/ToxicStoxm/LEDSuite</url>
   <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
   <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>

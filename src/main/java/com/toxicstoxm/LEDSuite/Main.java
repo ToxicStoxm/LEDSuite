@@ -68,6 +68,11 @@ public class Main {
             argsList.remove(textDomainOption);
         }
 
+        // Enable demo mode if cli argument is given
+        LEDSuiteApplication.getSettings().setDemoMode(
+                argsList.contains("--demo-mode")
+        );
+
         // Initialize translations with the specified text domain (if provided)
         Translations.init(Constants.Application.ID, translationDirectory);
 

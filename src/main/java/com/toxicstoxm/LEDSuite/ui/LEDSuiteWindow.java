@@ -412,6 +412,13 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     public ProgressBar uploadProgressBar;
 
     public void setUploadProgress(double fraction) {
+        // If demo mode is on, wait at specific percentage on upload
+        // For release screenshots :)
+        if (LEDSuiteApplication.getSettings().isDemoMode() && fraction > 0.75) {
+            while (true) {
+                Thread.onSpinWait();
+            }
+        }
         logger.verbose("Updating UI to -> Upload progress: {}", (LogMessagePlaceholder) () -> Math.round(fraction * 100000) / 1000);
         GLib.idleAddOnce(() -> {
             if (!uploadProgressBarRevealer.getChildRevealed()) {

@@ -2,6 +2,8 @@ package com.toxicstoxm.LEDSuite.settings;
 
 import com.toxicstoxm.YAJSI.api.settings.YAMLConfiguration;
 import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Settings bundle for LEDSuite using YAJSI framework.
@@ -14,6 +16,11 @@ public class LEDSuiteSettingsBundle {
     public LEDSuiteSettingsBundle() {
 
     }
+
+    @YAMLSetting.Ignore
+    @Getter
+    @Setter
+    private boolean demoMode = false;
 
     @YAMLSetting(name = "LEDSuite")
     public DefaultSettings mainSection = new DefaultSettings();

@@ -124,10 +124,14 @@ public class LEDSuiteApplication extends Application {
      */
     @InstanceInit
     public void init() {
-
-        System.out.println("Initializing...");
-
         logger.info("Initializing application...");
+
+        if (getSettings().isDemoMode()) {
+            logger.warn("Demo mode is active!");
+            logger.warn("If you don't know what this is, do not use it!");
+            logger.warn("Demo mode is unstable and only used by the developers for testing and debugging!");
+        }
+
         logger.verbose("Initializing UI...");
         logger.verbose("Initializing UI-Actions...");
         logger.verbose(" > create");
@@ -147,6 +151,7 @@ public class LEDSuiteApplication extends Application {
             window.asApplicationWindow().close();
             this.quit();
         }));
+
         status.onActivate(_ -> window.displayStatusDialog());
         settings.onActivate(_ -> window.displayPreferencesDialog());
         shortcuts.onActivate(_ -> window.displayShortcutsWindow());

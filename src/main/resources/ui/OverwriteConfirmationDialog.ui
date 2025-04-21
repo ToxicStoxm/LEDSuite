@@ -2,8 +2,8 @@
 <!-- Created with Cambalache 0.92.2 -->
 <interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name FileCollisionDialog.ui -->
-  <requires lib="gtk" version="4.16"/>
-  <requires lib="libadwaita" version="1.6"/>
+  <requires lib="gtk" version="4.18"/>
+  <requires lib="libadwaita" version="1.7"/>
   <template class="OverwriteConfirmationDialog" parent="AdwAlertDialog">
     <property name="body" translatable="yes">Are you sure you want to overwrite the existing animation?</property>
     <property name="default-response">cancel</property>

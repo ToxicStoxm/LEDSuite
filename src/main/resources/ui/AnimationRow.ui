@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.94.1 -->
 <interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name AnimationRow.ui -->
-  <requires lib="gtk" version="4.16"/>
+  <requires lib="gtk" version="4.18"/>
   <template class="AnimationRow" parent="GtkListBoxRow">
     <property name="child">
       <object class="GtkBox" id="animation_box">

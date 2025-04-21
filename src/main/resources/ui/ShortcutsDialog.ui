@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <interface domain="com.toxicstoxm.LEDSuite">
     <requires lib="gio" version="2.82"/>
-    <requires lib="gtk" version="4.16"/>
-    <requires lib="libadwaita" version="1.6"/>
+    <requires lib="gtk" version="4.18"/>
+    <requires lib="libadwaita" version="1.7"/>
     <template class="ShortcutsDialog" parent="GtkShortcutsWindow">
         <property name="destroy-with-parent">True</property>
         <property name="hide-on-close">True</property>

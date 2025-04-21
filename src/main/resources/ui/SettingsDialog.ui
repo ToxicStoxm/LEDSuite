@@ -3,8 +3,8 @@
 <interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name SettingsDialog.ui -->
   <requires lib="gio" version="2.82"/>
-  <requires lib="gtk" version="4.16"/>
-  <requires lib="libadwaita" version="1.6"/>
+  <requires lib="gtk" version="4.18"/>
+  <requires lib="libadwaita" version="1.7"/>
   <template class="SettingsDialog" parent="AdwPreferencesDialog">
     <property name="search-enabled">True</property>
     <child>

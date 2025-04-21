@@ -43,45 +43,45 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.jar",
-    "sha512": "fde007812eb5fa537a63d64823076c11cea194fae5b8093f0c93ea82f0f7d459511bf810dc0e3820313e2694ba92f5eff17ce0a29b068b45a84ed3cf30e819ae",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
-    "dest-filename": "YAJL-2.0.5.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.jar",
+    "sha512": "0c085e6363898b1dda14cee8fd61253284e2bc8c02855483ecd1e8c295a7237915c8c294a1ab16a5c258af712107d15b34a573582f1e2ab93d4415abf94072d0",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
+    "dest-filename": "YAJL-2.0.6.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.module",
-    "sha512": "c5ce8353e7892a69417d854b1ce39924e297b5e2b81b6b2fdf297e691bd176186cdca694e8a79b65477d45910d6fbbecf2cc719d6379c2b022f7579690614125",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
-    "dest-filename": "YAJL-2.0.5.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.module",
+    "sha512": "72120dd94bf4a96719966b466e84208b0cbffd6b0b9b9be1bd22ad0fffd3cf826ac56305a8c294d2ddb81ca232bdf28ea0923c971af9331e04873f6c9476b85d",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
+    "dest-filename": "YAJL-2.0.6.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.5/YAJL-2.0.5.pom",
-    "sha512": "36fb55fd15e78995ab27ff0950f7daf7f0a381074efefc0bfd63de7efacec8515af6d00f02c47993d9e130ad4ece4ee0dde884cd5ecf5657542e6409d2f60061",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.5",
-    "dest-filename": "YAJL-2.0.5.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.pom",
+    "sha512": "9521fb7e571cfd8d8cfaf160226b285113cb9e6ee6a089bab575b3d50062c1cc8becca4751399ed204752fa8c105ace90307db90a4c4dded3f2e709bb1d32b4d",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
+    "dest-filename": "YAJL-2.0.6.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.4/YAJSI-2.1.4.jar",
-    "sha512": "9179332e60ac6a432ff249dfaa95fe4d5bab61b012b5881843b120fa12bc139bdf26db74afaf661cea9ea7aa3df22d5f1e43a56689badb11498661c0ff52bf2e",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.4",
-    "dest-filename": "YAJSI-2.1.4.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.jar",
+    "sha512": "9b3ba26102731ec42d987653a37c31c9f2fe4f8eb9fa2bc20c9ee92ace85a012cc54ad89f9ae18521fa44fcb86f158873321476c149ceda7281fbf986a66c4b1",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
+    "dest-filename": "YAJSI-2.1.5.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.4/YAJSI-2.1.4.module",
-    "sha512": "1102d564d1bc15efdff48bd31158ad3c3c9d3e667b4151748246c35eeb421c435bdce49b716024349c9489feeb453e6bef395e9a33f7ae06bf15b05e1d4e8934",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.4",
-    "dest-filename": "YAJSI-2.1.4.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.module",
+    "sha512": "4fd745e8e60e6733421eca6c8a21009c68dc4be25560d3503b706fe0dfa736d61f277766ef0510f456b3b4a335d31e75817dca5350c1c20cb17daf91b7c44dcf",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
+    "dest-filename": "YAJSI-2.1.5.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.4/YAJSI-2.1.4.pom",
-    "sha512": "61ee25a6bb92ce1cb6b675df7f7201383e0f78cc376a0ef3156e310696d03a578f4bf90d21705de2fdc1e8d8bce6add40e190ae82e88564720861843594be44b",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.4",
-    "dest-filename": "YAJSI-2.1.4.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.pom",
+    "sha512": "ddfad85728d91492cba9fa702e4e21307daafb526e20e368875abd718b42d1fedfb9b8b65e72a5f4ca6120df8c259787875741112417556145208716e6895f00",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
+    "dest-filename": "YAJSI-2.1.5.pom"
   },
   {
     "type": "file",

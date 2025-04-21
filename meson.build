@@ -58,8 +58,8 @@ custom_target(
 	'compile-project',
 	depends             : [appdata],
 	input               : [configure_file(
-	                        input         : 'build.gradle',
-	                        output        : 'build.gradle',
+	                        input         : 'build.gradle.kts',
+	                        output        : 'build.gradle.kts',
 	                        configuration : metadata_conf,
 	                        install       : false
 	                       )],

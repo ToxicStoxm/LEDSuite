@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cp $MESON_SOURCE_ROOT/settings.gradle $MESON_BUILD_ROOT
+cp $MESON_SOURCE_ROOT/settings.gradle.kts $MESON_BUILD_ROOT
 cp -r $MESON_SOURCE_ROOT/src $MESON_BUILD_ROOT
 
 OFFLINE_REPO_SOURCE=$MESON_SOURCE_ROOT/offline-repository

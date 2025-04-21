@@ -116,6 +116,11 @@ tasks.jar {
     }
 }
 
+tasks.clean {
+    // Removes the .gresource file to prevent caching
+    delete("src/main/resources/LEDSuite.gresource")
+}
+
 tasks.register<Jar>("fatJar") {
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.LEDSuite.Main"

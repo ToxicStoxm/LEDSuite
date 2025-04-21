@@ -4,7 +4,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageData;
 import com.toxicstoxm.YAJL.Logger;
@@ -112,8 +111,7 @@ public class WebSocketClient {
                         textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
-                    logger.verbose(" > {}", e.getMessage());
-                    ExceptionTools.printStackTrace(e, logger::stacktrace);
+                    logger.verbose(e);
                 } finally {
                     if (!cancelled && !LEDSuiteApplication.isConnecting()) {
                         LEDSuiteApplication.notifyUser(

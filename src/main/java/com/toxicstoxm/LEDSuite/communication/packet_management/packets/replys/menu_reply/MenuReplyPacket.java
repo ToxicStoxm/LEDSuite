@@ -11,7 +11,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJL.Logger;
@@ -133,10 +132,9 @@ public class MenuReplyPacket extends CommunicationPacket {
                             logger.verbose("UI updated");
                         });
                     } catch (DeserializationException e) {
-                        logger.warn("Failed to handle menu reply! Deserialization failed: {}", e.getMessage());
+                        logger.warn("Failed to handle menu reply! Deserialization failed.", e);
                         errorCode = e.getErrorCode();
                         errorMessage = e.getMessage();
-                        e.printStackTrace(logger::stacktrace);
                     }
                 } else {
                     logger.warn("Couldn't handle menu reply packet because animation menu manager is not available!");
@@ -155,8 +153,7 @@ public class MenuReplyPacket extends CommunicationPacket {
                             fileName = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
                         }
                     } catch (InvalidConfigurationException ex) {
-                        logger.warn("Failed to get file name for error reporting menu deserialization failure!");
-                        ExceptionTools.printStackTrace(ex, logger::stacktrace);
+                        logger.warn("Failed to get file name for error reporting menu deserialization failure!", ex);
                     }
 
                     LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(

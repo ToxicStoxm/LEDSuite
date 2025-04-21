@@ -1,10 +1,7 @@
 package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
-import com.toxicstoxm.YAJSI.api.logging.Logger;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -136,18 +133,5 @@ public class DeserializationException extends RuntimeException {
     protected DeserializationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, ErrorCode errorCode) {
         super(message, cause, enableSuppression, writableStackTrace);
         this.errorCode = errorCode;
-    }
-
-    /**
-     * Logs the stack trace of this exception to a provided logger, along with the associated error code.
-     * This is useful for debugging deserialization errors by printing both the stack trace and error code.
-     *
-     * @param logger the logger to log the stack trace to
-     */
-    public void printStackTrace(@NotNull Logger logger) {
-        // Log the error code for easier identification of the type of error
-        logger.log("Error code: " + getErrorCode().name() + "(" + getErrorCode().getCode() + ")");
-        // Print the stack trace using the custom exception handling tools
-        ExceptionTools.printStackTrace(this, logger);
     }
 }

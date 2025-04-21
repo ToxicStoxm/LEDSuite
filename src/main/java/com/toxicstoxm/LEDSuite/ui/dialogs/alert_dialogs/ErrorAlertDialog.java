@@ -2,7 +2,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
@@ -73,7 +72,7 @@ public class ErrorAlertDialog {
                                 logger.verbose("Error acknowledged and reported by the user!"));
                     } catch (Exception e) {
                         ErrorAlertDialog.disableReportResponse = true;
-                        ExceptionTools.printStackTrace(e, logger::stacktrace);
+                        logger.verbose(e);
                         LEDSuiteApplication.handleError(
                                 ErrorData.builder()
                                         .message(Translations.getText("An error occurred during opening issue URL!"))

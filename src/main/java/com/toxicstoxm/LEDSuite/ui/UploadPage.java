@@ -10,7 +10,6 @@ import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.*;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Spinner;
@@ -35,11 +34,6 @@ import java.lang.foreign.MemorySegment;
 public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-
-    static {
-        TemplateTypes.register(UploadPage.class);
-    }
 
     public UploadPage(MemorySegment address) {
         super(address);

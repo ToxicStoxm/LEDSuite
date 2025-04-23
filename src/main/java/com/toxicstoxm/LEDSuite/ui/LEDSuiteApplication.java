@@ -29,7 +29,6 @@ import com.toxicstoxm.YAJL.config.YAJLManagerConfig;
 import com.toxicstoxm.YAJSI.api.settings.SettingsManager;
 import com.toxicstoxm.YAJSI.api.settings.YAMLUpdatingBehaviour;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
@@ -37,7 +36,6 @@ import org.gnome.adw.ApplicationWindow;
 import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.Window;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +43,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.foreign.MemorySegment;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -66,14 +63,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 1.0.0
  */
 public class LEDSuiteApplication extends Application {
-
-    static {
-        TemplateTypes.register(LEDSuiteApplication.class);
-    }
-
-    public LEDSuiteApplication(MemorySegment address) {
-        super(address);
-    }
 
     public static String version = "@version@";
 
@@ -111,11 +100,9 @@ public class LEDSuiteApplication extends Application {
 
     /**
      * Creates a new LEDSuiteApplication object with app-id and default flags
-     * @return the newly created LEDSuiteApplication instance
      */
-    public static LEDSuiteApplication create() {
-        return GObject.newInstance(LEDSuiteApplication.class,
-                "application-id", Constants.Application.ID,
+    public LEDSuiteApplication() {
+        super("application-id", Constants.Application.ID,
                 "flags", ApplicationFlags.DEFAULT_FLAGS);
     }
 
@@ -557,7 +544,7 @@ public class LEDSuiteApplication extends Application {
                     case "cancel" -> throw new UploadAbortException(() -> logger.info("File upload was cancelled by the user!"));
                     case "rename" -> {
                         logger.info("Rename selected");
-                        var renameDialog = RenameDialog.create(fileName.get());
+                        var renameDialog = new RenameDialog(fileName.get());
 
                         renameDialog.onResponse(renameResponse -> GLib.idleAddOnce(() -> {
                             String newName = renameDialog.getNewName();
@@ -587,7 +574,7 @@ public class LEDSuiteApplication extends Application {
                     }
                     case "overwrite" -> {
 
-                        var confirmationDialog = OverwriteConfirmationDialog.create();
+                        var confirmationDialog = new OverwriteConfirmationDialog();
 
                         confirmationDialog.onResponse(confirmationResponse -> GLib.idleAddOnce(() -> {
                             if (confirmationResponse.equals("cancel")) {
@@ -851,7 +838,7 @@ public class LEDSuiteApplication extends Application {
         logger.verbose(" > create");
         Window win = this.getActiveWindow();
         if (win == null)
-            win = LEDSuiteWindow.create(this);
+            win = new LEDSuiteWindow(this);
         window = (LEDSuiteWindow) win;
         logger.verbose(" > present");
         win.present();

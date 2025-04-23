@@ -42,7 +42,7 @@ public class MessageDialog {
     @Builder
     public MessageDialog(@NotNull MessageData messageData) {
         logger.verbose("Creating new message dialog from message data -> '{}'", messageData);
-        alertDialog = GeneralAlertDialog.create().configure(
+        alertDialog = new GeneralAlertDialog().configure(
                 AlertDialogData.builder()
                         .heading(generateHeading(messageData.heading(), messageData.source()))
                         .body(messageData.message())

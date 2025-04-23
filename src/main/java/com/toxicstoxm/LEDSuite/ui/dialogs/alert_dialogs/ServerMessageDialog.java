@@ -21,7 +21,7 @@ public class ServerMessageDialog {
     @Builder
     public ServerMessageDialog(@NotNull ServerMessagePacket packet) {
         logger.verbose("Creating server message dialog from message packet -> {}", packet);
-        alertDialog = GeneralAlertDialog.create().configure(
+        alertDialog = new GeneralAlertDialog().configure(
                 AlertDialogData.builder()
                         .heading(generateHeading(packet.getHeading(), packet.getSource()))
                         .body(packet.getMessage())

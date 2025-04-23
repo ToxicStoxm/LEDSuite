@@ -2,11 +2,7 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
-import org.gnome.gobject.GObject;
-
-import java.lang.foreign.MemorySegment;
 
 /**
  * A dialog that prompts the user for confirmation before overwriting data.
@@ -22,29 +18,6 @@ import java.lang.foreign.MemorySegment;
 public class OverwriteConfirmationDialog extends AlertDialog {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-    static {
-        TemplateTypes.register(OverwriteConfirmationDialog.class);
-    }
-
-    /**
-     * Constructs a new instance of the overwrite confirmation dialog using the provided memory address.
-     *
-     * @param address the memory segment address used to create the dialog instance
-     */
-    public OverwriteConfirmationDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates and returns a new instance of the OverwriteConfirmationDialog.
-     *
-     * @return a new OverwriteConfirmationDialog instance
-     */
-    public static OverwriteConfirmationDialog create() {
-        logger.verbose("Creating new overwrite confirmation dialog");
-        return GObject.newInstance(OverwriteConfirmationDialog.class);
-    }
 
     // Callback to handle user response actions
     private ResponseCallback responseCallback;

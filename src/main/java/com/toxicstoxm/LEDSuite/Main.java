@@ -4,7 +4,6 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.tools.ExceptionTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import org.gnome.gio.Resource;
-import org.gnome.glib.Bytes;
 
 import java.io.File;
 import java.util.Arrays;
@@ -82,7 +81,7 @@ public class Main {
         try (var stream = Main.class.getResourceAsStream("/LEDSuite.gresource")) {
             Objects.requireNonNull(stream, "Resource stream is null, failed to load gresource");
             byte[] bytes = stream.readAllBytes();
-            Resource resource = Resource.fromData(Bytes.static_(bytes));
+            Resource resource = Resource.fromData(bytes);
             resource.resourcesRegister();
         } catch (Exception e) {
             // If the gresource cannot be found, or an error occurred during loading or registering it,
@@ -92,7 +91,7 @@ public class Main {
         }
 
         // Create and run the LEDSuite application instance
-        var app = LEDSuiteApplication.create();
+        var app = new LEDSuiteApplication();
         try {
             // Run the application, passing in the modified list of arguments (after parsing translation directory)
             app.run(argsList.toArray(new String[0]));

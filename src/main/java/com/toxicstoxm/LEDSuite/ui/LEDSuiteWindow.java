@@ -29,7 +29,6 @@ import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.adw.*;
@@ -39,11 +38,9 @@ import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.foreign.MemorySegment;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -58,18 +55,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    static {
-        TemplateTypes.register(LEDSuiteWindow.class);
-    }
-
-    public LEDSuiteWindow(MemorySegment address) {
-        super(address);
+    public LEDSuiteWindow(Application app) {
+        super("application", app);
         endpointProvider = EndpointProvider.builder().build();
-    }
-
-    public static LEDSuiteWindow create(Application app) {
-        return GObject.newInstance(LEDSuiteWindow.class,
-                "application", app);
     }
 
     @InstanceInit
@@ -119,7 +107,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      */
     public void displayStatusDialog() {
         if (!endpointProvider.isStatusDialogEndpointConnected()) {
-            var statusDialog = StatusDialog.create();
+            var statusDialog = new StatusDialog();
             endpointProvider.connectStatusDialogEndpoint(statusDialog);
             statusDialog.onClosed(endpointProvider::disconnectStatusDialogEndpoint);
             statusDialog.present(this);
@@ -134,7 +122,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
      */
     public void displayPreferencesDialog() {
         if (!endpointProvider.isSettingsDialogEndpointConnected()) {
-            var settingsDialog = SettingsDialog.create();
+            var settingsDialog = new SettingsDialog();
             endpointProvider.connectSettingsDialogEndpoint(settingsDialog);
             settingsDialog.onClosed(endpointProvider::disconnectSettingsDialogEndpoint);
             settingsDialog.present(this);
@@ -340,7 +328,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     }
                 } else {
                     // Add new animation row if it doesn't already exist
-                    var newAnimationRow = AnimationRow.create(
+                    var newAnimationRow = new AnimationRow(
                             AnimationRowData.builder()
                                     .app(getApplication())
                                     .iconString(updatedAnimation.iconString())
@@ -565,7 +553,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
 
     public void displayFileCollisionDialog(AlertDialog.ResponseCallback cb, String body) {
         logger.debug("Updating UI to -> file-collision-dialog-display");
-        var fileCollisionDialog = FileCollisionDialog.create();
+        var fileCollisionDialog = new FileCollisionDialog();
         fileCollisionDialog.onResponse(cb);
         fileCollisionDialog.setBody(body);
         GLib.idleAddOnce(() -> fileCollisionDialog.present(this));
@@ -576,7 +564,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         logger.debug("Delete-button clicked");
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
-            var deleteConfirmDialog = OverwriteConfirmationDialog.create();
+            var deleteConfirmDialog = new OverwriteConfirmationDialog();
             deleteConfirmDialog.setHeading(Translations.getText("Confirm deletion"));
             deleteConfirmDialog.setBody(Translations.getText("Are you sure that you want to delete '$'?", animation));
             deleteConfirmDialog.setResponseLabel("overwrite", Translations.getText("Delete"));
@@ -603,7 +591,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         logger.debug("Rename-button clicked");
         String animation = selectedAnimation;
         if (animation != null && !animation.isBlank()) {
-            var renameDialog = RenameDialog.create(animation);
+            var renameDialog = new RenameDialog(animation);
             renameDialog.onResponse(response ->  {
                 if (Objects.equals(response, "rename")) {
                     String newName = renameDialog.getNewName();

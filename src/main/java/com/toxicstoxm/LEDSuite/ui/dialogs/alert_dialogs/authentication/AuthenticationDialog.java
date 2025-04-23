@@ -9,18 +9,15 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.EntryRow;
 import org.gnome.adw.PasswordEntryRow;
 import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.foreign.MemorySegment;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -45,10 +42,6 @@ public class AuthenticationDialog extends AlertDialog {
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    static {
-        TemplateTypes.register(AuthenticationDialog.class);
-    }
-
     // The task responsible for checking user credentials
     private LEDSuiteTask credentialCheckerTask;
 
@@ -65,24 +58,6 @@ public class AuthenticationDialog extends AlertDialog {
 
     // Task for handling authentication timeout
     private LEDSuiteTask authenticationTimeoutTask;
-
-    /**
-     * Constructor that initializes the {@code AuthenticationDialog} using a memory address segment.
-     *
-     * @param address a {@link MemorySegment} representing the memory address of the widget
-     */
-    public AuthenticationDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates a new instance of the {@code AuthenticationDialog}.
-     *
-     * @return a newly created {@code AuthenticationDialog} instance
-     */
-    public static AuthenticationDialog create() {
-        return GObject.newInstance(AuthenticationDialog.class);
-    }
 
     /**
      * Handles the response when the user interacts with the dialog.

@@ -73,7 +73,7 @@ public class AnimationMenuManager extends Registrable<Widget> {
         ensureKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME, yaml);
         String menuId = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.FILENAME);
         logger.debug("Creating AnimationMenu with ID '{}'", menuId);
-        AnimationMenu animationMenu = AnimationMenu.create(menuId);
+        AnimationMenu animationMenu = new AnimationMenu(menuId);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE, yaml)) {
             String menuSubtitle = yaml.getString(Constants.Communication.YAML.Keys.Reply.MenuReply.SUBTITLE);

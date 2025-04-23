@@ -5,18 +5,14 @@ import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.Box;
 import org.gnome.gtk.Image;
 import org.gnome.gtk.ImageType;
 import org.gnome.gtk.Label;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.foreign.MemorySegment;
 
 /**
  * Represents the settings menu for animations within the application.
@@ -34,10 +30,6 @@ import java.lang.foreign.MemorySegment;
 public class AnimationMenu extends Box implements AnimationMenuReference {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-    static {
-        TemplateTypes.register(AnimationMenu.class);
-    }
 
     /**
      * Unique identifier for the menu instance.
@@ -66,27 +58,16 @@ public class AnimationMenu extends Box implements AnimationMenuReference {
     @GtkChild(name = "animation_menu_subtitle")
     public Label animationSubtitle;
 
-    /**
-     * Constructor that initializes the AnimationMenu using a memory address segment.
-     *
-     * @param address a {@link MemorySegment} representing the address to initialize the widget
-     */
-    public AnimationMenu(MemorySegment address) {
-        super(address);
-    }
 
     /**
      * Creates a new instance of the {@code AnimationMenu} with the specified file name.
      * This method also sets the {@code menuID} to the provided file name.
      *
      * @param fileName the name of the file to associate with the menu instance
-     * @return a newly created {@code AnimationMenu} instance
      */
-    public static @NotNull AnimationMenu create(String fileName) {
-        logger.verbose("Creating new animation menu");
-        AnimationMenu menu = GObject.newInstance(AnimationMenu.class);
-        menu.setMenuID(fileName);
-        return menu;
+    public AnimationMenu(String fileName) {
+        super();
+        setMenuID(fileName);
     }
 
     /**

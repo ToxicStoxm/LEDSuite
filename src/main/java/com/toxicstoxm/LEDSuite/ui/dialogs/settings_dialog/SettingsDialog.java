@@ -11,17 +11,14 @@ import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.*;
 import org.gnome.adw.Spinner;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.foreign.MemorySegment;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -37,19 +34,9 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    static {
-        TemplateTypes.register(SettingsDialog.class);
-    }
-
-    public SettingsDialog(MemorySegment address) {
-        super(address);
-    }
-
-    public static @NotNull SettingsDialog create() {
-        logger.verbose("Creating new instance");
-        SettingsDialog settingsDialog = GObject.newInstance(SettingsDialog.class);
-        settingsDialog.initialize();
-        return settingsDialog;
+    public SettingsDialog() {
+        super();
+        initialize();
     }
 
     @GtkChild(name = "settings_server_address")

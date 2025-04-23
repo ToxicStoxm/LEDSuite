@@ -6,14 +6,11 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.foreign.MemorySegment;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,31 +28,10 @@ public class StatusDialog extends Dialog implements StatusDialogEndpoint {
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    static {
-        TemplateTypes.register(StatusDialog.class);
-    }
-
-    /**
-     * Constructs a new StatusDialog instance.
-     *
-     * @param address the memory address used by the native GTK dialog.
-     */
-    public StatusDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates a new instance of the {@link StatusDialog}.
-     * <p>This method initializes the dialog and marks all rows as unavailable initially.</p>
-     *
-     * @return a new instance of {@link StatusDialog}
-     */
-    public static @NotNull StatusDialog create() {
-        logger.verbose("Creating new status dialog");
-        StatusDialog dialog = GObject.newInstance(StatusDialog.class);
+    public StatusDialog() {
+        super();
         logger.verbose("Configuring UI state");
-        dialog.markAllUnavailable();
-        return dialog;
+        markAllUnavailable();
     }
 
     // GTK UI elements defined in the template

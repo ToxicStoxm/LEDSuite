@@ -88,7 +88,7 @@ public class ErrorAlertDialog {
     public ErrorAlertDialog(String errorMessage, String heading, boolean enableReporting) {
         logger.verbose("Creating new error alert dialog");
         logger.verbose("Configuring behaviour");
-        alertDialog = GeneralAlertDialog.create().configure(
+        alertDialog = new GeneralAlertDialog().configure(
 
                 AlertDialogData.builder()
                         .body(

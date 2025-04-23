@@ -2,11 +2,7 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.AlertDialog;
-import org.gnome.gobject.GObject;
-
-import java.lang.foreign.MemorySegment;
 
 /**
  * A dialog used to handle file collision scenarios in the LEDSuite application.
@@ -22,29 +18,6 @@ import java.lang.foreign.MemorySegment;
 public class FileCollisionDialog extends AlertDialog {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-    static {
-        TemplateTypes.register(FileCollisionDialog.class);
-    }
-
-    /**
-     * Constructs a new instance of the dialog, using the provided memory address.
-     *
-     * @param address the memory segment address used for creating the dialog instance
-     */
-    public FileCollisionDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates a new instance of the FileCollisionDialog.
-     *
-     * @return a new FileCollisionDialog instance
-     */
-    public static FileCollisionDialog create() {
-        logger.verbose("Creating new file collision dialog");
-        return GObject.newInstance(FileCollisionDialog.class);
-    }
 
     // Callback to handle user response actions
     private ResponseCallback responseCallback;

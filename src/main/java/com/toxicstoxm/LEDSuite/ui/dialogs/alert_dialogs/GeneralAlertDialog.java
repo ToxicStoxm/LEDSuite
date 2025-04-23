@@ -3,12 +3,9 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import org.gnome.adw.ResponseAppearance;
-import org.gnome.gobject.GObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.foreign.MemorySegment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -28,29 +25,6 @@ import java.util.UUID;
 public class GeneralAlertDialog extends org.gnome.adw.AlertDialog implements AlertDialog<AlertDialogData> {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-    static {
-        TemplateTypes.register(GeneralAlertDialog.class);
-    }
-
-    /**
-     * Constructs a new instance of the dialog, using the provided memory address.
-     *
-     * @param address the memory segment address used for creating the dialog instance
-     */
-    public GeneralAlertDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates and returns a new instance of the GeneralAlertDialog.
-     *
-     * @return a new GeneralAlertDialog instance
-     */
-    public static GeneralAlertDialog create() {
-        logger.verbose("Creating new general alert dialog");
-        return GObject.newInstance(GeneralAlertDialog.class);
-    }
 
     // Callback to handle user response actions
     private ResponseCallback responseCallback;

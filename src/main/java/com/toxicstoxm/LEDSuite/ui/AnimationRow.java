@@ -8,18 +8,15 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.adw.Clamp;
 import org.gnome.adw.Spinner;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.foreign.MemorySegment;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,20 +39,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AnimationRow extends ListBoxRow {
 
     private static final Logger logger = Logger.autoConfigureLogger();
-
-    static {
-        TemplateTypes.register(AnimationRow.class);
-    }
-
-    /**
-     * Constructs an instance of {@link AnimationRow}.
-     * This constructor is used internally by GTK to create a new instance from a template.
-     *
-     * @param address The memory address for the GTK object.
-     */
-    public AnimationRow(MemorySegment address) {
-        super(address);
-    }
 
     @Getter
     private String animationID = "";  // Unique identifier for the animation
@@ -110,9 +93,9 @@ public class AnimationRow extends ListBoxRow {
      * This method initializes the row with an icon, label, and other relevant data.
      *
      * @param animationRowData The data used to populate the animation row.
-     * @return The newly created {@link AnimationRow}.
      */
-    public static @NotNull AnimationRow create(@NotNull AnimationRowData animationRowData) {
+    public AnimationRow(@NotNull AnimationRowData animationRowData) {
+        super("action-name", "app." + animationRowData.animationID());
         logger.verbose("'{}' -> Creating new animation row from animation", animationRowData.animationID());
 
         logger.verbose("'{}' -> Registering click trigger with cooldown", animationRowData.animationID());
@@ -123,26 +106,21 @@ public class AnimationRow extends ListBoxRow {
                 animationRowData.cooldown() != null ? animationRowData.cooldown() : 0
         );
 
-        logger.verbose("'{}' -> Creating instance of UI element", animationRowData.animationID());
-        // Instantiate and configure the AnimationRow with the provided data.
-        AnimationRow row = GObject.newInstance(AnimationRow.class, "action-name", "app." + animationRowData.animationID());
-
         logger.verbose("'{}' -> Creating click trigger action", animationRowData.animationID());
         // Create the action for the application and bind it to the animation row.
-        row.createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
+        createAction(animationRowData.app(), animationRowData.animationID(), animationRowData.label());
 
         logger.verbose("'{}' -> Configuring UI state", animationRowData.animationID());
-        row.animationID = animationRowData.animationID();
-        row.update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
-        row.setLastAccessed(animationRowData.lastAccessed());
-        row.setAnimationLabel(animationRowData.label().strip());
-        row.pauseable = animationRowData.pauseable();
+        animationID = animationRowData.animationID();
+        update(null, animationRowData.iconString(), animationRowData.iconIsName(), null);
+        setLastAccessed(animationRowData.lastAccessed());
+        setAnimationLabel(animationRowData.label().strip());
+        pauseable = animationRowData.pauseable();
 
         // Set the tooltip to show the animation ID when hovered.
-        row.setTooltipText(animationRowData.animationID());
+        setTooltipText(animationRowData.animationID());
 
         logger.verbose("'{}' -> Instance configured and ready for usage", animationRowData.animationID());
-        return row;
     }
 
     /**

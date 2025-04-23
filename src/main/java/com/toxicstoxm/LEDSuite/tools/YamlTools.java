@@ -8,7 +8,6 @@ import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.gdk.Paintable;
 import org.gnome.gdk.Texture;
-import org.gnome.glib.Bytes;
 import org.gnome.gtk.Image;
 import org.jetbrains.annotations.NotNull;
 
@@ -143,7 +142,7 @@ public class YamlTools {
      * If {@code iconIsName} is {@code true} then a new {@link Image} will be constructed using {@link Image#fromIconName(String)}.
      * <p>
      * Otherwise, the string is treated as base64. This means that it is first decoded using {@link Base64#getDecoder()}
-     * and then a {@link Texture} will be created using {@link Texture#fromBytes(Bytes)}.
+     * and then a {@link Texture} will be created using {@link Texture#fromBytes(byte[])}.
      * Finally, an {@link Image} will be created using {@link Image#fromPaintable(Paintable)} and passing in the {@link Texture}.
      * @param iconString the icon name or base64
      * @param iconIsName true if {@code iconString} should be treated as name, otherwise {@code false}
@@ -159,7 +158,7 @@ public class YamlTools {
 
                 byte[] decodedBytes = Base64.getDecoder().decode(iconString);
 
-                finalImage = Image.fromPaintable(Texture.fromBytes(Bytes.static_(decodedBytes)));
+                finalImage = Image.fromPaintable(Texture.fromBytes(decodedBytes));
             } catch (GErrorException e) {
                 logger.warn("Failed to decode icon from base64! Error message: '{}'!", e.getMessage());
                 logger.debug("Base64: {}", iconString);

@@ -7,19 +7,16 @@ import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
 import lombok.Getter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.EntryRow;
 import org.gnome.glib.GLib;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,35 +35,20 @@ public class RenameDialog extends AlertDialog {
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    static {
-        TemplateTypes.register(RenameDialog.class);
-    }
-
     /**
-     * Constructs a new instance of the RenameDialog using the provided memory address.
-     *
-     * @param address the memory segment address used to create the dialog instance
-     */
-    public RenameDialog(MemorySegment address) {
-        super(address);
-    }
-
-    /**
-     * Creates and returns a new instance of the RenameDialog with the specified file name.
+     * Creates a new instance of the RenameDialog with the specified file name.
      *
      * @param fileName the name of the file to rename
-     * @return a new RenameDialog instance
      * @throws IllegalArgumentException if the file name is null or empty
      */
     @Contract("null -> fail")
-    public static @NotNull RenameDialog create(String fileName) {
+    public RenameDialog(String fileName) throws IllegalArgumentException {
+        super();
         logger.verbose("Creating new rename dialog from file name -> '{}'", fileName);
         if (fileName == null || fileName.isBlank()) {
             throw new IllegalArgumentException("Input filename can't be null or empty!");
         }
-        RenameDialog renameDialog = GObject.newInstance(RenameDialog.class);
-        renameDialog.init(fileName);
-        return renameDialog;
+        init(fileName);
     }
 
     // The new name entered by the user
@@ -122,7 +104,7 @@ public class RenameDialog extends AlertDialog {
         if (response.equals("rename") && newName.equals(currentName)) {
             logger.warn("New name equals current name after rename response!");
             logger.verbose("Calling parent dialog to handle the duplicate name");
-            var dialog = create(currentName);
+            var dialog = new RenameDialog(currentName);
             dialog.onResponse(responseCallback);
             dialog.present(getParent());
         } else {

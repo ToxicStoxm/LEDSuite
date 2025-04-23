@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.jwharm.javagi:adw:0.11.2")
+    implementation("io.github.jwharm.javagi:adw:0.12.0")
 
     implementation("org.yaml:snakeyaml:2.4")
 

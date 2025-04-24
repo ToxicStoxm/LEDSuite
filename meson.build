@@ -66,7 +66,7 @@ custom_target(
 	build_by_default	  : true, # Always recompile the project
 	build_always_stale	: true,
 	console			        : true,
-	command			        : [gradle.full_path(), 'jar'],
+	command			        : [gradle.full_path(), 'build'],
 	env			            : env,
 	install_dir	        : [get_option('libdir'), get_option('bindir')],
 	output			        : [jar_filename]

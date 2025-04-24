@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class LEDSuiteApplication extends Application {
 
-    public static String version = "@version@";
+    public static String version = "${Version}";
 
     private static Logger logger;
 

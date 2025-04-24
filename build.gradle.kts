@@ -3,9 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("java")
     id("application")
-    id("org.beryx.jlink") version "3.1.1"
     id("io.github.jwharm.flatpak-gradle-generator") version "1.5.0"
-    id("io.github.crimix.replace-placeholders") version "2.0"
 }
 
 if ("@ID@".endsWith("@")) {
@@ -18,7 +16,6 @@ if ("@ID@".endsWith("@")) {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven {
         url = uri("./offline-repository")
     }
@@ -34,13 +31,17 @@ dependencies {
     implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:2.2.0")
 
     compileOnly("org.jetbrains:annotations:26.0.2")
+    testCompileOnly("org.jetbrains:annotations:26.0.2")
     annotationProcessor("org.jetbrains:annotations:26.0.2")
+    testAnnotationProcessor("org.jetbrains:annotations:26.0.2")
 
     implementation("com.toxicstoxm.YAJSI:YAJSI:2.1.5")
     implementation("com.toxicstoxm.YAJL:YAJL:2.0.6")
 
     compileOnly("org.projectlombok:lombok:1.18.38")
+    testCompileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 
     implementation("io.github.classgraph:classgraph:4.8.179")
 
@@ -52,6 +53,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(23)
     }
+}
+
+// Replaces version placeholder, in LEDSuiteApplication with the actual version
+tasks.compileJava {
+    options.compilerArgs.add("-AVersion=${version}")
 }
 
 tasks.named<Test>("test") {
@@ -69,7 +75,7 @@ tasks.register<Exec>("glibCompileResources") {
     commandLine = listOf("glib-compile-resources", "LEDSuite.gresource.xml")
 }
 
-tasks.named("classes") {
+tasks.classes {
     dependsOn("glibCompileResources")
 }
 
@@ -82,17 +88,6 @@ tasks.named<JavaExec>("run") {
     jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
-jlink {
-    addOptions(
-        "--strip-debug",
-        "--no-header-files",
-        "--no-man-pages"
-    )
-    launcher {
-        name = "LEDSuite"
-    }
-}
-
 tasks.flatpakGradleGenerator {
     outputFile.set(
         file("flatpak-sources.json")
@@ -101,12 +96,6 @@ tasks.flatpakGradleGenerator {
     downloadDirectory.set(
         "./offline-repository"
     )
-}
-
-replaceSourcePlaceholders {
-    enabled(true)
-    filesToExpand("**/LEDSuiteApplication.java")
-    extraProperties("version")
 }
 
 tasks.jar {

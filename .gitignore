@@ -57,5 +57,4 @@ bin/
 /src/main/resources/ui/LEDSuiteWindow.cmb
 /src/main/resources/ui/RenameDialog.cmb
 /src/main/resources/ui/AuthenticationDialog.cmb
-!/implementation-concepts/
-/implementation-concepts/
+/implementation-concepts/server_message_packet_concept.yaml

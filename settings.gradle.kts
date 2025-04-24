@@ -1,3 +1,5 @@
+rootProject.name = "LEDSuite"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -7,5 +9,3 @@ pluginManagement {
         }
     }
 }
-
-rootProject.name = "LEDSuite"

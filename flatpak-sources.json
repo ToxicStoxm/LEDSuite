@@ -99,34 +99,6 @@
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/2.0/ReplacePlaceholdersPlugin-2.0.jar",
-    "sha512": "c46cf5d7cb5928c92e0b0e9c347d8dc7fd223ec4497012c9e87dd2139b33ef0f1447d65ddb76711cf07346d941fcbec8d29ccf0247502cde5279a40d8f2aa538",
-    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/2.0",
-    "dest-filename": "ReplacePlaceholdersPlugin-2.0.jar"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/2.0/ReplacePlaceholdersPlugin-2.0.module",
-    "sha512": "2a20884047105d63f46889d1dbaf69d1eef27225d2ae8fe99c6737cf40f1d418ec0cc07367335aba728f9c6de6abcbce4cc5aeab2f7c206ff9cfe7cddbf065aa",
-    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/2.0",
-    "dest-filename": "ReplacePlaceholdersPlugin-2.0.module"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/2.0/ReplacePlaceholdersPlugin-2.0.pom",
-    "sha512": "734f4d03f35e7e16551409fd16d5cb56b9c3fb9c3d99c1bb83b4b4c81a1974929a39bce02dcfb6aa630cec94e1316a661f7bc558377431939e590c02a6f3685c",
-    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/2.0",
-    "dest-filename": "ReplacePlaceholdersPlugin-2.0.pom"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/crimix/replace-placeholders/io.github.crimix.replace-placeholders.gradle.plugin/2.0/io.github.crimix.replace-placeholders.gradle.plugin-2.0.pom",
-    "sha512": "f1a61b45c8baa03e8defddeabd310b87c2493ee2d78210d886d6b9b40896c94f7d57f68cee30007b888a5817dd359d0e0ae6498eeb2324ac8cbc4f0fbbf0f0c7",
-    "dest": "./offline-repository/io/github/crimix/replace-placeholders/io.github.crimix.replace-placeholders.gradle.plugin/2.0",
-    "dest-filename": "io.github.crimix.replace-placeholders.gradle.plugin-2.0.pom"
-  },
-  {
-    "type": "file",
     "url": "https://repo.maven.apache.org/maven2/io/github/jwharm/cairobindings/cairo/1.18.4.1/cairo-1.18.4.1.jar",
     "sha512": "a7230993ea1412b1d811febe2135c22f90df3a35d093944765bbbde27508653df4cb6f80efb977f21c70146c697e30567937e5f272d1205728b6dc3a77e2f4b3",
     "dest": "./offline-repository/io/github/jwharm/cairobindings/cairo/1.18.4.1",
@@ -502,34 +474,6 @@
     "sha512": "bb604d1103315784a2f56a43244434dbbd7edc97d0450dada21313463d230e00f2f23f6e7c2ca45be94e81304057e70c79c9f0fb84247f7244d0277110b5747e",
     "dest": "./offline-repository/org/apiguardian/apiguardian-api/1.1.2",
     "dest-filename": "apiguardian-api-1.1.2.pom"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.jar",
-    "sha512": "2fc840a287e1504c830f352efb92e6797eba59cabdb1324650c4ea074ada4dae471381a19f186a72b07cd66364937c3f61bc2c42da3dfe39b2913dd8fa8fc623",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
-    "dest-filename": "badass-jlink-plugin-3.1.1.jar"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.module",
-    "sha512": "e443b75134188649721ddf93e00c5bfe940141884cd438cb0b2558ceb57df5bc7fc0fe7195540af8e8279558384e6cf39f16deace32e41adbb3a2d6c66cb396e",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
-    "dest-filename": "badass-jlink-plugin-3.1.1.module"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/badass-jlink-plugin/3.1.1/badass-jlink-plugin-3.1.1.pom",
-    "sha512": "cd7363fb36ee1a087c1bf232479d03a5a67beb04322866b0cb17512fafdbfbaeab69f5a0cda52a19556f7d1892a65d41aa21f6428c614240ac44b2d4b290488e",
-    "dest": "./offline-repository/org/beryx/badass-jlink-plugin/3.1.1",
-    "dest-filename": "badass-jlink-plugin-3.1.1.pom"
-  },
-  {
-    "type": "file",
-    "url": "https://plugins.gradle.org/m2/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.1.1/org.beryx.jlink.gradle.plugin-3.1.1.pom",
-    "sha512": "d20d2fc87bffb5aaf42d80dd83d48235d4281f34dfc70a55a169591e5db979ed158720c180cba0e0f22f75da9c7b38d4fb1ff11a36ad270ad5fadaaaf2df9ac5",
-    "dest": "./offline-repository/org/beryx/jlink/org.beryx.jlink.gradle.plugin/3.1.1",
-    "dest-filename": "org.beryx.jlink.gradle.plugin-3.1.1.pom"
   },
   {
     "type": "file",

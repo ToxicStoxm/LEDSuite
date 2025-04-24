@@ -1,6 +1,6 @@
 # LEDSuite
 [![Build](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml/badge.svg)](https://github.com/ToxicStoxm/LEDSuite/actions/workflows/build.yml) <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FToxicStoxm%2FLEDSuite%2Fbadge?format=human"> <img src="https://img.shields.io/liberapay/receives/ToxicStoxm.svg?logo=liberapay">
-- Graphical Front-End using [Java-GI](https://github.com/jwharm/java-gi) 
+- Graphical Front-End using [Java-GI](https://github.com/jwharm/java-gi)
 - Control LED/display installations
 - **Back-End:** [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
@@ -8,7 +8,7 @@
 - See latest [RC-Version](https://github.com/ToxicStoxm/LEDSuite/releases)
 
 ## ToDo
-###### (?) → planned for post v1.0.0
+###### (?) → planned in the future (after v1.0.0 release)
 - [X] Networking
   - [X] Find websocket Implementation
   - [X] Basic websocket Implementation
@@ -30,12 +30,12 @@
       - [X] Rename support
       - [X] Overwrite support
   - [X] Define communication protocol with YAML
-  - [ ] Additional features (?)
+  - [ ] Additional features (?) **(postponed to after v1.0.0)**
     - [ ] Multiple servers
     - [ ] Authentication / Accounts
       - [ ] Testing
       - [ ] Save credentials
-      - [X] Basic implementation **(postponed to after v1.0.0)**
+      - [X] Basic implementation
 - [X] UI
   - [X] Elements
     -  [X] Dialogs
@@ -76,7 +76,7 @@
     - [X] Classes
     - [X] Functions
   - [X] Add tons of comments to the code
-  - [ ] Create examples (?)
+  - [ ] ~~Create examples (?)~~
 - [ ] I18N
   - [ ] Languages
     - [X] English
@@ -86,10 +86,10 @@
     - [ ] Spanish (?)
     - [ ] Chinese (?)
 - [ ] Flathub Release
-  - [ ] Update metadata
+  - [X] Update metadata
     - [X] Description
     - [X] Screenshots
-    - [ ] Icon
+    - [X] Icon
     - [X] Version
     - [X] Patch notes
   - [X] Update dependencies
@@ -105,4 +105,20 @@
   - [X] Use [YAJSI](https://github.com/ToxicStoxm/YAJSI) (Yet Another Java Settings Implementation)
   - [X] Implement all necessary settings
 - [ ] Other
-  - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite) 
+  - [ ] Create project website at [Link](https://toxicstoxm.com/LEDSuite)
+    - [X] General structure
+    - [X] General style
+    - [X] Landing page
+    - [X] Screenshots
+    - [ ] In depth description
+    - [ ] Installation guide
+    - [ ] User guide
+    - [ ] Roadmap
+  - [X] Author website at [Link](https://toxicstoxm.com)
+    - [X] General structure
+    - [X] General style
+    - [ ] Landing page
+    - [ ] Skills & Projects
+    - [ ] Contact form (or similar)
+    - [X] Current projects
+    - [ ] Future projects / Ideas

@@ -10,6 +10,7 @@ import org.gnome.gdk.Paintable;
 import org.gnome.gdk.Texture;
 import org.gnome.gtk.Image;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Base64;
 import java.util.Objects;
@@ -148,7 +149,7 @@ public class YamlTools {
      * @param iconIsName true if {@code iconString} should be treated as name, otherwise {@code false}
      * @return the constructed {@link Image} or a 'broken image' if something went wrong or the name/base64 was invalid.
      */
-    public static Image constructIcon(String iconString, boolean iconIsName, String iconHash, HashSumCallable newIcon) {
+    public static @Nullable Image constructIcon(String iconString, boolean iconIsName, String iconHash, HashSumCallable newIcon) {
         Image finalImage = Image.fromIconName("");
         if (iconIsName) {
             finalImage = Image.fromIconName(iconString);

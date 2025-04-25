@@ -36,7 +36,6 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     private String source;        // guaranteed
     private String message;          // guaranteed
-    private int severity;         // guaranteed
 
     @Override
     public String getType() {
@@ -61,9 +60,6 @@ public class ServerErrorPacket extends CommunicationPacket {
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, yaml);
         packet.message = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE);
 
-        ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, yaml);
-        packet.severity = yaml.getInt(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY);
-
         ensureKeyExists(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE, yaml);
         packet.source = yaml.getString(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE);
 
@@ -75,7 +71,6 @@ public class ServerErrorPacket extends CommunicationPacket {
         YamlConfiguration yaml = saveYAML();
 
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.MESSAGE, message);
-        yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SEVERITY, severity);
         yaml.set(Constants.Communication.YAML.Keys.Error.ServerError.SOURCE, source);
 
         return yaml.saveToString();
@@ -83,7 +78,7 @@ public class ServerErrorPacket extends CommunicationPacket {
 
     @Override
     public void handlePacket() {
-        logger.warn("Server Error: Source: {}, Severity: {}", severity, source, severity);
+        logger.warn("Server Error: Source: {}", source);
 
         LEDSuiteApplication.handleError(
                 ErrorData.builder()

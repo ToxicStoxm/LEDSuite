@@ -4,6 +4,7 @@ plugins {
     id("java")
     id("application")
     id("io.github.jwharm.flatpak-gradle-generator") version "1.5.0"
+    id("io.github.crimix.replace-placeholders") version "3.0"
 }
 
 if ("@ID@".endsWith("@")) {
@@ -56,8 +57,10 @@ java {
 }
 
 // Replaces version placeholder, in LEDSuiteApplication with the actual version
-tasks.compileJava {
-    options.compilerArgs.add("-AVersion=${version}")
+replaceSourcePlaceholders {
+    enabled(true)
+    filesToExpand("**/LEDSuiteApplication.java")
+    extraProperties("version")
 }
 
 tasks.named<Test>("test") {

@@ -15,6 +15,22 @@
 
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
+        <release version="1.0.0-rc4" date="2025-04-25" type="development">
+            <description>
+                <p>Release Candidate #4</p>
+                <ul>
+                    <li>Bug fixes</li>
+                    <li>Update dependencies (Libadwaita 1.7)</li>
+                    <li>Migrate to Kotlin DSL for gradle</li>
+                    <li>Cleanup and general polish</li>
+                    <li>Fix and add unit tests</li>
+                    <li>Author and Project website</li>
+                    <li>Add credits to AboutDialog credit section</li>
+                    <li>Update Translations</li>
+                    <li>Migrated away from using jlink</li>
+                </ul>
+            </description>
+        </release>
         <release version="1.0.0-rc3" date="2025-04-06" type="development">
             <description>
                 <p>Release Candidate #3</p>
@@ -144,7 +160,8 @@
         <content_attribute id="money-gambling">none</content_attribute>
     </content_rating>
 
-    <url type="homepage">https://github.com/ToxicStoxm/LEDSuite</url>
+    <url type="homepage">https://toxicstoxm.com/LEDSuite</url>
+    <url type="vcs-browser">https://github.com/ToxicStoxm/LEDSuite</url>
     <url type="donation">https://liberapay.com/ToxicStoxm/donate</url>
     <url type="bugtracker">https://github.com/ToxicStoxm/LEDSuite/issues</url>
     <url type="contribute">https://github.com/ToxicStoxm/LEDSuite</url>
@@ -190,6 +207,10 @@
     <launchable type="desktop-id">@DESKTOP_FILE@</launchable>
 
     <screenshots>
+        <screenshot type="default">
+            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
+        </screenshot>
         <screenshot>
             <caption>Main page, after launching the app</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Main-Page.png</image>
@@ -201,10 +222,6 @@
         <screenshot>
             <caption>Upload page while uploading an animation with progress bar</caption>
             <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
-        </screenshot>
-        <screenshot type="default">
-            <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings Dialog, connect to backend, configure behaviour</caption>

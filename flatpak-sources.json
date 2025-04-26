@@ -99,6 +99,34 @@
   },
   {
     "type": "file",
+    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/3.0/ReplacePlaceholdersPlugin-3.0.jar",
+    "sha512": "d7b3c3cc258abba6b68e5727cb805accc1b9f50d8712798220b31c9f5802f19dca3eb772e27dae583fe8eb09f1f083642cf21ab2f7db8032af3f878f06ad83b4",
+    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/3.0",
+    "dest-filename": "ReplacePlaceholdersPlugin-3.0.jar"
+  },
+  {
+    "type": "file",
+    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/3.0/ReplacePlaceholdersPlugin-3.0.module",
+    "sha512": "67150b3438f7c373f8ee2e4d906349d3f8056394c9af8f6995f2ee338e86ed002d18b537150692d487e39f7b64ef9ba99c9384cc56608837ae6954c27e7b414d",
+    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/3.0",
+    "dest-filename": "ReplacePlaceholdersPlugin-3.0.module"
+  },
+  {
+    "type": "file",
+    "url": "https://plugins.gradle.org/m2/io/github/crimix/ReplacePlaceholdersPlugin/3.0/ReplacePlaceholdersPlugin-3.0.pom",
+    "sha512": "a797f61e309ce29ee10012f9980a6efabf182ee2c6cc0d274e0f98ae4fe57bdc8360dadd553fc2d4ebe1f7e664136eafd04b2e493c38106c1f450543149449c6",
+    "dest": "./offline-repository/io/github/crimix/ReplacePlaceholdersPlugin/3.0",
+    "dest-filename": "ReplacePlaceholdersPlugin-3.0.pom"
+  },
+  {
+    "type": "file",
+    "url": "https://plugins.gradle.org/m2/io/github/crimix/replace-placeholders/io.github.crimix.replace-placeholders.gradle.plugin/3.0/io.github.crimix.replace-placeholders.gradle.plugin-3.0.pom",
+    "sha512": "810b6e2587b66f0e9d906c5c0f8643631df321e0a17d7f546a6e4ceff1971d704a600698882c6a3e725501977fbabf106a91c164d2d4c75c446475632f79bbc7",
+    "dest": "./offline-repository/io/github/crimix/replace-placeholders/io.github.crimix.replace-placeholders.gradle.plugin/3.0",
+    "dest-filename": "io.github.crimix.replace-placeholders.gradle.plugin-3.0.pom"
+  },
+  {
+    "type": "file",
     "url": "https://repo.maven.apache.org/maven2/io/github/jwharm/cairobindings/cairo/1.18.4.1/cairo-1.18.4.1.jar",
     "sha512": "a7230993ea1412b1d811febe2135c22f90df3a35d093944765bbbde27508653df4cb6f80efb977f21c70146c697e30567937e5f272d1205728b6dc3a77e2f4b3",
     "dest": "./offline-repository/io/github/jwharm/cairobindings/cairo/1.18.4.1",

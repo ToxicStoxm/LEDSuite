@@ -36,7 +36,6 @@ import org.gnome.adw.AboutDialog;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
-import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +90,23 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void displayAboutDialog() {
-        Dialog aboutDialog = AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.metainfo.xml", LEDSuiteApplication.version);
+        AboutDialog aboutDialog = (AboutDialog) AboutDialog.fromAppdata("/com/toxicstoxm/LEDSuite/com.toxicstoxm.LEDSuite.metainfo.xml", LEDSuiteApplication.version);
+        aboutDialog.addCreditSection("Developers", List.of(
+                "ToxicStoxm https://toxicstoxm.com",
+                "Hannes Campidell https://gitlab.com/hannescam"
+                ).toArray(new String[]{})
+        );
+        aboutDialog.addCreditSection("Artists", List.of(
+                        "Micah Ilbery https://github.com/micahilbery"
+                ).toArray(new String[]{})
+        );
+        aboutDialog.addCreditSection("Java-GI technical support", List.of(
+                "Jan-Willem Harmannij"
+                ).toArray(new String[]{})
+        );
+        aboutDialog.addCreditSection("Emotional support", List.of(
+                "Hannes's cat"
+        ).toArray(new String[]{}));
         aboutDialog.present(this);
     }
 

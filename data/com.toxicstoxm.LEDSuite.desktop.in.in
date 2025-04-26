@@ -3,10 +3,10 @@ Type=Application
 
 Name=@NAME@
 
-Comment=Control an LED-Matrix with style
+Comment=Control LED/display installations
 
 Categories=Utility;
-Keywords=LED;matrix;LCCP;Cube;LEDSuite;
+Keywords=LED;matrix;LCCP;Cube;LEDSuite;HUB75
 X-Purism-FormFactor=Workstation;Mobile;
 Icon=@ID@
 Exec=@COMMAND@

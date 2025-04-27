@@ -27,6 +27,9 @@
                     <li>Updated German translations</li>
                     <li>Added Italian translations</li>
                     <li>Added translators to credit section</li>
+                    <li>Bug Fixes</li>
+                    <li>Added more tests and improved existing ones</li>
+                    <li>Added support for clearing cooldown on action groups</li>
                 </ul>
             </description>
         </release>

@@ -512,7 +512,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     case playing -> {
                         playing = true;
                         stopButtonRevealer.setRevealChild(true);
-                        logger.debug("Updating UI to -> animation-playing");
+                        logger.verbose("Updating UI to -> animation-playing");
                         if (animationList.getSelectedRow() instanceof AnimationRow row) {
                             if (row.isPauseable()) {
                                 playPauseButton.setIconName("media-playback-pause");
@@ -524,7 +524,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                         }
                     }
                     case paused -> {
-                        logger.debug("Updating UI to -> animation-paused");
+                        logger.verbose("Updating UI to -> animation-paused");
                         playing = false;
                         stopButtonRevealer.setRevealChild(true);
                         playPauseButton.setIconName("media-playback-start");
@@ -535,7 +535,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                     }
                 }
             } else {
-                logger.debug("Cancelled -> Updating UI to: current animation is not selected");
+                logger.verbose("Cancelled -> Updating UI to: current animation is not selected");
                 resetAnimationControlButtons(false);
                 setAnimationControlButtonsSensitive(true);
             }
@@ -553,7 +553,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void resetAnimationControlButtons(boolean hide) {
-        logger.debug("Resetting animation control buttons");
+        logger.verbose("Resetting animation control buttons");
         playing = false;
         GLib.idleAddOnce(() -> {
             if (hide) animationControlButtonsRevealer.setRevealChild(false);
@@ -564,7 +564,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void setAnimationControlButtonsSensitive(boolean sensitive) {
-        logger.debug("Updating UI to -> animation-ctrl-buttons-sensitive: '{}'", sensitive);
+        logger.verbose("Updating UI to -> animation-ctrl-buttons-sensitive: '{}'", sensitive);
         stopButton.setSensitive(sensitive);
         playPauseButton.setSensitive(sensitive);
     }

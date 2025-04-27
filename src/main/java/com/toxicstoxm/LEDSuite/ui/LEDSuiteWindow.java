@@ -104,6 +104,9 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 "Jan-Willem Harmannij"
                 ).toArray(new String[]{})
         );
+        aboutDialog.addCreditSection("Translators", List.of(
+                "Lydia (ToxicStoxm's Mom)"
+        ).toArray(new String[]{}));
         aboutDialog.addCreditSection("Emotional support", List.of(
                 "Hannes's cat"
         ).toArray(new String[]{}));

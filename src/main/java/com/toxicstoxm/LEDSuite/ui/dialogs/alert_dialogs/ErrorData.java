@@ -13,6 +13,8 @@ import lombok.Getter;
 @Getter
 public class ErrorData {
 
+    private static final Logger defaultLogger = Logger.autoConfigureLogger();
+
     private String message;
     private String heading;
 
@@ -20,7 +22,7 @@ public class ErrorData {
     private boolean log = true;
 
     @Builder.Default
-    private Logger logger = Logger.autoConfigureLogger();
+    private Logger logger = defaultLogger;
 
     @Builder.Default
     private boolean enableReporting = true;

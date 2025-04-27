@@ -117,7 +117,7 @@ public class SettingsChangeRequestPacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.BRIGHTNESS, brightness);
 
         // Serialize the selected color mode value into the YAML string if not blank
-        if (!selectedColorMode.isBlank()) {
+        if (selectedColorMode != null && !selectedColorMode.isBlank()) {
             yaml.set(Constants.Communication.YAML.Keys.Request.SettingsChangeRequest.SELECTED_COLOR_MODE, selectedColorMode);
         }
 

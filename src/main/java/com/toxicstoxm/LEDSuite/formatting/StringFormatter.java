@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public final class StringFormatter {
 
     // Default format used for date and time if no format is provided
-    private static final String defaultDateTimeFormat = "dd:MM:jj hh:mm:ss";
+    private static final String defaultDateTimeFormat = "dd:MM:yy hh:mm:ss";
 
     /**
      * Extracts the file name from the given path using the default delimiter ("/").
@@ -105,8 +105,14 @@ public final class StringFormatter {
      *
      * @param millis The duration in milliseconds.
      * @return The formatted duration string.
+     * @throws IllegalArgumentException if millis is negative
      */
     public static @NotNull String formatDuration(long millis) {
+
+        if (millis < 0) {
+            throw new IllegalArgumentException("Duration cannot be negative");
+        }
+
         Duration duration = Duration.ofMillis(millis);
 
         long hours = duration.toHours();

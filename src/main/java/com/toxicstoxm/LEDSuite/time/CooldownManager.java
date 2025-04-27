@@ -68,13 +68,40 @@ public class CooldownManager {
      */
     public static boolean clearCooldown(String name) {
         if (name == null || !actions.containsKey(name)) return false;
+
         CooldownAction cooldownAction = actions.remove(name);
+
         if (cooldownAction.actionGroup == null) {
-            actions.put(name, new CooldownAction(cooldownAction.action, cooldownAction.cooldown, System.currentTimeMillis() - Duration.ofDays(365).toMillis(), null));
+            // Existing behavior: reset single action cooldown timestamp
+            actions.put(name, new CooldownAction(
+                    cooldownAction.action,
+                    cooldownAction.cooldown,
+                    System.currentTimeMillis() - Duration.ofDays(365).toMillis(),
+                    null
+            ));
+        } else {
+            // Clear the cooldown for the action group as well
+            actions.put(name, new CooldownAction(
+                    cooldownAction.action,
+                    cooldownAction.cooldown,
+                    System.currentTimeMillis() - Duration.ofDays(365).toMillis(),
+                    cooldownAction.actionGroup
+            ));
+            String groupName = cooldownAction.actionGroup;
+            if (actionGroups.containsKey(groupName)) {
+                CooldownActionGroup group = actionGroups.remove(groupName);
+                // Reset group's lastCall similarly
+                actionGroups.put(groupName, new CooldownActionGroup(
+                        group.cooldown,
+                        System.currentTimeMillis() - Duration.ofDays(365).toMillis()
+                ));
+            }
         }
+
         logger.debug("Successfully cleared cooldown for action '{}'", name);
         return true;
     }
+
 
     /**
      * Tries to call the action associated with the specified action name. The action will only be executed if it is not on cooldown.

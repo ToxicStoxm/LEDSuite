@@ -20,6 +20,17 @@
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
 
+        <release version="1.0.0-rc5" date="2025-04-27" type="development">
+            <description>
+                <p>Release Candidate #5</p>
+                <ul>
+                    <li>Updated German translations</li>
+                    <li>Added Italian translations</li>
+                    <li>Added translators to credit section</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="1.0.0-rc4" date="2025-04-25" type="development">
             <description>
                 <p>Release Candidate #4</p>

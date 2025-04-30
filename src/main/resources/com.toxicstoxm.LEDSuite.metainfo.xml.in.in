@@ -31,6 +31,7 @@
                     <li>Added more tests and improved existing ones</li>
                     <li>Added support for clearing cooldown on action groups</li>
                     <li>Implemented ServerMessageDialog no-response-handler</li>
+                    <li>Updated GUI library version</li>
                 </ul>
             </description>
         </release>

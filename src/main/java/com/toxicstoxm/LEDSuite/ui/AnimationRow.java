@@ -95,7 +95,7 @@ public class AnimationRow extends ListBoxRow {
      * @param animationRowData The data used to populate the animation row.
      */
     public AnimationRow(@NotNull AnimationRowData animationRowData) {
-        super("action-name", "app." + animationRowData.animationID());
+        setActionName("app." + animationRowData.animationID());
         logger.verbose("'{}' -> Creating new animation row from animation", animationRowData.animationID());
 
         logger.verbose("'{}' -> Registering click trigger with cooldown", animationRowData.animationID());

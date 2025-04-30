@@ -55,7 +55,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     private static final Logger logger = Logger.autoConfigureLogger();
 
     public LEDSuiteWindow(Application app) {
-        super("application", app);
+        setApplication(app);
         endpointProvider = EndpointProvider.builder().build();
     }
 

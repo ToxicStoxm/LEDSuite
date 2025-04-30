@@ -102,8 +102,8 @@ public class LEDSuiteApplication extends Application {
      * Creates a new LEDSuiteApplication object with app-id and default flags
      */
     public LEDSuiteApplication() {
-        super("application-id", Constants.Application.ID,
-                "flags", ApplicationFlags.DEFAULT_FLAGS);
+        setApplicationId(Constants.Application.ID);
+        setFlags(ApplicationFlags.DEFAULT_FLAGS);
     }
 
     /**

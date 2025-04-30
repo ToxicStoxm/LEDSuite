@@ -72,6 +72,7 @@ public class Constants {
                         public static final String HEADING = "heading";
                         public static final String SOURCE = "source";
                         public static final String RESPONSES = "responses";
+                        public static final String NO_RESPONSE_HANDLER_ID = "no_response_handler_id";
 
                         public static class Responses {
                             public static final String STYLE = "style";

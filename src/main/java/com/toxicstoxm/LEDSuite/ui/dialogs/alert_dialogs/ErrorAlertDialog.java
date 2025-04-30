@@ -89,7 +89,6 @@ public class ErrorAlertDialog {
         logger.verbose("Creating new error alert dialog");
         logger.verbose("Configuring behaviour");
         alertDialog = new GeneralAlertDialog().configure(
-
                 AlertDialogData.builder()
                         .body(
                                 Objects.requireNonNullElse(

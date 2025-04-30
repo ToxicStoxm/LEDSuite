@@ -41,6 +41,7 @@ public class ServerMessagePacket extends CommunicationPacket {
     private String message;
     private String heading;
     private String source;
+    private String noResponseHandlerID;
 
     @Singular
     private List<AlertDialogResponse> responses;
@@ -63,6 +64,7 @@ public class ServerMessagePacket extends CommunicationPacket {
         packet.message = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.MESSAGE);
         packet.heading = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.HEADING);
         packet.source = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.SOURCE);
+        packet.noResponseHandlerID = getStringIfAvailable(Constants.Communication.YAML.Keys.Message.ServerMessage.NO_RESPONSE_HANDLER_ID);
 
         if (checkIfKeyExists(Constants.Communication.YAML.Keys.Message.ServerMessage.RESPONSES)) {
             ConfigurationSection responsesSection = yaml.getConfigurationSection(Constants.Communication.YAML.Keys.Message.ServerMessage.RESPONSES);
@@ -112,6 +114,7 @@ public class ServerMessagePacket extends CommunicationPacket {
         yaml.set(Constants.Communication.YAML.Keys.Message.ServerMessage.MESSAGE, message);
         yaml.set(Constants.Communication.YAML.Keys.Message.ServerMessage.HEADING, heading);
         yaml.set(Constants.Communication.YAML.Keys.Message.ServerMessage.SOURCE, source);
+        yaml.set(Constants.Communication.YAML.Keys.Message.ServerMessage.NO_RESPONSE_HANDLER_ID, noResponseHandlerID);
 
         if (responses != null && !responses.isEmpty()) {
             ConfigurationSection responsesSection = yaml.createSection(Constants.Communication.YAML.Keys.Message.ServerMessage.RESPONSES);

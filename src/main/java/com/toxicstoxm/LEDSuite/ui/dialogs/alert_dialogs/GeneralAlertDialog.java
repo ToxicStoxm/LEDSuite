@@ -79,16 +79,17 @@ public class GeneralAlertDialog extends org.gnome.adw.AlertDialog implements Ale
             for (AlertDialogResponse response : data.responses()) {
                 if (response != null) {
                     String label = response.label();
+                    Action action = Objects.requireNonNullElse(response.responseCallback(), () -> {});
                     if (label != null) {
                         String id = Objects.requireNonNullElse(response.id(), String.valueOf(UUID.randomUUID()));
-                        Action cb = Objects.requireNonNullElse(response.responseCallback(), () -> {
-                        });
                         ResponseAppearance appearance = Objects.requireNonNullElse(response.appearance(), ResponseAppearance.DEFAULT);
 
-                        registeredResponses.put(id, cb);
+                        registeredResponses.put(id, action);
                         addResponse(id, response.label());
                         setResponseAppearance(id, appearance);
                         setResponseEnabled(id, response.activated());
+                    } else if (Objects.equals(response.id(), getCloseResponse())) {
+                        registeredResponses.put(getCloseResponse(), action);
                     }
                 }
             }

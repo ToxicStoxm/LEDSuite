@@ -1,12 +1,16 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.message.ServerMessagePacket;
+import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.ServerMessageResponseRequestPacket;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJL.Logger;
 import lombok.Builder;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Widget;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Message dialog which is used to display server messages to the user.
@@ -16,16 +20,35 @@ public class ServerMessageDialog {
 
     private static final Logger logger = Logger.autoConfigureLogger();
 
-    private final AlertDialog<AlertDialogData> alertDialog;
+    private final GeneralAlertDialog alertDialog;
 
     @Builder
     public ServerMessageDialog(@NotNull ServerMessagePacket packet) {
         logger.verbose("Creating server message dialog from message packet -> {}", packet);
-        alertDialog = new GeneralAlertDialog().configure(
+        alertDialog = new GeneralAlertDialog();
+
+        List<AlertDialogResponse> responses = packet.getResponses();
+
+        if (packet.getNoResponseHandlerID() != null) {
+            responses.add(
+                    AlertDialogResponse.builder()
+                            .id(alertDialog.getCloseResponse())
+                            .responseCallback(() -> {
+                                LEDSuiteApplication.getWebSocketCommunication().enqueueMessage(
+                                        ServerMessageResponseRequestPacket.builder()
+                                                .responseID(packet.getNoResponseHandlerID())
+                                                .build().serialize()
+                                );
+                            })
+                            .build()
+            );
+        }
+
+        alertDialog.configure(
                 AlertDialogData.builder()
                         .heading(generateHeading(packet.getHeading(), packet.getSource()))
                         .body(packet.getMessage())
-                        .responses(packet.getResponses())
+                        .responses(responses)
                         .build()
         );
     }

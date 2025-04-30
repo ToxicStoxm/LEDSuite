@@ -5,7 +5,7 @@
 - **Back-End:** [LEDSuiteBackend](https://gitlab.com/hannescam/LEDSuiteBackend)
 ## Estimated time until official release:
 - Soon on FlatHub (waiting for <a href="https://gitlab.com/hannescam/LEDSuiteBackend">backend</a>)
-- See latest [RC-Version](https://github.com/ToxicStoxm/LEDSuite/releases)
+- See latest [RC-Version](https://github.com/ToxicStoxm/LEDSuite/releases/tag/v1.0.0-rc5)
 
 ## ToDo
 ###### (?) → planned in the future (after v1.0.0 release)
@@ -77,14 +77,14 @@
     - [X] Functions
   - [X] Add tons of comments to the code
   - [ ] ~~Create examples (?)~~
-- [ ] I18N
-  - [ ] Languages
+- [X] I18N
+  - [X] Languages
     - [X] English
     - [X] German
-    - [ ] Italian
-    - [ ] French (?)
-    - [ ] Spanish (?)
-    - [ ] Chinese (?)
+    - [X] Italian
+    - [ ] ~~French (?)~~
+    - [ ] ~~Spanish (?)~~
+    - [ ] ~~Chinese (?)~~
 - [ ] Flathub Release
   - [X] Update metadata
     - [X] Description

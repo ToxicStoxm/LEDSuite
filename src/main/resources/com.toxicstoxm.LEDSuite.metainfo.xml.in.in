@@ -230,23 +230,23 @@
     <screenshots>
         <screenshot type="default">
             <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/v1.0.0-rc5/Dark/Animation-Settings.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/@VERSION@/Dark/Animation-Settings.png</image>
         </screenshot>
         <screenshot>
             <caption>Main page, after launching the app</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/v1.0.0-rc5/Dark/Main-Page.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/@VERSION@/Dark/Main-Page.png</image>
         </screenshot>
         <screenshot>
             <caption>Upload page, used for uploading animations to the backend</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/v1.0.0-rc5/Dark/Upload-Page.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/@VERSION@/Dark/Upload-Page.png</image>
         </screenshot>
         <screenshot>
             <caption>Upload page while uploading an animation with progress bar</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/v1.0.0-rc5/Dark/Upload-In-Progress.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/@VERSION@/Dark/Upload-In-Progress.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings Dialog, connect to backend, configure behaviour</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/v1.0.0-rc5/Dark/Settings-Dialog.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/@VERSION@/Dark/Settings-Dialog.png</image>
         </screenshot>
     </screenshots>
 </component>

@@ -15,6 +15,21 @@
 
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
+
+        <release version="1.0.0-rc5" date="2025-04-27" type="development">
+            <description>
+                <p>Release Candidate #5</p>
+                <ul>
+                    <li>Updated German translations</li>
+                    <li>Added Italian translations</li>
+                    <li>Added translators to credit section</li>
+                    <li>Bug Fixes</li>
+                    <li>Added more tests and improved existing ones</li>
+                    <li>Added support for clearing cooldown on action groups</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="1.0.0-rc4" date="2025-04-25" type="development">
             <description>
                 <p>Release Candidate #4</p>
@@ -31,6 +46,7 @@
                 </ul>
             </description>
         </release>
+
         <release version="1.0.0-rc3" date="2025-04-06" type="development">
             <description>
                 <p>Release Candidate #3</p>
@@ -44,6 +60,7 @@
                 </ul>
             </description>
         </release>
+
         <release version="1.0.0-rc2" date="2024-11-24" type="development">
             <description>
                 <p>Release Candidate #2</p>
@@ -52,6 +69,7 @@
                 </ul>
             </description>
         </release>
+
         <release version="1.0.0-rc1" date="2024-11-23" type="development">
             <description>
                 <p>Release Candidate #1</p>
@@ -60,6 +78,7 @@
                 </ul>
             </description>
         </release>
+
         <release version="0.1.4" date="2024-08-12" type="stable">
             <description>
                 <p>This is our second stable release. Please report any bugs on the projects GitHub</p>
@@ -72,6 +91,7 @@
                 </ul>
             </description>
         </release>
+
         <release version="0.1.3" date="2024-07-28" type="stable">
             <description>
                 <p>This is our first stable release. Please report any bugs on the projects GitHub</p>
@@ -128,6 +148,7 @@
                 </ul>
             </description>
         </release>
+
     </releases>
 
     <content_rating type="oars-1.1">
@@ -201,7 +222,7 @@
         <keyword>matrix</keyword>
         <keyword>LCCP</keyword>
         <keyword>Cube</keyword>
-        <keyword>LEDSuite</keyword>
+        <keyword>HUB75</keyword>
     </keywords>
 
     <launchable type="desktop-id">@DESKTOP_FILE@</launchable>
@@ -209,23 +230,23 @@
     <screenshots>
         <screenshot type="default">
             <caption>Animation settings menu, automatically generated for video and image animations or custom for Java custom animations</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Animation-Settings.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/1.0.0-rc5/Dark/Animation-Settings.png</image>
         </screenshot>
         <screenshot>
             <caption>Main page, after launching the app</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Main-Page.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/1.0.0-rc5/Dark/Main-Page.png</image>
         </screenshot>
         <screenshot>
             <caption>Upload page, used for uploading animations to the backend</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-Page.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/1.0.0-rc5/Dark/Upload-Page.png</image>
         </screenshot>
         <screenshot>
             <caption>Upload page while uploading an animation with progress bar</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Upload-In-Progress.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/1.0.0-rc5/Dark/Upload-In-Progress.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings Dialog, connect to backend, configure behaviour</caption>
-            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/Settings-Dialog.png</image>
+            <image>https://toxicstoxm.com/LEDSuite/metadata/screenshots/1.0.0-rc5/Dark/Settings-Dialog.png</image>
         </screenshot>
     </screenshots>
 </component>

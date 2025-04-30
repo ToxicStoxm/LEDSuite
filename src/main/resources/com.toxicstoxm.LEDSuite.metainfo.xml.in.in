@@ -20,21 +20,22 @@
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
 
-        <release version="1.0.0-rc5" date="2025-04-27" type="development">
+        <release version="1.0.0-rc5" date="2025-04-30" type="development">
             <description>
                 <p>Release Candidate #5</p>
                 <ul>
                     <li>Updated German translations</li>
                     <li>Added Italian translations</li>
-                    <li>Added translators to credit section</li>
-                    <li>Bug Fixes</li>
-                    <li>Added more tests and improved existing ones</li>
-                    <li>Added support for clearing cooldown on action groups</li>
-                    <li>Implemented ServerMessageDialog no-response-handler</li>
-                    <li>Updated GUI library version</li>
+                    <li>Included translators in the credits section</li>
+                    <li>Fixed various bugs and minor issues</li>
+                    <li>Added new tests and enhanced existing ones</li>
+                    <li>Added support for clearing cooldowns on action groups</li>
+                    <li>Implemented no-response handler for ServerMessageDialog</li>
+                    <li>Upgraded to the latest version of the GUI library</li>
                 </ul>
             </description>
         </release>
+
 
         <release version="1.0.0-rc4" date="2025-04-25" type="development">
             <description>

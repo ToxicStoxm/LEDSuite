@@ -288,11 +288,13 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             LEDSuiteApplication.getWindow().uploadPageSelect();
         }
         GLib.idleAddOnce(() -> {
-            animationList.removeAll();
-            animations.clear();
+            if (!serverConnected) {
+                showAnimationListSpinner(false);
+                animationList.removeAll();
+                animations.clear();
+            }
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
-            if (!serverConnected) showAnimationListSpinner(false);
             setServerState(serverConnected ? ServerState.CONNECTED : ServerState.DISCONNECTED);
         });
     }

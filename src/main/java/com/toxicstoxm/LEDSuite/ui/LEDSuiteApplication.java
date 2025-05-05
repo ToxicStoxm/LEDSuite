@@ -268,6 +268,21 @@ public class LEDSuiteApplication extends Application {
     @Getter
     private static long connectionAttempt = -1;
 
+    /**
+     * Notifies the application that the communication websocket connected.
+     * Calling this is preferred over {@link LEDSuiteWindow#setServerConnected(boolean)},
+     * because this adds a small delay so the change in the UI looks nicer
+     */
+    public static void notifyConnectionResult(boolean connected) {
+        long delay = Constants.UI.Intervals.CONNECT_DELAY - (System.currentTimeMillis() - connectionAttempt);
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                getWindow().setServerConnected(connected);
+            }
+        }.runTaskLaterAsynchronously(connecting ? delay : 0);
+    }
+
     @Getter
     private static Thread connectionThread = null;
 
@@ -290,7 +305,7 @@ public class LEDSuiteApplication extends Application {
             }
             logger.verbose("Cleanup connection thread");
             connectionThread = null;
-            getWindow().setServerConnected(false);
+            notifyConnectionResult(false);
             return true;
         }
         return false;
@@ -302,6 +317,7 @@ public class LEDSuiteApplication extends Application {
     public static boolean startCommunicationSocket() {
         logger.verbose("Starting communication websocket...");
         logger.verbose(" > Computing server address...");
+
         URI serverAddress;
         try {
             String baseAddress = settings.mainSection.networkSettings.websocketURI;
@@ -312,6 +328,7 @@ public class LEDSuiteApplication extends Application {
         } catch (NullPointerException | URISyntaxException e) {
             return false;
         }
+
         logger.verbose(" > > DONE");
 
         logger.debug("Final server address: {}", serverAddress);
@@ -345,7 +362,6 @@ public class LEDSuiteApplication extends Application {
 
         logger.verbose(" > Starting connection loop...");
         while (timeElapsed < Constants.UI.Intervals.CONNECTION_TIMEOUT) {
-
             if (minDelayReached) {
                 if (webSocketCommunication.isConnected()) {
                     logger.verbose(" > Server connected!");
@@ -362,11 +378,12 @@ public class LEDSuiteApplication extends Application {
                     logger.verbose(" > Waiting for timeout...");
 
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(Constants.UI.Intervals.CONNECT_DELAY);
                     } catch (InterruptedException e) {
                         result = false;
                         break;
                     }
+
                     logger.verbose(" > Timeout reached!");
                 }
             }
@@ -380,12 +397,11 @@ public class LEDSuiteApplication extends Application {
             }
 
             timeElapsed = System.currentTimeMillis() - start;
-            minDelayReached = timeElapsed > Constants.UI.Intervals.MINIMUM_DELAY;
+            minDelayReached = timeElapsed > Constants.UI.Intervals.CONNECT_DELAY;
             retry = timeElapsed > Constants.UI.Intervals.RETRY_DELAY;
         }
         
         logger.verbose(" > DONE");
-
         logger.verbose(" > Updating UI to reflect changes...");
         GLib.idleAddOnce(() -> window.showAnimationListSpinner(false));
         logger.verbose(" > DONE");

@@ -313,7 +313,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             public void run() {
                 if (isServerConnected()) {
                     try {
-                        Thread.sleep(Constants.UI.Intervals.MINIMUM_DELAY);
+                        Thread.sleep(Constants.UI.Intervals.DISCONNECT_DELAY);
                     } catch (InterruptedException e) {
                         logger.warn("Minimum delay sleeper was interrupted!");
                     }

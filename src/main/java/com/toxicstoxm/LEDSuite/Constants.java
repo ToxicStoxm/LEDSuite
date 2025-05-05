@@ -50,7 +50,8 @@ public class Constants {
             public static final String[] CHANGING_CSS = new String[]{"warning"};
         }
         public static final class Intervals {
-            public static final long MINIMUM_DELAY = 500;
+            public static final long CONNECT_DELAY = 500;
+            public static final long DISCONNECT_DELAY = 200;
             public static final long RETRY_DELAY = 3000;
             public static final long CONNECTION_TIMEOUT = 10000;
         }

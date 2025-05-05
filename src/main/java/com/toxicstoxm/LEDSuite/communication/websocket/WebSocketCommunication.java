@@ -62,7 +62,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
         );
 
         // Update the UI to reflect the server is connected
-        LEDSuiteApplication.getWindow().setServerConnected(true);
+        LEDSuiteApplication.notifyConnectionResult(true);
 
         super.onOpen(session);
     }
@@ -113,7 +113,7 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
         logger.info("WebSocket connection closed with session ID: {}", session.getId());
 
         // Update the UI to reflect the server state
-        LEDSuiteApplication.getWindow().setServerConnected(false);
+        LEDSuiteApplication.notifyConnectionResult(false);
     }
 
     /**

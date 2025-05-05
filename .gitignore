@@ -48,13 +48,6 @@ bin/
 /src/main/resources/LEDSuite.gresource
 /ledsuite-main-window.cmb
 /ledsuite-main-window.ui
-/src/main/resources/upload-page.cmb
-/src/main/resources/ui/AnimationMenu.cmb
-/src/main/resources/ui/SettingsDialog.cmb
-/src/main/resources/ui/StatusDialog.cmb
-/src/main/resources/ui/AnimationRow.cmb
+/src/main/resources/ui/*.cmb
 /implementation-concepts/AnimationMenuConcept.rnote
-/src/main/resources/ui/LEDSuiteWindow.cmb
-/src/main/resources/ui/RenameDialog.cmb
-/src/main/resources/ui/AuthenticationDialog.cmb
 /implementation-concepts/server_message_packet_concept.yaml

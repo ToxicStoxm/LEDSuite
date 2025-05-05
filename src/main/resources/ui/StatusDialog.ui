@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.96.0 -->
 <interface domain="com.toxicstoxm.LEDSuite">
   <!-- interface-name StatusDialog.ui -->
-  <requires lib="gio" version="2.82"/>
+  <requires lib="gio" version="2.44"/>
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.7"/>
   <template class="StatusDialog" parent="AdwDialog">

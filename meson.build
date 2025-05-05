@@ -1,7 +1,7 @@
 project(
   'LEDSuite',
   'c',
-  version         : '1.0.0-rc5',
+  version         : '1.0.0-rc6',
   meson_version   : '>= 1.3.0',
   license         : 'GPL-3.0-or-later'
 )

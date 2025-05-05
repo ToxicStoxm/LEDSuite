@@ -20,6 +20,19 @@
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
 
+        <release version="1.0.0-rc6" date="2025-05-05" type="development">
+            <description>
+                <p>Release Candidate #6</p>
+                <ul>
+                    <li>Updated translations</li>
+                    <li>Fixed UI timing bugs</li>
+                    <li>Code cleanup</li>
+                    <li>Added cancel button to settings dialog to allow stopping current connection attempt</li>
+                    <li>Upgraded to the latest version of the GUI library</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="1.0.0-rc5" date="2025-04-30" type="development">
             <description>
                 <p>Release Candidate #5</p>

@@ -263,10 +263,38 @@ public class LEDSuiteApplication extends Application {
     }
 
     @Getter
-    private static boolean connecting = false;
+    private static volatile boolean connecting = false;
 
     @Getter
     private static long connectionAttempt = -1;
+
+    @Getter
+    private static Thread connectionThread = null;
+
+    /**
+     * Tries to interrupt the current connection process.
+     * @return {@code true} if a connection process was running and successfully ended, otherwise {@code false}
+     */
+    public static boolean interruptConnection() {
+        logger.verbose("Triggered premature connection shutdown");
+        if (getWebSocketCommunication() != null) {
+            logger.verbose("Shutting down websocket communication instance");
+            getWebSocketCommunication().shutdown();
+        }
+
+        if (connectionThread != null) {
+            logger.verbose("Shutting down connection loop");
+            connectionThread.interrupt();
+            while (connecting) {
+                Thread.onSpinWait();
+            }
+            logger.verbose("Cleanup connection thread");
+            connectionThread = null;
+            getWindow().setServerConnected(false);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Creates a new websocket client instance and connects it with the websocket server.
@@ -290,6 +318,7 @@ public class LEDSuiteApplication extends Application {
 
         connecting = true;
         connectionAttempt = System.currentTimeMillis();
+        connectionThread = Thread.currentThread();
         
         logger.verbose(" > Updating UI to reflect changes...");
 

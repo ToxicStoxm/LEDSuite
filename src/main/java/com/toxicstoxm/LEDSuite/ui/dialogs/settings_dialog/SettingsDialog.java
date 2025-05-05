@@ -7,6 +7,7 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.Logger;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -65,6 +66,18 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     @GtkChild(name = "settings_server_group_cnct_button_label")
     public Label serverConnectivityButtonLabel;
+
+    @GtkChild(name = "settings_server_group_cancel_button")
+    public Button serverConnectivityCancelButton;
+
+    @GtkChild(name = "settings_server_group_cancel_button_box")
+    public Box serverConnectivityCancelButtonBox;
+
+    @GtkChild(name = "settings_server_group_cancel_button_label")
+    public Label serverConnectivityCancelButtonLabel;
+
+    @GtkChild(name = "settings_server_group_cancel_button_revealer")
+    public Revealer serverCancelButtonRevealer;
 
     @GtkChild(name = "settings_server_group_cnct_button_spinner")
     public Spinner serverConnectivityButtonSpinner;
@@ -130,6 +143,24 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                 this.setServerStateConnecting();
                 triggerConnect();
             }
+        }, 500, true);
+
+        CooldownManager.addAction("serverCancelButtonCb", () -> {
+            if (!LEDSuiteApplication.isConnecting()) {
+                serverCancelButtonRevealer.setRevealChild(false);
+                return;
+            }
+            if (!LEDSuiteApplication.interruptConnection()) {
+                LEDSuiteApplication.handleError(
+                        ErrorData.builder()
+                                .enableReporting(true)
+                                .message("Failed to stop connection attempt! Failed to stop connection loop!")
+                                .heading("Internal error")
+                                .logger(logger)
+                                .build()
+                );
+            }
+            setServerState(ServerState.DISCONNECTED);
         }, 500, true);
 
         logger.verbose("Configuring UI state");
@@ -210,6 +241,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     public void serverStateNormal() {
         GLib.idleAddOnce(() -> {
+            serverCancelButtonRevealer.setRevealChild(false);
             serverConnectivityButton.setSensitive(true);
             serverConnectivityButtonBox.setSpacing(0);
             serverConnectivityButtonSpinnerRevealer.setRevealChild(false);
@@ -239,6 +271,14 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             serverStateChanging();
             serverConnectivityButtonLabel.setLabel(Translations.getText("Connecting"));
         });
+        new LEDSuiteRunnable() {
+            @Override
+            public void run() {
+                if (LEDSuiteApplication.isConnecting()) {
+                    GLib.idleAddOnce(() -> serverCancelButtonRevealer.setRevealChild(true));
+                }
+            }
+        }.runTaskLaterAsynchronously(Math.max(0, 1000 - (System.currentTimeMillis() - LEDSuiteApplication.getConnectionAttempt())));
     }
 
     private void setServerStateDisconnecting() {
@@ -249,15 +289,14 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     }
 
     private void serverStateChanging() {
-        GLib.idleAddOnce(() -> {
-            markServerSettingsUnavailable();
-            serverConnectivityButton.setSensitive(false);
-            serverConnectivityButton.setTooltipText(null);
-            serverConnectivityButtonBox.setSpacing(8);
-            serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
-            setServerGroupSuffixStyle(Constants.UI.CSS.CHANGING_CSS);
-            serverAddress.setSensitive(false);
-        });
+        serverCancelButtonRevealer.setRevealChild(false);
+        markServerSettingsUnavailable();
+        serverConnectivityButton.setSensitive(false);
+        serverConnectivityButton.setTooltipText(null);
+        serverConnectivityButtonBox.setSpacing(8);
+        serverConnectivityButtonSpinnerRevealer.setRevealChild(true);
+        setServerGroupSuffixStyle(Constants.UI.CSS.CHANGING_CSS);
+        serverAddress.setSensitive(false);
     }
 
     private void setServerGroupSuffixStyle(String[] css) {
@@ -272,7 +311,6 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         new LEDSuiteRunnable() {
             @Override
             public void run() {
-
                 if (isServerConnected()) {
                     try {
                         Thread.sleep(Constants.UI.Intervals.MINIMUM_DELAY);
@@ -313,6 +351,14 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
     public void serverCnctButtonClicked() {
         logger.verbose("Server connect button clicked");
         if (!CooldownManager.call("serverConnectivityButtonCb")) {
+            logger.verbose("Connectivity button on cooldown!");
+        }
+    }
+
+    @GtkCallback(name = "settings_server_cancel_button_clicked")
+    public void serverCancelButtonClicked() {
+        logger.verbose("Server connect cancel button clicked");
+        if (!CooldownManager.call("serverCancelButtonCb")) {
             logger.verbose("Connectivity button on cooldown!");
         }
     }

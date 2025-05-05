@@ -13,6 +13,29 @@
           <object class="AdwPreferencesGroup" id="settings_local_group">
             <property name="header-suffix">
               <object class="GtkBox" id="settings_local_group_suffix_box">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkRevealer" id="settings_server_group_cancel_button_revealer">
+                    <property name="child">
+                      <object class="GtkButton" id="settings_server_group_cancel_button">
+                        <property name="child">
+                          <object class="GtkBox" id="settings_server_group_cancel_button_box">
+                            <child>
+                              <object class="GtkLabel" id="settings_server_group_cancel_button_label">
+                                <property name="css-classes">error</property>
+                                <property name="label" translatable="yes">Cancel</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="tooltip-text" translatable="yes">Click to cancel connection attempt</property>
+                        <signal name="clicked" handler="settings_server_cancel_button_clicked"/>
+                      </object>
+                    </property>
+                    <property name="reveal-child">True</property>
+                    <property name="transition-type">crossfade</property>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkButton" id="settings_server_group_cnct_button">
                     <property name="child">

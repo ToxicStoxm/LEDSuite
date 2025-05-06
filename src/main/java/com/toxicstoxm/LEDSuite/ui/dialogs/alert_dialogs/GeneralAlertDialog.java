@@ -63,6 +63,7 @@ public class GeneralAlertDialog extends org.gnome.adw.AlertDialog implements Ale
         logger.verbose("Configuring alert dialog -> '{}'", data);
         String heading = data.heading();
         if (heading != null) setHeading(heading);
+        logger.debug("Adwaita warning can be safely ignored, it only occurs because the dialog has to be resized to fit a longer heading.");
 
         String body = data.body();
         if (body != null) setBody(body);

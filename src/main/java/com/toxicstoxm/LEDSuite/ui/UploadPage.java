@@ -16,10 +16,12 @@ import org.gnome.adw.Spinner;
 import org.gnome.gio.File;
 import org.gnome.glib.GLib;
 import org.gnome.gobject.GObject;
+import org.gnome.gobject.ParamSpec;
 import org.gnome.gtk.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
+import java.util.Objects;
 
 /**
  * Adw dialog for uploading files to the server.
@@ -64,9 +66,10 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      * Logs the state of the switch (on/off).
      */
     @GtkCallback(name = "start_animation_after_upload_switch_cb")
-    public void startAnimationAfterUploadCb() {
+    public void startAnimationAfterUploadCb(ParamSpec paramSpec) {
+        if (!Objects.equals(paramSpec.getName(), "active")) return;
         boolean switchState = startAnimationAfterUploadSwitch.getActive();
-        logger.info("Start animation after upload switch toggled -> {}", switchState);
+        logger.debug("Start animation after upload switch toggled -> {}", switchState);
     }
 
     @GtkChild(name = "file_picker_button_row")

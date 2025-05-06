@@ -36,7 +36,7 @@
         <child>
           <object class="AdwSwitchRow" id="start_animation_after_upload_switch">
             <property name="title" translatable="yes">Start Animation after upload</property>
-            <signal name="notify::active" handler="start_animation_after_upload_switch_cb"/>
+            <signal name="notify" handler="start_animation_after_upload_switch_cb"/>
           </object>
         </child>
         <child>

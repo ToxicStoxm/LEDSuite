@@ -20,6 +20,16 @@
     <!--WARNING: newest release MUST correspond to the meson version-->
     <releases>
 
+        <release version="1.0.0-rc7" date="2025-05-12" type="development">
+            <description>
+                <p>Release Candidate #7</p>
+                <ul>
+                    <li>Remade Task Scheduler System</li>
+                    <li>Upgraded to the latest version of the GUI library</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="1.0.0-rc6" date="2025-05-05" type="development">
             <description>
                 <p>Release Candidate #6</p>

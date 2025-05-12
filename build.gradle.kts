@@ -9,7 +9,7 @@ plugins {
 
 if ("@ID@".endsWith("@")) {
     group = "com.toxicstoxm.LEDSuite"
-    version = "1.0.0-rc6"
+    version = "1.0.0-rc7"
 } else {
     group = "@ID@"
     version = "@VERSION@"

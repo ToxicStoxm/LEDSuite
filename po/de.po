@@ -188,7 +188,7 @@ msgstr "Klicken Sie, um den Verbindungsversuch abzubrechen"
 #: src/main/resources/ui/SettingsDialog.ui:46
 #: src/main/java/com/toxicstoxm/LEDSuite/ui/dialogs/settings_dialog/SettingsDialog.java:232
 msgid "Disconnected"
-msgstr "Verbindung trennen"
+msgstr "nicht verbunden"
 
 #: src/main/resources/ui/SettingsDialog.ui:59
 msgid "Click to connect"

@@ -522,7 +522,7 @@ public class LEDSuiteApplication extends Application {
                 });
             }
 
-            String uploadSessionID = String.valueOf(UUID.randomUUID());
+            final String uploadSessionID = String.valueOf(UUID.randomUUID());
             AtomicReference<String> fileName = new AtomicReference<>(StringFormatter.getFileNameFromPath(filePath));
             if (uploadSessionID == null) {
                 throw new UploadAbortException(() -> {

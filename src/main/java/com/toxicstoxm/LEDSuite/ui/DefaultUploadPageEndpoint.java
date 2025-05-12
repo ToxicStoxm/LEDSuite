@@ -52,7 +52,7 @@ public abstract class DefaultUploadPageEndpoint implements UploadPageEndpoint {
      * @param active {@code true} to activate the upload button, {@code false} to deactivate it.
      */
     @Override
-    public void setUploadButtonActive(boolean active) {
+    public void setUploadButtonUploading(boolean active) {
         // Default implementation does nothing.
     }
 

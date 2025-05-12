@@ -53,7 +53,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     public static @NotNull UploadPage create(ApplicationWindow parent) {
         UploadPage uploadPage = GObject.newInstance(UploadPage.class);
         uploadPage.parent = parent;
-        uploadPage.setUploadButtonState(false);
+        uploadPage.setUploadButtonUploading(false);
         uploadPage.uploadStatistics.setSensitive(false);
         return uploadPage;
     }
@@ -150,10 +150,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      * @param serverConnected {@code true} if the server is connected, {@code false} otherwise.
      */
     public void setServerConnected(boolean serverConnected) {
-        GLib.idleAddOnce(() -> {
-            WebSocketClient webSocketClient = LEDSuiteApplication.getWebSocketCommunication();
-            setUploadButtonActive(webSocketClient != null && webSocketClient.isConnected() && !loading);
-        });
+        GLib.idleAddOnce(() -> setUploadButtonState(serverConnected && !loading));
     }
 
     @GtkChild(name = "upload_statistics")
@@ -211,7 +208,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
      *
      * @param uploading {@code true} if the upload is in progress, {@code false} otherwise.
      */
-    public void setUploadButtonActive(boolean uploading) {
+    public void setUploadButtonUploading(boolean uploading) {
         GLib.idleAddOnce(() -> {
             filePickerRow.setSensitive(!uploading);
             startAnimationAfterUploadSwitch.setSensitive(!uploading);
@@ -230,7 +227,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         }
         if (loading) return;
         loading = true;
-        setUploadButtonActive(true);
+        setUploadButtonUploading(true);
         logger.debug("Upload button click accepted, starting upload!");
 
         new SmartRunnable() {
@@ -249,7 +246,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
     public void uploadCompleted(boolean successfully) {
         logger.verbose("Updating UI state -> upload-complete");
         GLib.idleAddOnce(() -> {
-            setUploadButtonActive(false);
+            setUploadButtonUploading(false);
             uploadButton.setCssClasses(new String[]{"pill", successfully ? "success" : "destructive-action"});
             resetUploadStatistics();
         });

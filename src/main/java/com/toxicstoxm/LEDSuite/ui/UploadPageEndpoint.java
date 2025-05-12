@@ -28,7 +28,7 @@ public interface UploadPageEndpoint {
      *
      * @param active {@code true} to activate the button, {@code false} to deactivate it.
      */
-    void setUploadButtonActive(boolean active);
+    void setUploadButtonUploading(boolean active);
 
     /**
      * Updates the UI when the upload process is completed.

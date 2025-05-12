@@ -26,6 +26,7 @@
                 <ul>
                     <li>Remade Task Scheduler System</li>
                     <li>Upgraded to the latest version of the GUI library</li>
+                    <li>Bug fixes</li>
                 </ul>
             </description>
         </release>

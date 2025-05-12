@@ -164,7 +164,7 @@
 
         <release version="0.1.0" date="2024-07-11" type="development">
             <description>
-                <p>This is our first (pre) release so no release note but we have plans for the future:</p>
+                <p>This is our first (pre) release so no release note, but we have plans for the future:</p>
                 <ul>
                     <li>Translation for the app</li>
                     <li>Writing the backend</li>

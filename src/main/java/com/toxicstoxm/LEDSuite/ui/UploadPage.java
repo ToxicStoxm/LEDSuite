@@ -3,7 +3,7 @@ package com.toxicstoxm.LEDSuite.ui;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.base.GErrorException;
@@ -233,12 +233,12 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         setUploadButtonActive(true);
         logger.debug("Upload button click accepted, starting upload!");
 
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 LEDSuiteApplication.triggerFileUpload(selectedFile, startAnimationAfterUploadSwitch.getActive());
             }
-        }.runTaskAsynchronously();
+        }.runTaskAsync();
     }
 
     /**
@@ -254,7 +254,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
             resetUploadStatistics();
         });
 
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 GLib.idleAddOnce(() -> {
@@ -262,6 +262,6 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                     loading = false;
                 });
             }
-        }.runTaskLaterAsynchronously(2000);
+        }.runTaskLaterAsync(2000);
     }
 }

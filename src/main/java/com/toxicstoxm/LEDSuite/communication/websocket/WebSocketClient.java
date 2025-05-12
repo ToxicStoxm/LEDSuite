@@ -3,7 +3,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageData;
 import com.toxicstoxm.YAJL.Logger;
@@ -73,7 +73,7 @@ public class WebSocketClient {
 
     private void startStatusRequestClockTask() {
         logger.verbose("Starting status request loop");
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 if (cancelled) this.cancel();
@@ -81,7 +81,7 @@ public class WebSocketClient {
                         StatusRequestPacket.builder().build().serialize()
                 );
             }
-        }.runTaskTimerAsynchronously(1000, 1000);
+        }.runTaskTimerLaterAsync(1000, 1000);
     }
 
     /**
@@ -96,7 +96,7 @@ public class WebSocketClient {
      */
     private void run(WebSocketClientEndpoint clientEndpoint, URI path) {
         logger.verbose(" > Deploying new websocket client: Endpoint = {} URI = {}", StringFormatter.getClassName(getClass()), path);
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 ClientManager clientManager = ClientManager.createClient();
@@ -125,7 +125,7 @@ public class WebSocketClient {
                     connected = false;
                 }
             }
-        }.runTaskAsynchronously();
+        }.runTaskAsync();
     }
 
     /**
@@ -147,13 +147,13 @@ public class WebSocketClient {
 
         logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT,"----------------------< OUT >----------------------" + "\n[Session] {}", session.getId());
         if (toSend.length() < 10000) {
-            new LEDSuiteRunnable() {
+            new SmartRunnable() {
                 @Override
                 public void run() {
                     logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, toSend);
                     logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, "--------------------------------------------------");
                 }
-            }.runTaskAsynchronously();
+            }.runTaskAsync();
         } else {
             logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, toSend);
             logger.log(LEDSuiteLogLevels.COMMUNICATION_OUT, "--------------------------------------------------");

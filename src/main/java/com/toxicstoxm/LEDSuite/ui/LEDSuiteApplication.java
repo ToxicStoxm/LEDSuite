@@ -13,11 +13,10 @@ import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketCommunication;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketUpload;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.Task;
 import com.toxicstoxm.LEDSuite.settings.LEDSuiteSettingsBundle;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteScheduler;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
-import com.toxicstoxm.LEDSuite.time.TickingSystem;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
@@ -59,7 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Main application class. Initializes and starts {@link LEDSuiteWindow} and other vital elements like: <br>
- * {@link Logger} {@link LEDSuiteScheduler}
+ * {@link Logger} {@link com.toxicstoxm.LEDSuite.scheduler.Task}
  * @since 1.0.0
  */
 public class LEDSuiteApplication extends Application {
@@ -70,12 +69,6 @@ public class LEDSuiteApplication extends Application {
 
     @Getter
     private static MainWindow window;
-
-    @Getter
-    private static LEDSuiteScheduler scheduler;
-
-    @Getter
-    private static TickingSystem tickingSystem;
 
     @Getter
     private static WebSocketClient webSocketCommunication;
@@ -193,12 +186,23 @@ public class LEDSuiteApplication extends Application {
 
         logger.verbose("Initializing task scheduler...");
         logger.verbose(" > create");
-        scheduler = new LEDSuiteScheduler();
-        logger.verbose(" > DONE");
-
-        logger.verbose("Initializing core heartbeat...");
-        logger.verbose(" > create");
-        tickingSystem = new TickingSystem();
+        Task.setDebug(true);
+        Task.setDefaultExceptionHandler((task, t) -> {
+            logger.warn("Exception occurred while executing task '{}'", task.getName());
+            logger.error(t);
+            if (Task.isDebug()) {
+                logger.debug("-----------------------< DEBUG >-----------------------");
+                logger.debug("---------------------< Created at >--------------------");
+                Throwable tmp = new Throwable();
+                tmp.setStackTrace(task.getCreationTrace());
+                logger.stacktrace(tmp);
+                logger.debug("-----------------< Last started from >-----------------");
+                logger.debug(task.getLastCalledStack());
+                logger.stacktrace(tmp);
+                logger.debug("-------------------------------------------------------");
+            }
+            return false;
+        });
         logger.verbose(" > DONE");
 
         logger.verbose("Initializing animation menu manager...");
@@ -275,12 +279,12 @@ public class LEDSuiteApplication extends Application {
      */
     public static void notifyConnectionResult(boolean connected) {
         long delay = Constants.UI.Intervals.CONNECT_DELAY - (System.currentTimeMillis() - connectionAttempt);
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 getWindow().setServerConnected(connected);
             }
-        }.runTaskLaterAsynchronously(connecting ? delay : 0);
+        }.runTaskLaterAsync(connecting ? delay : 0);
     }
 
     @Getter
@@ -789,7 +793,7 @@ public class LEDSuiteApplication extends Application {
             return;
         }
 
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 while (!finished.get()) {
@@ -818,7 +822,7 @@ public class LEDSuiteApplication extends Application {
                     );
                 }
             }
-        }.runTaskAsynchronously();
+        }.runTaskAsync();
     }
 
     public static final AtomicBoolean errorFlag = new AtomicBoolean(false);
@@ -890,7 +894,7 @@ public class LEDSuiteApplication extends Application {
         logger.verbose(" > DONE");
 
         logger.verbose("Initializing websocket connection (async)...");
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 logger.verbose("Initializing websocket connection (sync)...");
@@ -898,7 +902,7 @@ public class LEDSuiteApplication extends Application {
                 logger.verbose("Initialized websocket connection!");
                 logger.verbose(" > DONE (sync)");
             }
-        }.runTaskAsynchronously();
+        }.runTaskAsync();
         logger.verbose(" > DONE (not sync)");
     }
 }

@@ -7,7 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuActionRowWidget;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import org.gnome.adw.SpinRow;
 import org.gnome.glib.Type;
 import org.gnome.gtk.Adjustment;
@@ -97,7 +97,7 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
                     } else {
                         onCooldown = true;
                         double lastKnownValue = widget.getValue();
-                        new LEDSuiteRunnable() {
+                        new SmartRunnable() {
                             @Override
                             public void run() {
                                 lastUpdate = System.currentTimeMillis();
@@ -108,7 +108,7 @@ public class SpinRowWidget extends AnimationMenuActionRowWidget<SpinRow> {
                                 }
                                 onCooldown = false;
                             }
-                        }.runTaskLaterAsynchronously(cooldown);
+                        }.runTaskLaterAsync(cooldown);
                     }
                 }
             });

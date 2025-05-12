@@ -11,7 +11,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.media_request.StopRequestPacket;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.FileCollisionDialog;
@@ -441,12 +441,12 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         logger.debug("Updating UI to -> Upload progress finished");
         GLib.idleAddOnce(() -> uploadProgressBar.setFraction(1.0));
 
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 GLib.idleAddOnce(() -> uploadProgressBarRevealer.setRevealChild(false));
             }
-        }.runTaskLaterAsynchronously(1000);
+        }.runTaskLaterAsync(1000);
 
     }
 

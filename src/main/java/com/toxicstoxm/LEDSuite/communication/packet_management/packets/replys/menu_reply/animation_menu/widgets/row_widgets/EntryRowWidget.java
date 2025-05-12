@@ -7,7 +7,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.DeserializableWidget;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.WidgetType;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuRowWidget;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import org.gnome.adw.EntryRow;
 import org.gnome.glib.Type;
 import org.gnome.pango.AttrList;
@@ -68,7 +68,7 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
                         } else {
                             onCooldown = true;
                             String lastKnownValue = widget.getText();
-                            new LEDSuiteRunnable() {
+                            new SmartRunnable() {
                                 @Override
                                 public void run() {
                                     lastUpdate = System.currentTimeMillis();
@@ -79,7 +79,7 @@ public class EntryRowWidget extends AnimationMenuRowWidget<EntryRow> {
                                     }
                                     onCooldown = false;
                                 }
-                            }.runTaskLaterAsynchronously(cooldown);
+                            }.runTaskLaterAsync(cooldown);
                         }
                     }
                 });

@@ -2,8 +2,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.authentication;
 
 import com.toxicstoxm.LEDSuite.authentication.Credentials;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.Task;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.Logger;
@@ -43,7 +43,7 @@ public class AuthenticationDialog extends AlertDialog {
     private static final Logger logger = Logger.autoConfigureLogger();
 
     // The task responsible for checking user credentials
-    private LEDSuiteTask credentialCheckerTask;
+    private Task credentialCheckerTask;
 
     // Entry fields for username and password
     @GtkChild(name = "username_row")
@@ -57,7 +57,7 @@ public class AuthenticationDialog extends AlertDialog {
     public Revealer spinnerRevealer;
 
     // Task for handling authentication timeout
-    private LEDSuiteTask authenticationTimeoutTask;
+    private Task authenticationTimeoutTask;
 
     /**
      * Handles the response when the user interacts with the dialog.
@@ -118,7 +118,7 @@ public class AuthenticationDialog extends AlertDialog {
             logger.info("Authentication -> Waiting for server response...");
 
             // Start a task to handle authentication timeout
-            authenticationTimeoutTask = new LEDSuiteRunnable() {
+            authenticationTimeoutTask = new Task(new SmartRunnable() {
                 @Override
                 public void run() {
                     // After timeout, hide the spinner and change the response appearance
@@ -139,7 +139,8 @@ public class AuthenticationDialog extends AlertDialog {
                         LEDSuiteApplication.getAuthManager().authResult(username, false);
                     });
                 }
-            }.runTaskLaterAsynchronously(10000); // 10-second timeout
+            });
+            authenticationTimeoutTask.runTaskLaterAsync(10000); // 10-second timeout
 
         } else {
             // If canceled, close the dialog immediately
@@ -169,13 +170,14 @@ public class AuthenticationDialog extends AlertDialog {
         setCanClose(false);  // Prevent closing while waiting for authentication
 
         // Start a task to monitor the username field and enable the authenticate button when valid
-        credentialCheckerTask = new LEDSuiteRunnable() {
+        credentialCheckerTask = new Task(new SmartRunnable() {
             @Override
             public void run() {
                 String username = usernameRow.getText();
                 setResponseEnabled("authenticate", usernameRow != null && !username.isBlank());
             }
-        }.runTaskTimerAsynchronously(10, 10);  // Check every 10 ms
+        });  // Check every 10 ms
+        credentialCheckerTask.runTaskTimerLaterAsync(10, 10);
 
         super.present(parent);
     }

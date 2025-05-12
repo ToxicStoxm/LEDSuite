@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.SettingsRequestPacket;
 import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
@@ -271,14 +271,14 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             serverStateChanging();
             serverConnectivityButtonLabel.setLabel(Translations.getText("Connecting"));
         });
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 if (LEDSuiteApplication.isConnecting()) {
                     GLib.idleAddOnce(() -> serverCancelButtonRevealer.setRevealChild(true));
                 }
             }
-        }.runTaskLaterAsynchronously(Math.max(0, 1000 - (System.currentTimeMillis() - LEDSuiteApplication.getConnectionAttempt())));
+        }.runTaskLaterAsync(Math.max(0, 1000 - (System.currentTimeMillis() - LEDSuiteApplication.getConnectionAttempt())));
     }
 
     private void setServerStateDisconnecting() {
@@ -308,7 +308,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
 
     private void triggerDisconnect() {
         logger.verbose("Triggered disconnect");
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 if (isServerConnected()) {
@@ -323,12 +323,12 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                     logger.info("Skipping disconnect attempt because communication websocket is already disconnected!");
                 }
             }
-        }.runTaskLaterAsynchronously(100);
+        }.runTaskLaterAsync(100);
     }
 
     private void triggerConnect() {
         logger.verbose("Triggered connect");
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
                 if (!isServerConnected()) {
@@ -344,7 +344,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                     requestSettings();
                 }
             }
-        }.runTaskLaterAsynchronously(100);
+        }.runTaskLaterAsync(100);
     }
 
     @GtkCallback(name = "settings_server_cnct_button_clicked")
@@ -385,7 +385,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
             applyButton.setLabel(Translations.getText("Slow down!"));
             applyButton.setSensitive(false);
 
-            new LEDSuiteRunnable() {
+            new SmartRunnable() {
                 @Override
                 public void run() {
                     GLib.idleAddOnce(() -> {
@@ -394,7 +394,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         applyButton.setSensitive(true);
                     });
                 }
-            }.runTaskLaterAsynchronously(500);
+            }.runTaskLaterAsync(500);
         });
     }
 
@@ -415,7 +415,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
         if (LEDSuiteApplication.isConnecting()) {
             this.setServerStateConnecting();
             long start = LEDSuiteApplication.getConnectionAttempt();
-            new LEDSuiteRunnable() {
+            new SmartRunnable() {
                 @Override
                 public void run() {
                     if (isServerConnected()) {
@@ -427,7 +427,7 @@ public class SettingsDialog extends PreferencesDialog implements SettingsDialogE
                         cancel();
                     }
                 }
-            }.runTaskTimerAsynchronously(0, 10);
+            }.runTaskTimerAsync(10);
         }
 
         super.present(parent);

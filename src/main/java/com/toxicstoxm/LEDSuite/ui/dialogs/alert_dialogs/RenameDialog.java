@@ -1,8 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteTask;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.Task;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -59,7 +59,7 @@ public class RenameDialog extends AlertDialog {
     private String currentName;
 
     // Task that checks the validity of the entered name
-    private LEDSuiteTask nameCheckerTask;
+    private Task nameCheckerTask;
 
     /**
      * Initializes the dialog with the given file name.
@@ -138,9 +138,9 @@ public class RenameDialog extends AlertDialog {
         logger.verbose("Starting name checker task");
         AtomicReference<String> last = new AtomicReference<>(newName);
         // Task to periodically check the validity of the file name
-        nameCheckerTask = new LEDSuiteRunnable() {
+        nameCheckerTask = new Task(new SmartRunnable() {
             @Override
-            public void run() {
+            public void run () {
                 GLib.idleAddOnce(() -> newName = fileNameRow.getText());
                 if (!Objects.equals(last.get(), newName)) {
                     last.set(newName);
@@ -152,7 +152,8 @@ public class RenameDialog extends AlertDialog {
                     });
                 }
             }
-        }.runTaskTimerAsynchronously(10, 1);
+        });
+        nameCheckerTask.runTaskTimerLater(10, 1);
 
         logger.verbose("Displaying rename dialog");
         super.present(parent);

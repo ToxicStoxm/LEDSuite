@@ -10,7 +10,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.MenuErrorPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.menu_error.Severity;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
 import com.toxicstoxm.YAJL.Logger;
@@ -114,7 +114,7 @@ public class MenuReplyPacket extends CommunicationPacket {
         GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(false));
 
         logger.verbose("Received menu reply, handling async.");
-        new LEDSuiteRunnable() {
+        new SmartRunnable() {
             @Override
             public void run() {
 
@@ -168,6 +168,6 @@ public class MenuReplyPacket extends CommunicationPacket {
                 GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().setAnimationListSensitive(true));
                 lock = false;
             }
-        }.runTaskAsynchronously();
+        }.runTaskAsync();
     }
 }

@@ -3,7 +3,7 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
-import com.toxicstoxm.LEDSuite.task_scheduler.LEDSuiteRunnable;
+import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.YAJL.Logger;
 import jakarta.websocket.*;
@@ -81,13 +81,13 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     public void onMessage(@NotNull String message, @NotNull Session session) {
         logger.log(LEDSuiteLogLevels.COMMUNICATION_IN,"----------------------< IN >----------------------" + "\n[Session] {}", session.getId());
         if (message.length() < 10000) {
-            new LEDSuiteRunnable() {
+            new SmartRunnable() {
                 @Override
                 public void run() {
                     logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, message);
                     logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, "--------------------------------------------------");
                 }
-            }.runTaskAsynchronously();
+            }.runTaskAsync();
         } else {
             logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, message);
             logger.log(LEDSuiteLogLevels.COMMUNICATION_IN, "--------------------------------------------------");

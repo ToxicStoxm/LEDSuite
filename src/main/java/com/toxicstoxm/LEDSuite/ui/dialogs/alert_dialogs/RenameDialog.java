@@ -3,6 +3,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.scheduler.Task;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
+import com.toxicstoxm.LEDSuite.ui.LEDSuiteWindow;
 import com.toxicstoxm.YAJL.Logger;
 import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -147,13 +149,14 @@ public class RenameDialog extends AlertDialog {
                     GLib.idleAddOnce(() -> {
                         boolean fileNameTooLong = newName.length() > 255;
                         fileNameTooLongRevealer.setRevealChild(fileNameTooLong);
-                        setResponseEnabled("rename", !newName.equals(currentName) && !newName.isBlank() && !fileNameTooLong);
+                        boolean enabled = !fileNameTooLong && !newName.equals(currentName) && !newName.isBlank() && !((LEDSuiteWindow) LEDSuiteApplication.getWindow().asApplicationWindow()).getAnimations().containsKey(newName);
+                        setResponseEnabled("rename", enabled);
                         newName = fileNameRow.getText();
                     });
                 }
             }
         });
-        nameCheckerTask.runTaskTimerLater(10, 1);
+        nameCheckerTask.runTaskTimerLaterAsync(50, 50);
 
         logger.verbose("Displaying rename dialog");
         super.present(parent);

@@ -237,6 +237,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         if (animationList != null) animationList.setSensitive(sensitive);
     }
 
+    @Getter
     private final HashMap<String, AnimationRow> animations = new HashMap<>();
 
     private final HashMap<String, String> renamedAnimations = new HashMap<>();
@@ -267,7 +268,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
         changeMainContent(uploadPage);
         GLib.idleAddOnce(() -> {
             if (uploadProgressBarRevealer.getChildRevealed()) {
-                setUploadButtonActive(true);
+                setUploadButtonUploading(true);
             }
             animationList.setSelectionMode(SelectionMode.NONE);
             animationList.setSelectionMode(SelectionMode.BROWSE);
@@ -284,7 +285,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     public void setServerConnected(boolean serverConnected) {
-        if (!serverConnected) {
+        if (!serverConnected && !(contentBox.getFirstChild() instanceof UploadPage)) {
             LEDSuiteApplication.getWindow().uploadPageSelect();
         }
         GLib.idleAddOnce(() -> {
@@ -296,6 +297,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
             animationList.setSensitive(serverConnected);
             animationGroupTitle.setSensitive(serverConnected);
             setServerState(serverConnected ? ServerState.CONNECTED : ServerState.DISCONNECTED);
+            endpointProvider.getUploadPageEndpoint().setServerConnected(serverConnected);
         });
     }
 
@@ -305,8 +307,8 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
     }
 
     @Override
-    public void setUploadButtonActive(boolean active) {
-        endpointProvider.getUploadPageEndpoint().setUploadButtonActive(active);
+    public void setUploadButtonUploading(boolean active) {
+        endpointProvider.getUploadPageEndpoint().setUploadButtonUploading(active);
     }
 
     @Override

@@ -764,7 +764,7 @@ public class LEDSuiteApplication extends Application {
                     fis.getChannel().position(fis.getChannel().position() - 1);
                 }
 
-                // Copy buffer to chunk array of the exact bytesRead length if it's smaller than packet_size
+                // Copy buffer to a chunk array of the exact bytesRead length if it's smaller than packet_size
                 byte[] chunk = (bytesRead == packet_size) ? buffer : new byte[bytesRead];
                 if (bytesRead < packet_size) {
                     System.arraycopy(buffer, 0, chunk, 0, bytesRead);

@@ -236,6 +236,8 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                 LEDSuiteApplication.triggerFileUpload(selectedFile, startAnimationAfterUploadSwitch.getActive());
             }
         }.runTaskAsync();
+
+        logger.debug("Upload scheduled");
     }
 
     /**

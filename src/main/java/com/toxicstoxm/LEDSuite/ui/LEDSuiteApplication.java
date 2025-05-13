@@ -522,9 +522,9 @@ public class LEDSuiteApplication extends Application {
                 });
             }
 
-            final String uploadSessionID = String.valueOf(UUID.randomUUID());
+            AtomicReference<String> uploadSessionID = new AtomicReference<>(String.valueOf(UUID.randomUUID()));
             AtomicReference<String> fileName = new AtomicReference<>(StringFormatter.getFileNameFromPath(filePath));
-            if (uploadSessionID == null) {
+            if (uploadSessionID.get() == null) {
                 throw new UploadAbortException(() -> {
                     LEDSuiteApplication.handleError(
                             ErrorData.builder()
@@ -536,10 +536,10 @@ public class LEDSuiteApplication extends Application {
 
             uploadManager.setPending(fileName.get(), uploadPermitted -> {
                 if (uploadPermitted) {
-                    uploadFile(fileToUpload, startAnimationAfterUpload, uploadSessionID, uploadEndpointPath, checksum);
+                    uploadFile(fileToUpload, startAnimationAfterUpload, uploadSessionID.get(), uploadEndpointPath, checksum);
                 } else {
                     GLib.idleAddOnce(() -> {
-                        AlertDialog.ResponseCallback cb = getResponseCallback(fileName, uploadSessionID, checksum, result -> {
+                        AlertDialog.ResponseCallback cb = getResponseCallback(fileName, uploadSessionID.get(), checksum, result -> {
                             if (result) uploadManager.removePending(fileName.get());
                             GLib.idleAddOnce(() -> LEDSuiteApplication.getWindow().uploadCompleted(result));
                         });
@@ -551,14 +551,14 @@ public class LEDSuiteApplication extends Application {
 
             webSocketCommunication.enqueueMessage(
                     FileUploadRequestPacket.builder()
-                            .uploadSessionId(uploadSessionID)
+                            .uploadSessionId(uploadSessionID.get())
                             .requestFile(fileName.get())
                             .sha256(checksum)
                             .build().serialize()
             );
 
         } catch (UploadAbortException e) {
-            e.printErrorMessage();
+            logger.error(e);
             LEDSuiteApplication.getWindow().uploadCompleted(false);
         }
     }

@@ -1,0 +1,13 @@
+theme:
+  name: 'material'
+  icon:
+    repo: fontawesome/brands/github
+site_name: LEDSuite
+site_dir: /html
+repo_url: https://github.com/ToxicStoxm/LEDSuite
+repo_name: ToxicStoxm/LEDSuite
+validation:
+  omitted_files: warn
+  absolute_links: warn  # Or 'relative_to_docs' - new in MkDocs 1.6
+  unrecognized_links: warn
+  anchors: warn

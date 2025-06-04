@@ -47,7 +47,7 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.179")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.0")
 }
 
 java {

@@ -22,33 +22,44 @@ repositories {
     }
 }
 
+val classgraphVersion = "4.8.181"
+val jakartaVersion = "2.2.0"
+val javaGiVersion = "0.12.2"
+val jetbrainsAnnotationsVersion = "26.0.2"
+val junitPlatformVersion = "1.13.4"
+val junitVersion = "5.13.4"
+val lombokVersion = "1.18.38"
+val snakeYAMLVersion = "2.4"
+val yajlVersion = "2.0.6"
+val yajsiVersion = "2.1.5"
+
 dependencies {
-    implementation("io.github.jwharm.javagi:adw:0.12.2")
+    compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("org.yaml:snakeyaml:2.4")
+    implementation("com.toxicstoxm.YAJL:YAJL:$yajlVersion")
+    implementation("com.toxicstoxm.YAJSI:YAJSI:$yajsiVersion")
+    implementation("io.github.classgraph:classgraph:$classgraphVersion")
+    implementation("io.github.jwharm.javagi:adw:$javaGiVersion")
+    implementation("jakarta.websocket:jakarta.websocket-client-api:$jakartaVersion")
+    implementation("org.glassfish.tyrus:tyrus-client:$jakartaVersion")
+    implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:$jakartaVersion")
+    implementation("org.yaml:snakeyaml:$snakeYAMLVersion")
 
-    implementation("jakarta.websocket:jakarta.websocket-client-api:2.2.0")
-    implementation("org.glassfish.tyrus:tyrus-client:2.2.0")
-    implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:2.2.0")
+    annotationProcessor("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    compileOnly("org.jetbrains:annotations:26.0.2")
-    testCompileOnly("org.jetbrains:annotations:26.0.2")
-    annotationProcessor("org.jetbrains:annotations:26.0.2")
-    testAnnotationProcessor("org.jetbrains:annotations:26.0.2")
+    testCompileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("com.toxicstoxm.YAJSI:YAJSI:2.1.5")
-    implementation("com.toxicstoxm.YAJL:YAJL:2.0.6")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    testCompileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+    testAnnotationProcessor("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("io.github.classgraph:classgraph:4.8.180")
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.13.3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
 }
+
 
 java {
     toolchain {
@@ -74,6 +85,8 @@ tasks.named<Test>("test") {
 }
 
 tasks.register<Exec>("glibCompileResources") {
+    description = "Compiles the glib resource file (.gresource.xml)."
+    group = JavaBasePlugin.BUILD_TASK_NAME
     workingDir = file("src/main/resources")
     commandLine = listOf("glib-compile-resources", "LEDSuite.gresource.xml")
 }
@@ -114,6 +127,8 @@ tasks.clean {
 }
 
 tasks.register<Jar>("fatJar") {
+    description = "Creates a so called 'fatJar' including all of the applications dependencies."
+    group = JavaBasePlugin.BUILD_TASK_NAME
     manifest {
         attributes["Main-Class"] = "com.toxicstoxm.LEDSuite.Main"
     }
@@ -126,4 +141,16 @@ tasks.register<Jar>("fatJar") {
     })
 
     with(tasks.jar.get())
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    doFirst {
+        val modulePath = configurations.compileClasspath.get().filter { it.name.endsWith(".jar") }
+
+        options.compilerArgs = listOf(
+            "--module-path", modulePath.joinToString(File.pathSeparator)
+        )
+
+        classpath = files()
+    }
 }

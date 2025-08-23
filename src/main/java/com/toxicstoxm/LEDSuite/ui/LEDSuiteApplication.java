@@ -448,16 +448,14 @@ public class LEDSuiteApplication extends Application {
                 baseAddress = baseAddress + "upload";
                 uploadEndpointPath = new URI(baseAddress);
             } catch (URISyntaxException e) {
-                throw new UploadAbortException(() -> {
-                    notifyUser(
-                            MessageData.builder()
-                                    .logger(logger::warn)
-                                    .message("Cancelled file upload because file upload websocket endpoint is unreachable!")
-                                    .heading("Abort")
-                                    .source("File Upload")
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> notifyUser(
+                        MessageData.builder()
+                                .logger(logger::warn)
+                                .message("Cancelled file upload because file upload websocket endpoint is unreachable!")
+                                .heading("Abort")
+                                .source("File Upload")
+                                .build()
+                ));
             }
 
             logger.info("Verified upload websocket endpoint at: " + uploadEndpointPath.getPath());
@@ -467,29 +465,25 @@ public class LEDSuiteApplication extends Application {
             try {
                 fileToUpload = new File(filePath);
             } catch (NullPointerException e) {
-                throw new UploadAbortException(() -> {
-                    notifyUser(
-                            MessageData.builder()
-                                    .logger(logger::warn)
-                                    .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
-                                    .heading("Abort")
-                                    .source("File Upload")
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> notifyUser(
+                        MessageData.builder()
+                                .logger(logger::warn)
+                                .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
+                                .heading("Abort")
+                                .source("File Upload")
+                                .build()
+                ));
             }
 
             if (!fileToUpload.exists() || !fileToUpload.isFile()) {
-                throw new UploadAbortException(() -> {
-                    notifyUser(
-                            MessageData.builder()
-                                    .logger(logger::warn)
-                                    .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
-                                    .heading("Abort")
-                                    .source("File Upload")
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> notifyUser(
+                        MessageData.builder()
+                                .logger(logger::warn)
+                                .message("Cancelled file upload because selected file '" + filePath + "' does not exist or isn't a file!")
+                                .heading("Abort")
+                                .source("File Upload")
+                                .build()
+                ));
             }
 
             String checksum;
@@ -499,39 +493,33 @@ public class LEDSuiteApplication extends Application {
                 byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
                 checksum = new BigInteger(1, hash).toString(16);
             } catch (IOException | NoSuchAlgorithmException | SecurityException e) {
-                throw new UploadAbortException(() -> {
-                    notifyUser(
-                            MessageData.builder()
-                                    .logger(logger::warn)
-                                    .message("Cancelled file upload because file couldn't be loaded or checksum failed!")
-                                    .heading("Abort")
-                                    .source("File Upload")
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> notifyUser(
+                        MessageData.builder()
+                                .logger(logger::warn)
+                                .message("Cancelled file upload because file couldn't be loaded or checksum failed!")
+                                .heading("Abort")
+                                .source("File Upload")
+                                .build()
+                ));
             } catch (OutOfMemoryError e) {
-                throw new UploadAbortException(() -> {
-                    notifyUser(
-                            MessageData.builder()
-                                    .logger(logger::warn)
-                                    .message("Cancelled file upload because the specified file is too large!")
-                                    .heading("Abort")
-                                    .source("File Upload")
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> notifyUser(
+                        MessageData.builder()
+                                .logger(logger::warn)
+                                .message("Cancelled file upload because the specified file is too large!")
+                                .heading("Abort")
+                                .source("File Upload")
+                                .build()
+                ));
             }
 
             AtomicReference<String> uploadSessionID = new AtomicReference<>(String.valueOf(UUID.randomUUID()));
             AtomicReference<String> fileName = new AtomicReference<>(StringFormatter.getFileNameFromPath(filePath));
             if (uploadSessionID.get() == null) {
-                throw new UploadAbortException(() -> {
-                    LEDSuiteApplication.handleError(
-                            ErrorData.builder()
-                                    .message(Translations.getText("Cancelled file upload because upload session id was null! This should be reported!"))
-                                    .build()
-                    );
-                });
+                throw new UploadAbortException(() -> LEDSuiteApplication.handleError(
+                        ErrorData.builder()
+                                .message(Translations.getText("Cancelled file upload because upload session id was null! This should be reported!"))
+                                .build()
+                ));
             }
 
             uploadManager.setPending(fileName.get(), uploadPermitted -> {

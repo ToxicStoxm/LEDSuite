@@ -29,7 +29,7 @@ val jetbrainsAnnotationsVersion = "26.0.2"
 val junitPlatformVersion = "1.13.4"
 val junitVersion = "5.13.4"
 val lombokVersion = "1.18.38"
-val snakeYAMLVersion = "2.4"
+val snakeYAMLVersion = "2.5"
 val yajlVersion = "2.0.6"
 val yajsiVersion = "2.1.5"
 

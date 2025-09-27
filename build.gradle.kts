@@ -25,7 +25,7 @@ repositories {
 val classgraphVersion = "4.8.181"
 val jakartaVersion = "2.2.0"
 val javaGiVersion = "0.12.2"
-val jetbrainsAnnotationsVersion = "26.0.2"
+val jetbrainsAnnotationsVersion = "26.0.2-1"
 val junitPlatformVersion = "1.13.4"
 val junitVersion = "5.13.4"
 val lombokVersion = "1.18.38"

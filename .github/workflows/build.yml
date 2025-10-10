@@ -30,7 +30,7 @@ jobs:
           apt-get install -y \
             libadwaita-1-dev \
             gettext \
-            desktop-file-utils
+            desktop-file-utils \
             git \
             meson \
             ninja-build \

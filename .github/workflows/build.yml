@@ -11,8 +11,8 @@ on:
 jobs:
   build:
     name: Get Dependencies and Build
-    runs-on: ubuntu-latest
-    container: ubuntu:25.10
+    runs-on: ubuntu-24.04
+
     permissions:
       contents: read
 
@@ -24,7 +24,7 @@ jobs:
       # Install libadwaita dependencies
       - name: Install Dependencies
         run: |
-          sudo add-apt-repository 'deb https://ftp.uni-stuttgart.de/ubuntu/ oracular main'
+          sudo add-apt-repository 'deb https://ftp.uni-stuttgart.de/ubuntu/ noble main'
           sudo apt-get update
           sudo apt-get install -y \
             libadwaita-1-dev=1.6.0-1ubuntu2 \

@@ -26,7 +26,6 @@ jobs:
       # Install libadwaita dependencies
       - name: Install Dependencies
         run: |
-          add-apt-repository 'deb https://ftp.uni-stuttgart.de/ubuntu/ noble main'
           apt-get update
           apt-get install -y \
             libadwaita-1-dev \

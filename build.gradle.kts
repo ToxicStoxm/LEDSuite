@@ -22,7 +22,7 @@ repositories {
     }
 }
 
-val classgraphVersion = "4.8.181"
+val classgraphVersion = "4.8.184"
 val jakartaVersion = "2.2.0"
 val javaGiVersion = "0.12.2"
 val jetbrainsAnnotationsVersion = "26.0.2-1"

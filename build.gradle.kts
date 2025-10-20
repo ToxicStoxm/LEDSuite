@@ -31,7 +31,7 @@ val junitVersion = "6.0.0"
 val lombokVersion = "1.18.42"
 val snakeYAMLVersion = "2.5"
 val yajlVersion = "2.0.6"
-val yajsiVersion = "2.1.5"
+val yajsiVersion = "2.3.0"
 
 dependencies {
     compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")

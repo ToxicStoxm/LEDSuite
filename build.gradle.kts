@@ -17,12 +17,13 @@ if ("@ID@".endsWith("@")) {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url = uri("./offline-repository")
     }
 }
 
-val classgraphVersion = "4.8.181"
+val classgraphVersion = "4.8.184"
 val jakartaVersion = "2.2.0"
 val javaGiVersion = "0.12.2"
 val jetbrainsAnnotationsVersion = "26.0.2-1"
@@ -30,8 +31,8 @@ val junitPlatformVersion = "6.0.0"
 val junitVersion = "6.0.0"
 val lombokVersion = "1.18.42"
 val snakeYAMLVersion = "2.5"
-val yajlVersion = "2.0.6"
-val yajsiVersion = "2.1.5"
+val yajlVersion = "2.1.0"
+val yajsiVersion = "2.3.0"
 
 dependencies {
     compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
@@ -141,16 +142,4 @@ tasks.register<Jar>("fatJar") {
     })
 
     with(tasks.jar.get())
-}
-
-tasks.named<JavaCompile>("compileJava") {
-    doFirst {
-        val modulePath = configurations.compileClasspath.get().filter { it.name.endsWith(".jar") }
-
-        options.compilerArgs = listOf(
-            "--module-path", modulePath.joinToString(File.pathSeparator)
-        )
-
-        classpath = files()
-    }
 }

@@ -43,59 +43,59 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.jar",
-    "sha512": "0c085e6363898b1dda14cee8fd61253284e2bc8c02855483ecd1e8c295a7237915c8c294a1ab16a5c258af712107d15b34a573582f1e2ab93d4415abf94072d0",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
-    "dest-filename": "YAJL-2.0.6.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.1.0/YAJL-2.1.0.jar",
+    "sha512": "68ffa531dd74c13277b8fd18e7671138c6a54970b31752291f13b39114fa75cf91ec5bc0022eb42e4f101ae791692ed9dbd61320a8cb122dd5e1ee63c34a245a",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.1.0",
+    "dest-filename": "YAJL-2.1.0.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.module",
-    "sha512": "72120dd94bf4a96719966b466e84208b0cbffd6b0b9b9be1bd22ad0fffd3cf826ac56305a8c294d2ddb81ca232bdf28ea0923c971af9331e04873f6c9476b85d",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
-    "dest-filename": "YAJL-2.0.6.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.1.0/YAJL-2.1.0.module",
+    "sha512": "38f1a8a36886cb8e31f56ecba51723a5acbebb58df1d1bf4b6f8325216c1d32033fce2c3325c46d990e43d079c639e88d0b091976cc7bd5a1f8f4d62df22fb56",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.1.0",
+    "dest-filename": "YAJL-2.1.0.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.0.6/YAJL-2.0.6.pom",
-    "sha512": "9521fb7e571cfd8d8cfaf160226b285113cb9e6ee6a089bab575b3d50062c1cc8becca4751399ed204752fa8c105ace90307db90a4c4dded3f2e709bb1d32b4d",
-    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.0.6",
-    "dest-filename": "YAJL-2.0.6.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJL/YAJL/2.1.0/YAJL-2.1.0.pom",
+    "sha512": "8dbc4c04f7a21d0758940e49aa32124fceba8574c55f21c277cbcf2f9af9b698107abe1c37cfe08dd72bf4e0bc2ba677e64b0480778b2380ca06d47dc1a24037",
+    "dest": "./offline-repository/com/toxicstoxm/YAJL/YAJL/2.1.0",
+    "dest-filename": "YAJL-2.1.0.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.jar",
-    "sha512": "9b3ba26102731ec42d987653a37c31c9f2fe4f8eb9fa2bc20c9ee92ace85a012cc54ad89f9ae18521fa44fcb86f158873321476c149ceda7281fbf986a66c4b1",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
-    "dest-filename": "YAJSI-2.1.5.jar"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.3.0/YAJSI-2.3.0.jar",
+    "sha512": "a3797ce46c05954a64789793b0b123aec421c85073fbca5d2357e07eccb893da32e51947f0f7d24f5121b2ab800330ef1eae9811254f815a6c0a820cc23bf1e6",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.3.0",
+    "dest-filename": "YAJSI-2.3.0.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.module",
-    "sha512": "4fd745e8e60e6733421eca6c8a21009c68dc4be25560d3503b706fe0dfa736d61f277766ef0510f456b3b4a335d31e75817dca5350c1c20cb17daf91b7c44dcf",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
-    "dest-filename": "YAJSI-2.1.5.module"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.3.0/YAJSI-2.3.0.module",
+    "sha512": "bf9cafc5185b3f611197fc93a18cbfc202b270528aac9d9591cbc4d199b6795489625df1a4897c9454e8376ec03de04d0cfe311e07579b0ffe91f51910482273",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.3.0",
+    "dest-filename": "YAJSI-2.3.0.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.1.5/YAJSI-2.1.5.pom",
-    "sha512": "ddfad85728d91492cba9fa702e4e21307daafb526e20e368875abd718b42d1fedfb9b8b65e72a5f4ca6120df8c259787875741112417556145208716e6895f00",
-    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.1.5",
-    "dest-filename": "YAJSI-2.1.5.pom"
+    "url": "https://repo.maven.apache.org/maven2/com/toxicstoxm/YAJSI/YAJSI/2.3.0/YAJSI-2.3.0.pom",
+    "sha512": "14109ddb51ce10a610751b5e32226b8ed3228f91d7130c836b6d9749b0125deb0f9e6cf25e33678d0fca98fe55da68fc34872c83d9cd2f9fd691ab0c3a12665e",
+    "dest": "./offline-repository/com/toxicstoxm/YAJSI/YAJSI/2.3.0",
+    "dest-filename": "YAJSI-2.3.0.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/io/github/classgraph/classgraph/4.8.181/classgraph-4.8.181.jar",
-    "sha512": "56ddba7508c2e56f710af1d4c619ccdfda3acc378cfde71d7e5a13b62c1388b424fa91133e528edc16e9619093fb888b2ec7aaa9721d8e14e101ee2a4a00877a",
-    "dest": "./offline-repository/io/github/classgraph/classgraph/4.8.181",
-    "dest-filename": "classgraph-4.8.181.jar"
+    "url": "https://repo.maven.apache.org/maven2/io/github/classgraph/classgraph/4.8.184/classgraph-4.8.184.jar",
+    "sha512": "f53968600bcb89ea29508e3e340510da1d21d392c962a492b0ebe3b2e7e67af5535e69f4d6e5202c389213f844ace22860a5d9cff6716621fbf5d974eb689e55",
+    "dest": "./offline-repository/io/github/classgraph/classgraph/4.8.184",
+    "dest-filename": "classgraph-4.8.184.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/io/github/classgraph/classgraph/4.8.181/classgraph-4.8.181.pom",
-    "sha512": "826e280dfa4ee9724455507a1779bda0d1cac056854cb21e24f7f0b7b9e6a91d2ecde770c1551d4dcc8df35236213a323209612005b220c1a1a29966745172fe",
-    "dest": "./offline-repository/io/github/classgraph/classgraph/4.8.181",
-    "dest-filename": "classgraph-4.8.181.pom"
+    "url": "https://repo.maven.apache.org/maven2/io/github/classgraph/classgraph/4.8.184/classgraph-4.8.184.pom",
+    "sha512": "88d625c000e9e06ca4ebfe59645b29faf67f17bf4a849856380b38badace93e5cfd9c88b6374c367c37affb27d4691f9dca876c99dc91f948ef694da2dd52197",
+    "dest": "./offline-repository/io/github/classgraph/classgraph/4.8.184",
+    "dest-filename": "classgraph-4.8.184.pom"
   },
   {
     "type": "file",
@@ -666,27 +666,6 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.jar",
-    "sha512": "c7be38957318874b837d029dc7b2a1f8b009feaa5362a56cba4f4c8a7d502993b3c900ee338eb9c9ee9494d7fd946bd280403eee28b244d213edb0b145a9ebfd",
-    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
-    "dest-filename": "annotations-26.0.2.jar"
-  },
-  {
-    "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.module",
-    "sha512": "85a40b937bbdfdf56ff08a3d1819f4f1a132715ef914be703acc08c897217dee575afa87623d0e9e7899f4b737794833afb2f64e02a7fef4835a0b64c56035ac",
-    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
-    "dest-filename": "annotations-26.0.2.module"
-  },
-  {
-    "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.pom",
-    "sha512": "1f90c9b391686fc13a832eb2705b6b43691961654525828faede6f16ade5777800a8e6b10da0b6d6b8571adee33110a4bdb69be09a96ac53c8441d6215becae2",
-    "dest": "./offline-repository/org/jetbrains/annotations/26.0.2",
-    "dest-filename": "annotations-26.0.2.pom"
-  },
-  {
-    "type": "file",
     "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
     "sha512": "efded31ef5b342f09422935076e599789076431e93a746685c0607e7de5592719ba6aacde0be670b3f064d1e85630d58d5bce6b34aed2a288fdb34f745efb7bc",
     "dest": "./offline-repository/org/jspecify/jspecify/1.0.0",
@@ -943,20 +922,6 @@
     "sha512": "9bda42d4ee45932f832ae01b3a3f23ad0b0927619db9576a8de2142f4c3b4afc4e94f1076951081af5963ab8cd4eeaa06a4bd5946cae321c6850b7fa36e3f175",
     "dest": "./offline-repository/org/opentest4j/opentest4j/1.3.0",
     "dest-filename": "opentest4j-1.3.0.pom"
-  },
-  {
-    "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar",
-    "sha512": "0b0b63aadb705eded6da00cd3960fc888e1ee1a2bf2feb896e4f0015ab429257ad6f974817b63e94cc2aed7fb80b22e9544584dfdba69197ec512d1ab4d2a69f",
-    "dest": "./offline-repository/org/projectlombok/lombok/1.18.38",
-    "dest-filename": "lombok-1.18.38.jar"
-  },
-  {
-    "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.38/lombok-1.18.38.pom",
-    "sha512": "5684c46a5f7bee95708277888e0367648558e21ebf132a3461e8717f48c901b48dbef68ed6094ef0f3683d432276f755249f6b2fe38ddb7dc71641d83f63e9b1",
-    "dest": "./offline-repository/org/projectlombok/lombok/1.18.38",
-    "dest-filename": "lombok-1.18.38.pom"
   },
   {
     "type": "file",

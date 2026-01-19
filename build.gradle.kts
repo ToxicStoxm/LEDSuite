@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("java")
     id("application")
-    id("io.github.jwharm.flatpak-gradle-generator") version "1.5.0"
+    id("io.github.jwharm.flatpak-gradle-generator") version "1.6.0"
     id("io.github.crimix.replace-placeholders") version "3.0"
 }
 

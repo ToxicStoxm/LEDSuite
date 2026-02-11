@@ -3,8 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("java")
     id("application")
-    id("io.github.jwharm.flatpak-gradle-generator") version "1.5.0"
-    id("io.github.crimix.replace-placeholders") version "3.0"
+    alias(libs.plugins.flatpak.generator)
+    alias(libs.plugins.replace.placeholders)
 }
 
 if ("@ID@".endsWith("@")) {
@@ -23,44 +23,31 @@ repositories {
     }
 }
 
-val classgraphVersion = "4.8.184"
-val jakartaVersion = "2.2.0"
-val javaGiVersion = "0.12.2"
-val jetbrainsAnnotationsVersion = "26.0.2-1"
-val junitPlatformVersion = "6.0.0"
-val junitVersion = "6.0.0"
-val lombokVersion = "1.18.42"
-val snakeYAMLVersion = "2.5"
-val yajlVersion = "2.1.0"
-val yajsiVersion = "2.3.0"
-
 dependencies {
-    compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.lombok)
 
-    implementation("com.toxicstoxm.YAJL:YAJL:$yajlVersion")
-    implementation("com.toxicstoxm.YAJSI:YAJSI:$yajsiVersion")
-    implementation("io.github.classgraph:classgraph:$classgraphVersion")
-    implementation("io.github.jwharm.javagi:adw:$javaGiVersion")
-    implementation("jakarta.websocket:jakarta.websocket-client-api:$jakartaVersion")
-    implementation("org.glassfish.tyrus:tyrus-client:$jakartaVersion")
-    implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:$jakartaVersion")
-    implementation("org.yaml:snakeyaml:$snakeYAMLVersion")
+    implementation(libs.yajl)
+    implementation(libs.yajsi)
+    implementation(libs.classgraph)
+    implementation(libs.javagi.adw)
+    implementation(libs.jakarta.websocket.client)
+    implementation(libs.tyrus.client)
+    implementation(libs.tyrus.grizzly.client)
+    implementation(libs.stormyaml)
 
-    annotationProcessor("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor(libs.jetbrains.annotations)
+    annotationProcessor(libs.lombok)
 
-    testCompileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly(libs.jetbrains.annotations)
+    testCompileOnly(libs.lombok)
 
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
-    testAnnotationProcessor("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
+    testAnnotationProcessor(libs.jetbrains.annotations)
+    testAnnotationProcessor(libs.lombok)
 }
-
 
 java {
     toolchain {

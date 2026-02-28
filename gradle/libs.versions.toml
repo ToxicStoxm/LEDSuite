@@ -1,6 +1,6 @@
 [versions]
 # plugins
-flatpak-generator = "1.5.0"
+flatpak-generator = "1.6.0"
 replace-placeholders = "3.0"
 
 # libraries

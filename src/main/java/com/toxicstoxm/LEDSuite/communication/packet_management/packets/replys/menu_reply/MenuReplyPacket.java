@@ -13,9 +13,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
-import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.StormYAML.file.YamlConfiguration;
 import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 import org.gnome.glib.GLib;

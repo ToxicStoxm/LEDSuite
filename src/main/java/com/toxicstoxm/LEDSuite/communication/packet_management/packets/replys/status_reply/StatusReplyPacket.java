@@ -10,8 +10,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
-import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 

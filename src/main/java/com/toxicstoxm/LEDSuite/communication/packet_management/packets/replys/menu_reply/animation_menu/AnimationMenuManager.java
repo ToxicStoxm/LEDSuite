@@ -8,10 +8,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
-import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.StormYAML.file.YamlConfiguration;
 import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
 import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.gnome.adw.PreferencesGroup;
 import org.jetbrains.annotations.NotNull;

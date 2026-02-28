@@ -1,7 +1,6 @@
 package com.toxicstoxm.LEDSuite.time;
 
-import com.toxicstoxm.YAJL.YAJLManager;
-import com.toxicstoxm.YAJL.config.YAJLManagerConfig;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +16,9 @@ class CooldownManagerTest {
 
     @BeforeAll
     static void beforeAll() {
-        YAJLManager.configure(
-                YAJLManagerConfig.builder()
-                        .muteLogger(true)
-                        .enableYAMLConfig(false)
-                        .build()
-        );
+        LoggerManager.configure()
+                .muteLogger(true)
+                .done();
     }
 
     @BeforeEach

@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.logger;
 
-import com.toxicstoxm.YAJL.level.LogLevel;
+import com.toxicstoxm.YAJL.core.level.LogLevel;
 import lombok.Getter;
 
 import java.awt.*;

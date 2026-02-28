@@ -10,7 +10,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
  * @since 1.0.0
  */
 public interface StatusDialogEndpoint {
-
     /**
      * Updates the status dialog with the provided status information.
      *

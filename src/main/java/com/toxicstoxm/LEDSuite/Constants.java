@@ -7,9 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 public class Constants {
-
     public static class FileSystem {
-
         public static @NotNull String getAppDir() {
             String confHome = java.lang.System.getenv("XDG_CONFIG_HOME");
             return confHome == null ?  // Check if the config home (mainly for flatpak) contains anything

@@ -7,7 +7,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.StatusReplyPacket;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StatusRequestPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(StatusRequestPacket.class);
 
     @Override
     public Logger getLogger() {

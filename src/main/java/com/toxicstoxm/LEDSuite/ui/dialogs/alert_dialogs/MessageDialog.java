@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Builder;
 import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
@@ -18,8 +19,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public class MessageDialog {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(MessageDialog.class);
 
     private final AlertDialog<AlertDialogData> alertDialog;
     private static final List<AlertDialogResponse> responses;

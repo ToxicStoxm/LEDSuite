@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.animation_menu;
 
 import com.toxicstoxm.LEDSuite.ui.AnimationRow;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gobject.annotations.Property;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -28,8 +29,7 @@ import org.jetbrains.annotations.NotNull;
 @Setter(onMethod_ = @Property(skip = true))
 @GtkTemplate(name = "AnimationMenu", ui = "/com/toxicstoxm/LEDSuite/AnimationMenu.ui")
 public class AnimationMenu extends Box implements AnimationMenuReference {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(AnimationMenu.class);
 
     /**
      * Unique identifier for the menu instance.

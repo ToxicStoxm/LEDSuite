@@ -15,7 +15,6 @@ import org.gnome.gtk.Widget;
  * @since 1.0.0
  */
 public interface AlertDialog<T> extends AutoRegistrableItem {
-
     /**
      * Creates a new instance of the alert dialog using the provided data.
      * This method is used to initialize the dialog with the data required for its display.

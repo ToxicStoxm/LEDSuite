@@ -7,7 +7,6 @@ package com.toxicstoxm.LEDSuite.communication.packet_management;
  * @since 1.0.0
  */
 public interface Serializable<T, R> {
-
     /**
      * Converts the current object into a string representation.
      * <p>This method should produce a string that fully represents the state of the object,

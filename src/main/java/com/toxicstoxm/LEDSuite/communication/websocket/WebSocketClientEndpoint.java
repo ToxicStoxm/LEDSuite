@@ -3,7 +3,8 @@ package com.toxicstoxm.LEDSuite.communication.websocket;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @ClientEndpoint
 public abstract class WebSocketClientEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(WebSocketClientEndpoint.class);
 
     /**
      * Returns {@code true} if this WebSocket endpoint communicates using binary data only.

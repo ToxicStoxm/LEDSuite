@@ -5,8 +5,8 @@ import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.scheduler.Task;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteWindow;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import lombok.Getter;
@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * A dialog for renaming a file or item.
@@ -34,8 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @GtkTemplate(name = "RenameDialog", ui = "/com/toxicstoxm/LEDSuite/RenameDialog.ui")
 public class RenameDialog extends AlertDialog {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(RenameDialog.class);
 
     /**
      * Creates a new instance of the RenameDialog with the specified file name.
@@ -134,7 +134,7 @@ public class RenameDialog extends AlertDialog {
     @Override
     public void present(@Nullable Widget parent) {
         logger.verbose("Received display request with parent widget -> '{}'",
-                (StringPlaceholder) () -> parent == null ? "unknown" : parent.getName()
+                (Supplier<String>) () -> parent == null ? "unknown" : parent.getName()
         );
 
         logger.verbose("Starting name checker task");

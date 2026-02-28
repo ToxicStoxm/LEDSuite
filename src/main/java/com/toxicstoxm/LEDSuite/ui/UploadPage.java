@@ -4,8 +4,8 @@ import com.toxicstoxm.LEDSuite.communication.websocket.WebSocketClient;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJL.placeholders.StringPlaceholder;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.base.GErrorException;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Adw dialog for uploading files to the server.
@@ -34,8 +35,7 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "UploadPage", ui = "/com/toxicstoxm/LEDSuite/UploadPage.ui")
 public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(UploadPage.class);
 
     public UploadPage(MemorySegment address) {
         super(address);
@@ -172,8 +172,8 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
         long speed = newUploadStats.bytesPerSecond();
 
         logger.verbose("Upload Statistics: ETA: '{}' Speed: '{}'",
-                (StringPlaceholder) () -> StringFormatter.formatDuration(eta),
-                (StringPlaceholder) () -> StringFormatter.formatSpeed(speed)
+                (Supplier<String>) () -> StringFormatter.formatDuration(eta),
+                (Supplier<String>) () -> StringFormatter.formatSpeed(speed)
         );
 
         if (!this.uploadStatistics.getExpanded()) {

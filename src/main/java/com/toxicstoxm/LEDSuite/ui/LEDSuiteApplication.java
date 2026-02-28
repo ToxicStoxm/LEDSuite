@@ -22,11 +22,10 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.*;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.ServerState;
 import com.toxicstoxm.LEDSuite.upload.UploadAbortException;
 import com.toxicstoxm.LEDSuite.upload.UploadManager;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJL.YAJLManager;
-import com.toxicstoxm.YAJL.config.YAJLManagerConfig;
-import com.toxicstoxm.YAJSI.api.settings.SettingsManager;
-import com.toxicstoxm.YAJSI.api.settings.YAMLUpdatingBehaviour;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
+import com.toxicstoxm.YAJL.errorhandling.ExceptionHandler;
+import com.toxicstoxm.YAJSI.SettingsManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import lombok.Getter;
 import org.gnome.adw.AlertDialog;
@@ -62,10 +61,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 1.0.0
  */
 public class LEDSuiteApplication extends Application {
-
     public static String version = "@version@";
 
-    private static Logger logger;
+    private static final Logger logger = LoggerManager.getLogger(LEDSuiteApplication.class);
 
     @Getter
     private static MainWindow window;
@@ -189,18 +187,7 @@ public class LEDSuiteApplication extends Application {
         Task.setDebug(true);
         Task.setDefaultExceptionHandler((task, t) -> {
             logger.warn("Exception occurred while executing task '{}'", task.getName());
-            logger.error(t);
-            if (Task.isDebug()) {
-                logger.debug("-----------------------< DEBUG >-----------------------");
-                logger.debug("---------------------< Created at >--------------------");
-                Throwable tmp = new Throwable();
-                tmp.setStackTrace(task.getCreationTrace());
-                logger.stacktrace(tmp);
-                logger.debug("-----------------< Last started from >-----------------");
-                logger.debug(task.getLastCalledStack());
-                logger.stacktrace(tmp);
-                logger.debug("-------------------------------------------------------");
-            }
+            ExceptionHandler.handle(t);
             return false;
         });
         logger.verbose(" > DONE");
@@ -242,27 +229,22 @@ public class LEDSuiteApplication extends Application {
         System.out.println(" > create");
         System.out.println(" > configure");
         SettingsManager.configure()
-                .setAppName("LEDSuite")
-                .setConfigDirectory(Constants.FileSystem.getAppDir())
-                .setUpdatingBehaviour(YAMLUpdatingBehaviour.MARK_UNUSED)
-                .setUnusedSettingWarning("This setting is currently unused!")
-                .setEnableLogBuffer(true)
-                .setLogMessageBufferSize(500)
-                .setConfigClassesHaveNoArgsConstructor(true);
-        settings = new LEDSuiteSettingsBundle();
-        SettingsManager.getInstance().registerYAMLConfiguration(settings);
+                .autoUpgrade(false)
+                .versionKey("Version")
+                .unusedWarning("This setting is currently unused!")
+                .done();
+        settings = new LEDSuiteSettingsBundle(new File(Constants.FileSystem.getAppDir() + "/config.yaml"));
+        SettingsManager.getInstance().registerConfig(settings);
         System.out.println(" > DONE");
     }
 
     public static void initYAJL() {
         System.out.println(" > create");
         System.out.println(" > configure");
-        YAJLManager.configure(
-                YAJLManagerConfig.builder()
-                        .enableYAMLConfig(true)
-                        .build()
-        );
-        logger = Logger.autoConfigureLogger();
+        LoggerManager.configure()
+                .logMessageLayout("{color:hex=#545454}[{time:format=HH:mm:ss}] [{trace:class,method,line}] [{prefix}]{levelColor} [{level}]: {message}")
+                .minimumLogLevel(-20)
+                .done();
         System.out.println(" > DONE");
     }
 
@@ -546,7 +528,7 @@ public class LEDSuiteApplication extends Application {
             );
 
         } catch (UploadAbortException e) {
-            logger.error(e);
+            ExceptionHandler.handle(e);
             LEDSuiteApplication.getWindow().uploadCompleted(false);
         }
     }

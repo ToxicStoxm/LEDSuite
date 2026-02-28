@@ -3,7 +3,8 @@ package com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests
 import com.toxicstoxm.LEDSuite.Constants;
 import com.toxicstoxm.LEDSuite.auto_registration.AutoRegister;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 /**
@@ -41,8 +42,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class StopRequestPacket extends MediaRequestPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(StopRequestPacket.class);
 
     @Override
     public Logger getLogger() {

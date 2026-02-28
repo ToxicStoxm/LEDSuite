@@ -34,7 +34,6 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
  * @since 1.0.0
  */
 public abstract class MediaRequestPacket extends CommunicationPacket {
-
     /**
      * Sets the file associated with this media request.
      * <p>

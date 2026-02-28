@@ -15,7 +15,6 @@ import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
  * @since 1.0.0
  */
 public interface Widget extends Serializable<DeserializableWidget, org.gnome.gtk.Widget>, AutoRegistrableItem {
-
     /**
      * Returns the type of the widget, which is a string representation of the specific
      * widget type (e.g., button, slider, etc.). This type is used to categorize and

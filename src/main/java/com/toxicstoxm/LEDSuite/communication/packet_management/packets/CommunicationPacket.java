@@ -5,9 +5,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
+import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
  */
 @NoArgsConstructor
 public abstract class CommunicationPacket implements Packet {
-
     protected YamlConfiguration yaml;
 
     /**

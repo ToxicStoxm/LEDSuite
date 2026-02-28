@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 public interface SettingsDialogEndpoint extends AuthStatus {
-
     /**
      * Updates the settings dialog with the latest settings data.
      * This method is called to refresh the dialog UI with new settings from the backend or user input.

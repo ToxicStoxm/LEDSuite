@@ -1,6 +1,5 @@
 module com.toxicstoxm.LEDSuite {
     requires org.gnome.adw;
-    requires org.yaml.snakeyaml;
     requires java.net.http;
     requires org.glassfish.tyrus.client;
     requires jakarta.websocket.client;
@@ -10,6 +9,7 @@ module com.toxicstoxm.LEDSuite {
     requires org.jetbrains.annotations;
     requires java.desktop;
     requires io.github.classgraph;
+    requires StormYAML;
     exports com.toxicstoxm.LEDSuite;
     exports com.toxicstoxm.LEDSuite.ui to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;
     exports com.toxicstoxm.LEDSuite.ui.dialogs to org.gnome.glib,org.gnome.gobject,org.gnome.gdk,org.gnome.gtk;

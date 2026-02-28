@@ -13,9 +13,10 @@ import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Getter;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
@@ -29,8 +30,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 public abstract class AnimationMenuWidget<T extends Widget> implements com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.Widget {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(AnimationMenuWidget.class);
 
     protected String widgetID;
 

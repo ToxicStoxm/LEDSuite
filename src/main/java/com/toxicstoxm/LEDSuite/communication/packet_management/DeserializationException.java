@@ -24,7 +24,6 @@ import lombok.Getter;
  */
 @Getter
 public class DeserializationException extends RuntimeException {
-
     /**
      * The error code associated with this exception, indicating the type of deserialization failure.
      */

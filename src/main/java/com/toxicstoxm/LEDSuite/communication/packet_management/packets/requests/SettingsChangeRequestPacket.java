@@ -7,7 +7,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,8 +36,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @Setter
 public class SettingsChangeRequestPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(SettingsChangeRequestPacket.class);
 
     @Override
     public Logger getLogger() {

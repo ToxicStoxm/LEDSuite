@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.gettext;
 
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.interop.Interop;
 import org.gnome.glib.GLib;
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +30,7 @@ import java.lang.invoke.MethodHandle;
  * @since 1.0.0
  */
 public class Translations {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(Translations.class);
 
     // Default translation domain is the application name or module
     private static final String defaultTranslationDomain = "LED_Suite";

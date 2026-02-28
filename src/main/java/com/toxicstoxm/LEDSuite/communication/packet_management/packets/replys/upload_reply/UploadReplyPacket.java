@@ -7,7 +7,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 /**
@@ -23,8 +24,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class UploadReplyPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(UploadReplyPacket.class);
 
     @Override
     public Logger getLogger() {

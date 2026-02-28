@@ -10,7 +10,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
  * @since 1.0.0
  */
 public interface AuthStatus {
-
     /**
      * Indicates that the authentication process is ongoing.
      * <p>

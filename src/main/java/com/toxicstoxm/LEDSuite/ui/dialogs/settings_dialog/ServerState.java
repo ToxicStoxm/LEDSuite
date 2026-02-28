@@ -11,7 +11,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog;
  * @since 1.0.0
  */
 public enum ServerState {
-
     /**
      * Represents the state when the server is successfully connected.
      */

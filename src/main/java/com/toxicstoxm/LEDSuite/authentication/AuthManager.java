@@ -4,7 +4,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +20,7 @@ import java.util.HashMap;
  */
 @Getter
 public class AuthManager implements AuthManagerEndpoint {
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(AuthManager.class);
 
     /**
      * A map storing pending authentication requests.

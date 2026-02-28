@@ -30,7 +30,6 @@ import java.util.Collection;
  * @since 1.0.0
  */
 public interface MainWindow extends StatusDialogEndpoint, SettingsDialogEndpoint, UploadPageEndpoint {
-
     /**
      * Converts this instance to an {@link ApplicationWindow}.
      *

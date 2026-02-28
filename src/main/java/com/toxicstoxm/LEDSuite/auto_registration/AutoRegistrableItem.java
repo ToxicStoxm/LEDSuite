@@ -10,7 +10,6 @@ package com.toxicstoxm.LEDSuite.auto_registration;
  * @since 1.0.0
  */
 public interface AutoRegistrableItem {
-
     /**
      * Returns the type of this registrable item.
      * The type is typically used to categorize or identify the item during the registration process.

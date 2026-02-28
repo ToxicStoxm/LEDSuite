@@ -9,7 +9,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.MenuRequestPacket;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 import org.gnome.gtk.Gtk;
 
@@ -32,8 +33,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @Setter
 public class SettingsReplyPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(SettingsReplyPacket.class);
 
     @Override
     public Logger getLogger() {

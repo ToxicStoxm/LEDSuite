@@ -1,20 +1,22 @@
 package com.toxicstoxm.LEDSuite.settings;
 
-import com.toxicstoxm.YAJSI.api.settings.YAMLConfiguration;
-import com.toxicstoxm.YAJSI.api.settings.YAMLSetting;
+import com.toxicstoxm.YAJSI.ConfigType;
+import com.toxicstoxm.YAJSI.SettingsBundle;
+import com.toxicstoxm.YAJSI.YAMLSetting;
+import com.toxicstoxm.YAJSI.upgrading.ConfigVersion;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.File;
 
 /**
  * Settings bundle for LEDSuite using YAJSI framework.
  * This class provides access to application-specific settings, mapped to YAML configuration paths.
  * @since 1.0.0
  */
-@YAMLConfiguration(name = "config.yaml")
-public class LEDSuiteSettingsBundle {
-
-    public LEDSuiteSettingsBundle() {
-
+public class LEDSuiteSettingsBundle extends SettingsBundle {
+    public LEDSuiteSettingsBundle(File f) {
+        super(new ConfigVersion(1, 0, 0), f, ConfigType.SETTINGS);
     }
 
     @YAMLSetting.Ignore
@@ -23,18 +25,18 @@ public class LEDSuiteSettingsBundle {
     private boolean demoMode = false;
 
     @YAMLSetting(name = "LEDSuite")
-    public DefaultSettings mainSection = new DefaultSettings();
+    public LEDSuiteSettingsBundle.DefaultSettings mainSection = new LEDSuiteSettingsBundle.DefaultSettings();
 
     public static class DefaultSettings {
 
         @YAMLSetting(name = "UI")
-        public DefaultUISettings uiSettings = new DefaultUISettings();
+        public LEDSuiteSettingsBundle.DefaultSettings.DefaultUISettings uiSettings = new LEDSuiteSettingsBundle.DefaultSettings.DefaultUISettings();
 
         @YAMLSetting(name = "Network")
-        public DefaultNetworkSettings networkSettings = new DefaultNetworkSettings();
+        public LEDSuiteSettingsBundle.DefaultSettings.DefaultNetworkSettings networkSettings = new LEDSuiteSettingsBundle.DefaultSettings.DefaultNetworkSettings();
 
         @YAMLSetting(name = "Debugging")
-        public DefaultDebuggingSettings debuggingSettings = new DefaultDebuggingSettings();
+        public LEDSuiteSettingsBundle.DefaultSettings.DefaultDebuggingSettings debuggingSettings = new LEDSuiteSettingsBundle.DefaultSettings.DefaultDebuggingSettings();
 
         public static class DefaultUISettings {
             @YAMLSetting(name = "FilePicker-Initial-Folder")

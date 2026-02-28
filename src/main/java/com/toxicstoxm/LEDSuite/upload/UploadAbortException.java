@@ -13,7 +13,6 @@ import com.toxicstoxm.LEDSuite.time.Action;
  * @since 1.0.0
  */
 public class UploadAbortException extends RuntimeException {
-
     /**
      * An optional action to print an error message or perform other operations when the exception is thrown.
      * If provided, this action will be executed when {@link #printErrorMessage()} is called.

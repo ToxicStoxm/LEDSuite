@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.AlertDialog;
 
@@ -16,8 +17,7 @@ import org.gnome.adw.AlertDialog;
  */
 @GtkTemplate(name = "FileCollisionDialog", ui = "/com/toxicstoxm/LEDSuite/FileCollisionDialog.ui")
 public class FileCollisionDialog extends AlertDialog {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(FileCollisionDialog.class);
 
     // Callback to handle user response actions
     private ResponseCallback responseCallback;

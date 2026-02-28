@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.upload;
 
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 
 import java.util.HashMap;
 
@@ -14,8 +15,7 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 public class UploadManager {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(UploadManager.class);
 
     /** A map holding pending uploads where the key is the file name and the value is the corresponding upload action. */
     private final HashMap<String, Upload> pendingUploads;

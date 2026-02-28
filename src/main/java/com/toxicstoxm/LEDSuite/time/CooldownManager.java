@@ -1,6 +1,7 @@
 package com.toxicstoxm.LEDSuite.time;
 
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -14,8 +15,7 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 public class CooldownManager {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(CooldownManager.class);
 
     private record CooldownAction(Action action, long cooldown, long lastCall, String actionGroup) {}
     private record CooldownActionGroup(long cooldown, long lastCall) {}

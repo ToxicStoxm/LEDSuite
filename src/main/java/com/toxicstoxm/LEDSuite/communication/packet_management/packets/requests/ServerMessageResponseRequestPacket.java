@@ -6,7 +6,8 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 /**
@@ -22,8 +23,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class ServerMessageResponseRequestPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(ServerMessageResponseRequestPacket.class);
 
     @Override
     public Logger getLogger() {

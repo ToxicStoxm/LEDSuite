@@ -10,7 +10,6 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
  * @since 1.0.0
  */
 public class DefaultStatusDialogEndpoint implements StatusDialogEndpoint {
-
     /**
      * Default implementation of the {@link StatusDialogEndpoint#update(StatusUpdate)} method.
      * <p>

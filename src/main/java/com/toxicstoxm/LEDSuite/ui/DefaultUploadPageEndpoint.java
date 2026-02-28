@@ -13,7 +13,6 @@ package com.toxicstoxm.LEDSuite.ui;
  * @since 1.0.0
  */
 public abstract class DefaultUploadPageEndpoint implements UploadPageEndpoint {
-
     /**
      * Default implementation for setting the server connection status.
      * <p>

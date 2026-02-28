@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Task implements Schedulable {
-
     @Setter
     @Getter
     private static boolean debug = true;

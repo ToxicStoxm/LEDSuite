@@ -4,7 +4,8 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.message.S
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.ServerMessageResponseRequestPacket;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Builder;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Widget;
@@ -17,8 +18,7 @@ import java.util.List;
  * @since 1.0.0
  */
 public class ServerMessageDialog {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(ServerMessageDialog.class);
 
     private final GeneralAlertDialog alertDialog;
 

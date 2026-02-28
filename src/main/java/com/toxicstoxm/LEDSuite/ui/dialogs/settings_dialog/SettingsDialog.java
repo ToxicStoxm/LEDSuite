@@ -8,7 +8,8 @@ import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
@@ -32,8 +33,7 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "SettingsDialog", ui = "/com/toxicstoxm/LEDSuite/SettingsDialog.ui")
 public class SettingsDialog extends PreferencesDialog implements SettingsDialogEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(SettingsDialog.class);
 
     public SettingsDialog() {
         super();

@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
-import com.toxicstoxm.YAJSI.api.logging.Logger;
+import com.toxicstoxm.LEDSuite.logger.Logger;
 import lombok.Builder;
 import org.jetbrains.annotations.Nullable;
 

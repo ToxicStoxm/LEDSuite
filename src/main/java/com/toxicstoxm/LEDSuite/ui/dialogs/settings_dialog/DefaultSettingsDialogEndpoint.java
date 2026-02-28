@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 public abstract class DefaultSettingsDialogEndpoint implements SettingsDialogEndpoint {
-
     /**
      * Default implementation for updating settings. Does nothing by default.
      * Subclasses can override this method to handle specific update logic.

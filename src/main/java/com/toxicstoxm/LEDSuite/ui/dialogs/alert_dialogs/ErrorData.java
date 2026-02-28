@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +13,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ErrorData {
-
-    private static final Logger defaultLogger = Logger.autoConfigureLogger();
+    private static final Logger defaultLogger = LoggerManager.getLogger(ErrorData.class);
 
     private String message;
     private String heading;

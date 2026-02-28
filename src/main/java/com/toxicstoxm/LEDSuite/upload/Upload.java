@@ -7,7 +7,6 @@ package com.toxicstoxm.LEDSuite.upload;
  */
 @FunctionalInterface
 public interface Upload {
-
     /**
      * Callback method for handling server responses regarding upload permission.
      *

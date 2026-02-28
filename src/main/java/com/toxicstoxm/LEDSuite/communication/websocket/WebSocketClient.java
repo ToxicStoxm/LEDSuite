@@ -6,7 +6,10 @@ import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.MessageData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
+import com.toxicstoxm.YAJL.core.level.LogLevels;
+import com.toxicstoxm.YAJL.errorhandling.ExceptionHandler;
 import jakarta.websocket.Session;
 import lombok.Getter;
 import org.glassfish.tyrus.client.ClientManager;
@@ -37,8 +40,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 public class WebSocketClient {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(WebSocketClient.class);
 
     private final LinkedBlockingDeque<String> sendQueue = new LinkedBlockingDeque<>();
     private final LinkedBlockingDeque<BinaryPacket> sendQueueBinary = new LinkedBlockingDeque<>();
@@ -111,7 +113,7 @@ public class WebSocketClient {
                         textEndpointHeartBeat(session);
                     }
                 } catch (Exception e) {
-                    logger.verbose(e);
+                    ExceptionHandler.handle(e, LogLevels.VERBOSE);
                 } finally {
                     if (!cancelled && !LEDSuiteApplication.isConnecting()) {
                         LEDSuiteApplication.notifyUser(

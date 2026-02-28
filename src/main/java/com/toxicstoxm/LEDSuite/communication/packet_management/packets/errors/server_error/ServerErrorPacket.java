@@ -9,9 +9,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 /**
@@ -26,8 +27,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class ServerErrorPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(ServerErrorPacket.class);
 
     @Override
     public Logger getLogger() {

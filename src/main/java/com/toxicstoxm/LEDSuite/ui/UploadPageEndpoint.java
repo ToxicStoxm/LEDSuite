@@ -8,7 +8,6 @@ package com.toxicstoxm.LEDSuite.ui;
  * @since 1.0.0
  */
 public interface UploadPageEndpoint {
-
     /**
      * Sets the server connection status and updates UI accordingly.
      *

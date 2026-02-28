@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @Builder
 public class EndpointProvider {
-
     // Default getters for each endpoint type, providing fallback behavior when disconnected
     @Builder.Default
     private NullSaveGetter<SettingsDialogEndpoint> settingsDialogEndpoint = generateDefaultGetterFor(new DefaultSettingsDialogEndpoint() {});

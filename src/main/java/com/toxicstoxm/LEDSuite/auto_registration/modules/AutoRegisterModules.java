@@ -12,7 +12,6 @@ import lombok.Getter;
  */
 @Getter
 public enum AutoRegisterModules {
-
     /**
      * Represents modules responsible for handling communication packets.
      */

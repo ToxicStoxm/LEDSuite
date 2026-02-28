@@ -2,9 +2,8 @@ package com.toxicstoxm.LEDSuite.tools;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.YAJL.YAJLManager;
-import com.toxicstoxm.YAJL.config.YAJLManagerConfig;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +15,9 @@ class YamlToolsTest {
 
     @BeforeAll
     static void setup() {
-        YAJLManager.configure(
-                YAJLManagerConfig.builder()
-                        .enableYAMLConfig(false)
-                        .bridgeYAJSI(false)
-                        .muteLogger(true)
-                        .build()
-        );
+        LoggerManager.configure()
+                .muteLogger(true)
+                .done();
 
         assertDoesNotThrow(() -> yaml.loadFromString(
                 """

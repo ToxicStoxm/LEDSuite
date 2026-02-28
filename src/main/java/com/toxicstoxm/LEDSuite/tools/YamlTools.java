@@ -3,8 +3,9 @@ package com.toxicstoxm.LEDSuite.tools;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
 import com.toxicstoxm.LEDSuite.ui.HashSumCallable;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.gdk.Paintable;
 import org.gnome.gdk.Texture;
@@ -25,8 +26,7 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public class YamlTools {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(YamlTools.class);
 
     /**
      * Checks if the specified key exists in the given configuration section.

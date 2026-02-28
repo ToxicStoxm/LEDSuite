@@ -10,7 +10,6 @@ import com.toxicstoxm.LEDSuite.time.Action;
  * @since 1.0.0
  */
 public interface AuthManagerEndpoint {
-
     /**
      * Initiates an authentication request using the provided credentials.
      * The specified callback will be invoked once the server processes the request.

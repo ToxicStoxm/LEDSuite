@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
  * @since 1.0.0
  */
 public final class StringFormatter {
-
     // Default format used for date and time if no format is provided
     private static final String defaultDateTimeFormat = "dd:MM:yy hh:mm:ss";
 

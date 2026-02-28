@@ -6,7 +6,8 @@ import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.scheduler.Task;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.AlertDialog;
@@ -39,8 +40,7 @@ import java.util.Objects;
  */
 @GtkTemplate(name = "AuthenticationDialog", ui = "/com/toxicstoxm/LEDSuite/AuthenticationDialog.ui")
 public class AuthenticationDialog extends AlertDialog {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(AuthenticationDialog.class);
 
     // The task responsible for checking user credentials
     private Task credentialCheckerTask;

@@ -10,8 +10,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.Er
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.StatusRequestPacket;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -32,8 +33,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Setter
 public class StatusReplyPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(StatusReplyPacket.class);
 
     @Override
     public Logger getLogger() {

@@ -5,7 +5,8 @@ import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.UpdateCallback;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import jakarta.websocket.*;
 import lombok.Builder;
 import lombok.Setter;
@@ -32,8 +33,7 @@ import java.util.UUID;
 @ClientEndpoint
 @Builder
 public class WebSocketUpload extends WebSocketClientEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(WebSocketUpload.class);
 
     // Indicates whether the upload is ready to start
     @Setter

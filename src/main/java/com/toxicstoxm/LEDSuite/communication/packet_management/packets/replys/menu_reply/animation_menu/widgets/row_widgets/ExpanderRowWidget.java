@@ -11,7 +11,7 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.me
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.menu_reply.animation_menu.widgets.templates.AnimationMenuRowWidget;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJSI.api.yaml.ConfigurationSection;
+import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
 import org.gnome.adw.ExpanderRow;
 import org.gnome.glib.Type;
 import org.jetbrains.annotations.NotNull;

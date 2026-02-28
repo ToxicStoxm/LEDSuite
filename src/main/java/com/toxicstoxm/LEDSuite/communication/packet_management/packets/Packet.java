@@ -4,7 +4,7 @@ import com.toxicstoxm.LEDSuite.auto_registration.AutoRegistrableItem;
 import com.toxicstoxm.LEDSuite.auto_registration.Registrable;
 import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationException;
 import com.toxicstoxm.LEDSuite.communication.packet_management.Serializable;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
 
 /**
  * <strong>Meaning:</strong><br>
@@ -23,7 +23,6 @@ import com.toxicstoxm.YAJL.Logger;
  * @since 1.0.0
  */
 public interface Packet extends Serializable<String, Packet>, AutoRegistrableItem {
-
     Logger getLogger();
 
     /**

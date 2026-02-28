@@ -5,7 +5,8 @@ import com.toxicstoxm.LEDSuite.time.CooldownManager;
 import com.toxicstoxm.LEDSuite.tools.YamlTools;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuReference;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import lombok.Getter;
@@ -37,8 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @GtkTemplate(name = "AnimationRow", ui = "/com/toxicstoxm/LEDSuite/AnimationRow.ui")
 public class AnimationRow extends ListBoxRow {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(AnimationRow.class);
 
     @Getter
     private String animationID = "";  // Unique identifier for the animation
@@ -144,7 +144,7 @@ public class AnimationRow extends ListBoxRow {
             } catch (NoSuchAlgorithmException e) {
                 LEDSuiteApplication.handleError(ErrorData.builder()
                                 .logger(logger)
-                                .message(logger.format("Failed to get hashSum algorithm 'md5' for computing icon hashSum within {}(ID:{})", getClass().getSimpleName(), getAnimationID()))
+                                .message("Failed to get hashSum algorithm 'md5' for computing icon hashSum within " + getClass().getSimpleName() + " (ID:" + getAnimationID() + ")")
                                 .heading("Error while receiving status update")
                         .build());
             }

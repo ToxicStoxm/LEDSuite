@@ -4,7 +4,8 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModule;
 import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.formatting.StringFormatter;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -27,8 +28,7 @@ import java.util.Set;
  * @since 1.0.0
  */
 public abstract class Registrable<T extends AutoRegistrableItem> {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(Registrable.class);
 
     private final HashMap<String, T> registeredItems = new HashMap<>();
 

@@ -23,7 +23,6 @@ import static com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication.initYAJSI;
  * @author ToxicStoxm
  */
 public class Main {
-
     /**
      * The main method of the LEDSuite application. It is responsible for:
      * 1. Ensuring the application's directory exists.
@@ -34,7 +33,7 @@ public class Main {
      *
      * @param args Command-line arguments passed to the application.
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         // Ensure the app's directory exists, creating it if necessary
         File appDirectory = new File(Constants.FileSystem.getAppDir());

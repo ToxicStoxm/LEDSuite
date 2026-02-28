@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
  */
 @AutoRegister(module = AutoRegisterModules.WIDGETS)
 public class PropertyRowWidget extends AnimationMenuRowWidget<ActionRow> {
-
     @Override
     public String getType() {
         return WidgetType.PROPERTY_ROW.getName();

@@ -5,7 +5,9 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
+import com.toxicstoxm.YAJL.errorhandling.ExceptionHandler;
 import jakarta.websocket.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,8 +29,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @ClientEndpoint
 public class WebSocketCommunication extends WebSocketClientEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(WebSocketCommunication.class);
 
     /**
      * Specifies that this WebSocket endpoint operates in text mode rather than binary mode.
@@ -128,6 +129,6 @@ public class WebSocketCommunication extends WebSocketClientEndpoint {
     @OnError
     public void onError(@NotNull Session session, @NotNull Throwable throwable) {
         super.onError(session, throwable);
-        logger.debug(throwable);
+        ExceptionHandler.handle(throwable);
     }
 }

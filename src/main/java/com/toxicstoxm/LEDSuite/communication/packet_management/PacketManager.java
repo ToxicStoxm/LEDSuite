@@ -7,9 +7,10 @@ import com.toxicstoxm.LEDSuite.auto_registration.modules.AutoRegisterModules;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.logger.LEDSuiteLogLevels;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0.0
  */
 public class PacketManager extends Registrable<Packet> {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(PacketManager.class);
 
     private final String packetClassPath;
 

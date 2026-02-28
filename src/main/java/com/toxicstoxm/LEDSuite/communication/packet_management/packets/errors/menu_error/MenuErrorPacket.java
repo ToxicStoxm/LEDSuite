@@ -7,9 +7,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.DeserializationEx
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.errors.ErrorCode;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 
 /**
@@ -25,8 +26,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class MenuErrorPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(MenuErrorPacket.class);
 
     @Override
     public Logger getLogger() {

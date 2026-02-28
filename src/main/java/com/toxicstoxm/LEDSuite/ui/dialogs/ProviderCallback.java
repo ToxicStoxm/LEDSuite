@@ -14,7 +14,6 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
  */
 @FunctionalInterface
 public interface ProviderCallback<T> {
-
     /**
      * Retrieves the data provided by the callback.
      *

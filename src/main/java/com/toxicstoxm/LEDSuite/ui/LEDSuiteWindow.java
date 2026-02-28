@@ -23,8 +23,8 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.settings_dialog.SettingsUpdate;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusDialog;
 import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJL.placeholders.LogMessagePlaceholder;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import io.github.jwharm.javagi.gtk.annotations.GtkCallback;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
@@ -43,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * Main application window class. Holds and manages all UI related elements.
@@ -51,8 +52,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @GtkTemplate(name = "LEDSuiteWindow", ui = "/com/toxicstoxm/LEDSuite/LEDSuiteWindow.ui")
 public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(LEDSuiteWindow.class);
 
     public LEDSuiteWindow(Application app) {
         setApplication(app);
@@ -429,7 +429,7 @@ public class LEDSuiteWindow extends ApplicationWindow implements MainWindow {
                 Thread.onSpinWait();
             }
         }
-        logger.verbose("Updating UI to -> Upload progress: {}", (LogMessagePlaceholder) () -> Math.round(fraction * 100000) / 1000);
+        logger.verbose("Updating UI to -> Upload progress: {}", (Supplier<Long>) () -> Math.round(fraction * 100000) / 1000);
         GLib.idleAddOnce(() -> {
             if (!uploadProgressBarRevealer.getChildRevealed()) {
                 resetUploadProgress();

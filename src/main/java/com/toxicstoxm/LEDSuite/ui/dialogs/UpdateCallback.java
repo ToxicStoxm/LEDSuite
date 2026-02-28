@@ -13,7 +13,6 @@ import com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog.StatusUpdate;
  * @since 1.0.0
  */
 public interface UpdateCallback<T> {
-
     /**
      * Updates the data within the class using the provided new values.
      *

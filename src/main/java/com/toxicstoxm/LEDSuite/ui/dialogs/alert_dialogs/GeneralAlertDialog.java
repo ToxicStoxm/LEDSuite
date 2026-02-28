@@ -1,7 +1,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.LEDSuite.time.Action;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.ResponseAppearance;
 import org.jetbrains.annotations.NotNull;
@@ -23,8 +24,7 @@ import java.util.UUID;
  */
 @GtkTemplate(name = "GeneralAlertDialog", ui = "/com/toxicstoxm/LEDSuite/GeneralAlertDialog.ui")
 public class GeneralAlertDialog extends org.gnome.adw.AlertDialog implements AlertDialog<AlertDialogData> {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(GeneralAlertDialog.class);
 
     // Callback to handle user response actions
     private ResponseCallback responseCallback;

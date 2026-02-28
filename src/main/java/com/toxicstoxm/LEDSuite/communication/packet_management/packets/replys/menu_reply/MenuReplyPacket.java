@@ -13,9 +13,10 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.requests.
 import com.toxicstoxm.LEDSuite.scheduler.SmartRunnable;
 import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenu;
-import com.toxicstoxm.YAJL.Logger;
-import com.toxicstoxm.YAJSI.api.file.YamlConfiguration;
-import com.toxicstoxm.YAJSI.api.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.StormYAML.file.YamlConfiguration;
+import com.toxicstoxm.StormYAML.yaml.InvalidConfigurationException;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import lombok.*;
 import org.gnome.glib.GLib;
 
@@ -35,8 +36,7 @@ import org.gnome.glib.GLib;
 @NoArgsConstructor
 @Setter
 public class MenuReplyPacket extends CommunicationPacket {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(MenuReplyPacket.class);
 
     @Override
     public Logger getLogger() {

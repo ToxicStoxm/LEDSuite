@@ -1,6 +1,6 @@
 package com.toxicstoxm.LEDSuite.tools;
 
-import com.toxicstoxm.YAJSI.api.logging.Logger;
+import com.toxicstoxm.LEDSuite.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0.0
  */
 public class ExceptionTools {
-
     /**
      * Prints the stack trace and the message of the provided exception to the
      * specified logger. If the exception's message is null, a default message

@@ -3,7 +3,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.status_dialog;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.FileState;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.status_reply.LidState;
 import com.toxicstoxm.LEDSuite.gettext.Translations;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import io.github.jwharm.javagi.gtk.annotations.GtkChild;
 import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.ActionRow;
@@ -25,8 +26,7 @@ import java.util.List;
  */
 @GtkTemplate(name = "StatusDialog", ui = "/com/toxicstoxm/LEDSuite/StatusDialog.ui")
 public class StatusDialog extends Dialog implements StatusDialogEndpoint {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(StatusDialog.class);
 
     public StatusDialog() {
         super();

@@ -2,7 +2,8 @@ package com.toxicstoxm.LEDSuite.communication.packet_management;
 
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.CommunicationPacket;
 import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
-import com.toxicstoxm.YAJL.Logger;
+import com.toxicstoxm.YAJL.core.Logger;
+import com.toxicstoxm.YAJL.core.LoggerManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,8 +26,7 @@ import org.jetbrains.annotations.NotNull;
  * @see Packet#handlePacket()
  */
 public class PacketReceivedHandler {
-
-    private static final Logger logger = Logger.autoConfigureLogger();
+    private static final Logger logger = LoggerManager.getLogger(PacketReceivedHandler.class);
 
     /**
      * Handles an incoming communication packet by calling the {@link Packet#handlePacket()} method.

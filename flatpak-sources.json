@@ -1,45 +1,45 @@
 [
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson-parent/2.12.1/gson-parent-2.12.1.pom",
-    "sha512": "e099a89999f863e95465baceeba2490fec16032a4eedf0955e3ec230ede9d5e2e6658a3f527a34a651ff3f3121713148e4afd4a03a97f8b0e145f152dae199b7",
-    "dest": "./offline-repository/com/google/code/gson/gson-parent/2.12.1",
-    "dest-filename": "gson-parent-2.12.1.pom"
+    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson-parent/2.13.2/gson-parent-2.13.2.pom",
+    "sha512": "e6524dbb8aa13707fa51df7413a8b247a4de248812e212702e4e5888d0df29c6ebe39a3b1e09aefb12a1a095c42d19d074756a30918bfc4c1fe55c39b9a7c1fa",
+    "dest": "./offline-repository/com/google/code/gson/gson-parent/2.13.2",
+    "dest-filename": "gson-parent-2.13.2.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson/2.12.1/gson-2.12.1.jar",
-    "sha512": "fafc369544e2d4a89f32c353dcbd012410a64a315a3cae9165d4ead6f8960aef5f77ced84c374d6a09af117748adca571b0426eb0e2864f584debb59707ebc03",
-    "dest": "./offline-repository/com/google/code/gson/gson/2.12.1",
-    "dest-filename": "gson-2.12.1.jar"
+    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar",
+    "sha512": "8974a052656d2e5ec968b6bac2edf51413ffc62040fdc65f14f00597e738ab544d22487f8579ba90618b5a7f94ef33773510fac67b408fee6ed274b38f3d9947",
+    "dest": "./offline-repository/com/google/code/gson/gson/2.13.2",
+    "dest-filename": "gson-2.13.2.jar"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson/2.12.1/gson-2.12.1.pom",
-    "sha512": "49aca8b17b4b4377dd358a356aec85d2105b5c8fca2a88fd4f5b5454a7f7e952980e0754e070adfa7136d01b9442c6efacc989c8a25d9928267c9fe3e869c61f",
-    "dest": "./offline-repository/com/google/code/gson/gson/2.12.1",
-    "dest-filename": "gson-2.12.1.pom"
+    "url": "https://plugins.gradle.org/m2/com/google/code/gson/gson/2.13.2/gson-2.13.2.pom",
+    "sha512": "c0d089089bf0d6bcfae008f329dcc2db2538d02654f8bc7690cb8db2ec94fe0d2aa069ac1d70a111a28cced0ffd7742ac8db29a884d64d9413ebf9b2af5dab82",
+    "dest": "./offline-repository/com/google/code/gson/gson/2.13.2",
+    "dest-filename": "gson-2.13.2.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar",
-    "sha512": "bd6f5650902526d3db06aa1cc7bd36723658166acfabb823aca27d0b2c3814e83ae24a8217ce915c3e194c2c696a102580b4c21ef5dba61f7610bcb8d580f566",
-    "dest": "./offline-repository/com/google/errorprone/error_prone_annotations/2.36.0",
-    "dest-filename": "error_prone_annotations-2.36.0.jar"
+    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_annotations/2.41.0/error_prone_annotations-2.41.0.jar",
+    "sha512": "e2eb4bf9f36f95a4d4c5ea344db5cd90a456e63bef8e52932b8f6f4ecfdd59cb2f6c2ce9e67b0070c82177e42885688b95afef591b16001f789b378f18afdf30",
+    "dest": "./offline-repository/com/google/errorprone/error_prone_annotations/2.41.0",
+    "dest-filename": "error_prone_annotations-2.41.0.jar"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.pom",
-    "sha512": "0c1d663f70a1bec083cdd007b1ee673df144bbfbd4d065c7cad0edba8410bcd1f578902133155a534a1506a82d6a6aa211b4e6c907c4df25b0da4c781caa9008",
-    "dest": "./offline-repository/com/google/errorprone/error_prone_annotations/2.36.0",
-    "dest-filename": "error_prone_annotations-2.36.0.pom"
+    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_annotations/2.41.0/error_prone_annotations-2.41.0.pom",
+    "sha512": "07bb0fc1b8659cd8c9ffb49563d4ec5f86bb30f5515eb6951e272de83e64670b0490f2e40b33ff6673f0d603719430c3378630478686d5849242028285204cdc",
+    "dest": "./offline-repository/com/google/errorprone/error_prone_annotations/2.41.0",
+    "dest-filename": "error_prone_annotations-2.41.0.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_parent/2.36.0/error_prone_parent-2.36.0.pom",
-    "sha512": "8157ba706ab6932cb428ebd295693477491a7439341c95994f492a10cc3b3222b30a3777e61a9f208fcd1623fc613a3a7fd3cc22c95c56c64e3dbb9d3ca5aeed",
-    "dest": "./offline-repository/com/google/errorprone/error_prone_parent/2.36.0",
-    "dest-filename": "error_prone_parent-2.36.0.pom"
+    "url": "https://plugins.gradle.org/m2/com/google/errorprone/error_prone_parent/2.41.0/error_prone_parent-2.41.0.pom",
+    "sha512": "ab85819cbab15554b3dbc1fd75eac6a13440178ee8c92a2b0fceeecac970f464d3aafc017842a2f7a692d15e7875389eb31ae9c0e08844990d7104f6c2f23f2a",
+    "dest": "./offline-repository/com/google/errorprone/error_prone_parent/2.41.0",
+    "dest-filename": "error_prone_parent-2.41.0.pom"
   },
   {
     "type": "file",
@@ -169,31 +169,31 @@
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.5.0/io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.5.0.pom",
-    "sha512": "d95ab753c7e295958260ad47da3271089e2e81554eb6bb5ae0acbb2b76dcbbfc8f67088a95b4fca917b882f7c6ccffc6e72a5941312b22f83f7402e3f758ae58",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.5.0",
-    "dest-filename": "io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.5.0.pom"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.6.0/io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.6.0.pom",
+    "sha512": "fbe6480fc584f081469ca53936edaae0597f91e973c761b3a51332c3f89486c27c7c37b7c6493846b072ce5b38d78daa7a64c0b2da1da02ef3b43678cd2c74cc",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.6.0",
+    "dest-filename": "io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.6.0.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0/plugin-1.5.0.jar",
-    "sha512": "010a05bdf5a7b0338b921577ce9fbff3f221aff8994926c9c4cd6965cf11047ded07485faeb092b7d2bd6ed1973a7171971940841ba52ea080bb382cffcb1115",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0",
-    "dest-filename": "plugin-1.5.0.jar"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.jar",
+    "sha512": "a3ea69f67a305030a02f5818a5349753522a382fe36bc22140ac7b63998c14bdb211810b43859e91be0203723490a5de2c1f5e968f696019ec5a31e92d42843e",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
+    "dest-filename": "plugin-1.6.0.jar"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0/plugin-1.5.0.module",
-    "sha512": "94948fffea8525b0dcaa23099d671a99995a1cef93208a7795d3c6fdc8f68c68420c2f9451211ff112dac15798e22d43f66aeb93fe5e5f4dbf0d5ae1f417ea97",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0",
-    "dest-filename": "plugin-1.5.0.module"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.module",
+    "sha512": "aa1756741388b43d5d07bd65934b1cbbb746085bc4df8f98c506f2d5bc367276fd4b0c01e51540d981a5be37715f5ae3d64dcc29b9157b602f59bd929560d1ec",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
+    "dest-filename": "plugin-1.6.0.module"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0/plugin-1.5.0.pom",
-    "sha512": "b090e4a56bfe11148ffa841c6fdb95a8181105365182f6380b3ec38b09d757897e78e087dd92d05d68c2c91f0aa49ce0d9e166aa6bd0b7b92d71a1a73a9ac494",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.5.0",
-    "dest-filename": "plugin-1.5.0.pom"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.pom",
+    "sha512": "3149ff19058093c6665f5d0d5f36ca174250a5cad22a38710502071cfaa7520645dc00546e3b5190437c496ddb630d13815477934221ac7672e65a5b60ad8f6b",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
+    "dest-filename": "plugin-1.6.0.pom"
   },
   {
     "type": "file",

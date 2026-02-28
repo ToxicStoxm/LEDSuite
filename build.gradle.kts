@@ -34,7 +34,6 @@ dependencies {
     implementation(libs.jakarta.websocket.client)
     implementation(libs.tyrus.client)
     implementation(libs.tyrus.grizzly.client)
-    implementation(libs.stormyaml)
 
     annotationProcessor(libs.jetbrains.annotations)
     annotationProcessor(libs.lombok)

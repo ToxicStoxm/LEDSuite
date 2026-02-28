@@ -7,23 +7,16 @@ replace-placeholders = "3.0"
 classgraph = "4.8.184"
 jakarta-websocket = "2.2.0"
 javagi = "0.12.2"
-jetbrains-annotations = "26.0.2-1"
-junit = "6.0.0"
-junit-platform = "6.0.0"
+jetbrains-annotations = "26.1.0"
+junit = "6.0.3"
 lombok = "1.18.42"
-stormyaml = "1.0.1"
-yajl = "2.1.0"
-yajsi = "3.0.1"
+yajl = "3.0.1"
+yajsi = "3.0.2"
 
 [libraries]
-# annotations / lombok
+# annotations
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
-
-# toxicstoxm
-yajl = { group = "com.toxicstoxm.YAJL", name = "YAJL", version.ref = "yajl" }
-yajsi = { group = "com.toxicstoxm", name = "YAJSI", version.ref = "yajsi" }
-stormyaml = { group = "com.toxicstoxm", name = "StormYAML", version.ref = "stormyaml" }
 
 # runtime libs
 classgraph = { group = "io.github.classgraph", name = "classgraph", version.ref = "classgraph" }
@@ -33,9 +26,12 @@ jakarta-websocket-client = { group = "jakarta.websocket", name = "jakarta.websoc
 tyrus-client = { group = "org.glassfish.tyrus", name = "tyrus-client", version.ref = "jakarta-websocket" }
 tyrus-grizzly-client = { group = "org.glassfish.tyrus", name = "tyrus-container-grizzly-client", version.ref = "jakarta-websocket" }
 
+yajl = { group = "com.toxicstoxm", name = "YAJL", version.ref = "yajl" }
+yajsi = { group = "com.toxicstoxm", name = "YAJSI", version.ref = "yajsi" }
+
 # testing
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
-junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit" }
 
 [plugins]
 flatpak-generator = { id = "io.github.jwharm.flatpak-gradle-generator", version.ref = "flatpak-generator" }

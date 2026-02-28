@@ -112,7 +112,7 @@ public class UploadPage extends PreferencesPage implements UploadPageEndpoint {
                     }
                     this.selectedFile = selectedFile.getPath();
                     logger.debug("Selected file: {}", this.selectedFile);
-                    filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile));
+                    filePickerRow.setSubtitle(StringFormatter.getFileNameFromPath(this.selectedFile).replace("&", "&amp;"));
                     WebSocketClient communication = LEDSuiteApplication.getWebSocketCommunication();
                     if (communication != null && communication.isConnected()) {
                         uploadButton.setSensitive(true);

@@ -10,7 +10,7 @@ javagi = "0.12.2"
 jetbrains-annotations = "26.1.0"
 junit = "6.0.3"
 lombok = "1.18.42"
-yajl = "3.0.1"
+yajl = "3.0.0"
 yajsi = "3.0.2"
 
 [libraries]

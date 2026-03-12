@@ -25,8 +25,8 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 1.0.0
  */
-@Getter(onMethod_ = @Property(skip = true))
-@Setter(onMethod_ = @Property(skip = true))
+@Getter
+@Setter
 @GtkTemplate(name = "AnimationMenu", ui = "/com/toxicstoxm/LEDSuite/AnimationMenu.ui")
 public class AnimationMenu extends Box implements AnimationMenuReference {
     private static final Logger logger = LoggerManager.getLogger(AnimationMenu.class);

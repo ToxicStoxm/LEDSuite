@@ -19,26 +19,26 @@ import lombok.*;
  * an upload session identifier, the file's SHA-256 hash, and an optional flag to force overwrite.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Allows uploading new animations or replacing existing ones if {@code forceOverwrite} is set.</li>
  *     <li>Supports automatic registration with the {@link AutoRegister} annotation.</li>
  *     <li>Can be deserialized from and serialized into a YAML string.</li>
  * </ul>
  *
- * <h3>Serialization and Deserialization:</h3>
+ * <strong>Serialization and Deserialization:</strong>
  * <ul>
  *     <li><strong>serialize:</strong> Converts this packet to a YAML string.</li>
  *     <li><strong>deserialize:</strong> Constructs the packet from a YAML string, ensuring all required fields are populated.</li>
  * </ul>
  *
- * <h3>Related Reply Packets:</h3>
+ * <strong>Related Reply Packets:</strong>
  * <ul>
  *     <li>{@link UploadReplyPacket} - Base reply type for upload responses.</li>
  *     <li>{@link UploadSuccessReplyPacket} - Indicates successful file upload completion.</li>
  * </ul>
  *
- * <h3>Usage:</h3>
+ * <strong>Usage:</strong>
  * <pre>
  * FileUploadRequestPacket packet = FileUploadRequestPacket.builder()
  *         .requestFile("example_animation.led")

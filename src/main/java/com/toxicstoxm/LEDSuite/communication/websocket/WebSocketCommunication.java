@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * WebSocket endpoint for general communication with the server. This class handles the communication channel
  * for exchanging general information, sending status requests, and handling errors that may arise during the WebSocket session.
- * <p>
  * The primary responsibility of this class is to manage the WebSocket connection and process incoming and outgoing messages.
  * This includes:
  * <ul>
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
  *     <li>Sending status requests after the connection with the server is made.</li>
  *     <li>Logging detailed information about WebSocket communication events and errors.</li>
  * </ul>
- * </p>
  *
  * @since 1.0.0
  */

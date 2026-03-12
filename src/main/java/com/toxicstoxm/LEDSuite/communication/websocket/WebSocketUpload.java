@@ -18,7 +18,6 @@ import java.util.UUID;
 /**
  * WebSocket endpoint for uploading binary data to the server. This class manages the file upload process by sending
  * data packets to the server and tracking progress during the transfer.
- * <p>
  * The primary responsibilities of this class include:
  * <ul>
  *     <li>Establishing a WebSocket connection with the server.</li>
@@ -26,7 +25,6 @@ import java.util.UUID;
  *     <li>Handling progress updates during the upload process.</li>
  *     <li>Handling connection events like opening, closing, and errors.</li>
  * </ul>
- * </p>
  *
  * @since 1.0.0
  */

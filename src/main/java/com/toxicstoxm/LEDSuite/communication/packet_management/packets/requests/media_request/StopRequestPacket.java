@@ -14,14 +14,14 @@ import lombok.*;
  * to halt playback of an animation associated with a specified file.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Supports automatic registration via the {@link AutoRegister} annotation.</li>
  *     <li>Implements the {@link MediaRequestPacket} abstract class, inheriting common media request functionality.</li>
  *     <li>Defines a specific subtype, {@code STOP}, which corresponds to the stop action in the communication protocol.</li>
  * </ul>
  *
- * <h3>Usage:</h3>
+ * <strong>Usage:</strong>
  * <p>
  * To create a stop request, instantiate this class and set the file to stop using the {@code requestFile} property.
  * Example:

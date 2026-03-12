@@ -3,8 +3,9 @@ package com.toxicstoxm.LEDSuite.auto_registration;
 /**
  * Represents an item that can be automatically registered.
  * Interfaces or classes intended for auto-registration should implement this interface.
- *
- * @implNote The default implementation of {@link #getItemType()} returns a placeholder string.
+ * <br>
+ * <strong>Note:</strong>
+ * The default implementation of {@link #getItemType()} returns a placeholder string.
  * Implementers should override this method to provide a meaningful item type.
  *
  * @since 1.0.0

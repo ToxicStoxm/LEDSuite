@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
  * Annotation for marking classes to be automatically registered to a specific module.
  * Classes annotated with {@code @AutoRegister} will be discovered and registered
  * to the specified module during runtime using the {@link Registrable#autoRegister()} method.
- *
- * @implNote The {@link Registrable#autoRegister()} method scans for all classes annotated with
+ * <br>
+ * <strong>Note:</strong>
+ * The {@link Registrable#autoRegister()} method scans for all classes annotated with
  * {@code @AutoRegister} and registers them to their corresponding {@link AutoRegisterModules}.
  *
  * @since 1.0.0

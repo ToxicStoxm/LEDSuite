@@ -17,13 +17,13 @@ import lombok.*;
  * to a new name specified in {@code newName}.
  * </p>
  *
- * <h3>Serialization and Deserialization:</h3>
+ * <strong>Serialization and Deserialization:</strong>
  * <ul>
  *     <li><strong>serialize:</strong> Converts this packet into a YAML string.</li>
  *     <li><strong>deserialize:</strong> Populates this packet from a YAML string.</li>
  * </ul>
  *
- * <h3>Usage Example:</h3>
+ * <strong>Usage Example:</strong>
  * <pre>
  * RenameRequestPacket packet = RenameRequestPacket.builder()
  *         .requestFile("old_name.jar")

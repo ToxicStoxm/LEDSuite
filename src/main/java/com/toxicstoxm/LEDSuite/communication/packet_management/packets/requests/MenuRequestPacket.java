@@ -18,19 +18,19 @@ import lombok.*;
  * a specified animation, identified by {@code requestFile}.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Specifies the animation file whose menu is being requested.</li>
  *     <li>Used in conjunction with a {@link MenuReplyPacket} to retrieve the menu data.</li>
  * </ul>
  *
- * <h3>Serialization and Deserialization:</h3>
+ * <strong>Serialization and Deserialization:</strong>
  * <ul>
  *     <li><strong>serialize:</strong> Converts this packet into a YAML string.</li>
  *     <li><strong>deserialize:</strong> Populates this packet from a YAML string.</li>
  * </ul>
  *
- * <h3>Usage Example:</h3>
+ * <strong>Usage Example:</strong>
  * <pre>
  * MenuRequestPacket packet = MenuRequestPacket.builder()
  *         .requestFile("example_animation.led")

@@ -15,14 +15,14 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.Packet;
  * by overriding {@link #getSubType()}.
  * </p>
  *
- * <h3>Key Responsibilities:</h3>
+ * <strong>Key Responsibilities:</strong>
  * <ul>
  *     <li>Handles serialization and deserialization of the media request packet.</li>
  *     <li>Ensures that the required file name key exists during deserialization.</li>
  *     <li>Defines a common request packet type ({@code REQUEST}).</li>
  * </ul>
  *
- * <h3>Usage:</h3>
+ * <strong>Usage:</strong>
  * <p>
  * To create a new media request packet, extend this class and provide implementations for
  * {@link #setRequestFile(String)}, {@link #getRequestFile()}, and {@link #getSubType()}.

@@ -17,20 +17,14 @@ import lombok.*;
  * such as toggling options or updating values in the animation menu interface.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Identifies the setting being changed using {@code objectId}.</li>
  *     <li>Provides the new value of the setting through {@code objectValue}.</li>
  *     <li>Associates the change with a specific animation file using {@code fileName}.</li>
  * </ul>
  *
- * <h3>Serialization and Deserialization:</h3>
- * <ul>
- *     <li><strong>serialize:</strong> Converts this packet to a YAML string.</li>
- *     <li><strong>deserialize:</strong> Populates the packet fields from a YAML string.</li>
- * </ul>
- *
- * <h3>Usage Example:</h3>
+ * <strong>Usage Example:</strong>
  * <pre>
  * MenuChangeRequestPacket packet = MenuChangeRequestPacket.builder()
  *         .objectId("setting_brightness")

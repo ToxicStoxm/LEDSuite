@@ -11,14 +11,14 @@ import java.nio.ByteBuffer;
  * and the time it took to send that particular packet.
  * </p>
  *
- * <h3>Fields:</h3>
+ * <strong>Fields:</strong>
  * <ul>
  *     <li><strong>data</strong>: The binary data that was sent to the server. This is stored as a {@link ByteBuffer}.</li>
  *     <li><strong>lastPacket</strong>: A flag indicating whether this was the last packet sent to the server in the current data transmission.</li>
  *     <li><strong>timeElapsed</strong>: The time, in milliseconds, that it took to send this packet to the server.</li>
  * </ul>
  *
- * <h3>Usage Example</h3>
+ * <strong>Usage Example</strong>
  * <pre>
  *     ByteBuffer data = ByteBuffer.wrap(new byte[]{1, 2, 3, 4});
  *     ProgressUpdate progress = ProgressUpdate.builder()

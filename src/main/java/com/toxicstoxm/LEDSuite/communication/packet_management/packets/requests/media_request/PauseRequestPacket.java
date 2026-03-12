@@ -14,14 +14,14 @@ import lombok.*;
  * to pause the animation associated with the specified file.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Supports automatic registration via the {@link AutoRegister} annotation.</li>
  *     <li>Implements the {@link MediaRequestPacket} abstract class, inheriting common media request functionality.</li>
  *     <li>Defines a specific sub-type, {@code PAUSE}, which corresponds to the pause action in the communication protocol.</li>
  * </ul>
  *
- * <h3>Usage:</h3>
+ * <strong>Usage:</strong>
  * <p>
  * To create a pause request, instantiate this class and set the desired file using the {@code requestFile} property.
  * Example:

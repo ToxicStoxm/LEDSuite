@@ -17,14 +17,14 @@ import lombok.*;
  * a hashed password, from the client to the server for authentication purposes.
  * </p>
  *
- * <h3>Key Features:</h3>
+ * <strong>Key Features:</strong>
  * <ul>
  *     <li>Supports automatic registration via the {@link AutoRegister} annotation.</li>
  *     <li>Implements the {@link CommunicationPacket} abstract class, inheriting general packet functionalities.</li>
  *     <li>Defines a specific sub-type, {@code AUTHENTICATE}, to classify the packet.</li>
  * </ul>
  *
- * <h3>Serialization and Deserialization:</h3>
+ * <strong>Serialization and Deserialization:</strong>
  * <p>
  * The class provides methods to convert the packet to and from YAML format:
  * </p>
@@ -33,7 +33,7 @@ import lombok.*;
  *     <li><strong>deserialize:</strong> Populates the packet fields using data from a YAML string.</li>
  * </ul>
  *
- * <h3>Usage:</h3>
+ * <strong>Usage:</strong>
  * <p>
  * To create and send an authentication request:
  * </p>

@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * status request for the server.
  * </p>
  *
- * <h3>Usage Example</h3>
+ * <strong>Usage Example</strong>
  * <pre>
  *     WebSocketClient webSocketClient = new WebSocketClient(new MyClientEndpoint(), URI.create("ws://example.com/socket"));
  *     webSocketClient.enqueueMessage("Hello, Server!");

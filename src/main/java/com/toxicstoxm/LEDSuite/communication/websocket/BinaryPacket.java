@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
  * If the {@code isLast} flag is set to {@code true}, the server can finalize the processing of the current data sequence.
  * </p>
  *
- * <h3>Usage Example</h3>
+ * <strong>Usage Example</strong>
  * <pre>
  *     ByteBuffer data = ByteBuffer.wrap(new byte[]{1, 2, 3, 4});
  *     BinaryPacket packet = BinaryPacket.builder()

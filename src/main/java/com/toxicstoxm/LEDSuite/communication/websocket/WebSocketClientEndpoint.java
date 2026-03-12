@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * through the {@link #binaryMode()} method, which determines the communication format for the client.
  * </p>
  *
- * <h3>Lifecycle Events:</h3>
+ * <strong>Lifecycle Events:</strong>
  * The following methods are triggered during the WebSocket session lifecycle:
  * <ul>
  *     <li>{@link #onOpen(Session)}: Called when the WebSocket connection is opened.</li>

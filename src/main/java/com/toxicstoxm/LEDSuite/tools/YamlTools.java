@@ -6,10 +6,10 @@ import com.toxicstoxm.LEDSuite.ui.HashSumCallable;
 import com.toxicstoxm.StormYAML.yaml.ConfigurationSection;
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.base.GErrorException;
 import org.gnome.gdk.Paintable;
 import org.gnome.gdk.Texture;
 import org.gnome.gtk.Image;
+import org.javagi.base.GErrorException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

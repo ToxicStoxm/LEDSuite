@@ -3,8 +3,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 import com.toxicstoxm.LEDSuite.time.Action;
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.ResponseAppearance;
+import org.javagi.gtk.annotations.GtkTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

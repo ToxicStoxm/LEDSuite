@@ -5,11 +5,11 @@ import com.toxicstoxm.LEDSuite.communication.packet_management.packets.replys.st
 import com.toxicstoxm.LEDSuite.gettext.Translations;
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkChild;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.ActionRow;
 import org.gnome.adw.Dialog;
 import org.gnome.glib.GLib;
+import org.javagi.gtk.annotations.GtkChild;
+import org.javagi.gtk.annotations.GtkTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

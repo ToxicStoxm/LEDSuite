@@ -6,12 +6,13 @@ replace-placeholders = "3.0"
 # libraries
 classgraph = "4.8.184"
 jakarta-websocket = "2.2.0"
-javagi = "0.12.2"
+javagi = "0.14.1"
 jetbrains-annotations = "26.1.0"
 junit = "6.0.3"
 lombok = "1.18.42"
 yajl = "3.0.0"
 yajsi = "3.0.2"
+jspecify = "1.0.0"
 
 [libraries]
 # annotations
@@ -20,7 +21,8 @@ lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" 
 
 # runtime libs
 classgraph = { group = "io.github.classgraph", name = "classgraph", version.ref = "classgraph" }
-javagi-adw = { group = "io.github.jwharm.javagi", name = "adw", version.ref = "javagi" }
+javagi = { group = "org.java-gi", name = "adw", version.ref = "javagi" }
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 
 jakarta-websocket-client = { group = "jakarta.websocket", name = "jakarta.websocket-client-api", version.ref = "jakarta-websocket" }
 tyrus-client = { group = "org.glassfish.tyrus", name = "tyrus-client", version.ref = "jakarta-websocket" }

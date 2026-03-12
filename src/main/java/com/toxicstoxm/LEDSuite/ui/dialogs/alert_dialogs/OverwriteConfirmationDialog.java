@@ -2,8 +2,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.AlertDialog;
+import org.javagi.gtk.annotations.GtkTemplate;
 
 /**
  * A dialog that prompts the user for confirmation before overwriting data.

@@ -7,8 +7,6 @@ import com.toxicstoxm.LEDSuite.ui.animation_menu.AnimationMenuReference;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkChild;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import lombok.Getter;
 import lombok.Setter;
 import org.gnome.adw.Clamp;
@@ -16,6 +14,8 @@ import org.gnome.adw.Spinner;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.*;
+import org.javagi.gtk.annotations.GtkChild;
+import org.javagi.gtk.annotations.GtkTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;

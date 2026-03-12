@@ -2,8 +2,8 @@
 package com.toxicstoxm.LEDSuite.ui.dialogs.shortcuts_dialog;
 
 
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
-import io.github.jwharm.javagi.gtk.types.TemplateTypes;
+import org.javagi.gtk.annotations.GtkTemplate;
+import org.javagi.gtk.types.TemplateTypes;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.ApplicationWindow;
 import org.gnome.gtk.ShortcutsWindow;

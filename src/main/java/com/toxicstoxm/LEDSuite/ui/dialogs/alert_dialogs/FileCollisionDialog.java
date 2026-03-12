@@ -2,8 +2,8 @@ package com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs;
 
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.AlertDialog;
+import org.javagi.gtk.annotations.GtkTemplate;
 
 /**
  * A dialog used to handle file collision scenarios in the LEDSuite application.

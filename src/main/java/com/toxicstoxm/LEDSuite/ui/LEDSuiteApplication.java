@@ -26,7 +26,6 @@ import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
 import com.toxicstoxm.YAJL.errorhandling.ExceptionHandler;
 import com.toxicstoxm.YAJSI.SettingsManager;
-import io.github.jwharm.javagi.gobject.annotations.InstanceInit;
 import lombok.Getter;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
@@ -35,6 +34,7 @@ import org.gnome.gio.ApplicationFlags;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Window;
+import org.javagi.gobject.annotations.InstanceInit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

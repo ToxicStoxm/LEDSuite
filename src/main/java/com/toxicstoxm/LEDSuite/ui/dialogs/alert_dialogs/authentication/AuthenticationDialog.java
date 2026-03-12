@@ -8,8 +8,6 @@ import com.toxicstoxm.LEDSuite.ui.LEDSuiteApplication;
 import com.toxicstoxm.LEDSuite.ui.dialogs.alert_dialogs.ErrorData;
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.gtk.annotations.GtkChild;
-import io.github.jwharm.javagi.gtk.annotations.GtkTemplate;
 import org.gnome.adw.AlertDialog;
 import org.gnome.adw.EntryRow;
 import org.gnome.adw.PasswordEntryRow;
@@ -17,6 +15,8 @@ import org.gnome.adw.ResponseAppearance;
 import org.gnome.glib.GLib;
 import org.gnome.gtk.Revealer;
 import org.gnome.gtk.Widget;
+import org.javagi.gtk.annotations.GtkChild;
+import org.javagi.gtk.annotations.GtkTemplate;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;

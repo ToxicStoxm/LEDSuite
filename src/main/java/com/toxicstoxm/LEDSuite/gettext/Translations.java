@@ -2,8 +2,8 @@ package com.toxicstoxm.LEDSuite.gettext;
 
 import com.toxicstoxm.YAJL.core.Logger;
 import com.toxicstoxm.YAJL.core.LoggerManager;
-import io.github.jwharm.javagi.interop.Interop;
 import org.gnome.glib.GLib;
+import org.javagi.interop.Interop;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.foreign.Arena;

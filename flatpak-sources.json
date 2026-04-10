@@ -169,31 +169,31 @@
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.6.0/io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.6.0.pom",
-    "sha512": "fbe6480fc584f081469ca53936edaae0597f91e973c761b3a51332c3f89486c27c7c37b7c6493846b072ce5b38d78daa7a64c0b2da1da02ef3b43678cd2c74cc",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.6.0",
-    "dest-filename": "io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.6.0.pom"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.7.0/io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.7.0.pom",
+    "sha512": "fba54b6f68e32382288201b0a360a6ba34f5a24bfc2f6ced503384f1bf67de2ca5c4f417a91616c2da591d185202d0c58acee2ea3a1ed2a8810011cdc1fe5056",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/io.github.jwharm.flatpak-gradle-generator.gradle.plugin/1.7.0",
+    "dest-filename": "io.github.jwharm.flatpak-gradle-generator.gradle.plugin-1.7.0.pom"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.jar",
-    "sha512": "a3ea69f67a305030a02f5818a5349753522a382fe36bc22140ac7b63998c14bdb211810b43859e91be0203723490a5de2c1f5e968f696019ec5a31e92d42843e",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
-    "dest-filename": "plugin-1.6.0.jar"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0/plugin-1.7.0.jar",
+    "sha512": "1fd33596f12f7f2e30e0a59db804cc1a65326b711f5bc8eafccaaf6bee495a33971354d58b17173f5a3f8053f2240e34146ca8e02f230b3319f2d22f5225b8fb",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0",
+    "dest-filename": "plugin-1.7.0.jar"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.module",
-    "sha512": "aa1756741388b43d5d07bd65934b1cbbb746085bc4df8f98c506f2d5bc367276fd4b0c01e51540d981a5be37715f5ae3d64dcc29b9157b602f59bd929560d1ec",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
-    "dest-filename": "plugin-1.6.0.module"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0/plugin-1.7.0.module",
+    "sha512": "4b0865f472199aa42925b39bed7e211e67ca935c4a5e6598d46cc5da313e91a2de6f6d0c775c06b6c79e01d46ab4f44d67ad4d1e5201efd9086d1cccba8e8bad",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0",
+    "dest-filename": "plugin-1.7.0.module"
   },
   {
     "type": "file",
-    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0/plugin-1.6.0.pom",
-    "sha512": "3149ff19058093c6665f5d0d5f36ca174250a5cad22a38710502071cfaa7520645dc00546e3b5190437c496ddb630d13815477934221ac7672e65a5b60ad8f6b",
-    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.6.0",
-    "dest-filename": "plugin-1.6.0.pom"
+    "url": "https://plugins.gradle.org/m2/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0/plugin-1.7.0.pom",
+    "sha512": "ecc20ed5e412a877d83ecf394e55376492535831d3237f348566bed8fcd31154641e74e4a4f5e841171069be83ef8f53e18dcddaffef3c8847b8ae2a75dd0a49",
+    "dest": "./offline-repository/io/github/jwharm/flatpak-gradle-generator/plugin/1.7.0",
+    "dest-filename": "plugin-1.7.0.pom"
   },
   {
     "type": "file",
@@ -561,220 +561,227 @@
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/6.0.3/junit-bom-6.0.3.module",
-    "sha512": "3717a98574763dee24a539aec558ae4a7d5345bb84384dbf1eccfb5441e6b8c96b5ab4f5f095d9c2793da1b9853827bb40d78a9cd6fa3a2019c5c50c4e5852e3",
-    "dest": "./offline-repository/org/junit/junit-bom/6.0.3",
-    "dest-filename": "junit-bom-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/6.1.0-M1/junit-bom-6.1.0-M1.module",
+    "sha512": "57521476f03c00cf5c0f0a2a82af6007175fe6b0ad83ef1cb62efd999a8435e8d775922a5e65f8090d42e6385250b19e83d006bb0b0a5a4ef8a99f028d4a6ded",
+    "dest": "./offline-repository/org/junit/junit-bom/6.1.0-M1",
+    "dest-filename": "junit-bom-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/6.0.3/junit-bom-6.0.3.pom",
-    "sha512": "be30e27bd59922d7d4b4275e0de06f3a67b796019e9fbbcc113b5b748749c4a55d6d14d4abecaf6bcd8b38a359dbbfcece2ce708d56c6fc13a06b9436b143f7f",
-    "dest": "./offline-repository/org/junit/junit-bom/6.0.3",
-    "dest-filename": "junit-bom-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-bom/6.1.0-M1/junit-bom-6.1.0-M1.pom",
+    "sha512": "d314c0f9e820f939480246a97e61cd8c5259726a6891794ca337e73ad98b0dd0ba39bd0cc77f808a28b4344c5cba1fb6e10999428104919b6cc89ea58ac55fad",
+    "dest": "./offline-repository/org/junit/junit-bom/6.1.0-M1",
+    "dest-filename": "junit-bom-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.0.3/junit-jupiter-api-6.0.3.jar",
-    "sha512": "145605177009d17d0d5698f7d827db805b5ea53fc54e67058cb1d8fdd79123a85da6f5e1a28fd8105d08175b74c5dd3a99928aa207ab00d734a1febfc70db1fb",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.0.3",
-    "dest-filename": "junit-jupiter-api-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/junit-start/6.1.0-M1/junit-start-6.1.0-M1.pom",
+    "sha512": "a5b600d3e9dd5901cbbf488cc36967fc42ce66f029ad78248adf10f02365155ae375baf81084063c1a3cf67f9ea31d34c529fcbced85ef6e65abea2be763ab31",
+    "dest": "./offline-repository/org/junit/junit-start/6.1.0-M1",
+    "dest-filename": "junit-start-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.0.3/junit-jupiter-api-6.0.3.module",
-    "sha512": "be0a5796047255fabb32f5d4321809983553117897172ee9fe2f80c5868c07a167ca9dca8a45f181b7c96999054d92a375f02e62cd483da219e8a83c590cc469",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.0.3",
-    "dest-filename": "junit-jupiter-api-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.1.0-M1/junit-jupiter-api-6.1.0-M1.jar",
+    "sha512": "5466a92868cc43c40e655e815ba921ff6efb9b7df3f6630fd51417a4e542df2ae03cfcc8fd79fefc272cf568dbc41e836c03afd765326480275e32a1b124b70c",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.1.0-M1",
+    "dest-filename": "junit-jupiter-api-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.0.3/junit-jupiter-api-6.0.3.pom",
-    "sha512": "9df53d2e759a7f28f2373bff11585c23456ca9b0ee1dbc577ff494e7c5a5c46a5f3d13909f155a855f37f8b21dd1ae609c3bfa605e3c6ea54f73e8453d0484df",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.0.3",
-    "dest-filename": "junit-jupiter-api-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.1.0-M1/junit-jupiter-api-6.1.0-M1.module",
+    "sha512": "e4e411c5273e9e42573adaeb4e7f163d33dab5953f8fe424354847c0a719bc7f3d074e0d322967d3bb6a5804d8d269453b7b79724e66d7e91e9ecb7b4131e027",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.1.0-M1",
+    "dest-filename": "junit-jupiter-api-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.0.3/junit-jupiter-engine-6.0.3.jar",
-    "sha512": "8d9b04a779d23c1fe76daf446de804dccca785d5f5f55df5d3b3aa373694a2c210e142b0e27d0ae56de28316bfd6c8cd4ac6bb93094b3cf959a867c4e333d226",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.0.3",
-    "dest-filename": "junit-jupiter-engine-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/6.1.0-M1/junit-jupiter-api-6.1.0-M1.pom",
+    "sha512": "9cadb0bdae43b112e78812b0953921e3147ef756ee26a65186d09b7022f20923bb9dfcdd11e03d92314ec7d854457eb39a6bc91e9c218812deefad4279e3c39f",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-api/6.1.0-M1",
+    "dest-filename": "junit-jupiter-api-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.0.3/junit-jupiter-engine-6.0.3.module",
-    "sha512": "055972fc5ac4d8986d64534654d355b5fc228c852e259d6fe741d94bf18ee33931d3c75dca0fea2b670e12aa38e56ca55c1ec26750616e6267ea512e2d1232f5",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.0.3",
-    "dest-filename": "junit-jupiter-engine-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1/junit-jupiter-engine-6.1.0-M1.jar",
+    "sha512": "6b564846ec68c0ca307be11b31f8111c9bd375e9dcbadc9a33c855fef3f26f1a6e13f4d5be658e781573e453b5fe4c7f1029f80da24cc5ff0249377ee564d31a",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1",
+    "dest-filename": "junit-jupiter-engine-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.0.3/junit-jupiter-engine-6.0.3.pom",
-    "sha512": "23bc1de49448d1139fe1e84ff7a1ea185e63ca79304eb1acea55ba4c75bf82892678db7f5e589953e9131018f4dda133bca4acb18b9899a38f180e03ccb4ae0f",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.0.3",
-    "dest-filename": "junit-jupiter-engine-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1/junit-jupiter-engine-6.1.0-M1.module",
+    "sha512": "17811e8b04335a55994ce5aee8af5a494e37830c67aae43d5f0e15ba0836956b8f04c352d03b00309f389a078449e6e60eaf0d7a1be0f848bc0cab2d9bf86fc7",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1",
+    "dest-filename": "junit-jupiter-engine-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-migrationsupport/6.0.3/junit-jupiter-migrationsupport-6.0.3.pom",
-    "sha512": "43b9e0f5fbcb3283ef85f60a49755e35468dd3770bbe43ba0ce9b04e204289ed9c4e33339b1ef944ab4943efbf0e8a0238ae290ef6ae0d94700cffbdf0a02e25",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-migrationsupport/6.0.3",
-    "dest-filename": "junit-jupiter-migrationsupport-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1/junit-jupiter-engine-6.1.0-M1.pom",
+    "sha512": "4bd342e589f6bf378c13ddf5a48c294f2474f38b095f70d5a29768ca876e434ea155d28f25172db7f1d0eb5352914dda5dd6e5b4667e684e59cad094d7f887ef",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-engine/6.1.0-M1",
+    "dest-filename": "junit-jupiter-engine-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.0.3/junit-jupiter-params-6.0.3.jar",
-    "sha512": "bd1215b879f8cb63162c9a219550acf3bbaa143a8161b276812f124af784112a2fd94b6bae983beafd0de7f6d0c36f223727bb41b7d6d87947500b750fffdede",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.0.3",
-    "dest-filename": "junit-jupiter-params-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-migrationsupport/6.1.0-M1/junit-jupiter-migrationsupport-6.1.0-M1.pom",
+    "sha512": "e1fc7fcd74168b98b00403e68932bc7835fcee6d2fcb9fb22a458f8d8a2786c1b7e983cc7caebc4759305392c985a110d8a3992953cb7abdaf7f903d76731186",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-migrationsupport/6.1.0-M1",
+    "dest-filename": "junit-jupiter-migrationsupport-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.0.3/junit-jupiter-params-6.0.3.module",
-    "sha512": "2edbed598857595ff5007901eb3fa6f2bcd01111cc453eaf812b93d2f20778bd342f2ee01f15f1f896c4f9f2c34aa60b9b4d7cc051bc88355449d74cf1e07772",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.0.3",
-    "dest-filename": "junit-jupiter-params-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.1.0-M1/junit-jupiter-params-6.1.0-M1.jar",
+    "sha512": "682965740459ec36dc4f67fe23c5c9063dc91db975e7973d4ba43b897129132f02b79be476d4ecf75f449a687320efe4fb7956653b3b73cbe05ea0f429f8e2d1",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.1.0-M1",
+    "dest-filename": "junit-jupiter-params-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.0.3/junit-jupiter-params-6.0.3.pom",
-    "sha512": "98ab641530b7f0ec984b0c328374efb063518e27563c0cacf847a284d5e6cf72ce34fb53f8fd3e52234d6193627988f3dc819a2af63c1a98e55cf4db108c8159",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.0.3",
-    "dest-filename": "junit-jupiter-params-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.1.0-M1/junit-jupiter-params-6.1.0-M1.module",
+    "sha512": "b844573114aa4032934c1af87a10c10df8fa4fe899aa3f0e1802c26fbc909fbf791d77279fb42b82ce50ebb3246b088cd314ae583d1cd59c90630dee3198f5d8",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.1.0-M1",
+    "dest-filename": "junit-jupiter-params-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.0.3/junit-jupiter-6.0.3.jar",
-    "sha512": "a7e4e6ac16bb0efec4fe36941e61835c8e28c2de535bba6f1e69b84781eb3186fa7cb9b63ee4499f9dc42d332c271d50c8c27e9b1db77aca43ad00f2de4a5dc1",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.0.3",
-    "dest-filename": "junit-jupiter-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/6.1.0-M1/junit-jupiter-params-6.1.0-M1.pom",
+    "sha512": "f7fe5ce969253cc861864e31b1e20537397112795c2ee4ebb06a49a0646e5c9bad9736d4966ef1be6ef5beb6565ddae9338b00aa26bdc4f407f92d4175fca436",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter-params/6.1.0-M1",
+    "dest-filename": "junit-jupiter-params-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.0.3/junit-jupiter-6.0.3.module",
-    "sha512": "3861a0fc863d163be000163103536b81c303e237ef23845ffa8eb67719a51d93ea1637b0fa6e852b42de9586e899afdd517bbb7a5518003dc138ffe2c2e1b710",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.0.3",
-    "dest-filename": "junit-jupiter-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.1.0-M1/junit-jupiter-6.1.0-M1.jar",
+    "sha512": "8ddfeec69924d4062ac5d0de11f56afbac398a40e81c3a12d0eb34de156163edf866942b8f8b54af11e417e0b2b6406ce77cf586f9b394a7607c0a4dde543234",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.1.0-M1",
+    "dest-filename": "junit-jupiter-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.0.3/junit-jupiter-6.0.3.pom",
-    "sha512": "52290c770c194b06c7cb759bcb6de530e4f7a04da141be4bceeaf67f530f9a4396a13c279ef4a1e5c5b0b57f174bdcc9f798d64b9f3bf3830259d4361516b0c9",
-    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.0.3",
-    "dest-filename": "junit-jupiter-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.1.0-M1/junit-jupiter-6.1.0-M1.module",
+    "sha512": "4c34abff45d380453f089119f781e63228d608e3a090ded4c5b509ea7b81198058dfdf60546e5d33a1e26a1592fa7222f08198e80553da3caa5cc899de0920e1",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.1.0-M1",
+    "dest-filename": "junit-jupiter-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.0.3/junit-platform-commons-6.0.3.jar",
-    "sha512": "a22154edbf3c277421dc87e924f5cbe7e2807df43a7b14911303d9f578b4cbe1f3dd5123aff2b94cecd5def3a5141710d6c127f58a03f6ace30be5bd3171fd6e",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.0.3",
-    "dest-filename": "junit-platform-commons-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/6.1.0-M1/junit-jupiter-6.1.0-M1.pom",
+    "sha512": "14543449f7c0aa5b01c01ddc269b1994a2cd526352b0b3a1738f43a9a5c1921b417af3df63c135ca97f2e6c2692950800a09dd50c72abcd43d687cfb502d8bdc",
+    "dest": "./offline-repository/org/junit/jupiter/junit-jupiter/6.1.0-M1",
+    "dest-filename": "junit-jupiter-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.0.3/junit-platform-commons-6.0.3.module",
-    "sha512": "e5d5fb08cf5fa0742548cadac5a6ec6c5e1579e4cfd4ab0f981837c60195aec36236682e305816e60367d5a02449be334b115dccd9e55972fb278de30ceafd77",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.0.3",
-    "dest-filename": "junit-platform-commons-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.1.0-M1/junit-platform-commons-6.1.0-M1.jar",
+    "sha512": "1a2e03ad4d9c4b8b603f9b265f3a73bdd342a34f2bd1f8daa0b881aead857d13d2c6c2ace842b996f06e917c934c97129b451139cf3fb82e51ea35b6c2ee9ccb",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.1.0-M1",
+    "dest-filename": "junit-platform-commons-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.0.3/junit-platform-commons-6.0.3.pom",
-    "sha512": "2f88b5df038a7d16289bd7806d12b78027867f6ad40d45e94291ef8aee8bb669c1699e2782c5ed1888891f748e481abf41d43e91cad82333a3a048c381ba0dd7",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.0.3",
-    "dest-filename": "junit-platform-commons-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.1.0-M1/junit-platform-commons-6.1.0-M1.module",
+    "sha512": "b6bbfd0628de7183fca1d753825d0d49e7872b98acdc23718f765a08d9665b3a5804bb1495ce4052fcd7905a2017c20048251db8971271ae5f2149c661f3d713",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.1.0-M1",
+    "dest-filename": "junit-platform-commons-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console/6.0.3/junit-platform-console-6.0.3.pom",
-    "sha512": "21850ba2f4ff99eec473cfc57dd5d4adf4674777777e8cf198a3addde2604f3e51792ede029778b59a8a39baeefb2e44147b4931af0a69284c2477a1c595dc96",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-console/6.0.3",
-    "dest-filename": "junit-platform-console-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/6.1.0-M1/junit-platform-commons-6.1.0-M1.pom",
+    "sha512": "ca66f0918dcbd5f0f2ac015fb0d685e3c35525a181b016f865537cceabc816417bb51ba6e9aa0026a4846e1294bdebb4c2d37cbb197f9e963684814f9414518d",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-commons/6.1.0-M1",
+    "dest-filename": "junit-platform-commons-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.jar",
-    "sha512": "0235da442ee6e189a87f06415c97fdbae1146f5a18ba2e0e9fc57a86916fe4ca1ccf883bb8b96730a524179217de88638cdf87ce7c8ba284cd0fe6f79d93f7aa",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.0.3",
-    "dest-filename": "junit-platform-engine-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console/6.1.0-M1/junit-platform-console-6.1.0-M1.pom",
+    "sha512": "3ead8fe5d9fa2a8452da5c4e4904c257c56b4e7bcf791106efc6f3b280e81a4d03d81533346b129167e89d4b74b193afbc2b09215b1641f96c190390d701a784",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-console/6.1.0-M1",
+    "dest-filename": "junit-platform-console-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.module",
-    "sha512": "91f77a4ce6f323f1cc24258b6499d31c1b01182805e69cad8f8fab93da5e228775332cce70bf95d35dc7fe3b3569782e970fb69e62b489b40904d456ca29bf09",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.0.3",
-    "dest-filename": "junit-platform-engine-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.1.0-M1/junit-platform-engine-6.1.0-M1.jar",
+    "sha512": "3959d40ceed5c85fb0c3796a1cc14b5bef79c59e0e7a6fb8cc9c4a1b6fefb9b80c22dd40f30e9507250c7ca11c1228ee1a4fe521363321b38bbdb8fa83befd76",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.1.0-M1",
+    "dest-filename": "junit-platform-engine-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.pom",
-    "sha512": "b99baedf758211baca36d0563c167e0e16d16b5793b97423e4234abadf669d419c098305769b35f62d912b5e2dcd4c334123206ac03c65e9dfb274b139826428",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.0.3",
-    "dest-filename": "junit-platform-engine-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.1.0-M1/junit-platform-engine-6.1.0-M1.module",
+    "sha512": "cdf548c1fd98ee1727bdaa6d1c124c58f57f576ad8d40d3baaa586bd2b40bc4ccce312698e1d9f0a2350d450234669ef31e51b961b438d4614aa12d33f8bb493",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.1.0-M1",
+    "dest-filename": "junit-platform-engine-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.0.3/junit-platform-launcher-6.0.3.jar",
-    "sha512": "f368b25eb2394328994fe587e8dc295e9e677c55c8d7b559d5798a262e22bbe963cdfffdc0879b54acc2ae500a78e17a7b80e0638d5d411a8b6c84fb11fbe4e3",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.0.3",
-    "dest-filename": "junit-platform-launcher-6.0.3.jar"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.1.0-M1/junit-platform-engine-6.1.0-M1.pom",
+    "sha512": "6252b5f4851b9cd1fd9df6b07a2e81bcd4e890a8c3247a541c31f7f88d18dd6c4da4dbcef5ebd49d0532a44b24fdbc5056b72a95814f6281768ee2ac338f71a5",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-engine/6.1.0-M1",
+    "dest-filename": "junit-platform-engine-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.0.3/junit-platform-launcher-6.0.3.module",
-    "sha512": "257e9c3702c8106cc47c8c2d2914f161c4f3f0db06e3eaf45456330833961bd88012ba281561216b3cb9b80e57a1ba3d21954daad043a81b593ce5b8e6fbd24b",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.0.3",
-    "dest-filename": "junit-platform-launcher-6.0.3.module"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.1.0-M1/junit-platform-launcher-6.1.0-M1.jar",
+    "sha512": "775d18397a79cd0c63f7a4d444e7ded6204e1050df9bc49f1db497447d83e81da79eb477cf8403bc9f9d289fdd1d845ae967d5993b674f0fa5bede969e3de91e",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.1.0-M1",
+    "dest-filename": "junit-platform-launcher-6.1.0-M1.jar"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.0.3/junit-platform-launcher-6.0.3.pom",
-    "sha512": "5e640f0d7954cc9699cedfd20e52309b78fa321a12ceb6cb0fe059698adb9c4ff0eaacb35f9310c9395bc34f44463f7767729260c63561bbe5f96100abd9a9be",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.0.3",
-    "dest-filename": "junit-platform-launcher-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.1.0-M1/junit-platform-launcher-6.1.0-M1.module",
+    "sha512": "8b2ef485b37b22e49c56e4cc6e4a534ae36b4d0ffd86438c7a9fad097ec120c15869e5bff783624e74caa14d7565e657d1286cd1917f70f5c3c1f5f4bed8b1a7",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.1.0-M1",
+    "dest-filename": "junit-platform-launcher-6.1.0-M1.module"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-reporting/6.0.3/junit-platform-reporting-6.0.3.pom",
-    "sha512": "08bc9ce3cfe88b12cd8f0435667706937f38f412bf0637a10c6f365b834403e6297537816a1b6fdd8155614dee15f5a69e89c3f5a35797ff49ad9d9d41cd19a4",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-reporting/6.0.3",
-    "dest-filename": "junit-platform-reporting-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/6.1.0-M1/junit-platform-launcher-6.1.0-M1.pom",
+    "sha512": "094d5a6b0a3444b4859acdb9543eeaf99bb372a41564460df89f2dc2d706f68d0217e40f048c445f065a00cf59ff63c35d1546323584c981be260c70ff211b4d",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-launcher/6.1.0-M1",
+    "dest-filename": "junit-platform-launcher-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-api/6.0.3/junit-platform-suite-api-6.0.3.pom",
-    "sha512": "1957467d09ebe4240ee665105461685b9151b99ffdbe0be337254132069ff141a1283bd23294464499def62af6b4b567c198c241608cf14ac815be5c05cfbb6a",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-api/6.0.3",
-    "dest-filename": "junit-platform-suite-api-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-reporting/6.1.0-M1/junit-platform-reporting-6.1.0-M1.pom",
+    "sha512": "255c2c00ecdf60d0105a2ad913dd38a39973e890dec3f4d47feb2f203228d139552d0cade45286f20283e80bd8b0e44590e62cdbaf4311e263cbe53d45dceeae",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-reporting/6.1.0-M1",
+    "dest-filename": "junit-platform-reporting-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-engine/6.0.3/junit-platform-suite-engine-6.0.3.pom",
-    "sha512": "7f6faf0126d66eb8a6bb3b95b121833c3821f6709df8d453463504997cc72e8889d910f9f7093db943d0c30a78bf65ef264bb9ec4edec559dbfce653caff32b5",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-engine/6.0.3",
-    "dest-filename": "junit-platform-suite-engine-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-api/6.1.0-M1/junit-platform-suite-api-6.1.0-M1.pom",
+    "sha512": "ac3e8775fe8d4b6c55dddee6688d08aa3049e2bbce890c5417a9894d2f6262cd26afa892a275fdc7ff65d70c0b902ce566f7cda07df1055ce98f9acf96c89647",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-api/6.1.0-M1",
+    "dest-filename": "junit-platform-suite-api-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite/6.0.3/junit-platform-suite-6.0.3.pom",
-    "sha512": "96d0646d60efeb5d48c82e72912db4a79f7c9704c49d7dd839b341ce9e1e400608325f57b851da2a18588a641d94826698088ed72910802779b25d847a5fa612",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-suite/6.0.3",
-    "dest-filename": "junit-platform-suite-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-engine/6.1.0-M1/junit-platform-suite-engine-6.1.0-M1.pom",
+    "sha512": "e14da7d52a5b0b330e398ba2de50e67bb48019b1cbba3296af5ec4c2b07a17a7808dd34e72a2a3e9f290978f92b230fe11ce235ffafdde694b402c508853067f",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite-engine/6.1.0-M1",
+    "dest-filename": "junit-platform-suite-engine-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-testkit/6.0.3/junit-platform-testkit-6.0.3.pom",
-    "sha512": "468e1c1fd12ecc8112057c467afd3774893539ec237cd6c5485484b76823dfff0013b1b233ff859d8b182e9fd47f4526e21d2f640d65cc67e3f8f630bc6014bb",
-    "dest": "./offline-repository/org/junit/platform/junit-platform-testkit/6.0.3",
-    "dest-filename": "junit-platform-testkit-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite/6.1.0-M1/junit-platform-suite-6.1.0-M1.pom",
+    "sha512": "f0ece2ba36f202862c1c87660a90de52686bf86e8796bd43ca20594f5c5087cd05ba8d80e988e614ce85de23b59a72d17e5018000cc92e92982c2f4dbe971aea",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-suite/6.1.0-M1",
+    "dest-filename": "junit-platform-suite-6.1.0-M1.pom"
   },
   {
     "type": "file",
-    "url": "https://repo.maven.apache.org/maven2/org/junit/vintage/junit-vintage-engine/6.0.3/junit-vintage-engine-6.0.3.pom",
-    "sha512": "5c60efad7af6721caeb50826b685988b8ecb495c0229fa059af54011b48d28bb1e98c68b127f5e8e363ff928df7d787d5aae35ee00baedf60eb060fae9c672bf",
-    "dest": "./offline-repository/org/junit/vintage/junit-vintage-engine/6.0.3",
-    "dest-filename": "junit-vintage-engine-6.0.3.pom"
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-testkit/6.1.0-M1/junit-platform-testkit-6.1.0-M1.pom",
+    "sha512": "0c99c0beda42c58de0b01aa8a722a6407cb5320fa4eacb050b505a2d16efdb53373e333eb903c7a9c89822319a422391ca9c2f1a70be9cc4b7b7d2d2a7957798",
+    "dest": "./offline-repository/org/junit/platform/junit-platform-testkit/6.1.0-M1",
+    "dest-filename": "junit-platform-testkit-6.1.0-M1.pom"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/junit/vintage/junit-vintage-engine/6.1.0-M1/junit-vintage-engine-6.1.0-M1.pom",
+    "sha512": "29670ee6b6b363d1b00b43a2dc02088154810919f9c69d2f1a04da9f876e658c58293089295678456b1592c878fd2b116e96e6c0dc65350d39888eb0ec1192b9",
+    "dest": "./offline-repository/org/junit/vintage/junit-vintage-engine/6.1.0-M1",
+    "dest-filename": "junit-vintage-engine-6.1.0-M1.pom"
   },
   {
     "type": "file",
@@ -810,6 +817,20 @@
     "sha512": "bc2d4ef364391d6a05c952ae09e83b8b7c7c251c599ac33b34e7507296f8abe7c3f390f533d6343f8745db1de80d0b2f29eaf1bc5b8f6af83380ad0067423930",
     "dest": "./offline-repository/org/projectlombok/lombok/1.18.42",
     "dest-filename": "lombok-1.18.42.pom"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar",
+    "sha512": "b5dd751994358563e264be08ae20a1c6c4c079f7975e8826103104261946e03dd53356867a2817389d07721800be7d40f5a3dbb499faf8049364cf87f411062a",
+    "dest": "./offline-repository/org/projectlombok/lombok/1.18.44",
+    "dest-filename": "lombok-1.18.44.jar"
+  },
+  {
+    "type": "file",
+    "url": "https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.44/lombok-1.18.44.pom",
+    "sha512": "56f661a8efd94a27058b0e484e664f147fb0fe24f615af18d13445641fcd908bc1560bbca00b230614c4728955d2a6d41d5fc2191f090b5b74e9cdcd76778c0d",
+    "dest": "./offline-repository/org/projectlombok/lombok/1.18.44",
+    "dest-filename": "lombok-1.18.44.pom"
   },
   {
     "type": "file",
